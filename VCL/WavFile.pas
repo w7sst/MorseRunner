@@ -562,12 +562,12 @@ begin
     InfName := Copy(FInfo[i], 1, 4);
     InfValue := Copy(FInfo[i], 6, MAXINT);
     //create subchunk
-    ckInfoPiece.ckId := mmioStringToFOURCCA(PChar(InfName), 0);
+    ckInfoPiece.ckId := mmioStringToFOURCCA(PAnsiChar(InfName), 0);
     ckInfoPiece.ckSize := Length(InfValue);
     rc := mmioCreateChunk(FHandle, @ckInfoPiece, 0);
     ChkErr;
     //save subchunk data
-    rc := mmioWrite(FHandle, PChar(InfValue), Length(InfValue));
+    rc := mmioWrite(FHandle, PAnsiChar(InfValue), Length(InfValue));
     ErrIf(rc <> Length(InfValue), 'WAV write error');
     //exit subchunk
     rc := mmioAscend(FHandle, @ckInfoPiece, 0);

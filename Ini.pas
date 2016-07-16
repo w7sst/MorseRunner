@@ -20,7 +20,7 @@ const
   DEFAULTBUFSIZE = 512;
   DEFAULTRATE = 11025;
 
-
+  DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
   
@@ -33,6 +33,9 @@ var
   Qsk: boolean = true;
   Rit: integer = 0;
   BufSize: integer = DEFAULTBUFSIZE;
+  WebServer: string = '';
+  SubmitHiScoreURL: string= '';
+  PostMethod: string = '';
 
   Activity: integer = 2;
   Qrn: boolean = true;
@@ -97,6 +100,9 @@ begin
       HiScore := ReadInteger(SEC_TST, 'HiScore', HiScore);
       CompDuration := Max(1, Min(60, ReadInteger(SEC_TST, 'CompetitionDuration', CompDuration)));
 
+      WebServer := ReadString(SEC_SYS, 'WebServer', DEFAULTWEBSERVER);
+      SubmitHiScoreURL := ReadString(SEC_SYS, 'SubmitHiScoreURL', '');
+      PostMethod := UpperCase(ReadString(SEC_SYS, 'PostMethod', 'POST'));
       //buffer size
       V := ReadInteger(SEC_SYS, 'BufSize', 0);
       if V = 0 then

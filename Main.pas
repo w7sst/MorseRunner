@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //This Source Code Form is subject to the terms of the Mozilla Public
 //License, v. 2.0. If a copy of the MPL was not distributed with this
 //file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -11,11 +11,12 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
-  ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32, 
-  WavFile, IniFiles;
+  ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
+  WavFile, IniFiles, Idhttp;
 
 const
   WM_TBDOWN = WM_USER+1;
+  sVersion: String = '1.69';
 
 type
   TMainForm = class(TForm)
@@ -80,7 +81,6 @@ type
     Stop1MNU: TMenuItem;
     ViewScoreBoardMNU: TMenuItem;
     ViewScoreTable1: TMenuItem;
-    N5: TMenuItem;
     Panel7: TPanel;
     Label16: TLabel;
     Panel8: TPanel;
@@ -195,6 +195,7 @@ type
     Panel11: TPanel;
     ListView1: TListView;
     Operator1: TMenuItem;
+    N9: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -274,6 +275,10 @@ type
     procedure SetPitch(PitchNo: integer);
     procedure SetBw(BwNo: integer);
     procedure ReadCheckboxes;
+    procedure PostHiScore(const sScore: string);
+    procedure ClientHTTP1Redirect(Sender: TObject; var dest: string;
+      var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
+
   end;
 
 var
@@ -300,6 +305,13 @@ begin
 
   Panel2.DoubleBuffered := true;
   RichEdit1.Align := alClient;
+  //RichEdit1.DoubleBuffered:= True;
+  RichEdit1.Font.Name:= 'Consolas';
+  RichEdit1.Font.Size:= 11;
+  Self.Caption:= format('Morse Runner %s', [sVersion]);
+  Label12.Caption:= format('Morse Runner %s ', [sVersion]);
+  Label13.Caption:= Label12.Caption;
+  Label14.Caption:= Label12.Caption;
 end;
 
 
@@ -317,7 +329,7 @@ begin
   if AlSoundOut1.Enabled then
     try AlSoundOut1.PutData(Tst.GetAudio); except end;
 end;
-                                    
+
 
 procedure TMainForm.SendClick(Sender: TObject);
 var
@@ -332,7 +344,6 @@ begin
     msgNR: NrSent:= true;
     end;
 end;
-
 
 
 procedure TMainForm.SendMsg(Msg: TStationMessage);
@@ -351,17 +362,20 @@ end;
 
 procedure TMainForm.Edit1KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['A'..'Z', 'a'..'z', '0'..'9', '/', '?', #8]) then Key := #0;
+  if not (Key in ['A'..'Z', 'a'..'z', '0'..'9', '/', '?', #8]) then
+    Key := #0;
 end;
 
 procedure TMainForm.Edit2KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['0'..'9', #8]) then Key := #0;
+  if not (Key in ['0'..'9', #8]) then
+    Key := #0;
 end;
 
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['0'..'9', #8]) then Key := #0;
+  if not (Key in ['0'..'9', #8]) then
+    Key := #0;
 end;
 
 
@@ -452,13 +466,11 @@ begin
     VK_NEXT: //PgDn
       DecSpeed;
 
+    VK_F9:
+      if (ssAlt in Shift) or  (ssCtrl in Shift) then DecSpeed;
 
-     VK_F9:
-       if (ssAlt in Shift) or  (ssCtrl in Shift) then DecSpeed;
-
-     VK_F10:
-       if (ssAlt in Shift) or  (ssCtrl in Shift) then IncSpeed;
-
+    VK_F10:
+      if (ssAlt in Shift) or  (ssCtrl in Shift) then IncSpeed;
     else Exit;
     end;
 
@@ -471,6 +483,8 @@ procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word;
 begin
   case Key of
     VK_INSERT, VK_RETURN: Key := 0;
+    VK_F1:
+      SpeedButton4.Down:= false;
     end;
 end;
 
@@ -480,17 +494,18 @@ begin
   MustAdvance := false;
 
   if ActiveControl = Edit1 then
-    begin
+  begin
     if Edit2.Text = '' then Edit2.Text := '599';
     ActiveControl := Edit3;
-    end
-  else if ActiveControl = Edit2 then
-    begin
-    if Edit2.Text = '' then Edit2.Text := '599';
-    ActiveControl := Edit3;
-    end
+  end
   else
-    ActiveControl := Edit1;
+    if ActiveControl = Edit2 then
+    begin
+      if Edit2.Text = '' then Edit2.Text := '599';
+      ActiveControl := Edit3;
+    end
+    else
+      ActiveControl := Edit1;
 end;
 
 
@@ -500,11 +515,18 @@ var
 begin
   MustAdvance := false;
 
-  if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0
-    then begin Log.SaveQso; Exit; end;
+  if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0 then
+  begin
+    Log.SaveQso;
+    Exit;
+  end;
 
   //no QSO in progress, send CQ
-  if Edit1.Text = '' then begin SendMsg(msgCq); Exit; end;
+  if Edit1.Text = '' then
+  begin
+    SendMsg(msgCq);
+    Exit;
+  end;
 
   //current state
   C := CallSent;
@@ -512,18 +534,21 @@ begin
   R := Edit3.Text <> '';
 
   //send his call if did not send before, or if call changed
-  if (not C) or ((not N) and (not R)) then SendMsg(msgHisCall);
-  if not N then SendMsg(msgNR);
-  if N and not R then SendMsg(msgQm);
+  if (not C) or ((not N) and (not R)) then
+    SendMsg(msgHisCall);
+  if not N then
+    SendMsg(msgNR);
+  if N and not R then
+    SendMsg(msgQm);
 
   if R and (C or N)
-    then
-      begin
+  then
+    begin
       SendMsg(msgTU);
       Log.SaveQso;
-      end
-    else
-      MustAdvance := true;
+    end
+  else
+    MustAdvance := true;
 end;
 
 
@@ -533,7 +558,10 @@ var
 begin
   P := Pos('?', Edit1.Text);
   if P > 1 then
-    begin Edit1.SelStart := P-1; Edit1.SelLength := 1; end;
+  begin
+    Edit1.SelStart := P-1;
+    Edit1.SelLength := 1;
+  end;
 end;
 
 
@@ -589,8 +617,6 @@ begin
 
   UpdateRitIndicator;
 end;
-
-
 
 
 procedure TMainForm.ComboBox2Change(Sender: TObject);
@@ -673,11 +699,12 @@ end;
 
 procedure TMainForm.About1Click(Sender: TObject);
 const
-  Msg = 'CW CONTEST SIMULATOR'#13#13 +
-        'Copyright � 2004-2006 Alex Shovkoplyas, VE3NEA'#13#13 +
-        've3nea@dxatlas.com'#13;
+  Msg= 'CW CONTEST SIMULATOR'#13#13 +
+        'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13#13 +
+        've3nea@dxatlas.com'#13#13 +
+        'Rebuild by BG4FQD. bg4fqd@gmail.com 20160712';
 begin
-  Application.MessageBox(Msg, 'Morse Runner 1.68', MB_OK or MB_ICONINFORMATION);
+  Application.MessageBox(Msg, 'Morse Runner', MB_OK or MB_ICONINFORMATION);
 end;          
 
 
@@ -720,7 +747,6 @@ begin
   if Ctl is TSpinEdit then (Ctl as TSpinEdit).Color := Clr[AEnable]
   else if Ctl is TEdit then (Ctl as TEdit).Color := Clr[AEnable];
 end;
-
 
 procedure TMainForm.Run(Value: TRunMode);
 const
@@ -816,7 +842,8 @@ begin
     Log.Clear;
     WipeBoxes;
     RichEdit1.Visible := true;
-    {! ?}Panel5.Update;
+    {! ?}
+    Panel5.Update;
     end;
 
   if not BStop then IncRit(0);
@@ -841,9 +868,10 @@ end;
 
 procedure TMainForm.RunBtnClick(Sender: TObject);
 begin
-  if RunMode = rmStop
-    then Run(rmPileUp)
-    else Tst.FStopPressed := true;
+  if RunMode = rmStop then
+    Run(rmPileUp)
+  else
+    Tst.FStopPressed := true;
 end;
 
 procedure TMainForm.WmTbDown(var Msg: TMessage);
@@ -859,36 +887,46 @@ begin
 end;
 
 
-
 procedure TMainForm.PopupScoreWpx;
 var
   S, FName: string;
   Score: integer;
 begin
-  S := Format('%s %s %s %s ', [
+  S := Format('%s %s %s %s ',
+  [
     FormatDateTime('yyyy-mm-dd', Now),
     Ini.Call,
     ListView1.Items[0].SubItems[1],
-    ListView1.Items[1].SubItems[1]]);
-
+    ListView1.Items[1].SubItems[1]
+  ]);
+{ for debug
+  S := Format('%s %s %s %s ',
+  [
+    FormatDateTime('yyyy-mm-dd', Now),
+    Ini.Call,
+    '46',
+    '46'
+  ]);
+}
   S := S + '[' + IntToHex(CalculateCRC32(S, $C90C2086), 8) + ']';
-
-           
   FName := ChangeFileExt(ParamStr(0), '.lst');
   with TStringList.Create do
     try
-      if FileExists(FName) then LoadFromFile(FName);
+      if FileExists(FName) then
+        LoadFromFile(FName);
       Add(S);
       SaveToFile(FName);
-    finally Free; end;
+    finally
+      Free;
+    end;
 
   ScoreDialog.Edit1.Text := S;
 
-
   Score := StrToIntDef(ListView1.Items[2].SubItems[1], 0);
-  if Score > HiScore
-    then ScoreDialog.Height := 192
-    else ScoreDialog.Height := 129;
+  if Score > HiScore then
+    ScoreDialog.Height := 192
+  else
+    ScoreDialog.Height := 129;
   HiScore := Max(HiScore, Score);
   ScoreDialog.ShowModal;
 end;
@@ -908,10 +946,13 @@ begin
   FName := ExtractFilePath(ParamStr(0)) + 'HstResults.txt';
   with TStringList.Create do
     try
-      if FileExists(FName) then LoadFromFile(FName);
+      if FileExists(FName) then
+        LoadFromFile(FName);
       Add(S);
       SaveToFile(FName);
-    finally Free; end;
+    finally
+      Free;
+    end;
 
   ShowMessage('HST Score: ' + ListView1.Items[2].SubItems[1]);
 end;
@@ -925,7 +966,7 @@ end;
 
 procedure TMainForm.ViewScoreBoardMNUClick(Sender: TObject);
 begin
-  OpenWebPage('http://www.dxatlas.com/MorseRunner/MrScore.asp');
+  OpenWebPage(WebServer);
 end;
 
 procedure TMainForm.ViewScoreTable1Click(Sender: TObject);
@@ -934,10 +975,12 @@ var
 begin
   RichEdit1.Clear;
   FName := ChangeFileExt(ParamStr(0), '.lst');
-  if FileExists(FName)
-    then RichEdit1.Lines.LoadFromFile(FName)
-    else RichEdit1.Lines.Add('Your score table is empty');
+  if FileExists(FName) then
+    RichEdit1.Lines.LoadFromFile(FName)
+  else
+    RichEdit1.Lines.Add('Your score table is empty');
   RichEdit1.Visible := true;
+  RichEdit1.Font.Name:= 'Consolas';
 end;
 
 
@@ -953,6 +996,14 @@ procedure TMainForm.Shape2MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   IncRit(0);
+end;
+
+
+procedure TMainForm.ClientHTTP1Redirect(Sender: TObject; var dest: string;
+  var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
+begin
+  (Sender as TIdHTTP).Tag:= 1;
+  Handled:= true;
 end;
 
 
@@ -1019,7 +1070,54 @@ begin
 end;
 
 
+procedure TMainForm.PostHiScore(const sScore: string);
+var
+  HttpClient: TIdHttp;
+  ParamList: TStringList;
+  s, sUrl, sp: string;
+  response: TMemoryStream;
+  p: integer;
+begin
+  try
+    s:= format(SubmitHiScoreURL, [sScore]);
+    s:= StringReplace(s, ' ', '%20', [rfReplaceAll]);
 
+    response:= TMemoryStream.Create;
+    HttpClient:= TIdHttp.Create();
+    HttpClient.AllowCookies:= true;
+    HttpClient.Request.ContentType:= 'application/x-www-form-urlencoded';
+    HttpClient.Request.CacheControl:='no-cache';
+    HttpClient.Request.UserAgent:='User-Agent=Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)';
+    HttpClient.Request.Accept:='Accept=*/*';
+    HttpClient.OnRedirect:= ClientHTTP1Redirect;
+    if PostMethod<>'POST' then
+    begin // Method = Get
+      s:= StringReplace(s, '[', '%5B', [rfReplaceAll]);
+      s:= StringReplace(s, ']', '%5D', [rfReplaceAll]);
+      HttpClient.Get(s, response);
+    end
+    else
+    begin // Method = Post
+      p:= pos('?', s);
+      sUrl:= copy(s, 0, p-1);
+      sp:= copy(s, p + 1, MaxInt);
+      ParamList:= TStringList.Create;
+      ParamList.Delimiter:= '&';
+      ParamList.DelimitedText:= sp;
+      // procedure TStrings.SetDelimitedText(const Value: string); has a bug
+      ParamList.Text:= StringReplace(ParamList.Text, '%20', ' ', [rfReplaceAll]);
+      HttpClient.Request.ContentType:= 'application/x-www-form-urlencoded';
+      s:= HttpClient.Post(sUrl, ParamList);
+      ParamList.Free;
+    end;
+    if HttpClient.Tag=1 then
+      ShowMessage('Sent!')
+    else
+      ShowMessage('Error!');
+  finally
+    HttpClient.Free;
+  end;
+end;
 
 //------------------------------------------------------------------------------
 //                              accessibility

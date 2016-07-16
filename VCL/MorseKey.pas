@@ -8,7 +8,7 @@ unit MorseKey;
 interface
 
 uses
-  SysUtils, Classes, SndTypes, MorseTbl, Math, Ini;
+  SysUtils, Classes, SndTypes, MorseTbl, Math; //, Ini
 
 
 type
@@ -86,18 +86,22 @@ var
   Ch: Char;
 begin
   for i:=0 to High(MorseTable) do
-    begin
+  begin
     S := MorseTable[i];
-    if S[2] <> '[' then Continue;
+    if S[2] <> '[' then
+      Continue;
     Ch := S[1];
     Morse[Ch] := Copy(S, 3, Pos(']', S)-3) + ' ';
-    end;
+  end;
 end;
 
 
 function TKeyer.BlackmanHarrisKernel(x: Single): Single;
 const
-  a0 = 0.35875; a1 = 0.48829;	a2 = 0.14128;	a3 = 0.01168;
+  a0 = 0.35875;
+  a1 = 0.48829;
+  a2 = 0.14128;
+  a3 = 0.01168;
 begin
   Result := a0 - a1*Cos(2*Pi*x) + a2*Cos(4*Pi*x) - a3*Cos(6*Pi*x);
 end;

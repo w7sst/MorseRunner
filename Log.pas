@@ -54,16 +54,22 @@ begin
   QsoList := nil;
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
-
-  if Ini.RunMode = rmHst
-    then MainForm.RichEdit1.Lines.Add(' UTC       Call          Recv      Sent      Score  Chk')
-    else MainForm.RichEdit1.Lines.Add(' UTC       Call          Recv      Sent      Pref   Chk');
+  MainForm.RichEdit1.DefAttributes.Name:= 'Consolas';
+  if Ini.RunMode = rmHst then
+    MainForm.RichEdit1.Lines.Add(' UTC       Call          Recv       Sent       Score  Chk')
+  else
+    MainForm.RichEdit1.Lines.Add(' UTC       Call          Recv       Sent       Pref   Chk');
+  MainForm.RichEdit1.SelectAll;
+  MainForm.RichEdit1.SelAttributes.Name:= 'Consolas';
   MainForm.RichEdit1.SelStart := 1;
   MainForm.RichEdit1.SelLength := Length(MainForm.RichEdit1.Lines[0]);
   MainForm.RichEdit1.SelAttributes.Style := [fsUnderline];
   MainForm.RichEdit1.SelAttributes.Color := clBlue;
 
-  if Ini.RunMode = rmHst then Empty := '' else Empty := '0';
+  if Ini.RunMode = rmHst then
+    Empty := ''
+  else
+    Empty := '0';
 
   MainForm.ListView1.Items[0].SubItems[0] := Empty;
   MainForm.ListView1.Items[1].SubItems[0] := Empty;
@@ -170,7 +176,11 @@ begin
   Call := StringReplace(Call, '/P|', '', []);
   Call := StringReplace(Call, '|', '', []);
   Call := StringReplace(Call, '//', '/', [rfReplaceAll]);
-  if Length(Call) < 2 then begin Result := ''; Exit; end;
+  if Length(Call) < 2 then
+  begin
+    Result := '';
+    Exit;
+  end;
 
   Dig := '';
 
@@ -259,22 +269,34 @@ end;
 procedure LastQsoToScreen;
 const
   EM_SCROLLCARET = $B7;
+  WM_VSCROLL= $0115;
 var
-  S: string;
+  S: String;
+  nStart, nLength: Integer;
 begin
   with QsoList[High(QsoList)] do
     S := FormatDateTime(' hh:nn:ss  ', t) +
-         Format('%-12s  %.3d %.4d  %.3d %.4d  %-5s  %-3s',
+         Format('%-12s  %.3d %.4d   %.3d %.4d   %-5s  %-3s',
          [Call, Rst, Nr, Tst.Me.Rst,
          //Tst.Me.NR,
-         MainForm.RichEdit1.Lines.Count,
-         Pfx, Err]);
+         MainForm.RichEdit1.Lines.Count, Pfx, Err]);
 
+  nStart:= Length(MainForm.RichEdit1.Lines.Text);
   MainForm.RichEdit1.Lines.Add(S);
-  MainForm.RichEdit1.SelStart := Length(MainForm.RichEdit1.Text) - 5;
+  nLength:= Length(S) + 2;
+  MainForm.RichEdit1.SelStart:= nStart;
+  MainForm.RichEdit1.SelLength:= nLength;
+  MainForm.RichEdit1.SelAttributes.Name:= 'Consolas';
+  MainForm.RichEdit1.SelLength:= 0;
+
+  //MainForm.RichEdit1.SelStart := Length(MainForm.RichEdit1.Lines.Text) - 5;
+  MainForm.RichEdit1.SelStart := nStart + nLength - 4 - MainForm.RichEdit1.Lines.Count;
   MainForm.RichEdit1.SelLength := 3;
   MainForm.RichEdit1.SelAttributes.Color := clRed;
-  MainForm.RichEdit1.Perform(EM_SCROLLCARET, 0, 0);
+  MainForm.RichEdit1.SelLength:= 0;
+
+  //MainForm.RichEdit1.Perform(EM_SCROLLCARET, 0, 0);
+  MainForm.RichEdit1.Perform(WM_VSCROLL, SB_BOTTOM, 0);
 end;
 
 
@@ -282,11 +304,19 @@ procedure CheckErr;
 begin
   with QsoList[High(QsoList)] do
     begin
-    if TrueCall = '' then Err := 'NIL'
-    else if Dupe then Err := 'DUP'
-    else if TrueRst <> Rst then Err := 'RST'
-    else if TrueNr <> NR then Err := 'NR '
-    else Err := '   ';
+    if TrueCall = '' then
+      Err := 'NIL'
+    else
+      if Dupe then
+        Err := 'DUP'
+      else
+        if TrueRst <> Rst then
+          Err := 'RST'
+        else
+          if TrueNr <> NR then
+            Err := 'NR '
+          else
+            Err := '   ';
     end;
 end;
 

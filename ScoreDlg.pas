@@ -9,7 +9,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls;
+  StdCtrls, ini;
 
 type
   TScoreDialog = class(TForm)
@@ -19,8 +19,11 @@ type
     Button2: TButton;
     Label2: TLabel;
     Label3: TLabel;
+    Button3: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
   end;
 
 var
@@ -40,6 +43,16 @@ end;
 procedure TScoreDialog.Button2Click(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TScoreDialog.Button3Click(Sender: TObject);
+begin
+  MainForm.PostHiScore(Edit1.Text);
+end;
+
+procedure TScoreDialog.FormCreate(Sender: TObject);
+begin
+  Button3.Enabled:= length(SubmitHiScoreURL)>0;
 end;
 
 end.

@@ -1,10 +1,10 @@
-                              MORSE RUNNER  1.68
+                              MORSE RUNNER  1.69
 
                               Contest Simulator
 
                                   freeware
 
-               Copyright (C) 2004-2006 Alex Shovkoplyas, VE3NEA
+               Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
 
                       http://www.dxatlas.com/MorseRunner/
 
@@ -13,7 +13,7 @@
 
 PLATFORMS
 
-  - Windows 95/98/ME/NT4/2000/XP;
+  - Windows XP/7/8/10;
   - works on Linux systems under WINE (info TNX F8BQQ).
 
 
@@ -32,6 +32,12 @@ UNINSTALLATION
 
 
 CONFIGURATION
+
+  Web Server
+
+    [system]
+    WebServer=http://www.bh1scw.com/mr/score
+    SubmitHiScoreURL=http://www.bh1scw.com/mr/score/insert.php?name=%s
 
   Station
 
@@ -217,6 +223,13 @@ command.
 
 
 VERSION HISTORY
+
+
+1.69
+  - Add "Hi-Score web page" server in MorseRunner.ini.
+  - Change Callersign Font to 'Consolar', You can find the font in office 2007, windows visit/7/8 etc.;
+  - Change string to Unicode, Building with Delphi 2010 sp3.
+
 
 
 1.68

@@ -42,7 +42,8 @@ var
   FFileSize: integer;
 
   FIndex: array[0..INDEXSIZE-1] of integer;
-  Data: string;
+  DataNew: AnsiString;
+  Data: String;
 begin
   Calls.Clear;
 
@@ -57,11 +58,12 @@ begin
 
       if (FIndex[0] <> INDEXBYTES) or (FIndex[INDEXSIZE-1] <> FFileSize)
         then Exit;
-      SetLength(Data, Size - Position);
-      ReadBuffer(Data[1], Length(Data));
+      SetLength(DataNew, Size - Position);
+      ReadBuffer(DataNew[1], Length(DataNew));
     finally
       Free;
     end;
+    Data:= DataNew; //Modify By BG4FQD for unicode
 
 
   L := TList.Create;

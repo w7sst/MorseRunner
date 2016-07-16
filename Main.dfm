@@ -7,10 +7,10 @@ object MainForm: TMainForm
   ClientHeight = 413
   ClientWidth = 700
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
+  Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
   Font.Style = []
   Icon.Data = {
     0000010002002020100000000000E80200002600000010101000000000002801
@@ -50,7 +50,7 @@ object MainForm: TMainForm
   KeyPreview = True
   Menu = MainMenu1
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -58,7 +58,7 @@ object MainForm: TMainForm
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 15
   object Bevel1: TBevel
     Left = 0
     Top = 0
@@ -78,94 +78,94 @@ object MainForm: TMainForm
     object Label1: TLabel
       Left = 16
       Top = 12
-      Width = 17
-      Height = 13
+      Width = 20
+      Height = 15
       Caption = 'Call'
     end
     object SpeedButton4: TSpeedButton
       Tag = 1
       Left = 12
-      Top = 68
+      Top = 66
       Width = 61
-      Height = 17
+      Height = 22
       Caption = 'F1  CQ'
       OnClick = SendClick
     end
     object SpeedButton5: TSpeedButton
       Tag = 2
       Left = 76
-      Top = 68
+      Top = 66
       Width = 61
-      Height = 17
+      Height = 22
       Caption = 'F2  <#>'
       OnClick = SendClick
     end
     object SpeedButton6: TSpeedButton
       Tag = 3
       Left = 140
-      Top = 68
+      Top = 66
       Width = 61
-      Height = 17
+      Height = 22
       Caption = 'F3  TU'
       OnClick = SendClick
     end
     object SpeedButton7: TSpeedButton
       Tag = 4
       Left = 204
-      Top = 68
+      Top = 66
       Width = 61
-      Height = 17
+      Height = 22
       Caption = 'F4  <my>'
       OnClick = SendClick
     end
     object SpeedButton8: TSpeedButton
       Tag = 5
       Left = 12
-      Top = 92
+      Top = 90
       Width = 61
-      Height = 17
+      Height = 22
       Caption = 'F5  <his>'
       OnClick = SendClick
     end
     object SpeedButton9: TSpeedButton
       Tag = 6
       Left = 76
-      Top = 92
+      Top = 90
       Width = 61
-      Height = 17
+      Height = 22
       Caption = 'F6  B4'
       OnClick = SendClick
     end
     object SpeedButton10: TSpeedButton
       Tag = 7
       Left = 140
-      Top = 92
+      Top = 90
       Width = 61
-      Height = 17
+      Height = 22
       Caption = 'F7  ?'
       OnClick = SendClick
     end
     object SpeedButton11: TSpeedButton
       Tag = 8
       Left = 204
-      Top = 92
+      Top = 90
       Width = 61
-      Height = 17
+      Height = 22
       Caption = 'F8  NIL'
       OnClick = SendClick
     end
     object Label2: TLabel
       Left = 172
       Top = 12
-      Width = 22
-      Height = 13
+      Width = 20
+      Height = 15
       Caption = 'RST'
     end
     object Label3: TLabel
       Left = 224
       Top = 12
-      Width = 14
-      Height = 13
+      Width = 16
+      Height = 15
       Caption = 'Nr.'
     end
     object Bevel2: TBevel
@@ -178,13 +178,13 @@ object MainForm: TMainForm
       Left = 12
       Top = 28
       Width = 149
-      Height = 28
+      Height = 27
       AutoSelect = False
       CharCase = ecUpperCase
-      Font.Charset = DEFAULT_CHARSET
+      Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
-      Font.Name = 'MS Sans Serif'
+      Font.Name = 'Consolas'
       Font.Style = [fsBold]
       MaxLength = 12
       ParentFont = False
@@ -197,12 +197,12 @@ object MainForm: TMainForm
       Left = 168
       Top = 28
       Width = 45
-      Height = 28
+      Height = 27
       AutoSelect = False
-      Font.Charset = DEFAULT_CHARSET
+      Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
-      Font.Name = 'MS Sans Serif'
+      Font.Name = 'Consolas'
       Font.Style = [fsBold]
       MaxLength = 3
       ParentFont = False
@@ -214,12 +214,12 @@ object MainForm: TMainForm
       Left = 220
       Top = 28
       Width = 45
-      Height = 28
+      Height = 27
       AutoSelect = False
-      Font.Charset = DEFAULT_CHARSET
+      Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
-      Font.Name = 'MS Sans Serif'
+      Font.Name = 'Consolas'
       Font.Style = [fsBold]
       MaxLength = 4
       ParentFont = False
@@ -334,18 +334,19 @@ object MainForm: TMainForm
           end
           item
             Caption = 'Verified'
+            Width = 70
           end>
         ColumnClick = False
-        Font.Charset = DEFAULT_CHARSET
+        Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Height = -12
+        Font.Name = 'Consolas'
         Font.Style = []
-        Items.Data = {
-          650000000300000000000000FFFFFFFFFFFFFFFF020000000000000003507473
-          000000000000FFFFFFFFFFFFFFFF0200000000000000044D756C740000000000
-          00FFFFFFFFFFFFFFFF02000000000000000553636F72650000FFFFFFFFFFFFFF
-          FFFFFFFFFF}
+        Items.ItemData = {
+          03780000000300000000000000FFFFFFFFFFFFFFFF02000000FFFFFFFF000000
+          0003500074007300000000000000FFFFFFFFFFFFFFFF02000000FFFFFFFF0000
+          0000044D0075006C007400000000000000FFFFFFFFFFFFFFFF02000000FFFFFF
+          FF0000000005530063006F00720065000000FFFFFFFFFFFFFFFFFFFFFFFF}
         ReadOnly = True
         RowSelect = True
         ParentFont = False
@@ -415,7 +416,7 @@ object MainForm: TMainForm
       Top = 55
       Width = 310
       Height = 40
-      Caption = 'Morse Runner 1.68'
+      Caption = 'Morse Runner 1.69'
       Font.Charset = ANSI_CHARSET
       Font.Color = clGreen
       Font.Height = -35
@@ -427,17 +428,29 @@ object MainForm: TMainForm
     object Label15: TLabel
       Left = 106
       Top = 108
-      Width = 245
-      Height = 13
-      Caption = 'Copyright © 2004-2006 Alex Shovkoplyas, VE3NEA'
+      Width = 315
+      Height = 15
+      Caption = 'Copyright '#169'2004-2016 Alex Shovkoplyas, VE3NEA'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Consolas'
+      Font.Style = []
+      ParentFont = False
       Transparent = True
     end
     object Label16: TLabel
       Left = 198
       Top = 128
-      Width = 61
-      Height = 13
+      Width = 56
+      Height = 15
       Caption = 'FREEWARE'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Consolas'
+      Font.Style = []
+      ParentFont = False
       Transparent = True
     end
     object RichEdit1: TRichEdit
@@ -448,10 +461,10 @@ object MainForm: TMainForm
       TabStop = False
       Align = alBottom
       BorderStyle = bsNone
-      Font.Charset = ANSI_CHARSET
+      Font.Charset = GB2312_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
-      Font.Name = 'Courier New'
+      Font.Name = 'Consolas'
       Font.Style = []
       ParentFont = False
       ReadOnly = True
@@ -478,8 +491,8 @@ object MainForm: TMainForm
       object Label11: TLabel
         Left = 144
         Top = 16
-        Width = 34
-        Height = 13
+        Width = 40
+        Height = 15
         Caption = 'Activity'
       end
       object CheckBox2: TCheckBox
@@ -546,7 +559,7 @@ object MainForm: TMainForm
         Left = 144
         Top = 32
         Width = 37
-        Height = 22
+        Height = 24
         TabStop = False
         MaxLength = 1
         MaxValue = 9
@@ -566,36 +579,36 @@ object MainForm: TMainForm
       object Label4: TLabel
         Left = 12
         Top = 20
-        Width = 17
-        Height = 13
+        Width = 20
+        Height = 15
         Caption = 'Call'
       end
       object Label5: TLabel
         Left = 156
         Top = 48
-        Width = 27
-        Height = 13
+        Width = 29
+        Height = 15
         Caption = 'WPM'
       end
       object Label6: TLabel
         Left = 12
         Top = 48
-        Width = 52
-        Height = 13
+        Width = 54
+        Height = 15
         Caption = 'CW Speed'
       end
       object Label7: TLabel
         Left = 12
         Top = 76
-        Width = 45
-        Height = 13
+        Width = 49
+        Height = 15
         Caption = 'CW Pitch'
       end
       object Label9: TLabel
         Left = 12
         Top = 104
-        Width = 68
-        Height = 13
+        Width = 74
+        Height = 15
         Caption = 'RX Bandwidth'
       end
       object VolumeSlider1: TVolumeSlider
@@ -606,27 +619,33 @@ object MainForm: TMainForm
         Hint = '-15.0 dB'
         ShowHint = True
         Margin = 5
-        Value = 0.75
+        Value = 0.750000000000000000
         Overloaded = False
         OnChange = VolumeSlider1Change
         OnDblClick = VolumeSliderDblClick
-        DbScale = 60
-        Db = -15
+        DbScale = 60.000000000000000000
+        Db = -15.000000000000000000
       end
       object Label18: TLabel
         Left = 12
         Top = 134
-        Width = 53
-        Height = 13
+        Width = 58
+        Height = 15
         Caption = 'Mon. Level'
       end
       object Edit4: TEdit
-        Left = 36
+        Left = 40
         Top = 16
         Width = 89
-        Height = 21
+        Height = 23
         TabStop = False
         CharCase = ecUpperCase
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Consolas'
+        Font.Style = []
+        ParentFont = False
         TabOrder = 0
         Text = 'VE3NEA'
         OnChange = Edit4Change
@@ -635,7 +654,7 @@ object MainForm: TMainForm
         Left = 88
         Top = 44
         Width = 65
-        Height = 22
+        Height = 24
         TabStop = False
         MaxLength = 3
         MaxValue = 120
@@ -660,12 +679,11 @@ object MainForm: TMainForm
         Left = 88
         Top = 72
         Width = 65
-        Height = 21
-        TabStop = False
+        Height = 23
         Style = csDropDownList
         DropDownCount = 12
-        ItemHeight = 13
         TabOrder = 3
+        TabStop = False
         OnChange = ComboBox1Change
         Items.Strings = (
           '300 Hz'
@@ -686,12 +704,11 @@ object MainForm: TMainForm
         Left = 88
         Top = 100
         Width = 65
-        Height = 21
-        TabStop = False
+        Height = 23
         Style = csDropDownList
         DropDownCount = 12
-        ItemHeight = 13
         TabOrder = 4
+        TabStop = False
         OnChange = ComboBox2Change
         Items.Strings = (
           '100 Hz'
@@ -716,24 +733,24 @@ object MainForm: TMainForm
       BevelOuter = bvNone
       TabOrder = 2
       object Label8: TLabel
-        Left = 173
+        Left = 179
         Top = 9
-        Width = 19
-        Height = 13
+        Width = 24
+        Height = 15
         Caption = 'min.'
       end
       object Label10: TLabel
-        Left = 103
+        Left = 109
         Top = 9
-        Width = 12
-        Height = 13
+        Width = 15
+        Height = 15
         Caption = 'for'
       end
       object SpinEdit2: TSpinEdit
-        Left = 122
+        Left = 128
         Top = 7
         Width = 45
-        Height = 22
+        Height = 24
         TabStop = False
         MaxLength = 2
         MaxValue = 240
@@ -743,14 +760,15 @@ object MainForm: TMainForm
         OnChange = SpinEdit2Change
       end
       object ToolBar1: TToolBar
-        Left = 13
-        Top = 5
-        Width = 84
+        Left = 6
+        Top = 6
+        Width = 97
         Height = 24
         Align = alNone
-        ButtonWidth = 65
+        ButtonHeight = 30
+        ButtonWidth = 72
         Caption = 'ToolBar1'
-        EdgeBorders = []
+        Flat = False
         Images = ImageList1
         Indent = 3
         List = True
@@ -759,7 +777,7 @@ object MainForm: TMainForm
         object ToolButton1: TToolButton
           Tag = 1
           Left = 3
-          Top = 2
+          Top = 0
           AllowAllUp = True
           Caption = '   Run   '
           DropdownMenu = PopupMenu1
@@ -792,7 +810,7 @@ object MainForm: TMainForm
         Caption = 'View Hi-Score web page...'
         OnClick = ViewScoreBoardMNUClick
       end
-      object N5: TMenuItem
+      object N9: TMenuItem
         Caption = '-'
       end
       object AudioRecordingEnabled1: TMenuItem
@@ -1290,7 +1308,7 @@ object MainForm: TMainForm
     Left = 384
     Top = 176
     Bitmap = {
-      494C010102000400040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400580010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000008484840000000000000000000000000000000000000000000000

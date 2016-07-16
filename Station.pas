@@ -158,7 +158,8 @@ begin
   Keyer.Wpm := Wpm;
   Keyer.MorseMsg := AMorse;
   Envelope := Keyer.Envelope;
-  for i:=0 to High(Envelope) do Envelope[i] := Envelope[i] * Amplitude;
+  for i:=0 to High(Envelope) do
+    Envelope[i] := Envelope[i] * Amplitude;
 
   State := stSending;
   TimeOut := NEVER;
