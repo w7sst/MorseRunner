@@ -11,7 +11,10 @@ interface
 
 uses
   LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Forms, SyncObjs, MMSystem, SndTypes,
-  Ini, Windows, Dialogs;
+  Windows;
+
+const
+  DEFAULTBUFCOUNT = 8;
 
 type
   TCustomSoundInOut = class;
@@ -148,8 +151,7 @@ end;
 
 procedure TCustomSoundInOut.Err(Txt: string);
 begin
- // raise ESoundError.Create(Txt);
- ShowMessage(Txt);
+  raise ESoundError.Create(Txt);
 end;
 
 
@@ -198,8 +200,7 @@ begin
       //FThread.Priority := tpTimeCritical;
       //start
       FEnabled := true;
-     // try Start; except FreeAndNil(FThread); raise; end;
-      try Start; except FreeAndNil(FThread); end;
+      try Start; except FreeAndNil(FThread); raise; end;
       //device started ok, wait for events
       FThread.Resume;
       end

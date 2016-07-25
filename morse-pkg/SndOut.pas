@@ -11,7 +11,7 @@ interface
 
 uses
   LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  BaseComp, MMSystem, SndTypes, SndCustm, Math;
+  MMSystem, SndTypes, SndCustm, Math;
 
 type
   TAlSoundOut = class(TCustomSoundInOut)
@@ -80,21 +80,12 @@ procedure TAlSoundOut.Start;
 var
   i: integer;
   numdev: integer;
-
-  begin
+begin
   //open device
   numdev := waveoutgetnumdevs();
 
-  if DeviceID > (numdev - 1) Then
-    begin
-    if DeviceID <> WAVE_MAPPER Then
-      begin
-      ShowMessage('SoundDevice must be less than the number of sound output devices - 1');
-      Halt;
-      end;
-  end;
+  if DeviceID > (numdev - 1) Then ShowMessage('SoundDevice exceeds the number of sound output devices');
 
-  //open device
   rc := waveOutOpen(@DeviceHandle, DeviceID, @WaveFmt, GetThreadID, 0, CALLBACK_THREAD);
   CheckErr;
 
