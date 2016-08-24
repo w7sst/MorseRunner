@@ -21,7 +21,7 @@ PLATFORMS
 INSTALLATION
 
   - run Setup.exe and follow the on-screen instructions.
-
+  - uncompress the file to any folder and run "MorseRunner.exe"
 
 
 UNINSTALLATION
@@ -153,7 +153,7 @@ KEY ASSIGNMENTS
     fields have the same functions as these keys, and the captions
     of the buttons show what each key sends.
 
-  "\" - equivalent to F1.
+  "\" - equivalent to F1.(*Above 1.70 disable this key)
 
   Esc - stop sending.
 
@@ -223,11 +223,17 @@ command.
 
 
 VERSION HISTORY
+1.70 (BG4FQD)
+  - Adjust UI, support windows scheme.
+  - Support showing callsign infomation, You can modify it in the "ARRL.LIST"
+  - Disable hot key: "\" to prevent pressing by carelessness.
+  - Some other bugs fixing.
 
 
-1.69
+
+1.69 (BG4FQD)
   - Add "Hi-Score web page" server in MorseRunner.ini.
-  - Change Callersign Font to 'Consolar', You can find the font in office 2007, windows visit/7/8 etc.;
+  - Change default Font to Cleartype 'segoe ui', 'Consolar';
   - Change string to Unicode, Building with Delphi 2010 sp3.
 
 

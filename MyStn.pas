@@ -114,9 +114,13 @@ procedure TMyStation.SendNextPiece;
 begin
   MsgText := '';
 
-  if Pieces[0] <> '@' then inherited SendText(Pieces[0])
-  else if CallsFromKeyer and (not (RunMode in [rmHst, rmWpx])) then inherited SendText(' ')
-  else inherited SendText(HisCall);
+  if Pieces[0] <> '@' then
+    inherited SendText(Pieces[0])
+  else
+    if CallsFromKeyer and (not (RunMode in [rmHst, rmWpx])) then
+      inherited SendText(' ')
+    else
+      inherited SendText(HisCall);
 end;
 
 

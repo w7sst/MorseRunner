@@ -10,13 +10,13 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
-  VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
+  VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles, Idhttp;
+  WavFile, IniFiles, Idhttp, ARRL;
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.69';
+  sVersion: String = '1.70';
 
 type
   TMainForm = class(TForm)
@@ -196,6 +196,11 @@ type
     ListView1: TListView;
     Operator1: TMenuItem;
     N9: TMenuItem;
+    ListView2: TListView;
+    Abort1: TMenuItem;
+    sbar: TPanel;
+    N5: TMenuItem;
+    mnuShowCallsignInfo: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -250,6 +255,12 @@ type
     procedure Duration1Click(Sender: TObject);
     procedure Operator1Click(Sender: TObject);
     procedure StopMNUClick(Sender: TObject);
+    procedure ListView2CustomDrawSubItem(Sender: TCustomListView;
+      Item: TListItem; SubItem: Integer; State: TCustomDrawState;
+      var DefaultDraw: Boolean);
+    procedure ListView2SelectItem(Sender: TObject; Item: TListItem;
+      Selected: Boolean);
+    procedure mnuShowCallsignInfoClick(Sender: TObject);
   private
     MustAdvance: boolean;
     procedure ProcessSpace;
@@ -286,7 +297,7 @@ var
 
 implementation
 
-uses ScoreDlg;
+uses ScoreDlg, Log;
 
 {$R *.DFM}
 
@@ -296,6 +307,10 @@ begin
   Tst := TContest.Create;
   LoadCallList;
 
+  ARRLDX:= TARRL.Create;
+
+  Histo:= THisto.Create(PaintBox1);
+
   AlSoundOut1.BufCount := 4;
   FromIni;
 
@@ -303,21 +318,23 @@ begin
   Keyer.Rate := DEFAULTRATE;
   Keyer.BufSize := Ini.BufSize;
 
-  Panel2.DoubleBuffered := true;
+  Panel2.DoubleBuffered := True;
   RichEdit1.Align := alClient;
-  //RichEdit1.DoubleBuffered:= True;
   RichEdit1.Font.Name:= 'Consolas';
   RichEdit1.Font.Size:= 11;
   Self.Caption:= format('Morse Runner %s', [sVersion]);
   Label12.Caption:= format('Morse Runner %s ', [sVersion]);
   Label13.Caption:= Label12.Caption;
   Label14.Caption:= Label12.Caption;
+  ListView2.Visible:= False;
+  ListView2.Clear;
 end;
 
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   ToIni;
+  ARRLDX.Free;
   Tst.Free;
   DestroyKeyer;
 end;
@@ -340,19 +357,21 @@ begin
   SendMsg(Msg);
 
   case Msg of
-    msgHisCall: CallSent:= true;
-    msgNR: NrSent:= true;
-    end;
+    msgHisCall:
+      CallSent:= true;
+    msgNR:
+      NrSent:= true;
+  end;
 end;
 
 
 procedure TMainForm.SendMsg(Msg: TStationMessage);
 begin
-  if Msg = msgHisCall then
-    begin
-    if Edit1.Text <> '' then Tst.Me.HisCall := Edit1.Text;
+  if Msg = msgHisCall then begin
+    if Edit1.Text <> '' then
+      Tst.Me.HisCall := Edit1.Text;
     CallSent := true;
-    end;
+  end;
 
   if Msg = msgNR then  NrSent := true;
 
@@ -362,19 +381,19 @@ end;
 
 procedure TMainForm.Edit1KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['A'..'Z', 'a'..'z', '0'..'9', '/', '?', #8]) then
+  if not CharInSet(Key, ['A'..'Z', 'a'..'z', '0'..'9', '/', '?', #8]) then
     Key := #0;
 end;
 
 procedure TMainForm.Edit2KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['0'..'9', #8]) then
+  if not CharInSet(Key, ['0'..'9', #8]) then
     Key := #0;
 end;
 
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['0'..'9', #8]) then
+  if not CharInSet(Key, ['0'..'9', #8]) then
     Key := #0;
 end;
 
@@ -394,33 +413,36 @@ begin
 
     #27: //Esc = Abort send
       begin
-      if msgHisCall in Tst.Me.Msg then CallSent := false;
-      if msgNR in Tst.Me.Msg then NrSent := false;
-      Tst.Me.AbortSend;
+        if msgHisCall in Tst.Me.Msg then
+          CallSent := false;
+        if msgNR in Tst.Me.Msg then
+          NrSent := false;
+        Tst.Me.AbortSend;
       end;
 
     ';': //<his> <#>
       begin
-      SendMsg(msgHisCall);
-      SendMsg(msgNr);
+        SendMsg(msgHisCall);
+        SendMsg(msgNr);
       end;
 
     '.', '+', '[', ',': //TU & Save
       begin
-      if not CallSent then SendMsg(msgHisCall);
-      SendMsg(msgTU);
-      Log.SaveQso;
+        if not CallSent then
+          SendMsg(msgHisCall);
+        SendMsg(msgTU);
+        Log.SaveQso;
       end;
 
     ' ': //next field
       ProcessSpace;
 
-    '\': // = F1
-      SendMsg(msgCQ);
+    //'\': // = F1
+    //  SendMsg(msgCQ);
 
-    else Exit;
+    else
+      Exit;
   end;
-
   Key := #0;
 end;
 
@@ -438,9 +460,6 @@ begin
 
     VK_RETURN: //Save
       ProcessEnter;
-
-    VK_F11:
-      WipeBoxes;
 
     87, 119: //Alt-W  = Wipe
       if GetKeyState(VK_MENU) < 0 then WipeBoxes else Exit;
@@ -471,9 +490,13 @@ begin
 
     VK_F10:
       if (ssAlt in Shift) or  (ssCtrl in Shift) then IncSpeed;
-    else Exit;
-    end;
 
+    VK_F11:
+      WipeBoxes;
+
+    else
+      Exit;
+  end;
   Key := 0;
 end;
 
@@ -482,9 +505,8 @@ procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   case Key of
-    VK_INSERT, VK_RETURN: Key := 0;
-    VK_F1:
-      SpeedButton4.Down:= false;
+    VK_INSERT, VK_RETURN:
+      Key := 0;
     end;
 end;
 
@@ -495,13 +517,15 @@ begin
 
   if ActiveControl = Edit1 then
   begin
-    if Edit2.Text = '' then Edit2.Text := '599';
+    if Edit2.Text = '' then
+      Edit2.Text := '599';
     ActiveControl := Edit3;
   end
   else
     if ActiveControl = Edit2 then
     begin
-      if Edit2.Text = '' then Edit2.Text := '599';
+      if Edit2.Text = '' then
+        Edit2.Text := '599';
       ActiveControl := Edit3;
     end
     else
@@ -541,12 +565,11 @@ begin
   if N and not R then
     SendMsg(msgQm);
 
-  if R and (C or N)
-  then
-    begin
-      SendMsg(msgTU);
-      Log.SaveQso;
-    end
+  if R and (C or N) then
+  begin
+    SendMsg(msgTU);
+    Log.SaveQso;
+  end
   else
     MustAdvance := true;
 end;
@@ -667,6 +690,7 @@ end;
 procedure TMainForm.SpinEdit2Change(Sender: TObject);
 begin
   Ini.Duration := SpinEdit2.Value;
+  Histo.ReCalc(Ini.Duration);
 end;
 
 procedure TMainForm.SpinEdit3Change(Sender: TObject);
@@ -676,7 +700,7 @@ end;
 
 procedure TMainForm.PaintBox1Paint(Sender: TObject);
 begin
-  Log.PaintHisto;
+  Histo.Repaint;
 end;
 
 procedure TMainForm.Exit1Click(Sender: TObject);
@@ -755,7 +779,8 @@ const
 var
   BCompet, BStop: boolean;
 begin
-  if Value = Ini.RunMode then Exit;
+  if Value = Ini.RunMode then
+    Exit;
 
   BStop := Value = rmStop;
   BCompet := Value in [rmWpx, rmHst];
@@ -804,6 +829,7 @@ begin
   Competition1.Enabled := BStop;
   HSTCompetition2.Enabled := BStop;
   Stop1MNU.Enabled := not BStop;
+  ViewScoreTable1.Enabled:= BStop;  // by bg4fqd
 
   Call1.Enabled := BStop;
   Duration1.Enabled := BStop;
@@ -814,7 +840,6 @@ begin
   Lids1.Enabled := not BCompet;
 
 
-
   //hst specific
   Activity1.Enabled := Value <> rmHst;
   CWBandwidth2.Enabled := Value <> rmHst;
@@ -822,7 +847,7 @@ begin
   EnableCtl(SpinEdit3, RunMode <> rmHst);
   if RunMode = rmHst then SpinEdit3.Value := 4;
 
-  EnableCtl(ComboBox2, RunMode <> rmHst);                
+  EnableCtl(ComboBox2, RunMode <> rmHst);
   if RunMode = rmHst then begin ComboBox2.ItemIndex :=10; SetBw(10); end;
 
   if RunMode = rmHst then ListView1.Visible := false
@@ -841,29 +866,33 @@ begin
     Tst.Me.Nr := 1;
     Log.Clear;
     WipeBoxes;
-    RichEdit1.Visible := true;
+
+    RichEdit1.Visible:= false;
+    RichEdit1.Align:= alNone;
+    sbar.Align:= alBottom;
+    sbar.Visible:= mnuShowCallsignInfo.Checked;
+    ListView2.Align:= alClient;
+    ListView2.Clear;
+    ListView2.Visible:= true;
     {! ?}
     Panel5.Update;
     end;
 
-  if not BStop then IncRit(0);
+  if not BStop then
+    IncRit(0);
 
-
-
-  if BStop
-    then
-      begin
-      if AlWavFile1.IsOpen then AlWavFile1.Close;
-      end
-    else
-      begin
-      AlWavFile1.FileName := ChangeFileExt(ParamStr(0), '.wav');
-      if SaveWav then AlWavFile1.OpenWrite;
-      end;
+  if BStop then begin
+    if AlWavFile1.IsOpen then
+      AlWavFile1.Close;
+  end
+  else begin
+    AlWavFile1.FileName := ChangeFileExt(ParamStr(0), '.wav');
+    if SaveWav then
+      AlWavFile1.OpenWrite;
+  end;
 
   AlSoundOut1.Enabled := not BStop;
 end;
-
 
 
 procedure TMainForm.RunBtnClick(Sender: TObject);
@@ -891,6 +920,7 @@ procedure TMainForm.PopupScoreWpx;
 var
   S, FName: string;
   Score: integer;
+  DlgScore: TScoreDialog;
 begin
   S := Format('%s %s %s %s ',
   [
@@ -899,15 +929,15 @@ begin
     ListView1.Items[0].SubItems[1],
     ListView1.Items[1].SubItems[1]
   ]);
-{ for debug
+ //for debug
   S := Format('%s %s %s %s ',
   [
     FormatDateTime('yyyy-mm-dd', Now),
     Ini.Call,
-    '46',
-    '46'
+    '62',
+    '53'
   ]);
-}
+
   S := S + '[' + IntToHex(CalculateCRC32(S, $C90C2086), 8) + ']';
   FName := ChangeFileExt(ParamStr(0), '.lst');
   with TStringList.Create do
@@ -920,15 +950,20 @@ begin
       Free;
     end;
 
-  ScoreDialog.Edit1.Text := S;
+  DlgScore:= TScoreDialog.Create(Self);
+  try
+    DlgScore.Edit1.Text := S;
 
-  Score := StrToIntDef(ListView1.Items[2].SubItems[1], 0);
-  if Score > HiScore then
-    ScoreDialog.Height := 192
-  else
-    ScoreDialog.Height := 129;
-  HiScore := Max(HiScore, Score);
-  ScoreDialog.ShowModal;
+    Score := StrToIntDef(ListView1.Items[2].SubItems[1], 0);
+    if Score > HiScore then
+      DlgScore.Height := 192
+    else
+      DlgScore.Height := 129;
+    HiScore := Max(HiScore, Score);
+    DlgScore.ShowModal;
+  finally
+    DlgScore.Free;
+  end;
 end;
 
 
@@ -966,6 +1001,7 @@ end;
 
 procedure TMainForm.ViewScoreBoardMNUClick(Sender: TObject);
 begin
+  //PopupScoreWpx;
   OpenWebPage(WebServer);
 end;
 
@@ -974,21 +1010,29 @@ var
   FName: string;
 begin
   RichEdit1.Clear;
+  ListView2.Align:= alNone;
+  ListView2.Visible:= false;
+  sbar.Visible:= false;
+  RichEdit1.Align:= alClient;
+  RichEdit1.Visible:= true;
   FName := ChangeFileExt(ParamStr(0), '.lst');
   if FileExists(FName) then
     RichEdit1.Lines.LoadFromFile(FName)
   else
     RichEdit1.Lines.Add('Your score table is empty');
   RichEdit1.Visible := true;
-  RichEdit1.Font.Name:= 'Consolas';
+  RichEdit1.Font.Name:= 'Consolasf';
 end;
 
 
 procedure TMainForm.Panel8MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  if X < Shape2.Left then IncRit(-1)
-  else if X > (Shape2.Left + Shape2.Width) then IncRit(1);
+  if X < Shape2.Left then
+    IncRit(-1)
+  else
+    if X > (Shape2.Left + Shape2.Width) then
+      IncRit(1);
 end;
 
 
@@ -998,6 +1042,15 @@ begin
   IncRit(0);
 end;
 
+
+procedure TMainForm.mnuShowCallsignInfoClick(Sender: TObject);
+begin
+    with Sender as TMenuItem do begin
+        Checked := not Checked;
+        if ListView2.Visible then
+            sbar.Visible:= Checked;
+    end;
+end;
 
 procedure TMainForm.ClientHTTP1Redirect(Sender: TObject; var dest: string;
   var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
@@ -1013,7 +1066,7 @@ begin
    -1: Inc(Ini.Rit, -50);
     0: Ini.Rit := 0;
     1: Inc(Ini.Rit, 50);
-    end;
+  end;
 
   Ini.Rit := Min(500, Max(-500, Ini.Rit));
   UpdateRitIndicator;
@@ -1029,13 +1082,19 @@ end;
 
 procedure TMainForm.Advance;
 begin
-  if not MustAdvance then Exit;
+  if not MustAdvance then
+    Exit;
 
-  if Edit2.Text = '' then Edit2.Text := '599';
+  if Edit2.Text = '' then
+    Edit2.Text := '599';
 
-  if Pos('?', Edit1.Text) = 0 then ActiveControl := Edit3
-  else if ActiveControl = Edit1 then Edit1Enter(nil)
-  else ActiveControl := Edit1;
+  if Pos('?', Edit1.Text) = 0 then
+    ActiveControl := Edit3
+  else
+    if ActiveControl = Edit1 then
+      Edit1Enter(nil)
+    else
+      ActiveControl := Edit1;
 
   MustAdvance := false;
 end;
@@ -1044,22 +1103,21 @@ end;
 
 procedure TMainForm.VolumeSliderDblClick(Sender: TObject);
 begin
-  with Sender as TVolumeSlider do
-    begin
+  with Sender as TVolumeSlider do begin
     Value := 0.75;
     OnChange(Sender);
-    end;
+  end;
 end;
 
 procedure TMainForm.VolumeSlider1Change(Sender: TObject);
 begin
-  with VolumeSlider1 do
-    begin
+  with VolumeSlider1 do begin
     //-60..+20 dB
     Db := 80 * (Value - 0.75);
-    if dB > 0
-      then Hint := Format('+%.0f dB', [dB])
-      else Hint := Format( '%.0f dB', [dB]);
+    if dB > 0 then
+      Hint := Format('+%.0f dB', [dB])
+    else
+      Hint := Format( '%.0f dB', [dB]);
     end;
 end;
 
@@ -1078,12 +1136,12 @@ var
   response: TMemoryStream;
   p: integer;
 begin
-  try
-    s:= format(SubmitHiScoreURL, [sScore]);
-    s:= StringReplace(s, ' ', '%20', [rfReplaceAll]);
+  HttpClient:= TIdHttp.Create();
+  response:= TMemoryStream.Create;
+  s:= format(SubmitHiScoreURL, [sScore]);
+  s:= StringReplace(s, ' ', '%20', [rfReplaceAll]);
 
-    response:= TMemoryStream.Create;
-    HttpClient:= TIdHttp.Create();
+  try
     HttpClient.AllowCookies:= true;
     HttpClient.Request.ContentType:= 'application/x-www-form-urlencoded';
     HttpClient.Request.CacheControl:='no-cache';
@@ -1150,11 +1208,9 @@ begin
 end;
 
 
-
 procedure TMainForm.Pitch1Click(Sender: TObject);
 begin
   SetPitch((Sender as TMenuItem).Tag);
-
 end;
 
 procedure TMainForm.Bw1Click(Sender: TObject);
@@ -1189,7 +1245,6 @@ begin
 end;
 
 
-
 procedure TMainForm.SelfMonClick(Sender: TObject);
 begin
   VolumeSlider1.Value := (Sender as TMenuItem).Tag / 80 + 0.75;
@@ -1221,6 +1276,22 @@ begin
 end;
 
 
+procedure TMainForm.ListView2CustomDrawSubItem(Sender: TCustomListView;
+  Item: TListItem; SubItem: Integer; State: TCustomDrawState;
+  var DefaultDraw: Boolean);
+begin
+    if (SubItem=5) then
+      (Sender as TListView).Canvas.Font.Color:= clRed
+    else
+      (Sender as TListView).Canvas.Font.Color:= clBlack;
+end;
+
+procedure TMainForm.ListView2SelectItem(Sender: TObject; Item: TListItem;
+  Selected: Boolean);
+begin
+    if (mnuShowCallsignInfo.Checked) then
+        UpdateSbar(Item.SubItems.Strings[0]);
+end;
 
 procedure TMainForm.Activity1Click(Sender: TObject);
 begin
@@ -1240,13 +1311,17 @@ procedure TMainForm.Operator1Click(Sender: TObject);
 begin
   HamName := InputBox('HST Operator', 'Enter operator''s name', HamName);
 
-  if HamName <> ''
-    then Caption := 'Morse Runner:  ' + HamName
-    else Caption := 'Morse Runner';
+  if HamName <> '' then
+    Caption := 'Morse Runner:  ' + HamName
+  else
+    Caption := 'Morse Runner';
 
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
-    try WriteString(SEC_STN, 'Name', HamName);
-    finally Free; end;
+    try
+      WriteString(SEC_STN, 'Name', HamName);
+    finally
+      Free;
+    end;
 end;
 
 procedure TMainForm.StopMNUClick(Sender: TObject);

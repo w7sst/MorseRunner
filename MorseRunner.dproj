@@ -76,6 +76,9 @@
 			<DCCReference Include="VCL\VolumCtl.pas"/>
 			<DCCReference Include="VCL\VolmSldr.pas"/>
 			<DCCReference Include="VCL\WavFile.pas"/>
+			<DCCReference Include="PerlRegEx\pcre.pas"/>
+			<DCCReference Include="PerlRegEx\PerlRegEx.pas"/>
+			<DCCReference Include="ARRL.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -106,9 +109,9 @@
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">True</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
-						<VersionInfo Name="MinorVer">69</VersionInfo>
+						<VersionInfo Name="MinorVer">70</VersionInfo>
 						<VersionInfo Name="Release">2016</VersionInfo>
-						<VersionInfo Name="Build">722</VersionInfo>
+						<VersionInfo Name="Build">826</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -120,9 +123,9 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">VE3NEA</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">Morse Runner</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.69.2016.722</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.70.2016.826</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
-						<VersionInfoKeys Name="LegalCopyright">2004, 2005 Alex, VE3NEA</VersionInfoKeys>
+						<VersionInfoKeys Name="LegalCopyright">2004-2016 Alex, VE3NEA</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName"/>

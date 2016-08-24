@@ -85,7 +85,8 @@ begin
     //put calls to Lst
     Calls.Capacity := L.Count;
     for i:=0 to L.Count-1 do
-      if L[i] <> nil then Calls.Add(PChar(L[i]));
+      if L[i] <> nil then
+        Calls.Add(PChar(L[i]));
   finally
     L.Free;
   end;
@@ -96,12 +97,16 @@ function PickCall: string;
 var
   Idx: integer;
 begin
-  if Calls.Count = 0 then begin Result := 'P29SX'; Exit; end;
+  if Calls.Count = 0 then begin
+    Result := 'P29SX';
+    Exit;
+  end;
 
   Idx := Random(Calls.Count);
   Result := Calls[Idx];
 
-  if Ini.RunMode = rmHst then Calls.Delete(Idx);
+  if Ini.RunMode = rmHst then
+    Calls.Delete(Idx);
 end;
 
 

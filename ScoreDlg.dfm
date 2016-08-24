@@ -76,7 +76,6 @@ object ScoreDialog: TScoreDialog
     ParentFont = False
     ReadOnly = True
     TabOrder = 0
-    ExplicitTop = 28
   end
   object Button1: TButton
     Left = 183
@@ -90,7 +89,6 @@ object ScoreDialog: TScoreDialog
     ShowHint = True
     TabOrder = 2
     OnClick = Button1Click
-    ExplicitTop = 69
   end
   object Button2: TButton
     Left = 304
@@ -102,10 +100,9 @@ object ScoreDialog: TScoreDialog
     ModalResult = 2
     TabOrder = 3
     OnClick = Button2Click
-    ExplicitTop = 69
   end
   object Button3: TButton
-    Left = 63
+    Left = 64
     Top = 130
     Width = 113
     Height = 25
@@ -116,6 +113,5 @@ object ScoreDialog: TScoreDialog
     ShowHint = True
     TabOrder = 1
     OnClick = Button3Click
-    ExplicitTop = 69
   end
 end

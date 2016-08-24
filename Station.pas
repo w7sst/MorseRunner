@@ -203,12 +203,15 @@ begin
   if NrWithError then
     begin
     Idx := Length(Result);
-    if not (Result[Idx] in ['2'..'7']) then Dec(Idx);
-    if Result[Idx] in ['2'..'7'] then
-      begin
-      if Random < 0.5 then Dec(Result[Idx]) else Inc(Result[Idx]);
+    if not CharInSet(Result[Idx], ['2'..'7']) then
+      Dec(Idx);
+    if CharInSet(Result[Idx], ['2'..'7']) then begin
+      if Random < 0.5 then
+        Dec(Result[Idx])
+      else
+        Inc(Result[Idx]);
       Result := Result + Format('EEEEE %.3d', [NR]);
-      end;
+    end;
     NrWithError := false;
     end;
 

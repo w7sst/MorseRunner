@@ -141,10 +141,12 @@ var
 begin
   Result := '';
   for i:=1 to Length(Txt) do
-    if Txt[i] in [' ', '_']
-      then Result := Result + ' '
-      else Result := Result + Morse[Txt[i]];
-  if Result <> '' then Result[Length(Result)] := '~';
+    if CharInSet(Txt[i], [' ', '_']) then
+        Result := Result + ' '
+    else
+        Result := Result + Morse[Txt[i]];
+  if Result <> '' then
+    Result[Length(Result)] := '~';
 end;
 
 

@@ -36,7 +36,7 @@ var
   WebServer: string = '';
   SubmitHiScoreURL: string= '';
   PostMethod: string = '';
-
+  ShowCallsignInfo: integer= 1;
   Activity: integer = 2;
   Qrn: boolean = true;
   Qrm: boolean = true;
@@ -103,6 +103,8 @@ begin
       WebServer := ReadString(SEC_SYS, 'WebServer', DEFAULTWEBSERVER);
       SubmitHiScoreURL := ReadString(SEC_SYS, 'SubmitHiScoreURL', '');
       PostMethod := UpperCase(ReadString(SEC_SYS, 'PostMethod', 'POST'));
+      MainForm.mnuShowCallsignInfo.Checked := ReadBool(SEC_SYS, 'ShowCallsignInfo', true);
+
       //buffer size
       V := ReadInteger(SEC_SYS, 'BufSize', 0);
       if V = 0 then
@@ -128,6 +130,7 @@ var
 begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
+      WriteBool(SEC_SYS, 'ShowCallsignInfo', MainForm.mnuShowCallsignInfo.Checked);
       WriteString(SEC_STN, 'Call', Call);
       WriteInteger(SEC_STN, 'Pitch', MainForm.ComboBox1.ItemIndex);
       WriteInteger(SEC_STN, 'BandWidth', MainForm.ComboBox2.ItemIndex);
