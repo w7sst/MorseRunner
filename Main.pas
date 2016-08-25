@@ -16,7 +16,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.70';
+  sVersion: String = '1.70 beta4';
 
 type
   TMainForm = class(TForm)
@@ -197,7 +197,6 @@ type
     Operator1: TMenuItem;
     N9: TMenuItem;
     ListView2: TListView;
-    Abort1: TMenuItem;
     sbar: TPanel;
     N5: TMenuItem;
     mnuShowCallsignInfo: TMenuItem;
@@ -304,6 +303,18 @@ uses ScoreDlg, Log;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Randomize;
+
+  Panel2.DoubleBuffered := True;
+  RichEdit1.Align := alClient;
+  RichEdit1.Font.Name:= 'Consolas';
+  RichEdit1.Font.Size:= 11;
+  Self.Caption:= format('Morse Runner %s', [sVersion]);
+  Label12.Caption:= format('Morse Runner %s ', [sVersion]);
+  Label13.Caption:= Label12.Caption;
+  Label14.Caption:= Label12.Caption;
+  ListView2.Visible:= False;
+  ListView2.Clear;
+
   Tst := TContest.Create;
   LoadCallList;
 
@@ -317,17 +328,6 @@ begin
   MakeKeyer;
   Keyer.Rate := DEFAULTRATE;
   Keyer.BufSize := Ini.BufSize;
-
-  Panel2.DoubleBuffered := True;
-  RichEdit1.Align := alClient;
-  RichEdit1.Font.Name:= 'Consolas';
-  RichEdit1.Font.Size:= 11;
-  Self.Caption:= format('Morse Runner %s', [sVersion]);
-  Label12.Caption:= format('Morse Runner %s ', [sVersion]);
-  Label13.Caption:= Label12.Caption;
-  Label14.Caption:= Label12.Caption;
-  ListView2.Visible:= False;
-  ListView2.Clear;
 end;
 
 
@@ -930,14 +930,15 @@ begin
     ListView1.Items[1].SubItems[1]
   ]);
  //for debug
+{
   S := Format('%s %s %s %s ',
   [
     FormatDateTime('yyyy-mm-dd', Now),
     Ini.Call,
-    '62',
-    '53'
+    '111',
+    '109'
   ]);
-
+}
   S := S + '[' + IntToHex(CalculateCRC32(S, $C90C2086), 8) + ']';
   FName := ChangeFileExt(ParamStr(0), '.lst');
   with TStringList.Create do
@@ -1290,7 +1291,8 @@ procedure TMainForm.ListView2SelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
 begin
     if (mnuShowCallsignInfo.Checked) then
-        UpdateSbar(Item.SubItems.Strings[0]);
+        UpdateSbar(Item.SubItems[0]);
+    //Item.Index  @QsoList[High(QsoList)];
 end;
 
 procedure TMainForm.Activity1Click(Sender: TObject);

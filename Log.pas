@@ -9,7 +9,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Graphics, RndFunc, Math, Controls,
-  StdCtrls, ExtCtrls, ARRL;
+  StdCtrls, ExtCtrls, ARRL, PerlRegEx, pcre;
 
 
 procedure SaveQso;
@@ -25,12 +25,14 @@ procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6 :strin
 procedure ScoreTableUpdateCheck;
 function FormatScore(const AScore: integer):string;
 procedure UpdateSbar(const ACallsign: string);
+function ExtractCallsign(Call: string): string;
+function ExtractPrefix(Call: string): string;
 
 type
   PQso = ^TQso;
   TQso = record
     T: TDateTime;
-    Call, TrueCall: string;
+    Call, TrueCall, RawCallsign: string;
     Rst, TrueRst: integer;
     Nr, TrueNr: integer;
     Pfx: string;
@@ -40,7 +42,7 @@ type
 
   THisto= class(TObject)
     private Histo: array[0..47] of integer;
-    private w, h, CallCount: integer;
+    //private w, h, CallCount: integer;
     private Duration: integer;
     private PaintBoxH: TPaintBox;
     public constructor Create(APaintBox: TPaintBOx);
@@ -125,21 +127,22 @@ begin
     SubItems.Add(ACol4);
     SubItems.Add(ACol5);
     SubItems.Add(ACol6);
+    Selected:= True;
   end;
-  UpdateSbar(ACol2);
+  //UpdateSbar(MainForm.ListView2.Items.Count);
   MainForm.ListView2.Perform(WM_VSCROLL, SB_BOTTOM, 0);
 end;
 
 //Update Callsign info
 procedure UpdateSbar(const ACallsign: string);
 var
-    k: integer;
+    s: string;
 begin
-    k:= ARRLDX.Search(ACallsign);
-    if (k>=0) then
-        MainForm.sbar.Caption:= ACallsign + '   ' + ARRLDX.GetCol(k)
+    s:= ARRLDX.Search(ACallsign);
+    if (length(s) > 0) then
+        MainForm.sbar.Caption:= '  ' + s
     else
-        MainForm.sbar.Caption:= 'Unknow';
+        MainForm.sbar.Caption:= '  Unknow';
 end;
 
 
@@ -229,7 +232,8 @@ begin
 
   Pts := Length(QsoList);
   PfxList.Clear;
-  for i:=0 to High(QsoList) do PfxList.Add(QsoList[i].Pfx);
+  for i:=0 to High(QsoList) do
+     PfxList.Add(QsoList[i].Pfx);
   Mul := PfxList.Count;
 
   MainForm.ListView1.Items[0].SubItems[0] := FormatScore(Pts);
@@ -253,7 +257,46 @@ begin
   MainForm.PaintBox1.Invalidate;
 end;
 
+// Code by BG4FQD
+function ExtractCallsign(Call: string):string;
+var
+    reg: TPerlRegEx;
+    bMatch: bool;
+begin
+    reg := TPerlRegEx.Create();
+    try
+        Result:= '';
+        reg.Subject := UTF8Encode(Call);
+        reg.RegEx:= '(([0-9][A-Z])|([A-Z]{1,2}))[0-9][A-Z0-9]*[A-Z]';
+        bMatch:= reg.Match;
+        if bMatch then begin
+            if reg.MatchedOffset > 1 then
+                bMatch:= (call[reg.MatchedOffset-1] = '/');
+            if bMatch then begin
+                Result:= String(reg.MatchedText);
+            end;
+        end;
+    finally
+        reg.Free;
+    end;
+end;
 
+function ExtractPrefix(Call: string): string;
+var
+    reg: TPerlRegEx;
+begin
+    reg := TPerlRegEx.Create();
+    try
+        Result:= '-';
+        reg.Subject := UTF8String(Call);
+        reg.RegEx:= '(([0-9][A-Z])|([A-Z]{1,2}))[0-9]';
+        if reg.Match then
+            Result:= UTF8ToUnicodeString(reg.MatchedText);
+    finally
+        reg.Free;
+    end;
+end;
+{
 function ExtractPrefix(Call: string): string;
 const
   DIGITS = ['0'..'9'];
@@ -325,7 +368,7 @@ begin
 
   Result := Copy(Result, 1, 5);
 end;
-
+}
 
 procedure SaveQso;
 var
@@ -347,7 +390,8 @@ begin
     Qso.Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
     Qso.Rst := StrToInt(Edit2.Text);
     Qso.Nr := StrToInt(Edit3.Text);
-    Qso.Pfx := ExtractPrefix(Qso.Call);
+    Qso.RawCallsign:= ExtractCallsign(Qso.Call);
+    Qso.Pfx := ExtractPrefix(Qso.RawCallsign);
     {if PfxList.Find(Qso.Pfx, Idx) then Qso.Pfx := '' else }
     PfxList.Add(Qso.Pfx);
     if Ini.RunMode = rmHst then

@@ -16,11 +16,7 @@ function PickCall: string;
 var
   Calls: TStringList;
 
-
-
-
 implementation
-
 
 function CompareCalls(Item1, Item2: Pointer): Integer;
 begin
@@ -63,7 +59,7 @@ begin
     finally
       Free;
     end;
-    Data:= DataNew; //Modify By BG4FQD for unicode
+    Data:= string(DataNew); //Modify By BG4FQD for unicode
 
 
   L := TList.Create;

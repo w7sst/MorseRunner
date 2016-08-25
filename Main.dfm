@@ -493,11 +493,11 @@ object MainForm: TMainForm
       Columns = <
         item
           Caption = 'UTC'
-          Width = 92
+          Width = 84
         end
         item
           Caption = 'Call'
-          Width = 94
+          Width = 104
         end
         item
           Caption = 'Recv'
@@ -521,7 +521,6 @@ object MainForm: TMainForm
       Font.Height = -15
       Font.Name = 'Consolas'
       Font.Style = []
-      MultiSelect = True
       ReadOnly = True
       RowSelect = True
       ParentDoubleBuffered = False
@@ -1354,10 +1353,6 @@ object MainForm: TMainForm
         Caption = 'About...'
         OnClick = About1Click
       end
-      object Abort1: TMenuItem
-        Caption = 'About'
-        Visible = False
-      end
     end
   end
   object PopupMenu1: TPopupMenu
@@ -1397,7 +1392,7 @@ object MainForm: TMainForm
     Left = 384
     Top = 176
     Bitmap = {
-      494C01010A00D800F80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A00D800000110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

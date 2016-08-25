@@ -23,13 +23,11 @@ type
   TARRL= class
   private
     ARRLList: TList;
-    idx: Array ['0'..'Z'] of integer;
     procedure LoadARRL;
     procedure Delimit(var AStringList: TStringList; const AText: string);
   public
     constructor Create;
-    function Search(APrefix: string): integer;
-    function GetCol(AIndex: integer): string;
+    function Search(ACallsign: string): string;
   end;
 
 var
@@ -37,16 +35,19 @@ var
 
 implementation
 
+uses
+    log;
+
 procedure TARRL.LoadARRL;
 var
     slst, tl: TStringList;
     i: integer;
     AR: TARRLRec;
 begin
+    slst:= TStringList.Create;
+    tl:= TStringList.Create;
     try
         ARRLList:= TList.Create;
-        slst:= TStringList.Create;
-        tl:= TStringList.Create;
         slst.LoadFromFile(ParamStr(1) + 'ARRL.LIST');
         slst.Sort;
         for i:= 0 to slst.Count-1 do begin
@@ -63,6 +64,7 @@ begin
         end;
     finally
         slst.Free;
+        tl.Free;
     end;
 end;
 
@@ -72,21 +74,23 @@ begin
     LoadARRL;
 end;
 
-function TARRL.Search(APrefix: string): integer;
+function TARRL.Search(ACallsign: string): string;
 var
     reg: TPerlRegEx;
     i: integer;
-    s: string;
+    s, sC, sP: string;
 begin
+    reg := TPerlRegEx.Create();
     try
-        Result:= -1;
-        reg := TPerlRegEx.Create();
-        reg.Subject := APrefix;
+        Result:= '';
+        sC:= ExtractCallsign(ACallsign);
+        sP:= ExtractPrefix(sC);
+        reg.Subject := UTF8Encode(sP);
         for i:= ARRLList.Count - 1 downto 0 do begin
-            s:= '^' + TARRLRec(ARRLList.Items[i]).prefixReg;
-            reg.RegEx:= s;
+            s:= '^(' + TARRLRec(ARRLList.Items[i]).prefixReg + ')';
+            reg.RegEx:= UTF8Encode(s);
             if Reg.Match then begin
-                Result:= i;
+                Result:= sC + '  ' + TARRLRec(ARRLList[i]).GetString;
                 Break;
             end;
         end;
@@ -113,17 +117,6 @@ begin
         end
         else
             s:= s + AText[i];
-    end;
-end;
-
-function TARRL.GetCol(AIndex: integer): string;
-begin
-    try
-        if (AIndex>=0) and (AIndex < ARRLList.Count) then
-            Result:= TARRLRec(ARRLList[AIndex]).GetString
-        else
-            Result:= '';
-    finally
     end;
 end;
 
