@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Morse Runner'
-  ClientHeight = 449
+  ClientHeight = 469
   ClientWidth = 729
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -69,13 +69,14 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Top = 314
+    Top = 334
     Width = 729
     Height = 135
     Align = alBottom
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 0
+    ExplicitTop = 314
     object Label1: TLabel
       Left = 16
       Top = 12
@@ -365,27 +366,29 @@ object MainForm: TMainForm
   end
   object Panel5: TPanel
     Left = 0
-    Top = 304
+    Top = 324
     Width = 729
     Height = 10
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitTop = 304
   end
   object Panel6: TPanel
     Left = 0
     Top = 2
     Width = 517
-    Height = 302
+    Height = 322
     Align = alClient
     BevelOuter = bvNone
     BorderStyle = bsSingle
     TabOrder = 2
+    ExplicitHeight = 302
     object Shape1: TShape
       Left = 0
       Top = 54
       Width = 513
-      Height = 181
+      Height = 201
       Align = alClient
       Brush.Color = 16711401
       Pen.Style = psClear
@@ -398,7 +401,7 @@ object MainForm: TMainForm
       Top = 60
       Width = 310
       Height = 40
-      Caption = 'Morse Runner 1.68'
+      Caption = 'Morse Runner 1.71'
       Font.Charset = ANSI_CHARSET
       Font.Color = 12369084
       Font.Height = -35
@@ -412,7 +415,7 @@ object MainForm: TMainForm
       Top = 56
       Width = 310
       Height = 40
-      Caption = 'Morse Runner 1.68'
+      Caption = 'Morse Runner 1.71'
       Font.Charset = ANSI_CHARSET
       Font.Color = clAqua
       Font.Height = -35
@@ -426,7 +429,7 @@ object MainForm: TMainForm
       Top = 55
       Width = 310
       Height = 40
-      Caption = 'Morse Runner 1.69'
+      Caption = 'Morse Runner 1.71'
       Font.Charset = ANSI_CHARSET
       Font.Color = clGreen
       Font.Height = -35
@@ -465,7 +468,7 @@ object MainForm: TMainForm
     end
     object RichEdit1: TRichEdit
       Left = 0
-      Top = 257
+      Top = 277
       Width = 513
       Height = 41
       TabStop = False
@@ -481,6 +484,7 @@ object MainForm: TMainForm
       ScrollBars = ssVertical
       TabOrder = 0
       Visible = False
+      ExplicitTop = 257
     end
     object ListView2: TListView
       Left = 0
@@ -535,7 +539,7 @@ object MainForm: TMainForm
     end
     object sbar: TPanel
       Left = 0
-      Top = 235
+      Top = 255
       Width = 513
       Height = 22
       Align = alBottom
@@ -544,16 +548,18 @@ object MainForm: TMainForm
       ParentBackground = False
       TabOrder = 2
       Visible = False
+      ExplicitTop = 235
     end
   end
   object Panel9: TPanel
     Left = 517
     Top = 2
     Width = 212
-    Height = 302
+    Height = 322
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 3
+    ExplicitHeight = 302
     object GroupBox3: TGroupBox
       Left = 9
       Top = 171
@@ -799,12 +805,13 @@ object MainForm: TMainForm
     end
     object Panel10: TPanel
       Left = 0
-      Top = 265
+      Top = 285
       Width = 212
       Height = 37
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 2
+      ExplicitTop = 265
       object Label8: TLabel
         Left = 179
         Top = 11
@@ -1392,7 +1399,7 @@ object MainForm: TMainForm
     Left = 384
     Top = 176
     Bitmap = {
-      494C01010A00D800000110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A00D8000C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

@@ -158,10 +158,9 @@ end;
 //do not enable component at design or load time
 procedure TCustomSoundInOut.SetEnabled(AEnabled: boolean);
 begin
-  if (not (csDesigning in ComponentState)) and
-     (not (csLoading in ComponentState)) and
-     (AEnabled <> FEnabled)
-    then DoSetEnabled(AEnabled);
+  if (not (csDesigning in ComponentState)) and (not (csLoading in ComponentState)) and
+     (AEnabled <> FEnabled) then
+     DoSetEnabled(AEnabled);
   FEnabled := AEnabled;
 end;
 

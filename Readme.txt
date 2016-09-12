@@ -1,5 +1,4 @@
-                              MORSE RUNNER  1.69
-
+                              MORSE RUNNER  1.71
                               Contest Simulator
 
                                   freeware
@@ -20,14 +19,12 @@ PLATFORMS
 
 INSTALLATION
 
-  - run Setup.exe and follow the on-screen instructions.
-  - uncompress the file to any folder and run "MorseRunner.exe"
+  - Uncompress the file to any folder and run "MorseRunner.exe"
 
 
 UNINSTALLATION
 
-  - click on Add/Remove Programs in the Windows Control Panel;
-  - select Morse Runner in the list of installed programs and click on Remove.
+  - Delete MorseRunner directory.
 
 
 
@@ -38,6 +35,7 @@ CONFIGURATION
     [system]
     WebServer=http://www.bh1scw.com/mr/score
     SubmitHiScoreURL=http://www.bh1scw.com/mr/score/insert.php?name=%s
+    PostMethod=POST
 
   Station
 

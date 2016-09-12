@@ -16,7 +16,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.70 beta4';
+  sVersion: String = '1.71';
 
 type
   TMainForm = class(TForm)
@@ -723,29 +723,31 @@ end;
 
 procedure TMainForm.About1Click(Sender: TObject);
 const
-  Msg= 'CW CONTEST SIMULATOR'#13#13 +
+    Msg= 'CW CONTEST SIMULATOR'#13#13 +
         'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13#13 +
         've3nea@dxatlas.com'#13#13 +
         'Rebuild by BG4FQD. bg4fqd@gmail.com 20160712';
 begin
-  Application.MessageBox(Msg, 'Morse Runner', MB_OK or MB_ICONINFORMATION);
+    //Application.MessageBox(Msg, 'Morse Runner', MB_OK or MB_ICONINFORMATION);
+    PopupScoreWpx;
 end;          
 
 
 procedure TMainForm.Readme1Click(Sender: TObject);
 var
-  FileName: string;
+    FileName: string;
 begin
-  FileName := ExtractFilePath(ParamStr(0)) + 'readme.txt';
-  ShellExecute(GetDesktopWindow, 'open', PChar(FileName), '', '', SW_SHOWNORMAL);
+    FileName := ExtractFilePath(ParamStr(0)) + 'readme.txt';
+    ShellExecute(GetDesktopWindow, 'open', PChar(FileName), '', '', SW_SHOWNORMAL);
 end;
 
 
 procedure TMainForm.Edit1Change(Sender: TObject);
 begin
-  if Edit1.Text = '' then NrSent := false;
-  if not Tst.Me.UpdateCallInMessage(Edit1.Text)
-    then CallSent := false;
+    if Edit1.Text = '' then
+        NrSent := false;
+    if not Tst.Me.UpdateCallInMessage(Edit1.Text) then
+        CallSent := false;
 end;
 
 
@@ -912,23 +914,23 @@ end;
 procedure TMainForm.SetToolbuttonDown(Toolbutton: TToolbutton;
   ADown: boolean);
 begin
-  Windows.PostMessage(Handle, WM_TBDOWN, Integer(ADown), Integer(Toolbutton));
+    Windows.PostMessage(Handle, WM_TBDOWN, Integer(ADown), Integer(Toolbutton));
 end;
 
 
 procedure TMainForm.PopupScoreWpx;
 var
-  S, FName: string;
-  Score: integer;
-  DlgScore: TScoreDialog;
+    S, FName: string;
+    Score: integer;
+    DlgScore: TScoreDialog;
 begin
-  S := Format('%s %s %s %s ',
-  [
-    FormatDateTime('yyyy-mm-dd', Now),
-    Ini.Call,
-    ListView1.Items[0].SubItems[1],
-    ListView1.Items[1].SubItems[1]
-  ]);
+    S := Format('%s %s %s %s ',
+    [
+        FormatDateTime('yyyy-mm-dd', Now),
+        trim(Ini.Call),
+        trim(ListView1.Items[0].SubItems[1]),
+        trim(ListView1.Items[1].SubItems[1])
+    ]);
  //for debug
 {
   S := Format('%s %s %s %s ',
@@ -936,42 +938,42 @@ begin
     FormatDateTime('yyyy-mm-dd', Now),
     Ini.Call,
     '111',
-    '109'
+    '107'
   ]);
 }
-  S := S + '[' + IntToHex(CalculateCRC32(S, $C90C2086), 8) + ']';
-  FName := ChangeFileExt(ParamStr(0), '.lst');
-  with TStringList.Create do
+    S := S + '[' + IntToHex(CalculateCRC32(S, $C90C2086), 8) + ']';
+    FName := ChangeFileExt(ParamStr(0), '.lst');
+    with TStringList.Create do
     try
-      if FileExists(FName) then
-        LoadFromFile(FName);
-      Add(S);
-      SaveToFile(FName);
+        if FileExists(FName) then
+            LoadFromFile(FName);
+        Add(S);
+        SaveToFile(FName);
     finally
-      Free;
+        Free;
     end;
 
-  DlgScore:= TScoreDialog.Create(Self);
-  try
-    DlgScore.Edit1.Text := S;
+    DlgScore:= TScoreDialog.Create(Self);
+    try
+        DlgScore.Edit1.Text := S;
 
-    Score := StrToIntDef(ListView1.Items[2].SubItems[1], 0);
-    if Score > HiScore then
-      DlgScore.Height := 192
-    else
-      DlgScore.Height := 129;
-    HiScore := Max(HiScore, Score);
-    DlgScore.ShowModal;
-  finally
-    DlgScore.Free;
-  end;
+        Score := StrToIntDef(ListView1.Items[2].SubItems[1], 0);
+        if Score > HiScore then
+            DlgScore.Height := 192
+        else
+            DlgScore.Height := 129;
+        HiScore := Max(HiScore, Score);
+        DlgScore.ShowModal;
+    finally
+        DlgScore.Free;
+    end;
 end;
 
 
 procedure TMainForm.PopupScoreHst;
 var
-  S: string;
-  FName: TFileName;
+    S: string;
+    FName: TFileName;
 begin
   S := Format('%s'#9'%s'#9'%s'#9'%s', [
     FormatDateTime('yyyy-mm-dd hh:nn', Now),
@@ -1141,7 +1143,6 @@ begin
   response:= TMemoryStream.Create;
   s:= format(SubmitHiScoreURL, [sScore]);
   s:= StringReplace(s, ' ', '%20', [rfReplaceAll]);
-
   try
     HttpClient.AllowCookies:= true;
     HttpClient.Request.ContentType:= 'application/x-www-form-urlencoded';

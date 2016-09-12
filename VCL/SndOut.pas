@@ -9,7 +9,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  BaseComp, MMSystem, SndTypes, SndCustm, Math;
+  MMSystem, SndTypes, SndCustm, Math;
 
 type
   TAlSoundOut = class(TCustomSoundInOut)

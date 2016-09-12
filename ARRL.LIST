@@ -21,7 +21,7 @@ XV;XV;Viet Nam;AS;49;26;293
 4L*;4L;Georgia;AS;29;21;075
 4O(47)*;4O;Montenegro;EU;28;15;514
 4S*;4S;Sri Lanka;AS;41;22;315
-4U_ITU#*;4U_ITU;ITU HQ;EU;28;14;117
+4U_ITU#*;4U[0-9];ITU HQ;EU;28;14;117
 4U_UN*;4U_UN;United Nations HQ;NA;08;05;289
 4W(44);4W;Timor - Leste;OC;54;28;511
 4X;4X;Israel;AS;39;20;336
@@ -73,7 +73,7 @@ AP*;AP;Pakistan;AS;41;21;372
 B*;B;China;AS;33,42-44,47,48;23,24;318
 BS7(11);BS7;Scarborough Reef,China;AS;50;27;506
 BU-BX*;B[M-OU-X];Taiwan;AS;44;24;386
-BV9P(12);BV9P;Pratas I.;AS;44;24;505
+*BV9P(12);Pratas I. China;AS;44;24;505
 C2;C2;Nauru;OC;65;31;157
 C3*;C3;Andorra;EU;27;14;203
 C5#;C5;The Gambia;AF;46;35;422
@@ -143,15 +143,15 @@ FS,TO*;(FS)|(TO);Saint Martin;NA;11;08;213
 FW*;FW;Wallis & Futuna Is.;OC;62;32;298
 FY*;FY;French Guiana;SA;12;09;063
 G,GX,M*;(G)|(GX)|(M);England;EU;27;14;223
-GD,GT*;(GD)|(GT);Isle of Man;EU;27;14;114
-GI,GN*;(GI)|(GN);Northern Ireland;EU;27;14;265
-GJ,GH*;(GJ)|(GH);Jersey;EU;27;14;122
-GM,GS*;(GM)|(GS);Scotland;EU;27;14;279
-GU,GP*;(GU)|(GP);Guernsey;EU;27;14;106
-GW,GC*;(GW)|(GC);Wales;EU;27;14;294
+GD,GT*;G[DT];Isle of Man;EU;27;14;114
+GI,GN*;G[IN];Northern Ireland;EU;27;14;265
+GJ,GH*;G[JH];Jersey;EU;27;14;122
+GM,GS*;G[MS];Scotland;EU;27;14;279
+GU,GP*;G[UP];Guernsey;EU;27;14;106
+GW,GC*;G[WC];Wales;EU;27;14;294
 H4*;H4;Solomon Is.;OC;51;28;185
 H40(18)*;H40;Temotu Province;OC;51;32;507
-HA,HG*;(HA)|(HG);Hungary;EU;28;15;239
+HA,HG*;H[A|G];Hungary;EU;28;15;239
 HB*;HB;Switzerland;EU;28;14;287
 HB0*;HB0;Liechtenstein;EU;28;14;251
 HC-HD#*;HC[C-D];Ecuador;SA;12;10;120
@@ -231,7 +231,7 @@ PP0-PY0F#*;P[P-Y]0F;Fernando de Noronha;SA;13;11;056
 PP0-PY0S#*;P[P-Y]0S;St. Peter & St. Paul Rocks;SA;13;11;253
 PP0-PY0T#*;P[P-Y]0T;Trindade & Martim Vaz Is.;SA;15;11;273
 PZ;PZ;Suriname;SA;12;09;140
-*R1/F*;Franz Josef Land;EU;75;40;061
+*R1/F*;R1;Franz Josef Land;EU;75;40;061
 S0(1),(27);S0;Western Sahara;AF;46;33;302
 S2*;S2;Bangladesh;AS;41;22;305
 S5(6)*;S5;Slovenia;EU;28;15;499
@@ -242,7 +242,7 @@ SN-SR*;S[N-R];Poland;EU;28;15;269
 ST;ST;Sudan;AF;47,48;34;466
 SU;SU;Egypt;AF;38;34;478
 SV-SZ,J4*;(S[V-Z])|(J4);Greece;EU;28;20;236
-*SV/A*;Mount Athos;EU;28;20;180
+SV/A*;SV;Mount Athos;EU;28;20;180
 SV5,J45*;(SV5)|(J45);Dodecanese;EU;28;20;045
 SV9,J49*;(SV9)|(J49);Crete;EU;28;20;040
 T2(28);T2;Tuvalu;OC;65;31;282
@@ -269,7 +269,7 @@ TY(35);TY;Benin;AF;46;35;416
 TZ(36)*;TZ;Mali;AF;46;35;442
 UA-UI1-7,RA-RZ*;(U[A-I][1-7])|(R[A-Z]);European Russia;EU;19,20,29,30;16;054
 UA2,RA2*;[UR]A2;Kaliningrad;EU;29;15;126
-UA-UI8,9,0;(U[A-I][890])|(R[A-Z]);Asiatic Russia;AS;20-26,30-35,75;16,17,18,19,23;015
+UA-UI8,9,0,RA-RZ;(U[A-I][890])|(R[A-Z]);Asiatic Russia;AS;20-26,30-35,75;16,17,18,19,23;015
 UJ-UM;U[J-M];Uzbekistan;AS;30;17;292
 UN-UQ*;U[N-Q];Kazakhstan;AS;29,30,31;17;130
 UR-UZ,EM-EO*;(U[R-Z])|(E[M-O]);Ukraine;EU;29;16;288

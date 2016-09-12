@@ -3,11 +3,7 @@ unit ARRL;
 interface
 
 uses
-  SysUtils,
-  Classes,
-  Contnrs,
-  PerlRegEx,
-  pcre;
+  SysUtils, Classes, Contnrs, PerlRegEx, pcre;
 
 type
     TARRLRec= class
