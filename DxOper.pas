@@ -111,71 +111,82 @@ end;
 
 function TDxOperator.IsMyCall: TCallCheckResult;
 const
-  W_X = 2; W_Y = 2; W_D = 2;
+    W_X = 2;
+    W_Y = 2;
+    W_D = 2;
 var
-  C, C0: string;
-  M: array of array of integer;
-  x, y: integer;
-  T, L, D: integer;
+    C, C0: string;
+    M: array of array of integer;
+    x, y: integer;
+    T, L, D: integer;
 begin
-  C0 := Call;
-  C := Tst.Me.HisCall;
+    C0 := Call;
+    C := Tst.Me.HisCall;
 
-  SetLength(M, Length(C)+1, Length(C0)+1);
+    SetLength(M, Length(C)+1, Length(C0)+1);
 
-  //dynamic programming algorithm
+    //dynamic programming algorithm
 
-  for y:=0 to High(M[0]) do
-    M[0,y] := 0;
-  for x:=1 to High(M) do
-    M[x,0] := M[x-1,0] + W_X;
+    for y:=0 to High(M[0]) do
+        M[0,y] := 0;
+    for x:=1 to High(M) do
+        M[x,0] := M[x-1,0] + W_X;
 
-  for x:=1 to High(M) do
-    for y:=1 to High(M[0]) do begin
-      T := M[x,y-1];
-      //'?' can match more than one char
-      //end may be missing
-      if (x < High(M)) and (C[x] <> '?') then
-        Inc(T, W_Y);
+    for x:=1 to High(M) do
+        for y:=1 to High(M[0]) do begin
+            T := M[x,y-1];
+            //'?' can match more than one char
+            //end may be missing
+            if (x < High(M)) and (C[x] <> '?') then
+                Inc(T, W_Y);
 
-      L := M[x-1,y];
-      //'?' can match no chars
-      if C[x] <> '?' then Inc(L, W_X);
+            L := M[x-1,y];
+            //'?' can match no chars
+            if C[x] <> '?' then
+                Inc(L, W_X);
 
-      D := M[x-1,y-1];
-      //'?' matches any char
-      //if not (C[x] in [C0[y], '?']) then Inc(D, W_D);
-      if not (CharInSet(C[x], [C0[y], '?'])) then Inc(D, W_D);
+            D := M[x-1,y-1];
+            //'?' matches any char
+            //if not (C[x] in [C0[y], '?']) then Inc(D, W_D);
+            if not (CharInSet(C[x], [C0[y], '?']))
+                then Inc(D, W_D);
 
-      M[x,y] := MinIntValue([T,D,L]);
+            M[x,y] := MinIntValue([T,D,L]);
+        end;
+
+    //classify by penalty
+    case M[High(M), High(M[0])] of
+        0:   Result := mcYes;
+        1,2: Result := mcAlmost;
+    else
+        Result := mcNo;
     end;
 
-  //classify by penalty
-  case M[High(M), High(M[0])] of
-    0:   Result := mcYes;
-    1,2: Result := mcAlmost;             
-    else Result := mcNo;
-  end;
 
+    //callsign-specific corrections
 
-  //callsign-specific corrections
+    if (not Ini.Lids) and (Length(C) = 2) and (Result = mcAlmost) then
+        Result := mcNo;
 
-  if (not Ini.Lids) and (Length(C) = 2) and (Result = mcAlmost) then Result := mcNo;
+    //partial and wildcard match result in 0 penalty but are not exact matches
+    if (Result = mcYes) then
+        if (Length(C) <> Length(C0)) or (Pos('?', C) > 0) then
+            Result := mcAlmost;
 
-  //partial and wildcard match result in 0 penalty but are not exact matches
-  if (Result = mcYes) then
-    if (Length(C) <> Length(C0)) or (Pos('?', C) > 0)
-      then Result := mcAlmost;
+    //partial match too short
+    if Length(StringReplace(C, '?', '', [rfReplaceAll])) < 2 then
+        Result := mcNo;
 
-  //partial match too short
-  if Length(StringReplace(C, '?', '', [rfReplaceAll])) < 2 then Result := mcNo;
-
-  //accept a wrong call, or reject the correct one
-  if Ini.Lids and (Length(C) > 3) then
-    case Result of
-      mcYes: if Random < 0.01 then Result := mcAlmost;
-      mcAlmost: if Random < 0.04 then Result := mcYes;
-      end;
+    //accept a wrong call, or reject the correct one
+    if Ini.Lids and (Length(C) > 3) then
+        case Result of
+            mcYes:
+                if Random < 0.01 then
+                    Result := mcAlmost;
+            mcAlmost:
+                if Random < 0.04 then
+                    Result := mcYes;
+        end;
 end;
 
 

@@ -367,15 +367,16 @@ end;
 
 procedure TMainForm.SendMsg(Msg: TStationMessage);
 begin
-  if Msg = msgHisCall then begin
-    if Edit1.Text <> '' then
-      Tst.Me.HisCall := Edit1.Text;
-    CallSent := true;
-  end;
+    if Msg = msgHisCall then begin
+        if Edit1.Text <> '' then
+            Tst.Me.HisCall := Edit1.Text;
+        CallSent := true;
+    end;
 
-  if Msg = msgNR then  NrSent := true;
+    if Msg = msgNR then
+        NrSent := true;
 
-  Tst.Me.SendMsg(Msg);
+    Tst.Me.SendMsg(Msg);
 end;
 
 
@@ -472,12 +473,18 @@ begin
 }
 
     VK_UP:
-      if GetKeyState(VK_CONTROL) >= 0 then IncRit(1)
-      else if RunMode <> rmHst then SetBw(ComboBox2.ItemIndex+1);
+      if GetKeyState(VK_CONTROL) >= 0 then
+        IncRit(1)
+      else
+        if RunMode <> rmHst then
+            SetBw(ComboBox2.ItemIndex+1);
 
     VK_DOWN:
-      if GetKeyState(VK_CONTROL) >= 0  then IncRit(-1)
-      else if RunMode <> rmHst then SetBw(ComboBox2.ItemIndex-1);
+      if GetKeyState(VK_CONTROL) >= 0  then
+        IncRit(-1)
+      else
+        if RunMode <> rmHst then
+            SetBw(ComboBox2.ItemIndex-1);
 
     VK_PRIOR: //PgUp
       IncSpeed;
@@ -535,43 +542,43 @@ end;
 
 procedure TMainForm.ProcessEnter;
 var
-  C, N, R: boolean;
+    C, N, R: boolean;
 begin
-  MustAdvance := false;
+    MustAdvance := false;
 
-  if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0 then
-  begin
-    Log.SaveQso;
-    Exit;
-  end;
+    if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0 then
+    begin
+        Log.SaveQso;
+        Exit;
+    end;
 
-  //no QSO in progress, send CQ
-  if Edit1.Text = '' then
-  begin
-    SendMsg(msgCq);
-    Exit;
-  end;
+    //no QSO in progress, send CQ
+    if Edit1.Text = '' then
+    begin
+        SendMsg(msgCq);
+        Exit;
+    end;
 
-  //current state
-  C := CallSent;
-  N := NrSent;
-  R := Edit3.Text <> '';
+    //current state
+    C := CallSent;
+    N := NrSent;
+    R := Edit3.Text <> '';
 
-  //send his call if did not send before, or if call changed
-  if (not C) or ((not N) and (not R)) then
-    SendMsg(msgHisCall);
-  if not N then
-    SendMsg(msgNR);
-  if N and not R then
-    SendMsg(msgQm);
+    //send his call if did not send before, or if call changed
+    if (not C) or ((not N) and (not R)) then
+        SendMsg(msgHisCall);
+    if not N then
+        SendMsg(msgNR);
+    if N and not R then
+        SendMsg(msgQm);
 
-  if R and (C or N) then
-  begin
-    SendMsg(msgTU);
-    Log.SaveQso;
-  end
-  else
-    MustAdvance := true;
+    if R and (C or N) then
+    begin
+        SendMsg(msgTU);
+        Log.SaveQso;
+    end
+    else
+        MustAdvance := true;
 end;
 
 
@@ -726,10 +733,10 @@ const
     Msg= 'CW CONTEST SIMULATOR'#13#13 +
         'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13#13 +
         've3nea@dxatlas.com'#13#13 +
-        'Rebuild by BG4FQD. bg4fqd@gmail.com 20160712';
+        'Modified by BG4FQD. bg4fqd@gmail.com 20160913';
 begin
-    //Application.MessageBox(Msg, 'Morse Runner', MB_OK or MB_ICONINFORMATION);
-    PopupScoreWpx;
+    Application.MessageBox(Msg, 'Morse Runner', MB_OK or MB_ICONINFORMATION);
+    //PopupScoreWpx;
 end;          
 
 
@@ -791,6 +798,7 @@ begin
   //main ctls
   EnableCtl(Edit4,  BStop);
   EnableCtl(SpinEdit2, BStop);
+  sbar.Caption:= '';
   SetToolbuttonDown(ToolButton1, not BStop);
 
   //condition checkboxes
@@ -850,19 +858,27 @@ begin
   if RunMode = rmHst then SpinEdit3.Value := 4;
 
   EnableCtl(ComboBox2, RunMode <> rmHst);
-  if RunMode = rmHst then begin ComboBox2.ItemIndex :=10; SetBw(10); end;
+  if RunMode = rmHst then begin
+    ComboBox2.ItemIndex :=10;
+    SetBw(10);
+  end;
 
-  if RunMode = rmHst then ListView1.Visible := false
-  else if RunMode <> rmStop then ListView1.Visible := true;
+  if RunMode = rmHst then
+    ListView1.Visible := false
+  else
+    if RunMode <> rmStop then
+        ListView1.Visible := true;
 
 
   //mode caption
   Panel4.Caption := Title[Value];
-  if BCompet
-    then Panel4.Font.Color := clRed else Panel4.Font.Color := clGreen;
+  if BCompet then
+    Panel4.Font.Color := clRed
+  else
+    Panel4.Font.Color := clGreen;
 
   if not BStop then
-    begin
+  begin
     Tst.Me.AbortSend;
     Tst.BlockNumber := 0;
     Tst.Me.Nr := 1;
@@ -878,7 +894,7 @@ begin
     ListView2.Visible:= true;
     {! ?}
     Panel5.Update;
-    end;
+  end;
 
   if not BStop then
     IncRit(0);

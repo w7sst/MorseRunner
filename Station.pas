@@ -91,78 +91,82 @@ end;
 
 procedure TStation.SendMsg(AMsg: TStationMessage);
 begin
-  if Envelope = nil then Msg := [];
-  if AMsg = msgNone then begin State := stListening; Exit; End;
-  Include(Msg, AMsg);
+    if Envelope = nil then
+        Msg := [];
+    if AMsg = msgNone then begin
+        State := stListening;
+        Exit;
+    End;
+    Include(Msg, AMsg);
 
-  case AMsg of
-    msgCQ: SendText('CQ <my> TEST');
-    msgNR: SendText('<#>');
-    msgTU: SendText('TU');
-    msgMyCall: SendText('<my>');
-    msgHisCall: SendText('<his>');
-    msgB4: SendText('QSO B4');
-    msgQm: SendText('?');
-    msgNil: SendText('NIL');
-    msgR_NR: SendText('R <#>');
-    msgR_NR2: SendText('R <#> <#>');
-    msgDeMyCall1: SendText('DE <my>');
-    msgDeMyCall2: SendText('DE <my> <my>');
-    msgDeMyCallNr1: SendText('DE <my> <#>');
-    msgDeMyCallNr2: SendText('DE <my> <my> <#>');
-    msgMyCallNr2: SendText('<my> <my> <#>');
-    msgNrQm: SendText('NR?');
-    msgLongCQ: SendText('CQ CQ TEST <my> <my> TEST');
-    msgQrl: SendText('QRL?');
-    msgQrl2: SendText('QRL?   QRL?');
-    msqQsy: SendText('<his>  QSY QSY');
-    msgAgn: SendText('AGN');
+    case AMsg of
+        msgCQ: SendText('CQ <my> TEST');
+        msgNR: SendText('<#>');
+        msgTU: SendText('TU');
+        msgMyCall: SendText('<my>');
+        msgHisCall: SendText('<his>');
+        msgB4: SendText('QSO B4');
+        msgQm: SendText('?');
+        msgNil: SendText('NIL');
+        msgR_NR: SendText('R <#>');
+        msgR_NR2: SendText('R <#> <#>');
+        msgDeMyCall1: SendText('DE <my>');
+        msgDeMyCall2: SendText('DE <my> <my>');
+        msgDeMyCallNr1: SendText('DE <my> <#>');
+        msgDeMyCallNr2: SendText('DE <my> <my> <#>');
+        msgMyCallNr2: SendText('<my> <my> <#>');
+        msgNrQm: SendText('NR?');
+        msgLongCQ: SendText('CQ CQ TEST <my> <my> TEST');
+        msgQrl: SendText('QRL?');
+        msgQrl2: SendText('QRL?   QRL?');
+        msqQsy: SendText('<his>  QSY QSY');
+        msgAgn: SendText('AGN');
     end;
 end;
 
 procedure TStation.SendText(AMsg: string);
 begin
-  if Pos('<#>', AMsg) > 0 then
+    if Pos('<#>', AMsg) > 0 then
     begin
-    //with error
-    AMsg := StringReplace(AMsg, '<#>', NrAsText, []);
-    //error cleared
-    AMsg := StringReplace(AMsg, '<#>', NrAsText, [rfReplaceAll]);
+        //with error
+        AMsg := StringReplace(AMsg, '<#>', NrAsText, []);
+        //error cleared
+        AMsg := StringReplace(AMsg, '<#>', NrAsText, [rfReplaceAll]);
     end;
 
-  AMsg := StringReplace(AMsg, '<my>', MyCall, [rfReplaceAll]);
+    AMsg := StringReplace(AMsg, '<my>', MyCall, [rfReplaceAll]);
 
-{
-  if CallsFromKeyer
-     then AMsg := StringReplace(AMsg, '<his>', ' ', [rfReplaceAll])
-     else AMsg := StringReplace(AMsg, '<his>', HisCall, [rfReplaceAll]);
-}
+    {
+    if CallsFromKeyer
+    then AMsg := StringReplace(AMsg, '<his>', ' ', [rfReplaceAll])
+    else AMsg := StringReplace(AMsg, '<his>', HisCall, [rfReplaceAll]);
+    }
 
-  if MsgText <> ''
-    then MsgText := MsgText + ' ' + AMsg
-    else MsgText := AMsg;
-  SendMorse(Keyer.Encode(MsgText));
+    if MsgText <> '' then
+        MsgText := MsgText + ' ' + AMsg
+    else
+        MsgText := AMsg;
+    SendMorse(Keyer.Encode(MsgText));
 end;
 
 
 procedure TStation.SendMorse(AMorse: string);
 var
-  i: integer;
+    i: integer;
 begin
-  if Envelope = nil then
-    begin
-    SendPos := 0;
-    FBfo := 0;
+    if Envelope = nil then begin
+        SendPos := 0;
+        FBfo := 0;
     end;
-    
-  Keyer.Wpm := Wpm;
-  Keyer.MorseMsg := AMorse;
-  Envelope := Keyer.Envelope;
-  for i:=0 to High(Envelope) do
-    Envelope[i] := Envelope[i] * Amplitude;
 
-  State := stSending;
-  TimeOut := NEVER;
+    Keyer.Wpm := Wpm;
+    Keyer.MorseMsg := AMorse;
+    Envelope := Keyer.Envelope;
+    for i:=0 to High(Envelope) do
+        Envelope[i] := Envelope[i] * Amplitude;
+
+    State := stSending;
+    TimeOut := NEVER;
 end;
 
 
@@ -176,19 +180,18 @@ end;
 
 procedure TStation.Tick;
 begin
-  //just finished sending
-  if (State = stSending) and (Envelope = nil) then
-    begin
-    MsgText := '';
-    State := stListening;
-    ProcessEvent(evMsgSent);
+    //just finished sending
+    if (State = stSending) and (Envelope = nil) then begin
+        MsgText := '';
+        State := stListening;
+        ProcessEvent(evMsgSent);
     end
-
-  //check timeout
-  else if State <> stSending then
-    begin
-    if TimeOut > -1 then Dec(TimeOut);
-    if TimeOut = 0 then ProcessEvent(evTimeout);
+    else      //check timeout
+    if State <> stSending then begin
+        if TimeOut > -1 then
+            Dec(TimeOut);
+        if TimeOut = 0 then
+            ProcessEvent(evTimeout);
     end;
 end;
 
@@ -196,39 +199,37 @@ end;
                                                 
 function TStation.NrAsText: string;
 var
-  Idx: integer;
+    Idx: integer;
 begin
-  Result := Format('%d%.3d', [RST, NR]);
+    Result := Format('%d%.3d', [RST, NR]);
 
-  if NrWithError then
-    begin
-    Idx := Length(Result);
-    if not CharInSet(Result[Idx], ['2'..'7']) then
-      Dec(Idx);
-    if CharInSet(Result[Idx], ['2'..'7']) then begin
-      if Random < 0.5 then
-        Dec(Result[Idx])
-      else
-        Inc(Result[Idx]);
-      Result := Result + Format('EEEEE %.3d', [NR]);
+    if NrWithError then begin
+        Idx := Length(Result);
+        if not CharInSet(Result[Idx], ['2'..'7']) then
+            Dec(Idx);
+        if CharInSet(Result[Idx], ['2'..'7']) then begin
+            if Random < 0.5 then
+                Dec(Result[Idx])
+            else
+                Inc(Result[Idx]);
+            Result := Result + Format('EEEEE %.3d', [NR]);
+        end;
+        NrWithError := false;
     end;
-    NrWithError := false;
-    end;
 
-  Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
+    Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
 
-  if Ini.RunMode <> rmHst then
-    begin
-    Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
-    Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
+    if Ini.RunMode <> rmHst then begin
+        Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
+        Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
 
-    if Random < 0.4
-      then Result := StringReplace(Result, '0', 'O', [rfReplaceAll])
-    else if Random < 0.97
-      then Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
-
-    if Random < 0.97
-      then Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
+        if Random < 0.4 then
+            Result := StringReplace(Result, '0', 'O', [rfReplaceAll])
+        else
+            if Random < 0.97 then
+                Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
+        if Random < 0.97 then
+            Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
     end;
 end;
 

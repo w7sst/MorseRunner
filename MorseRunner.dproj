@@ -109,9 +109,9 @@
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">True</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
-						<VersionInfo Name="MinorVer">70</VersionInfo>
+						<VersionInfo Name="MinorVer">71</VersionInfo>
 						<VersionInfo Name="Release">2016</VersionInfo>
-						<VersionInfo Name="Build">914</VersionInfo>
+						<VersionInfo Name="Build">1124</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">True</VersionInfo>
@@ -123,7 +123,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">VE3NEA</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">Morse Runner</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.70.2016.914</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.71.2016.1124</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright">2004-2016 Alex, VE3NEA</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalTrademarks"/>

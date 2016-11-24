@@ -37,54 +37,54 @@ uses
 
 constructor TMyStation.CreateStation;
 begin
-  inherited Create(nil);
-  Pieces := TStringList.Create;
-  Init;
+    inherited Create(nil);
+    Pieces := TStringList.Create;
+    Init;
 end;
 
 
 destructor TMyStation.Destroy;
 begin
-  Pieces.Free;
-  inherited;
+    Pieces.Free;
+    inherited;
 end;
 
 
 procedure TMyStation.Init;
 begin
-  MyCall := Ini.Call;
-  NR := 1;
-  RST := 599;
-  Pitch := Ini.Pitch;
-  Wpm := Ini.Wpm;
-  Amplitude := 300000;
+    MyCall := Ini.Call;
+    NR := 1;
+    RST := 599;
+    Pitch := Ini.Pitch;
+    Wpm := Ini.Wpm;
+    Amplitude := 300000;
 end;
 
 
 procedure TMyStation.ProcessEvent(AEvent: TStationEvent);
 begin
-  if AEvent = evMsgSent then Tst.OnMeFinishedSending;
+    if AEvent = evMsgSent then
+        Tst.OnMeFinishedSending;
 end;
 
 
 procedure TMyStation.AbortSend;
 begin
-  Envelope := nil;
-  Msg := [msgGarbage];
-  MsgText := '';
-  Pieces.Clear;
-  State := stListening;
-  ProcessEvent(evMsgSent);
+    Envelope := nil;
+    Msg := [msgGarbage];
+    MsgText := '';
+    Pieces.Clear;
+    State := stListening;
+    ProcessEvent(evMsgSent);
 end;
 
 
 procedure TMyStation.SendText(AMsg: string);
 begin
-  AddToPieces(AMsg);
-  if State <> stSending then
-    begin
-    SendNextPiece;
-    Tst.OnMeStartedSending;
+    AddToPieces(AMsg);
+    if State <> stSending then begin
+        SendNextPiece;
+        Tst.OnMeStartedSending;
     end;
 end;
 

@@ -19,12 +19,14 @@ PLATFORMS
 
 INSTALLATION
 
-  - Uncompress the file to any folder and run "MorseRunner.exe"
+  - run Setup.exe and follow the on-screen instructions.
+  - uncompress the file to any folder and run "MorseRunner.exe"
 
 
 UNINSTALLATION
 
-  - Delete MorseRunner directory.
+  - click on Add/Remove Programs in the Windows Control Panel;
+  - select Morse Runner in the list of installed programs and click on Remove.
 
 
 
@@ -218,14 +220,18 @@ command.
 
 
 
-
-
 VERSION HISTORY
+
+1.71 (BG4FQD)
+  - Bug fixed: 1.70 Can't post score to webserver.
+  - Bug fixed: Tab key focus bug.(TNX BI3NAW)
+  - Bug fixed: Callsign information bar display error.
+
 1.70 (BG4FQD)
-  - Adjust UI, support windows scheme.
-  - Support showing callsign infomation, You can modify it in the "ARRL.LIST"
-  - Disable hot key: "\" to prevent pressing by carelessness.
-  - Some other bugs fixing.
+  - Adjust UI, support windows runtime scheme.
+  - Support show callsign infomation, You can modify it in the "ARRL.LIST", it's a text file;
+  - Disable key "\"
+  - Some bugs fixed.
 
 
 
