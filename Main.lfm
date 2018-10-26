@@ -371,7 +371,7 @@ object MainForm: TMainForm
       Height = 40
       Top = 54
       Width = 359
-      Caption = 'Morse Runner 1.68.2+'
+      Caption = 'Morse Runner 1.68.3+'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clAqua
       Font.Height = -35
@@ -385,7 +385,7 @@ object MainForm: TMainForm
       Height = 40
       Top = 53
       Width = 359
-      Caption = 'Morse Runner 1.68.2+'
+      Caption = 'Morse Runner 1.68.3+'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clGreen
       Font.Height = -35
