@@ -44,7 +44,7 @@ type
 implementation
 
 uses
-  SysUtils, Ini, Math, RndFunc, Contest, Log;
+  SysUtils, Ini, Math, RndFunc, Contest, Log, Main;
 
 { TDxOperator }
 
@@ -289,7 +289,8 @@ begin
       end;
 
   if msgQm in AMsg then
-    if State = osNeedPrevEnd then SetState(osNeedQso);
+    if (State = osNeedPrevEnd) and (Mainform.Edit1.Text = '') then
+      SetState(osNeedQso);
 
   if (not Ini.Lids) and (AMsg = [msgGarbage]) then State := osNeedPrevEnd;
 
