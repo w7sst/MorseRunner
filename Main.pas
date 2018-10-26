@@ -13,7 +13,7 @@ uses
   LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
-  ComCtrls, Spin, SndTypes, ToolWin, ImgList, FileUtil, Crc32,
+  ComCtrls, Spin, SndTypes, ToolWin, ImgList, LazFileUtils, Crc32,
   WavFile, IniFiles, Windows, UdpHandler;
 
 const
@@ -563,8 +563,10 @@ end;
 
 
 procedure TMainForm.IncSpeed;
+const
+  INC_WPM = 2;
 begin
-  Wpm := Trunc(Wpm / 5) * 5 + 5;
+  Wpm := Trunc(Wpm / INC_WPM) * INC_WPM + INC_WPM;
   Wpm := Max(10, Min(120, Wpm));
   SpinEdit1.Value := Wpm;
   Tst.Me.Wpm := Wpm;
@@ -572,8 +574,10 @@ end;
 
 
 procedure TMainForm.DecSpeed;
+const
+  DEC_WPM = 2;
 begin
-  Wpm := Ceil(Wpm / 5) * 5 - 5;
+  Wpm := Ceil(Wpm / DEC_WPM) * DEC_WPM - DEC_WPM;
   Wpm := Max(10, Min(120, Wpm));
   SpinEdit1.Value := Wpm;
   Tst.Me.Wpm := Wpm;
@@ -702,7 +706,7 @@ const
         'Copyright © 2004-2006 Alex Shovkoplyas, VE3NEA'#13#13 +
         've3nea@dxatlas.com'#13;
 begin
-  Application.MessageBox(Msg, 'Morse Runner 1.68+', MB_OK or MB_ICONINFORMATION);
+  Application.MessageBox(Msg, 'Morse Runner 1.68.1+', MB_OK or MB_ICONINFORMATION);
 end;          
 
 

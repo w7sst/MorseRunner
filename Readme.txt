@@ -232,6 +232,14 @@ command.
 
 VERSION HISTORY
 
+1.68.2+
+  - New callers can be added when a QSO is done (F6FVY)
+  - Bugfix : When F1 was hit several times in a row, the number of callers was
+    increasing without respect to the activity setting (F6FVY)
+  - The "reply or not" algorithm has been modified to allow callers with long
+    callsigns to reply, even if only few letters are caught (experimental) (F6FVY)
+  - Speed increments / decrements modified (2 WPM instead of 5) (F6FVY)
+
 1.68+
   - Added capability to have 2 Morse Runner instances running simultaneously, each sending output to its own
     sound card. (N2IC)
