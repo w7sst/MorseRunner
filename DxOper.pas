@@ -218,6 +218,7 @@ end;
 
 procedure TDxOperator.MsgReceived(AMsg: TStationMessages);
 begin
+
   //if CQ received, we can call no matter what else was sent
   if msgCQ in AMsg then
     begin
@@ -240,7 +241,6 @@ begin
     Exit;
     end;  
 
-
   if msgHisCall in AMsg then
     case IsMyCall of
       mcYes:
@@ -259,14 +259,12 @@ begin
         else if State = osNeedEnd then State := osDone;
       end;
 
-
   if msgB4 in AMsg then
     case State of
       osNeedPrevEnd, osNeedQso: SetState(osNeedQso);
       osNeedNr, osNeedEnd: State := osFailed;
       osNeedCall, osNeedCallNr: ; //same state: correct the call
       end;
-
 
   if msgNR in AMsg then
     case State of
@@ -289,6 +287,9 @@ begin
       osNeedCallNr: ;
       osNeedEnd: State := osDone;
       end;
+
+  if msgQm in AMsg then
+    if State = osNeedPrevEnd then SetState(osNeedQso);
 
   if (not Ini.Lids) and (AMsg = [msgGarbage]) then State := osNeedPrevEnd;
 
