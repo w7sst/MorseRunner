@@ -7,6 +7,7 @@
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
 	
                            Modified by N2IC, 2016.
+                           Modified by F6FVY, 2018.
 
                       http://www.dxatlas.com/MorseRunner/
 
@@ -138,7 +139,7 @@ The contest can be started in one of four modes.
  Single Calls mode: a single station calls you as soon as you finish the
    previous QSO. Good for improving typing skills.
 
- WPX Compteition mode: similar to the Pile-Up mode, but band conditions and contest
+ WPX Competition mode: similar to the Pile-Up mode, but band conditions and contest
    duration are fixed and cannot be changed. The keying speed and band activity
    are still under your control;
 
@@ -232,13 +233,17 @@ command.
 
 VERSION HISTORY
 
+1.68.3+
+  - After a CQ, if nothing is caught or if what you caught is wrong, you can use
+    F7 ('?') to instruct the callers to call again. (F6FVY)
+
 1.68.2+
-  - New callers can be added when a QSO is done (F6FVY)
+  - New callers can be added when a QSO is done. (F6FVY)
   - Bugfix : When F1 was hit several times in a row, the number of callers was
-    increasing without respect to the activity setting (F6FVY)
+    increasing without respect to the activity setting. (F6FVY)
   - The "reply or not" algorithm has been modified to allow callers with long
-    callsigns to reply, even if only few letters are caught (experimental) (F6FVY)
-  - Speed increments / decrements modified (2 WPM instead of 5) (F6FVY)
+    callsigns to reply, even if only few letters are caught (experimental). (F6FVY)
+  - Speed increments / decrements modified (2 WPM instead of 5). (F6FVY)
 
 1.68+
   - Added capability to have 2 Morse Runner instances running simultaneously, each sending output to its own
