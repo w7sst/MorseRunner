@@ -10,7 +10,7 @@ unit CallLst;
 interface
 
 uses
-  SysUtils, Classes, Ini, FileUtil;
+  SysUtils, Classes, Ini, LazFileUtils;
 
 procedure LoadCallList;
 function PickCall: string;
