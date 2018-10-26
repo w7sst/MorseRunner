@@ -21,7 +21,7 @@ object MainForm: TMainForm
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
   Position = poDesktopCenter
-  LCLVersion = '1.4.4.0'
+  LCLVersion = '1.8.2.0'
   object Bevel1: TBevel
     Left = 0
     Height = 2
@@ -356,8 +356,8 @@ object MainForm: TMainForm
       Left = 74
       Height = 40
       Top = 58
-      Width = 330
-      Caption = 'Morse Runner 1.68+'
+      Width = 340
+      Caption = 'Morse Runner 1.68.2'
       Font.CharSet = ANSI_CHARSET
       Font.Color = 12369084
       Font.Height = -35
@@ -370,8 +370,8 @@ object MainForm: TMainForm
       Left = 69
       Height = 40
       Top = 54
-      Width = 330
-      Caption = 'Morse Runner 1.68+'
+      Width = 359
+      Caption = 'Morse Runner 1.68.2+'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clAqua
       Font.Height = -35
@@ -385,7 +385,7 @@ object MainForm: TMainForm
       Height = 40
       Top = 53
       Width = 359
-      Caption = 'Morse Runner 1.68.1+'
+      Caption = 'Morse Runner 1.68.2+'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clGreen
       Font.Height = -35
@@ -429,11 +429,11 @@ object MainForm: TMainForm
       Visible = False
     end
     object Label19: TLabel
-      Left = 176
+      Left = 136
       Height = 13
       Top = 128
-      Width = 111
-      Caption = 'Modified by N2IC, 2016'
+      Width = 182
+      Caption = 'Modified by N2IC, 2016 - F6FVY, 2018'
       ParentColor = False
     end
   end
@@ -718,6 +718,7 @@ object MainForm: TMainForm
         Top = 3
         Width = 84
         Align = alNone
+        ButtonHeight = 22
         ButtonWidth = 65
         Caption = 'ToolBar1'
         EdgeBorders = []
@@ -744,7 +745,7 @@ object MainForm: TMainForm
   object VolumeSlider1: TVolumeSlider
     Left = 640
     Height = 20
-    Hint = '-15.0 dB'
+    Hint = '-15,0 dB'
     Top = 136
     Width = 60
     ShowHint = True
