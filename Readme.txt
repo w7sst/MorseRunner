@@ -5,6 +5,9 @@
                 Version 1.84 - IARU HF World Championship Contest
             The fifth release of the Morse Runner Community Edition
 
+                           Modified by N2IC, 2016.
+                           Modified by F6FVY, 2018.
+
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
                       http://www.dxatlas.com/MorseRunner/
 
@@ -278,6 +281,18 @@ Version 1.80 (Oct 2022)
 
 1.68.4+
   - The mouse wheel now acts as RIT. (F6FVY)
+
+1.68.3+
+  - After a CQ, if nothing is caught or if what you caught is wrong, you can use
+    F7 ('?') to instruct the callers to call again. (F6FVY)
+
+1.68.2+
+  - New callers can be added when a QSO is done. (F6FVY)
+  - Bugfix : When F1 was hit several times in a row, the number of callers was
+    increasing without respect to the activity setting. (F6FVY)
+  - The "reply or not" algorithm has been modified to allow callers with long
+    callsigns to reply, even if only few letters are caught (experimental). (F6FVY)
+  - Speed increments / decrements modified (2 WPM instead of 5). (F6FVY)
 
 1.68 (VE3NEA) 2016
   - TU + MyCall after the QSO is now equivalent to CQ
