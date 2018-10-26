@@ -5,5 +5,7 @@ MorseRunner.compiled
 MorseRunner.dbg
 MorseRunner.exe
 MorseRunner.or
+MorseRunner.lps
 backup/
 morse-pkg/lib/i386-win32/morserunnerpkg.compiled
+*.bak
