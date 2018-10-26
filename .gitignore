@@ -1,0 +1,9 @@
+*.o
+*.ppu
+Master.dta
+MorseRunner.compiled
+MorseRunner.dbg
+MorseRunner.exe
+MorseRunner.or
+backup/
+morse-pkg/lib/i386-win32/morserunnerpkg.compiled
