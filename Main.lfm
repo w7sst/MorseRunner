@@ -673,21 +673,28 @@ object MainForm: TMainForm
         TabOrder = 4
         TabStop = False
       end
-      object VolumeSlider1: TVolumeSlider
-        Left = 89
-        Height = 20
-        Hint = '-15,0 dB'
+      object TrackBar1: TTrackBar
+        Left = 78
+        Height = 28
+        Hint = '-15.0 dB'
         Top = 110
-        Width = 60
+        Width = 78
+        Max = 20
+        Min = -60
+        OnChange = TrackBar1Change
+        Position = 0
+        TickStyle = tsNone
+        ParentShowHint = False
         ShowHint = True
-        Margin = 5
-        Value = 0.75
-        Overloaded = False
-        OnChange = VolumeSlider1Change
-        OnDblClick = VolumeSliderDblClick
-        DbMax = 0
-        DbScale = 60
-        Db = -15
+        TabOrder = 5
+      end
+      object Label18: TLabel
+        Left = 10
+        Height = 13
+        Top = 115
+        Width = 53
+        Caption = 'Mon. Level'
+        ParentColor = False
       end
     end
     object Panel10: TPanel
@@ -757,22 +764,6 @@ object MainForm: TMainForm
         end
       end
     end
-  end
-  object Label17: TLabel
-    Left = 104
-    Height = 13
-    Top = 106
-    Width = 245
-    Caption = 'Copyright © 2004-2016 Alex Shovkoplyas, VE3NEA'
-    ParentColor = False
-  end
-  object Label18: TLabel
-    Left = 10
-    Height = 13
-    Top = 10
-    Width = 38
-    Caption = 'Label18'
-    ParentColor = False
   end
   object AlSoundOut1: TAlSoundOut
     SamplesPerSec = 11025

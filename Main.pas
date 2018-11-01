@@ -25,6 +25,8 @@ type
 
   TMainForm = class(TForm)
     AlSoundOut1: TAlSoundOut;
+    Label18: TLabel;
+    Label19: TLabel;
     MainMenu1: TMainMenu;
     File1: TMenuItem;
     N40dB1: TMenuItem;
@@ -32,6 +34,7 @@ type
     Send1: TMenuItem;
     CQ1: TMenuItem;
     Number1: TMenuItem;
+    TrackBar1: TTrackBar;
     TU1: TMenuItem;
     MyCall1: TMenuItem;
     HisCall1: TMenuItem;
@@ -200,7 +203,6 @@ type
     Panel11: TPanel;
     ListView1: TListView;
     Operator1: TMenuItem;
-    VolumeSlider1: TVolumeSlider;
     UdpThread : TUdpThread;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
@@ -232,6 +234,7 @@ type
     procedure RunMNUClick(Sender: TObject);
     procedure RunBtnClick(Sender: TObject);
     procedure SpinEdit4Change(Sender: TObject);
+    procedure TrackBar1Change(Sender: TObject);
     procedure ViewScoreBoardMNUClick(Sender: TObject);
     procedure ViewScoreTable1Click(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word;
@@ -241,8 +244,6 @@ type
     procedure Shape2MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure Edit2Enter(Sender: TObject);
-    procedure VolumeSliderDblClick(Sender: TObject);
-    procedure VolumeSlider1Change(Sender: TObject);
     procedure WebPage1Click(Sender: TObject);
     procedure Call1Click(Sender: TObject);
     procedure QSK1Click(Sender: TObject);
@@ -888,6 +889,19 @@ begin
   //Db := 80 * (SpinEdit4.Value - 0.75);
 end;
 
+procedure TMainForm.TrackBar1Change(Sender: TObject);
+begin
+  begin
+    with TrackBar1 do
+      begin
+      //-60..+20 dB
+      if Position > 0
+        then Hint := Format('+%.0d dB', [Position])
+        else Hint := Format( '%.0d dB', [Position]);
+      end;
+  end;
+end;
+
 procedure TMainForm.WmTbDown(var Msg: TMessage);
 begin
   TToolbutton(Msg.LParam).Down := Boolean(Msg.WParam);
@@ -1032,29 +1046,6 @@ begin
 end;
 
 
-
-procedure TMainForm.VolumeSliderDblClick(Sender: TObject);
-begin
-  with Sender as TVolumeSlider do
-    begin
-    Value := 0.75;
-    OnChange(Sender);
-    end;
-end;
-
-procedure TMainForm.VolumeSlider1Change(Sender: TObject);
-begin
-  with VolumeSlider1 do
-    begin
-    //-60..+20 dB
-    Db := 80 * (Value - 0.75);
-    if dB > 0
-      then Hint := Format('+%.0f dB', [dB])
-      else Hint := Format( '%.0f dB', [dB]);
-    end;
-end;
-
-
 procedure TMainForm.WebPage1Click(Sender: TObject);
 begin
   OpenWebPage('http://www.dxatlas.com/MorseRunner');
@@ -1136,8 +1127,8 @@ end;
 
 procedure TMainForm.SelfMonClick(Sender: TObject);
 begin
-  VolumeSlider1.Value := (Sender as TMenuItem).Tag / 80 + 0.75;
-  VolumeSlider1.OnChange(Sender);
+  TrackBar1.Position := (Sender as TMenuItem).Tag;
+  TrackBar1.OnChange(Sender);
 end;
 
 procedure TMainForm.Settings1Click(Sender: TObject);

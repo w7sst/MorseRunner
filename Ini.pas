@@ -111,7 +111,8 @@ begin
       Tst.Filt2.SamplesInInput := BufSize;
 
       V := ReadInteger(SEC_STN, 'SelfMonVolume', 0);
-      MainForm.VolumeSlider1.Value := V / 80 + 0.75;
+//      MainForm.VolumeSlider1.Value := V / 80 + 0.75;
+      MainForm.TrackBar1.Position := V;
 
       V := ReadInteger(SEC_SYS, 'SoundDevice', -1);
       MainForm.AlSoundOut1.DeviceID := V;
@@ -146,7 +147,9 @@ begin
       WriteInteger(SEC_TST, 'HiScore', HiScore);
       WriteInteger(SEC_TST, 'CompetitionDuration', CompDuration);
 
-      V := Round(80 * (MainForm.VolumeSlider1.Value - 0.75));
+//      V := Round(80 * (MainForm.VolumeSlider1.Value - 0.75));
+
+      V := MainForm.TrackBar1.Position;
       WriteInteger(SEC_STN, 'SelfMonVolume', V);
 
       WriteBool(SEC_STN, 'SaveWav', SaveWav);
