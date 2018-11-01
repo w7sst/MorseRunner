@@ -673,6 +673,22 @@ object MainForm: TMainForm
         TabOrder = 4
         TabStop = False
       end
+      object VolumeSlider1: TVolumeSlider
+        Left = 89
+        Height = 20
+        Hint = '-15,0 dB'
+        Top = 110
+        Width = 60
+        ShowHint = True
+        Margin = 5
+        Value = 0.75
+        Overloaded = False
+        OnChange = VolumeSlider1Change
+        OnDblClick = VolumeSliderDblClick
+        DbMax = 0
+        DbScale = 60
+        Db = -15
+      end
     end
     object Panel10: TPanel
       Left = 0
@@ -741,22 +757,6 @@ object MainForm: TMainForm
         end
       end
     end
-  end
-  object VolumeSlider1: TVolumeSlider
-    Left = 640
-    Height = 20
-    Hint = '-15,0 dB'
-    Top = 136
-    Width = 60
-    ShowHint = True
-    Margin = 5
-    Value = 0.75
-    Overloaded = False
-    OnChange = VolumeSlider1Change
-    OnDblClick = VolumeSliderDblClick
-    DbMax = 0
-    DbScale = 60
-    Db = -15
   end
   object Label17: TLabel
     Left = 104
