@@ -160,8 +160,8 @@ begin
     begin
     Blk := Me.GetBlock;
     //self-mon. gain
-    Temp := MainForm.VolumeSlider1.Value;
-    Smg := Power(10, (MainForm.VolumeSlider1.Value - 0.75) * 4);
+    Temp := (MainForm.TrackBar1.Position + 60)/80;  // Scale 0 to 1
+    Smg := Power(10, (Temp - 0.75) * 4);
     Rfg := 1;
     for i:=0 to High(Blk) do
       if Ini.Qsk
