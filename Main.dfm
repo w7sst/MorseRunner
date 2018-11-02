@@ -57,7 +57,8 @@ object MainForm: TMainForm
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
-  OnMouseWheel = FormMouseWheel
+  OnMouseWheelDown = FormMouseWheelDown
+  OnMouseWheelUp = FormMouseWheelUp
   PixelsPerInch = 96
   TextHeight = 15
   object Bevel1: TBevel

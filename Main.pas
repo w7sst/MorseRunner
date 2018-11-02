@@ -292,9 +292,11 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
-      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure Edit1Enter(Sender: TObject);
+    procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
     procedure SendClick(Sender: TObject);
     procedure Edit4Change(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
@@ -961,6 +963,21 @@ begin
     Edit1.SelStart := P-1;
     Edit1.SelLength := 1;
   end;
+end;
+
+
+procedure TMainForm.FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  if GetKeyState(VK_CONTROL) >= 0  then IncRit(1)
+  else if RunMode <> rmHst then SetBw(ComboBox2.ItemIndex-1);
+end;
+
+procedure TMainForm.FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  if GetKeyState(VK_CONTROL) >= 0 then IncRit(-1)
+  else if RunMode <> rmHst then SetBw(ComboBox2.ItemIndex+1);
 end;
 
 
@@ -1932,16 +1949,6 @@ begin
   else
     if X > (Shape2.Left + Shape2.Width) then
       IncRit(1);
-end;
-
-
-procedure TMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
-  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-begin
-    if WheelDelta>0 then
-        IncRit(2)
-      else
-        IncRit(-2)
 end;
 
 

@@ -276,6 +276,9 @@ Version 1.80 (Oct 2022)
   - Change default Font to Cleartype 'segoe ui', 'Consolar';
   - Change string to Unicode, Building with Delphi 2010 sp3.
 
+1.68.4+
+  - The mouse wheel now acts as RIT. (F6FVY)
+
 1.68 (VE3NEA) 2016
   - TU + MyCall after the QSO is now equivalent to CQ
 
