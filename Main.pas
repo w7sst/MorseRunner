@@ -14,7 +14,7 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
   ComCtrls, Spin, SndTypes, ToolWin, ImgList, LazFileUtils, Crc32,
-  WavFile, IniFiles, Windows, UdpHandler;
+  WavFile, IniFiles, Windows, UdpHandler, Types;
 
 const
   WM_TBDOWN = WM_USER+1;
@@ -214,6 +214,10 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure Edit1Enter(Sender: TObject);
+    procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
     procedure N40dB1Click(Sender: TObject);
     procedure N50dB1Click(Sender: TObject);
     procedure SendClick(Sender: TObject);
@@ -550,6 +554,20 @@ begin
     begin Edit1.SelStart := P-1; Edit1.SelLength := 1; end;
 end;
 
+procedure TMainForm.FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  if GetKeyState(VK_CONTROL) >= 0  then IncRit(1)
+  else if RunMode <> rmHst then SetBw(ComboBox2.ItemIndex-1);
+end;
+
+procedure TMainForm.FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  if GetKeyState(VK_CONTROL) >= 0 then IncRit(-1)
+  else if RunMode <> rmHst then SetBw(ComboBox2.ItemIndex+1);
+end;
+
 procedure TMainForm.N40dB1Click(Sender: TObject);
 begin
 
@@ -707,8 +725,8 @@ const
         'Copyright © 2004-2006 Alex Shovkoplyas, VE3NEA'#13#13 +
         've3nea@dxatlas.com'#13;
 begin
-  Application.MessageBox(Msg, 'Morse Runner 1.68.1+', MB_OK or MB_ICONINFORMATION);
-end;          
+  Application.MessageBox(Msg, 'Morse Runner 1.68.4+', MB_OK or MB_ICONINFORMATION);
+end;
 
 
 procedure TMainForm.Readme1Click(Sender: TObject);

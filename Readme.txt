@@ -233,6 +233,9 @@ command.
 
 VERSION HISTORY
 
+1.68.4+
+  - The mouse wheel now acts as RIT. (F6FVY)
+
 1.68.3+
   - After a CQ, if nothing is caught or if what you caught is wrong, you can use
     F7 ('?') to instruct the callers to call again. (F6FVY)

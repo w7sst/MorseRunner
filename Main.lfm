@@ -20,6 +20,8 @@ object MainForm: TMainForm
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
+  OnMouseWheelDown = FormMouseWheelDown
+  OnMouseWheelUp = FormMouseWheelUp
   Position = poDesktopCenter
   LCLVersion = '1.8.2.0'
   object Bevel1: TBevel
@@ -357,7 +359,7 @@ object MainForm: TMainForm
       Height = 40
       Top = 58
       Width = 359
-      Caption = 'Morse Runner 1.68.3+'
+      Caption = 'Morse Runner 1.68.4+'
       Font.CharSet = ANSI_CHARSET
       Font.Color = 12369084
       Font.Height = -35
@@ -371,7 +373,7 @@ object MainForm: TMainForm
       Height = 40
       Top = 54
       Width = 359
-      Caption = 'Morse Runner 1.68.3+'
+      Caption = 'Morse Runner 1.68.4+'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clAqua
       Font.Height = -35
@@ -385,7 +387,7 @@ object MainForm: TMainForm
       Height = 40
       Top = 53
       Width = 359
-      Caption = 'Morse Runner 1.68.3+'
+      Caption = 'Morse Runner 1.68.4+'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clGreen
       Font.Height = -35
