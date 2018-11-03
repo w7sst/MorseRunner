@@ -1,6 +1,5 @@
 *.o
 *.ppu
-Master.dta
 MorseRunner.compiled
 MorseRunner.dbg
 MorseRunner.exe
