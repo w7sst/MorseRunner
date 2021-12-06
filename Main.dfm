@@ -1075,6 +1075,80 @@ object MainForm: TMainForm
           OnClick = NWPMClick
         end
       end
+      object CWMinRxSpeed1: TMenuItem
+        Caption = 'CW Min Rx Speed'
+        object CWMinRxSpeedSet0: TMenuItem
+          Caption = '0'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet1: TMenuItem
+          Tag = 1
+          Caption = '-1'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet2: TMenuItem
+          Tag = 2
+          Caption = '-2'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet4: TMenuItem
+          Tag = 4
+          Caption = '-4'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet6: TMenuItem
+          Tag = 6
+          Caption = '-6'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet8: TMenuItem
+          Tag = 8
+          Caption = '-8'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet10: TMenuItem
+          Tag = 10
+          Caption = '-10'
+          OnClick = CWMinRxSpeedClick
+        end
+      end
+      object CWMaxRxSpeed1: TMenuItem
+        Caption = 'CW Max Rx Speed'
+        object CWMaxRxSpeedSet0: TMenuItem
+          Caption = '0'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet1: TMenuItem
+          Tag = 1
+          Caption = '+1'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet2: TMenuItem
+          Tag = 2
+          Caption = '+2'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet4: TMenuItem
+          Tag = 4
+          Caption = '+4'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet6: TMenuItem
+          Tag = 6
+          Caption = '+6'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet8: TMenuItem
+          Tag = 8
+          Caption = '+8'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet10: TMenuItem
+          Tag = 10
+          Caption = '+10'
+          OnClick = CWMaxRxSpeedClick
+        end
+      end
       object CWBandwidth1: TMenuItem
         Caption = 'CW Pitch'
         object N300Hz1: TMenuItem

@@ -29,6 +29,8 @@ var
   HamName: string = 'Alex';
   CWOPSNum: string = '1';
   Wpm: integer = 30;
+  MaxRxWpm: integer = 0;
+  MinRxWpm: integer = 0;
   NRDigits: integer = 1;
   BandWidth: integer = 500;
   Pitch: integer = 600;
@@ -85,6 +87,19 @@ begin
         if CWOPSNum <> ''  then
              MainForm.Caption := MainForm.Caption + ' ' + CWOPSNum;
        end;
+
+      x1:= ReadString(SEC_STN, 'CWMaxRxSpeed', '');
+      if x1 = '' then
+           x1 := '0';
+      MaxRxWpm := strtoint(x1);
+      MainForm.UpdCWMaxRxSpeed(MaxRxWpm);
+
+
+      x1:= ReadString(SEC_STN, 'CWMinRxSpeed', '');
+      if x1 = '' then
+           x1 := '0';
+      MinRxWpm := strtoint(x1);
+      MainForm.UpdCWMinRxSpeed(MinRxWpm);
 
       x1:= ReadString(SEC_STN, 'NRDigits', '');
       if x1 = '' then
