@@ -512,10 +512,14 @@ object MainForm: TMainForm
         end
         item
           Caption = 'Pref'
-          Width = 64
         end
         item
           Caption = 'Chk'
+          Width = 40
+        end
+        item
+          Caption = 'Wpm'
+          Width = 40
         end>
       ColumnClick = False
       DoubleBuffered = True
