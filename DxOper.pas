@@ -73,8 +73,16 @@ begin
 end;
 
 function TDxOperator.GetNR: integer;
+Var
+ n1: integer;
 begin
-  Result := 1 + Round(Random * Tst.Minute * Skills);
+  if NRDigits = 1 then
+      Result := 1 + Round(Random * Tst.Minute * Skills)
+  else begin
+       n1 := trunc(power(10,NRDigits));
+       n1 := n1-1;
+       Result := Random(n1);
+  end;
 end;
 
 

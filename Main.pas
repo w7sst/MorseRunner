@@ -200,6 +200,12 @@ type
     sbar: TPanel;
     N5: TMenuItem;
     mnuShowCallsignInfo: TMenuItem;
+    NRDigits1: TMenuItem;
+    NRDigitsSet1: TMenuItem;
+    NRDigitsSet2: TMenuItem;
+    NRDigitsSet3: TMenuItem;
+    NRDigitsSet4: TMenuItem;
+    NRQM: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -250,6 +256,7 @@ type
     procedure SelfMonClick(Sender: TObject);
     procedure Settings1Click(Sender: TObject);
     procedure LIDS1Click(Sender: TObject);
+    procedure NRDigitsClick(Sender: TObject);
     procedure Activity1Click(Sender: TObject);
     procedure Duration1Click(Sender: TObject);
     procedure Operator1Click(Sender: TObject);
@@ -287,6 +294,7 @@ type
     procedure SetBw(BwNo: integer);
     procedure ReadCheckboxes;
     procedure PostHiScore(const sScore: string);
+    procedure UpdNRDigits(nrd: integer);
     procedure ClientHTTP1Redirect(Sender: TObject; var dest: string;
       var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
 
@@ -1306,6 +1314,50 @@ begin
   Flutter1.Checked := Ini.Flutter;
   LIDS1.Checked := Ini.Lids;
 end;
+
+procedure TMainForm.NRDigitsClick(Sender: TObject);
+Var
+  nrd:integer;
+begin
+  nrd := (Sender as TMenuItem).Tag;
+
+  UpdNRDigits(nrd);
+
+  NRDigits := nrd;
+end;
+
+procedure TMainForm.UpdNRDigits(nrd: integer);
+Var
+  xdig1:Boolean;
+  xdig2:Boolean;
+  xdig3:Boolean;
+  xdig4:Boolean;
+begin
+  xdig1 := False;
+  xdig2 := False;
+  xdig3 := False;
+  xdig4 := False;
+  if nrd = 1 then
+       xdig1 := True;
+  if nrd = 2 then
+       xdig2 := True;
+  if nrd = 3 then
+       xdig3 := True;
+  if nrd = 4 then
+       xdig4 := True;
+  NRDigitsSet1.Checked := xdig1;
+  NRDigitsSet2.Checked := xdig2;
+  NRDigitsSet3.Checked := xdig3;
+  NRDigitsSet4.Checked := xdig4;
+
+  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
+    try
+      WriteString(SEC_STN, 'NRDigits', inttostr(nrd));
+    finally
+      Free;
+  end;
+end;
+
 
 //ALL checkboxes
 procedure TMainForm.LIDS1Click(Sender: TObject);

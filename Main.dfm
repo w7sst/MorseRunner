@@ -999,6 +999,12 @@ object MainForm: TMainForm
         ShortCut = 119
         OnClick = SendClick
       end
+      object NRQM: TMenuItem
+        Tag = 16
+        Caption = 'NR?'
+        ShortCut = 123
+        OnClick = SendClick
+      end
     end
     object Settings1: TMenuItem
       Caption = 'Settings'
@@ -1219,6 +1225,30 @@ object MainForm: TMainForm
           Tag = 20
           Caption = '+20 dB'
           OnClick = SelfMonClick
+        end
+      end
+      object NRDigits1: TMenuItem
+        Tag = 3
+        Caption = 'NR Digits'
+        object NRDigitsSet1: TMenuItem
+          Tag = 1
+          Caption = '1'
+          OnClick = NRDigitsClick
+        end
+        object NRDigitsSet2: TMenuItem
+          Tag = 2
+          Caption = '2'
+          OnClick = NRDigitsClick
+        end
+        object NRDigitsSet3: TMenuItem
+          Tag = 3
+          Caption = '3'
+          OnClick = NRDigitsClick
+        end
+        object NRDigitsSet4: TMenuItem
+          Tag = 4
+          Caption = '4'
+          OnClick = NRDigitsClick
         end
       end
       object N6: TMenuItem
