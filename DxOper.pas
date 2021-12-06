@@ -34,6 +34,7 @@ type
     function GetReplyTimeout: integer;
     function GetWpm: integer;
     function GetNR: integer;
+    function GetName: string;
     procedure MsgReceived(AMsg: TStationMessages);
     procedure SetState(AState: TOperatorState);
     function GetReply: TStationMessage;
@@ -75,6 +76,14 @@ function TDxOperator.GetNR: integer;
 begin
   Result := 1 + Round(Random * Tst.Minute * Skills);
 end;
+
+
+function TDxOperator.GetName: string;
+begin
+//  Result := 1 + Round(Random * Tst.Minute * Skills);
+  Result := 'ALEX';
+end;
+
 
 function TDxOperator.GetReplyTimeout: integer;
 begin

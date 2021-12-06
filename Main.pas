@@ -12,11 +12,11 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles, Idhttp, ARRL;
+  WavFile, IniFiles, Idhttp, ARRL, CWOPS , System.ImageList;
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.71';
+  sVersion: String = '1.71a';
 
 type
   TMainForm = class(TForm)
@@ -70,14 +70,14 @@ type
     PileupMNU: TMenuItem;
     SingleCallsMNU: TMenuItem;
     CompetitionMNU: TMenuItem;
-    N3: TMenuItem;
+    CWTCompetition1: TMenuItem;
     StopMNU: TMenuItem;
     ImageList1: TImageList;
     Run1: TMenuItem;
     PileUp1: TMenuItem;
     SingleCalls1: TMenuItem;
     Competition1: TMenuItem;
-    N4: TMenuItem;
+    CWTCompetition3: TMenuItem;
     Stop1MNU: TMenuItem;
     ViewScoreBoardMNU: TMenuItem;
     ViewScoreTable1: TMenuItem;
@@ -253,6 +253,7 @@ type
     procedure Activity1Click(Sender: TObject);
     procedure Duration1Click(Sender: TObject);
     procedure Operator1Click(Sender: TObject);
+    procedure CWOPSNumberClick(Sender: TObject);
     procedure StopMNUClick(Sender: TObject);
     procedure ListView2CustomDrawSubItem(Sender: TCustomListView;
       Item: TListItem; SubItem: Integer; State: TCustomDrawState;
@@ -319,6 +320,7 @@ begin
   LoadCallList;
 
   ARRLDX:= TARRL.Create;
+  CWOPSCWT := TCWOPS.Create;
 
   Histo:= THisto.Create(PaintBox1);
 
@@ -328,13 +330,14 @@ begin
   MakeKeyer;
   Keyer.Rate := DEFAULTRATE;
   Keyer.BufSize := Ini.BufSize;
+
+
 end;
-
-
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   ToIni;
   ARRLDX.Free;
+  CWOPSCWT.Free;
   Tst.Free;
   DestroyKeyer;
 end;
@@ -387,8 +390,14 @@ end;
 
 procedure TMainForm.Edit2KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not CharInSet(Key, ['0'..'9', #8]) then
-    Key := #0;
+   if RunMode <> rmCwt then begin
+      if not CharInSet(Key, ['0'..'9', #8]) then
+         Key := #0;
+   end
+   else begin
+      if not CharInSet(Key, ['A'..'Z','a'..'z', #8]) then
+       Key := #0;
+   end;
 end;
 
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
@@ -514,28 +523,46 @@ end;
 procedure TMainForm.ProcessSpace;
 begin
   MustAdvance := false;
-
-  if ActiveControl = Edit1 then
-  begin
-    if Edit2.Text = '' then
-      Edit2.Text := '599';
-    ActiveControl := Edit3;
-  end
-  else
-    if ActiveControl = Edit2 then
+  if RunMode <> rmCwt then begin
+    if ActiveControl = Edit1 then
     begin
       if Edit2.Text = '' then
         Edit2.Text := '599';
       ActiveControl := Edit3;
     end
     else
-      ActiveControl := Edit1;
+      if ActiveControl = Edit2 then
+      begin
+        if Edit2.Text = '' then
+          Edit2.Text := '599';
+        ActiveControl := Edit3;
+      end
+      else
+        ActiveControl := Edit1;
+  end else begin
+   if ActiveControl = Edit1 then
+    begin
+      if Edit2.Text = '' then
+      ActiveControl := Edit2;
+    end
+    else
+      if ActiveControl = Edit2 then
+      begin
+        if Edit2.Text = '' then
+          ActiveControl := Edit2
+        else
+          ActiveControl := Edit3;
+      end
+  //    else
+  //      ActiveControl := Edit3;
+
+  end;
 end;
 
 
 procedure TMainForm.ProcessEnter;
 var
-  C, N, R: boolean;
+  C, N, R, Q: boolean;
 begin
   MustAdvance := false;
 
@@ -555,6 +582,7 @@ begin
   //current state
   C := CallSent;
   N := NrSent;
+  Q := Edit2.Text <> '';
   R := Edit3.Text <> '';
 
   //send his call if did not send before, or if call changed
@@ -562,10 +590,10 @@ begin
     SendMsg(msgHisCall);
   if not N then
     SendMsg(msgNR);
-  if N and not R then
+  if N and (not R or not Q) then
     SendMsg(msgQm);
 
-  if R and (C or N) then
+  if R and Q and (C or N) then
   begin
     SendMsg(msgTU);
     Log.SaveQso;
@@ -759,8 +787,10 @@ end;
 
 procedure TMainForm.Edit2Enter(Sender: TObject);
 begin
+if RunMode <> rmCwt then  begin
   if Length(Edit2.Text) = 3 then
     begin Edit2.SelStart := 1; Edit2.SelLength := 1; end;
+  end
 end;
 
 
@@ -777,7 +807,7 @@ end;
 procedure TMainForm.Run(Value: TRunMode);
 const
   Title: array[TRunMode] of string =
-    ('', 'Pile-Up', 'Single Calls', 'COMPETITION', 'H S T');
+    ('', 'Pile-Up', 'Single Calls', 'COMPETITION', 'H S T','CWOPS CWT');
 var
   BCompet, BStop: boolean;
 begin
@@ -818,6 +848,14 @@ begin
     SpinEdit2.Value := CompDuration;
     end;
 
+  Label2.Caption := 'RST';
+  Edit2.MaxLength := 3;
+  // Cwt changes
+  if RunMode = rmCwt then
+    begin
+       Label2.Caption := 'Name';
+       Edit2.MaxLength := 10;
+    end;
   //button menu
   PileupMNU.Enabled := BStop;
   SingleCallsMNU.Enabled := BStop;
@@ -1087,18 +1125,24 @@ procedure TMainForm.Advance;
 begin
   if not MustAdvance then
     Exit;
-
-  if Edit2.Text = '' then
-    Edit2.Text := '599';
-
-  if Pos('?', Edit1.Text) = 0 then
-    ActiveControl := Edit3
-  else
-    if ActiveControl = Edit1 then
-      Edit1Enter(nil)
+  if RunMode <> rmCwt then begin
+    if Edit2.Text = '' then
+      Edit2.Text := '599';
+    if Pos('?', Edit1.Text) = 0 then
+      ActiveControl := Edit3
     else
-      ActiveControl := Edit1;
-
+      if ActiveControl = Edit1 then
+        Edit1Enter(nil)
+      else
+        ActiveControl := Edit1;
+  end else begin
+     if Edit2.Text = '' then
+        ActiveControl := Edit2;
+      if ActiveControl = Edit1 then
+        Edit1Enter(nil)
+      else
+        ActiveControl := Edit1;
+  end;
   MustAdvance := false;
 end;
 
@@ -1313,10 +1357,12 @@ end;
 procedure TMainForm.Operator1Click(Sender: TObject);
 begin
   HamName := InputBox('HST Operator', 'Enter operator''s name', HamName);
-
-  if HamName <> '' then
-    Caption := 'Morse Runner:  ' + HamName
-  else
+  HamName := UpperCase(HamName);
+  if HamName <> '' then begin
+    Caption := 'Morse Runner:  ' + HamName;
+    if CWOPSNum <> ''  then
+        Caption := 'Morse Runner:  ' + HamName + ' ' + CWOPSNum;
+  end else
     Caption := 'Morse Runner';
 
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
@@ -1326,6 +1372,36 @@ begin
       Free;
     end;
 end;
+
+
+procedure TMainForm.CWOPSNumberClick(Sender: TObject);
+Var
+buf: string;
+begin
+  buf := InputBox('CWOps Number', 'Enter CWOPS Number', CWOPSNum);
+  if buf = '' then begin
+       exit;
+  end;
+  if CWOPSCWT.isnum(buf)=False then  begin
+       exit;
+  end;
+    CWOPSNum := buf;
+
+  if HamName <> '' then begin
+    Caption := 'Morse Runner:  ' + HamName;
+    if CWOPSNum <> ''  then
+        Caption := 'Morse Runner:  ' + HamName + ' ' + CWOPSNum;
+  end else
+    Caption := 'Morse Runner';
+
+  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
+    try
+      WriteString(SEC_STN, 'cwopsnum', CWOPSNum);
+    finally
+      Free;
+    end;
+end;
+
 
 procedure TMainForm.StopMNUClick(Sender: TObject);
 begin

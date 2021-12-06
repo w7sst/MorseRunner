@@ -44,6 +44,8 @@ type
 
     NR, RST: integer;
     MyCall, HisCall: string;
+    OpName: string;
+    CWOPSNR: integer;
 
     Msg: TStationMessages;
     MsgText: string;
@@ -96,7 +98,12 @@ begin
   Include(Msg, AMsg);
 
   case AMsg of
-    msgCQ: SendText('CQ <my> TEST');
+    msgCQ: begin
+       if RunMode = rmCwt then
+           SendText('CQ CWT <my>')
+       else
+           SendText('CQ <my> TEST');
+    end;
     msgNR: SendText('<#>');
     msgTU: SendText('TU');
     msgMyCall: SendText('<my>');
@@ -104,8 +111,18 @@ begin
     msgB4: SendText('QSO B4');
     msgQm: SendText('?');
     msgNil: SendText('NIL');
-    msgR_NR: SendText('R <#>');
-    msgR_NR2: SendText('R <#> <#>');
+    msgR_NR: begin
+        if RunMode = rmCwt then
+            SendText('<#>')
+        else
+            SendText('R <#>');
+    end;
+    msgR_NR2: begin
+         if RunMode = rmCwt then
+            SendText('<#>')
+         else
+            SendText('R <#> <#>');
+    end;
     msgDeMyCall1: SendText('DE <my>');
     msgDeMyCall2: SendText('DE <my> <my>');
     msgDeMyCallNr1: SendText('DE <my> <#>');
@@ -198,8 +215,10 @@ function TStation.NrAsText: string;
 var
   Idx: integer;
 begin
-  Result := Format('%d%.3d', [RST, NR]);
-
+  if RunMode <> rmCwt then
+      Result := Format('%d%.3d', [RST, NR])
+  else
+      Result := Format('%s  %.d', [OpName, NR]);
   if NrWithError then
     begin
     Idx := Length(Result);
@@ -230,9 +249,8 @@ begin
     if Random < 0.97
       then Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
     end;
+
 end;
-
-
 
 
 end.

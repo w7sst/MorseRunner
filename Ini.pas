@@ -22,11 +22,12 @@ const
 
   DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
-  TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
+  TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst, rmCwt);
   
 var
   Call: string = 'VE3NEA';
-  HamName: string;
+  HamName: string = 'Alex';
+  CWOPSNum: string = '1';
   Wpm: integer = 30;
   BandWidth: integer = 500;
   Pitch: integer = 600;
@@ -74,8 +75,12 @@ begin
       MainForm.SetBw(ReadInteger(SEC_STN, 'BandWidth', 9));
 
       HamName := ReadString(SEC_STN, 'Name', '');
-      if HamName <> '' then
+      CWOPSNum :=  ReadString(SEC_STN, 'cwopsnum', '');
+      if HamName <> '' then begin
         MainForm.Caption := MainForm.Caption + ':  ' + HamName;
+        if CWOPSNum <> ''  then
+             MainForm.Caption := MainForm.Caption + ' ' + CWOPSNum;
+       end;
 
       Wpm := ReadInteger(SEC_STN, 'Wpm', Wpm);
       Wpm := Max(10, Min(120, Wpm));

@@ -33,7 +33,8 @@ uses
   WavFile in 'VCL\WavFile.pas',
   pcre in 'PerlRegEx\pcre.pas',
   PerlRegEx in 'PerlRegEx\PerlRegEx.pas',
-  ARRL in 'ARRL.pas';
+  ARRL in 'ARRL.pas',
+  CWOPS in 'CWOPS.pas';
 
 {$R *.RES}
 
