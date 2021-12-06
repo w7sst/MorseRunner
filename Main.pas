@@ -231,6 +231,8 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure Edit1Enter(Sender: TObject);
     procedure SendClick(Sender: TObject);
     procedure Edit4Change(Sender: TObject);
@@ -1118,6 +1120,16 @@ begin
 end;
 
 
+procedure TMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+    if WheelDelta>0 then
+        IncRit(2)
+      else
+        IncRit(-2)
+end;
+
+
 procedure TMainForm.Shape2MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -1145,9 +1157,11 @@ end;
 procedure TMainForm.IncRit(dF: integer);
 begin
   case dF of
+   -2: Inc(Ini.Rit, -5);
    -1: Inc(Ini.Rit, -50);
     0: Ini.Rit := 0;
     1: Inc(Ini.Rit, 50);
+    2: Inc(Ini.Rit, 5);
   end;
 
   Ini.Rit := Min(500, Max(-500, Ini.Rit));
