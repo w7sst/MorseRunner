@@ -12,7 +12,7 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32, 
-  WavFile, IniFiles;
+  WavFile, IniFiles, System.ImageList;
 
 const
   WM_TBDOWN = WM_USER+1;
@@ -85,7 +85,6 @@ type
     Label16: TLabel;
     Panel8: TPanel;
     Shape2: TShape;
-    AlWavFile1: TAlWavFile;
     Panel9: TPanel;
     GroupBox3: TGroupBox;
     Label11: TLabel;
@@ -112,7 +111,6 @@ type
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     Label10: TLabel;
-    VolumeSlider1: TVolumeSlider;
     Label18: TLabel;
     WebPage1: TMenuItem;
     Settings1: TMenuItem;
@@ -195,6 +193,8 @@ type
     Panel11: TPanel;
     ListView1: TListView;
     Operator1: TMenuItem;
+    VolumeSlider1: TVolumeSlider;
+    AlWavFile1: TAlWavFile;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -351,17 +351,17 @@ end;
 
 procedure TMainForm.Edit1KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['A'..'Z', 'a'..'z', '0'..'9', '/', '?', #8]) then Key := #0;
+  if not CharInSet(Key, ['A'..'Z', 'a'..'z', '0'..'9', '/', '?', #8]) then Key := #0;
 end;
 
 procedure TMainForm.Edit2KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['0'..'9', #8]) then Key := #0;
+  if not CharInSet(Key, ['0'..'9', #8]) then Key := #0;
 end;
 
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['0'..'9', #8]) then Key := #0;
+  if not CharInSet(Key, ['0'..'9', #8]) then Key := #0;
 end;
 
 

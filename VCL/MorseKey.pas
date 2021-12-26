@@ -8,13 +8,13 @@ unit MorseKey;
 interface
 
 uses
-  SysUtils, Classes, SndTypes, MorseTbl, Math, Ini;
+  SysUtils, Classes, SndTypes, MorseTbl, Math;
 
 
 type
   TKeyer = class
   private
-    Morse: array[Char] of string;
+    Morse: array[AnsiChar] of string;
     RampLen: integer;
     RampOn, RampOff: TSingleArray;
     FRiseTime: Single;
@@ -83,13 +83,13 @@ procedure TKeyer.LoadMorseTable;
 var
   i: integer;
   S: string;
-  Ch: Char;
+  Ch: AnsiChar;
 begin
   for i:=0 to High(MorseTable) do
     begin
     S := MorseTable[i];
     if S[2] <> '[' then Continue;
-    Ch := S[1];
+    Ch := AnsiChar(S[1]);
     Morse[Ch] := Copy(S, 3, Pos(']', S)-3) + ' ';
     end;
 end;
@@ -137,9 +137,9 @@ var
 begin
   Result := '';
   for i:=1 to Length(Txt) do
-    if Txt[i] in [' ', '_']
+    if CharInSet(Txt[i], [' ', '_'])
       then Result := Result + ' '
-      else Result := Result + Morse[Txt[i]];
+      else Result := Result + Morse[AnsiChar(Txt[i])];
   if Result <> '' then Result[Length(Result)] := '~';
 end;
 

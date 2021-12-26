@@ -541,8 +541,8 @@ end;
 procedure TAlWavFile.WriteInfo;
 var
   i: integer;
-  InfName: string;
-  InfValue: string;
+  InfName: AnsiString;
+  InfValue: AnsiString;
   ckInfoLIST, ckInfoPiece: TMmckInfo;
 begin
   //remove invalid info entries
@@ -559,15 +559,15 @@ begin
   //save info entries
   for i:= 0 to FInfo.Count-1 do
     begin
-    InfName := Copy(FInfo[i], 1, 4);
-    InfValue := Copy(FInfo[i], 6, MAXINT);
+    InfName := Copy(AnsiString(FInfo[i]), 1, 4);
+    InfValue := Copy(AnsiString(FInfo[i]), 6, MAXINT);
     //create subchunk
-    ckInfoPiece.ckId := mmioStringToFOURCCA(PChar(InfName), 0);
+    ckInfoPiece.ckId := mmioStringToFOURCCA(PAnsiChar(InfName), 0);
     ckInfoPiece.ckSize := Length(InfValue);
     rc := mmioCreateChunk(FHandle, @ckInfoPiece, 0);
     ChkErr;
     //save subchunk data
-    rc := mmioWrite(FHandle, PChar(InfValue), Length(InfValue));
+    rc := mmioWrite(FHandle, PAnsiChar(InfValue), Length(InfValue));
     ErrIf(rc <> Length(InfValue), 'WAV write error');
     //exit subchunk
     rc := mmioAscend(FHandle, @ckInfoPiece, 0);

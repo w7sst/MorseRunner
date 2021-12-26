@@ -8,7 +8,7 @@ unit Contest;
 interface
 
 uses
-  SysUtils, SndTypes, Station, StnColl, MyStn, Math,  Ini,
+  SysUtils, SndTypes, Station, StnColl, MyStn, Math,  Ini, Classes,
   MovAvg, Mixers, VolumCtl, RndFunc, TypInfo, DxStn, DxOper, Log;
 
 type

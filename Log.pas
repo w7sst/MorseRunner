@@ -184,8 +184,8 @@ begin
     S1 := Copy(Call, 1, p-1);
     S2 := Copy(Call, p+1, MAXINT);
 
-    if (Length(S1) = 1) and (S1[1] in DIGITS) then begin Dig := S1; Result := S2; end
-    else if (Length(S2) = 1) and (S2[1] in DIGITS) then begin Dig := S2; Result := S1; end
+    if (Length(S1) = 1) and CharInSet(S1[1], DIGITS) then begin Dig := S1; Result := S2; end
+    else if (Length(S2) = 1) and CharInSet(S2[1], DIGITS) then begin Dig := S2; Result := S1; end
     else if Length(S1) <= Length(S2) then Result := S1
     else Result := S2;
     end;
@@ -193,11 +193,11 @@ begin
 
   //delete trailing letters, retain at least 2 chars
   for p:= Length(Result) downto 3 do
-    if Result[p] in DIGITS then Break
+    if CharInSet(Result[p], DIGITS) then Break
     else Delete(Result, p, 1);
 
   //ensure digit
-  if not (Result[Length(Result)] in DIGITS) then Result := Result + '0';
+  if not CharInSet(Result[Length(Result)], DIGITS) then Result := Result + '0';
   //replace digit
   if Dig <> '' then Result[Length(Result)] := Dig[1];
 
@@ -270,6 +270,11 @@ begin
          MainForm.RichEdit1.Lines.Count,
          Pfx, Err]);
 
+  MainForm.RichEdit1.SelStart := Length(MainForm.RichEdit1.Text);
+  MainForm.RichEdit1.SelLength := 1;
+  MainForm.RichEdit1.SelAttributes.Color := clBlack;
+
+//OutputDebugString(PChar('[' + S + ']'));
   MainForm.RichEdit1.Lines.Add(S);
   MainForm.RichEdit1.SelStart := Length(MainForm.RichEdit1.Text) - 5;
   MainForm.RichEdit1.SelLength := 3;
