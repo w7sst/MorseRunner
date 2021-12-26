@@ -341,11 +341,12 @@ object MainForm: TMainForm
         Font.Height = -11
         Font.Name = 'MS Sans Serif'
         Font.Style = []
-        Items.Data = {
-          650000000300000000000000FFFFFFFFFFFFFFFF020000000000000003507473
-          000000000000FFFFFFFFFFFFFFFF0200000000000000044D756C740000000000
-          00FFFFFFFFFFFFFFFF02000000000000000553636F72650000FFFFFFFFFFFFFF
-          FFFFFFFFFF}
+        Items.ItemData = {
+          05900000000300000000000000FFFFFFFFFFFFFFFF02000000FFFFFFFF000000
+          00035000740073000000000000000000000000000000FFFFFFFFFFFFFFFF0200
+          0000FFFFFFFF00000000044D0075006C00740000000000000000000000000000
+          00FFFFFFFFFFFFFFFF02000000FFFFFFFF0000000005530063006F0072006500
+          00000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF}
         ReadOnly = True
         RowSelect = True
         ParentFont = False
@@ -427,9 +428,9 @@ object MainForm: TMainForm
     object Label15: TLabel
       Left = 106
       Top = 108
-      Width = 245
+      Width = 241
       Height = 13
-      Caption = 'Copyright © 2004-2006 Alex Shovkoplyas, VE3NEA'
+      Caption = 'Copyright '#65385' 2004-2006 Alex Shovkoplyas, VE3NEA'
       Transparent = True
     end
     object Label16: TLabel
@@ -448,16 +449,17 @@ object MainForm: TMainForm
       TabStop = False
       Align = alBottom
       BorderStyle = bsNone
-      Font.Charset = ANSI_CHARSET
+      Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
-      Font.Name = 'Courier New'
+      Font.Name = #65325#65331' '#12468#12471#12483#12463
       Font.Style = []
       ParentFont = False
       ReadOnly = True
       ScrollBars = ssVertical
       TabOrder = 0
       Visible = False
+      Zoom = 100
     end
   end
   object Panel9: TPanel
@@ -598,27 +600,25 @@ object MainForm: TMainForm
         Height = 13
         Caption = 'RX Bandwidth'
       end
-      object VolumeSlider1: TVolumeSlider
-        Left = 89
-        Top = 132
-        Width = 60
-        Height = 20
-        Hint = '-15.0 dB'
-        ShowHint = True
-        Margin = 5
-        Value = 0.75
-        Overloaded = False
-        OnChange = VolumeSlider1Change
-        OnDblClick = VolumeSliderDblClick
-        DbScale = 60
-        Db = -15
-      end
       object Label18: TLabel
         Left = 12
         Top = 134
         Width = 53
         Height = 13
         Caption = 'Mon. Level'
+      end
+      object VolumeSlider1: TVolumeSlider
+        Left = 88
+        Top = 127
+        Width = 65
+        Height = 20
+        Hint = '-15.0 dB'
+        ShowHint = True
+        Margin = 5
+        Value = 0.750000000000000000
+        Overloaded = False
+        DbScale = 60.000000000000000000
+        Db = -15.000000000000000000
       end
       object Edit4: TEdit
         Left = 36
@@ -661,11 +661,10 @@ object MainForm: TMainForm
         Top = 72
         Width = 65
         Height = 21
-        TabStop = False
         Style = csDropDownList
         DropDownCount = 12
-        ItemHeight = 13
         TabOrder = 3
+        TabStop = False
         OnChange = ComboBox1Change
         Items.Strings = (
           '300 Hz'
@@ -687,11 +686,10 @@ object MainForm: TMainForm
         Top = 100
         Width = 65
         Height = 21
-        TabStop = False
         Style = csDropDownList
         DropDownCount = 12
-        ItemHeight = 13
         TabOrder = 4
+        TabStop = False
         OnChange = ComboBox2Change
         Items.Strings = (
           '100 Hz'
@@ -748,9 +746,9 @@ object MainForm: TMainForm
         Width = 84
         Height = 24
         Align = alNone
-        ButtonWidth = 65
+        ButtonHeight = 30
+        ButtonWidth = 71
         Caption = 'ToolBar1'
-        EdgeBorders = []
         Images = ImageList1
         Indent = 3
         List = True
@@ -759,7 +757,7 @@ object MainForm: TMainForm
         object ToolButton1: TToolButton
           Tag = 1
           Left = 3
-          Top = 2
+          Top = 0
           AllowAllUp = True
           Caption = '   Run   '
           DropdownMenu = PopupMenu1
@@ -770,13 +768,6 @@ object MainForm: TMainForm
         end
       end
     end
-  end
-  object AlSoundOut1: TAlSoundOut
-    SamplesPerSec = 11025
-    BufCount = 8
-    OnBufAvailable = AlSoundOut1BufAvailable
-    Left = 384
-    Top = 148
   end
   object MainMenu1: TMainMenu
     Left = 356
@@ -1429,8 +1420,15 @@ object MainForm: TMainForm
       F3FFF3FF00000000F7FFF7FF0000000000000000000000000000000000000000
       000000000000}
   end
+  object AlSoundOut1: TAlSoundOut
+    SamplesPerSec = 11025
+    BufCount = 8
+    OnBufAvailable = AlSoundOut1BufAvailable
+    Left = 128
+    Top = 186
+  end
   object AlWavFile1: TAlWavFile
-    Left = 384
-    Top = 204
+    Left = 184
+    Top = 186
   end
 end

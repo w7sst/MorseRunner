@@ -141,7 +141,7 @@ begin
 
       D := M[x-1,y-1];
       //'?' matches any char
-      if not (C[x] in [C0[y], '?']) then Inc(D, W_D);
+      if not CharInSet(C[x], [C0[y], '?']) then Inc(D, W_D);
 
       M[x,y] := MinIntValue([T,D,L]);
       end;

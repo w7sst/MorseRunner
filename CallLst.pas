@@ -8,7 +8,7 @@ unit CallLst;
 interface
 
 uses
-  SysUtils, Classes, Ini;
+  SysUtils, Classes, Ini, AnsiStrings;
 
 procedure LoadCallList;
 function PickCall: string;
@@ -24,7 +24,7 @@ implementation
 
 function CompareCalls(Item1, Item2: Pointer): Integer;
 begin
-  Result := StrComp(PChar(Item1), PChar(Item2));
+  Result := AnsiStrings.StrComp(PAnsiChar(Item1), PAnsiChar(Item2));
 end;
 
 procedure LoadCallList;
@@ -35,14 +35,14 @@ const
   INDEXBYTES = INDEXSIZE * SizeOf(Integer);
 var
   i: integer;
-  P, Pe: PChar;
-  L: TList;
 
   FileName: string;
   FFileSize: integer;
 
   FIndex: array[0..INDEXSIZE-1] of integer;
-  Data: string;
+  Data: AnsiString;
+  CL: TStringList;
+  S: string;
 begin
   Calls.Clear;
 
@@ -63,30 +63,23 @@ begin
       Free;
     end;
 
+   S := StringReplace(string(Data), #00, #09, [rfReplaceAll]);
 
-  L := TList.Create;
-  try
-    //list pointers to calls
-    L.Capacity := 20000;
-      P := @Data[1];
-    Pe := P + Length(Data);
-    while P < Pe do
-      begin
-      L.Add(TObject(P));
-      P := P + StrLen(P) + 1;
+   CL := TStringList.Create();
+   try
+      CL.Delimiter := #09;
+      CL.StrictDelimiter := True;
+      CL.DelimitedText := S;
+
+      Calls.Duplicates := dupIgnore;
+      Calls.Sorted := True;
+      for i := 0 to CL.Count - 1 do begin
+         S := CL[i];
+         Calls.Add(S);
       end;
-    //delete dupes
-    L.Sort(CompareCalls);
-    for i:=L.Count-1 downto 1 do
-      if StrComp(PChar(L[i]), PChar(L[i-1])) = 0
-        then L[i] := nil;
-    //put calls to Lst
-    Calls.Capacity := L.Count;
-    for i:=0 to L.Count-1 do
-      if L[i] <> nil then Calls.Add(PChar(L[i]));
-  finally
-    L.Free;
-  end;
+   finally
+      CL.Free();
+   end;
 end;
 
 

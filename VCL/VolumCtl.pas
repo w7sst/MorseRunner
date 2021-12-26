@@ -333,22 +333,22 @@ begin
 
 
 {$IFDEF DEBUG}
-  with TStringList.Create do
-    try
-      for i:=0 to High(Result) do Add(Format('%d, %f', [i+(FLen div 2), Data[i]]));
-      SaveToFile('c:\in.txt');
-      Clear;
-      for i:=0 to High(FAttackShape) do Add(Format('%d, %f', [i, 1000*Exp(FAttackShape[i])]));
-      SaveToFile('c:\shp.txt');
-      Clear;
-      for i:=0 to High(Result) do Add(Format('%d, %f', [i, Exp(DebugArr[i])]));
-      SaveToFile('c:\env.txt');
-      Clear;
-      for i:=0 to High(Result) do Add(Format('%d, %f', [i, 0.05*Result[i]]));
-      SaveToFile('c:\out.txt');
-    finally
-      Free;
-    end;
+//  with TStringList.Create do
+//    try
+//      for i:=0 to High(Result) do Add(Format('%d, %f', [i+(FLen div 2), Data[i]]));
+//      SaveToFile('c:\in.txt');
+//      Clear;
+//      for i:=0 to High(FAttackShape) do Add(Format('%d, %f', [i, 1000*Exp(FAttackShape[i])]));
+//      SaveToFile('c:\shp.txt');
+//      Clear;
+//      for i:=0 to High(Result) do Add(Format('%d, %f', [i, Exp(DebugArr[i])]));
+//      SaveToFile('c:\env.txt');
+//      Clear;
+//      for i:=0 to High(Result) do Add(Format('%d, %f', [i, 0.05*Result[i]]));
+//      SaveToFile('c:\out.txt');
+//    finally
+//      Free;
+//    end;
 {$ENDIF}
 end;
 

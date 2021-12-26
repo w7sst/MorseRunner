@@ -8,8 +8,7 @@ unit SndCustm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, MMSystem, SndTypes,
-  Ini;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, MMSystem, SndTypes;
 
 type
   TCustomSoundInOut = class;
@@ -119,7 +118,7 @@ constructor TCustomSoundInOut.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
-  SetBufCount(DEFAULTBUFCOUNT);
+  SetBufCount(8{DEFAULTBUFCOUNT});
 
   FDeviceID := WAVE_MAPPER;
 

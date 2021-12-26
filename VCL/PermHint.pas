@@ -79,6 +79,7 @@ var
   Bits: Pointer;
   BytesPerScanline: Integer;
 
+    {$IFDEF WIN32}
     function FindScanline(Source: Pointer; MaxLen: Cardinal;
       Value: Cardinal): Cardinal; assembler;
     asm
@@ -91,7 +92,22 @@ var
             MOV     EAX,ECX
             MOV     EDI,EDX
     end;
+    {$ENDIF}
 
+    {$IFDEF WIN64}
+    function FindScanline(Source: Pointer; MaxLen: Cardinal;
+      Value: Cardinal): Cardinal; assembler;
+    asm
+            PUSH    RCX
+            MOV     ECX,EDX
+            MOV     EDX,EDI
+            MOV     EDI,EAX
+            POP     RAX
+            REPE    SCASB
+            MOV     EAX,ECX
+            MOV     EDI,EDX
+    end;
+    {$ENDIF}
 begin
   { Default value is entire icon height }
   Result := GetSystemMetrics(SM_CYCURSOR);
