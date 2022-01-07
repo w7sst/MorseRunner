@@ -813,6 +813,7 @@ begin
     Tst.Me.AbortSend;
     Tst.BlockNumber := 0;
     Tst.Me.Nr := 1;
+    Tst.Me.Nr2 := '';
     Log.Clear;
     WipeBoxes;
     RichEdit1.Visible := true;
