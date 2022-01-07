@@ -285,7 +285,7 @@ begin
   //the stations heard my CQ and want to call
   if (not (RunMode in [rmSingle, RmHst])) then
     if (msgCQ in Me.Msg) or
-       ((QsoList <> nil) and (msgTU in Me.Msg) and (msgMyCall in Me.Msg))then
+       ((QsoList <> nil) and (msgTU in Me.Msg) {and (msgMyCall in Me.Msg)})then
     for i:=1 to RndPoisson(Activity / 2) do Stations.AddCaller;
 
   //tell callers that I finished sending

@@ -3,7 +3,7 @@
         <ProjectGuid>{6C0DE69E-708E-460A-92EF-E9A5DBEC5469}</ProjectGuid>
         <MainSource>MorseRunner.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
         <FrameworkType>VCL</FrameworkType>

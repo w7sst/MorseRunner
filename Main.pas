@@ -12,7 +12,7 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32, 
-  WavFile, IniFiles, System.ImageList;
+  WavFile, IniFiles, System.ImageList, System.Character;
 
 const
   WM_TBDOWN = WM_USER+1;
@@ -361,7 +361,9 @@ end;
 
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not CharInSet(Key, ['0'..'9', #8]) then Key := #0;
+  Key := Key.ToUpper();
+
+  if not CharInSet(Key, ['0'..'9', 'H', 'M', 'L', 'P', #8]) then Key := #0;
 end;
 
 
