@@ -8,7 +8,7 @@ unit DxStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Ini, CallLst, Qsb, DxOper, Log, SndTypes;
+  SysUtils, Classes, Station, RndFunc, Ini, CallLst, Qsb, DxOper, Log, SndTypes, Calls;
 
 type
   TDxStation = class(TStation)
@@ -32,11 +32,15 @@ uses
 { TDxStation }
 
 constructor TDxStation.CreateStation;
+var
+   O: TCall;
 begin
   inherited Create(nil);
 
   HisCall := Ini.Call;
-  MyCall := PickCall;
+  O := PickCall2();
+
+  MyCall := O.Callsign; //PickCall;
 
   Oper := TDxOperator.Create;
   Oper.Call := MyCall;
@@ -45,7 +49,13 @@ begin
   NrWithError := Ini.Lids and (Random < 0.1);
 
   Wpm := Oper.GetWpm;
-  NR := Oper.GetNR;
+
+  if Ini.JaMode = True then begin
+    NR2 := O.Number;
+  end
+  else begin
+    NR := Oper.GetNR;
+  end;
   if Ini.Lids and (Random < 0.03)
     then RST := 559 + 10*Random(4)
     else RST := 599;
@@ -142,8 +152,14 @@ begin
     begin
     TrueCall := Self.MyCall;
     TrueRst := Self.Rst;
-    TrueNR := Self.NR;
+    if Ini.JaMode = True then begin
+      TrueNR := Self.NR2;
+    end
+    else begin
+      TrueNR := IntToStr(Self.NR);
     end;
+
+  end;
 
   Free;
 end;

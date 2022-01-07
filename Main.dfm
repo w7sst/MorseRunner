@@ -449,7 +449,7 @@ object MainForm: TMainForm
       TabStop = False
       Align = alBottom
       BorderStyle = bsNone
-      Font.Charset = DEFAULT_CHARSET
+      Font.Charset = SHIFTJIS_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
       Font.Name = #65325#65331' '#12468#12471#12483#12463

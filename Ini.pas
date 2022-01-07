@@ -49,6 +49,7 @@ var
   SaveWav: boolean = false;
   CallsFromKeyer: boolean = false;
 
+  JaMode: Boolean = True;
 
 procedure FromIni;
 procedure ToIni;
@@ -110,6 +111,8 @@ begin
       MainForm.VolumeSlider1.Value := V / 80 + 0.75;
 
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
+
+      JaMode := ReadBool('mode', 'ja', True);
     finally
       Free;
     end;

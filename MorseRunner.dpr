@@ -16,7 +16,8 @@ uses
   Qsb in 'Qsb.pas',
   DxOper in 'DxOper.pas',
   QrnStn in 'QrnStn.pas',
-  ScoreDlg in 'ScoreDlg.pas' {ScoreDialog};
+  ScoreDlg in 'ScoreDlg.pas' {ScoreDialog},
+  Calls in 'Calls.pas';
 
 {$R *.RES}
 
