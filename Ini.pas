@@ -26,6 +26,7 @@ type
   
 var
   Call: string = 'VE3NEA';
+  Number: string = '10H';
   HamName: string;
   Wpm: integer = 30;
   BandWidth: integer = 500;
@@ -68,6 +69,7 @@ begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
       MainForm.SetMyCall(ReadString(SEC_STN, 'Call', Call));
+      MainForm.SetNumber(ReadString(SEC_STN, 'Number', Number));
       MainForm.SetPitch(ReadInteger(SEC_STN, 'Pitch', 3));
       MainForm.SetBw(ReadInteger(SEC_STN, 'BandWidth', 9));
 
@@ -126,6 +128,7 @@ begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
       WriteString(SEC_STN, 'Call', Call);
+      WriteString(SEC_STN, 'Number', Number);
       WriteInteger(SEC_STN, 'Pitch', MainForm.ComboBox1.ItemIndex);
       WriteInteger(SEC_STN, 'BandWidth', MainForm.ComboBox2.ItemIndex);
       WriteInteger(SEC_STN, 'Wpm', Wpm);

@@ -100,7 +100,7 @@ type
     Label6: TLabel;
     Label7: TLabel;
     Label9: TLabel;
-    Edit4: TEdit;
+    editCallsign: TEdit;
     SpinEdit1: TSpinEdit;
     CheckBox1: TCheckBox;
     ComboBox1: TComboBox;
@@ -195,6 +195,8 @@ type
     Operator1: TMenuItem;
     VolumeSlider1: TVolumeSlider;
     AlWavFile1: TAlWavFile;
+    Label17: TLabel;
+    editNumber: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -206,7 +208,7 @@ type
       Shift: TShiftState);
     procedure Edit1Enter(Sender: TObject);
     procedure SendClick(Sender: TObject);
-    procedure Edit4Change(Sender: TObject);
+    procedure editCallsignChange(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -249,6 +251,7 @@ type
     procedure Duration1Click(Sender: TObject);
     procedure Operator1Click(Sender: TObject);
     procedure StopMNUClick(Sender: TObject);
+    procedure editNumberChange(Sender: TObject);
   private
     MustAdvance: boolean;
     procedure ProcessSpace;
@@ -271,6 +274,7 @@ type
 
     procedure SetQsk(Value: boolean);
     procedure SetMyCall(ACall: string);
+    procedure SetNumber(ANumber: string);
     procedure SetPitch(PitchNo: integer);
     procedure SetBw(BwNo: integer);
     procedure ReadCheckboxes;
@@ -557,15 +561,27 @@ begin
 end;
 
 
-procedure TMainForm.Edit4Change(Sender: TObject);
+procedure TMainForm.editCallsignChange(Sender: TObject);
 begin
-  SetMyCall(Trim(Edit4.Text));
+  SetMyCall(Trim(editCallsign.Text));
+end;
+
+procedure TMainForm.editNumberChange(Sender: TObject);
+begin
+   SetNumber(Trim(editNumber.Text));
+end;
+
+procedure TMainForm.SetNumber(ANumber: string);
+begin
+   Ini.Number := ANumber;
+   editNumber.Text := ANumber;
+   Tst.Me.NR2 := ANumber;
 end;
 
 procedure TMainForm.SetMyCall(ACall: string);
 begin
   Ini.Call := ACall;
-  Edit4.Text := ACall;
+  editCallsign.Text := ACall;
   Tst.Me.MyCall := ACall;
 end;
 
@@ -738,7 +754,8 @@ begin
   RunMode := Value;
 
   //main ctls
-  EnableCtl(Edit4,  BStop);
+  EnableCtl(editCallsign,  BStop);
+  EnableCtl(editNumber,  BStop);
   EnableCtl(SpinEdit2, BStop);
   SetToolbuttonDown(ToolButton1, not BStop);
 
@@ -815,7 +832,7 @@ begin
     Tst.Me.AbortSend;
     Tst.BlockNumber := 0;
     Tst.Me.Nr := 1;
-    Tst.Me.Nr2 := '';
+//    Tst.Me.Nr2 := '';
     Log.Clear;
     WipeBoxes;
     RichEdit1.Visible := true;
@@ -1029,7 +1046,7 @@ end;
 //------------------------------------------------------------------------------
 procedure TMainForm.Call1Click(Sender: TObject);
 begin
-  SetMyCall(Trim(InputBox('Callsign', 'Callsign', Edit4.Text)));
+  SetMyCall(Trim(InputBox('Callsign', 'Callsign', editCallsign.Text)));
 end;
 
 
