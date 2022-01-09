@@ -46,6 +46,7 @@ type
     NR: integer;
     NR2: string;
     MyCall, HisCall: string;
+    Number: string;
 
     Msg: TStationMessages;
     MsgText: string;
