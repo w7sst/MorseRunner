@@ -54,7 +54,7 @@ procedure TMyStation.Init;
 begin
   MyCall := Ini.Call;
   NR := 1;
-  NR2 := '';
+  NR2 := Ini.Number;
   RST := 599;
   Pitch := Ini.Pitch;
   Wpm := Ini.Wpm;
