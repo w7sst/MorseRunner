@@ -75,7 +75,6 @@ object MainForm: TMainForm
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 0
-    ExplicitTop = 294
     object Label1: TLabel
       Left = 16
       Top = 12
@@ -365,7 +364,6 @@ object MainForm: TMainForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 286
   end
   object Panel6: TPanel
     Left = 0
@@ -376,7 +374,6 @@ object MainForm: TMainForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     TabOrder = 2
-    ExplicitHeight = 284
     object Shape1: TShape
       Left = 0
       Top = 0
@@ -445,6 +442,14 @@ object MainForm: TMainForm
       Caption = 'FREEWARE'
       Transparent = True
     end
+    object Label19: TLabel
+      Left = 138
+      Top = 147
+      Width = 179
+      Height = 13
+      Caption = 'for ALL JA Copyright(c) 2022 JR8PPG'
+      Transparent = True
+    end
     object RichEdit1: TRichEdit
       Left = 0
       Top = 263
@@ -464,7 +469,6 @@ object MainForm: TMainForm
       TabOrder = 0
       Visible = False
       Zoom = 100
-      ExplicitTop = 239
     end
   end
   object Panel9: TPanel
@@ -475,7 +479,6 @@ object MainForm: TMainForm
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 3
-    ExplicitHeight = 284
     object GroupBox3: TGroupBox
       Left = 9
       Top = 197
@@ -737,7 +740,6 @@ object MainForm: TMainForm
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 2
-      ExplicitTop = 253
       object Label8: TLabel
         Left = 173
         Top = 9
@@ -1455,5 +1457,21 @@ object MainForm: TMainForm
   object AlWavFile1: TAlWavFile
     Left = 184
     Top = 186
+  end
+  object ActionList1: TActionList
+    Left = 272
+    Top = 222
+    object actionQsoStart: TAction
+      Caption = 'actionQsoStart'
+      Enabled = False
+      ShortCut = 9
+      OnExecute = actionQsoStartExecute
+    end
+    object actionQsoComplete: TAction
+      Caption = 'actionQsoComplete'
+      Enabled = False
+      ShortCut = 40
+      OnExecute = actionQsoCompleteExecute
+    end
   end
 end
