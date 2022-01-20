@@ -12,7 +12,8 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32, 
-  WavFile, IniFiles, System.ImageList, System.Character;
+  WavFile, IniFiles, System.ImageList, System.Character, System.Actions,
+  Vcl.ActnList;
 
 const
   WM_TBDOWN = WM_USER+1;
@@ -197,6 +198,10 @@ type
     AlWavFile1: TAlWavFile;
     Label17: TLabel;
     editNumber: TEdit;
+    Label19: TLabel;
+    ActionList1: TActionList;
+    actionQsoStart: TAction;
+    actionQsoComplete: TAction;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -252,6 +257,8 @@ type
     procedure Operator1Click(Sender: TObject);
     procedure StopMNUClick(Sender: TObject);
     procedure editNumberChange(Sender: TObject);
+    procedure actionQsoStartExecute(Sender: TObject);
+    procedure actionQsoCompleteExecute(Sender: TObject);
   private
     MustAdvance: boolean;
     procedure ProcessSpace;
@@ -758,6 +765,8 @@ begin
   EnableCtl(editNumber,  BStop);
   EnableCtl(SpinEdit2, BStop);
   SetToolbuttonDown(ToolButton1, not BStop);
+  actionQsoStart.Enabled := not BStop;
+  actionQsoComplete.Enabled := not BStop;
 
   //condition checkboxes
   EnableCtl(CheckBox2, not BCompet);
@@ -1142,8 +1151,6 @@ begin
   ReadCheckboxes;
 end;
 
-
-
 procedure TMainForm.Activity1Click(Sender: TObject);
 begin
   Ini.Activity := (Sender as TMenuItem).Tag;
@@ -1174,6 +1181,16 @@ end;
 procedure TMainForm.StopMNUClick(Sender: TObject);
 begin
   Tst.FStopPressed := true;
+end;
+
+procedure TMainForm.actionQsoStartExecute(Sender: TObject);
+begin
+   ProcessEnter;
+end;
+
+procedure TMainForm.actionQsoCompleteExecute(Sender: TObject);
+begin
+   ProcessEnter;
 end;
 
 end.
