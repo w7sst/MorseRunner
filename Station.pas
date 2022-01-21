@@ -42,8 +42,11 @@ type
     Envelope: TSingleArray;
     State: TStationState;
 
-    NR, RST: integer;
+    RST: integer;
+    NR: integer;
+    NR2: string;
     MyCall, HisCall: string;
+    Number: string;
 
     Msg: TStationMessages;
     MsgText: string;
@@ -197,7 +200,11 @@ function TStation.NrAsText: string;
 var
   Idx: integer;
 begin
-  Result := Format('%d%.3d', [RST, NR]);
+  if Ini.JaMode = True then begin
+    Result := IntToStr(RST) + NR2;
+  end
+  else begin
+    Result := Format('%d%.3d', [RST, NR]);
 
   if NrWithError then
     begin
@@ -211,6 +218,7 @@ begin
       end;
     NrWithError := false;
     end;
+  end;
 
   Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
 
