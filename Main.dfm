@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Morse Runner'
-  ClientHeight = 437
+  ClientHeight = 488
   ClientWidth = 700
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -68,7 +68,7 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Top = 318
+    Top = 369
     Width = 700
     Height = 119
     Align = alBottom
@@ -221,7 +221,7 @@ object MainForm: TMainForm
       Font.Height = -16
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
-      MaxLength = 4
+      MaxLength = 8
       ParentFont = False
       TabOrder = 2
       OnKeyPress = Edit3KeyPress
@@ -358,7 +358,7 @@ object MainForm: TMainForm
   end
   object Panel5: TPanel
     Left = 0
-    Top = 310
+    Top = 361
     Width = 700
     Height = 8
     Align = alBottom
@@ -369,7 +369,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 2
     Width = 488
-    Height = 308
+    Height = 359
     Align = alClient
     BevelOuter = bvNone
     BorderStyle = bsSingle
@@ -378,7 +378,7 @@ object MainForm: TMainForm
       Left = 0
       Top = 0
       Width = 484
-      Height = 263
+      Height = 314
       Align = alClient
       Brush.Color = 16711401
       Pen.Style = psClear
@@ -452,7 +452,7 @@ object MainForm: TMainForm
     end
     object RichEdit1: TRichEdit
       Left = 0
-      Top = 263
+      Top = 314
       Width = 484
       Height = 41
       TabStop = False
@@ -475,17 +475,17 @@ object MainForm: TMainForm
     Left = 488
     Top = 2
     Width = 212
-    Height = 308
+    Height = 359
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 3
     object GroupBox3: TGroupBox
-      Left = 9
-      Top = 197
+      Left = 13
+      Top = 247
       Width = 194
       Height = 81
       Caption = ' Band Conditions '
-      TabOrder = 0
+      TabOrder = 2
       object Label11: TLabel
         Left = 144
         Top = 16
@@ -568,8 +568,8 @@ object MainForm: TMainForm
       end
     end
     object GroupBox1: TGroupBox
-      Left = 9
-      Top = 6
+      Left = 13
+      Top = 56
       Width = 194
       Height = 187
       Caption = ' Station '
@@ -734,12 +734,12 @@ object MainForm: TMainForm
     end
     object Panel10: TPanel
       Left = 0
-      Top = 277
+      Top = 328
       Width = 212
       Height = 31
       Align = alBottom
       BevelOuter = bvNone
-      TabOrder = 2
+      TabOrder = 3
       object Label8: TLabel
         Left = 173
         Top = 9
@@ -793,6 +793,45 @@ object MainForm: TMainForm
           Style = tbsDropDown
           OnClick = RunBtnClick
         end
+      end
+    end
+    object GroupBox2: TGroupBox
+      Left = 13
+      Top = 6
+      Width = 194
+      Height = 47
+      Caption = 'Contest'
+      TabOrder = 0
+      object radioWpx: TRadioButton
+        Left = 10
+        Top = 20
+        Width = 41
+        Height = 17
+        Caption = 'WPX'
+        Checked = True
+        TabOrder = 0
+        TabStop = True
+        OnClick = radioSimContestClick
+      end
+      object radioAllja: TRadioButton
+        Tag = 1
+        Left = 66
+        Top = 20
+        Width = 53
+        Height = 17
+        Caption = 'ALLJA'
+        TabOrder = 1
+        OnClick = radioSimContestClick
+      end
+      object radioAcag: TRadioButton
+        Tag = 2
+        Left = 130
+        Top = 20
+        Width = 53
+        Height = 17
+        Caption = 'ACAG'
+        TabOrder = 2
+        OnClick = radioSimContestClick
       end
     end
   end
@@ -1470,8 +1509,15 @@ object MainForm: TMainForm
     object actionQsoComplete: TAction
       Caption = 'actionQsoComplete'
       Enabled = False
+      SecondaryShortCuts.Strings = (
+        ';')
       ShortCut = 40
       OnExecute = actionQsoCompleteExecute
+    end
+    object actionPlayCq: TAction
+      Caption = 'actionPlayCq'
+      ShortCut = 8282
+      OnExecute = actionPlayCqExecute
     end
   end
 end

@@ -16,7 +16,7 @@ uses
   Vcl.ActnList;
 
 const
-  WM_TBDOWN = WM_USER+1;
+  WM_TBDOWN = WM_USER + 1;
 
 type
   TMainForm = class(TForm)
@@ -202,6 +202,11 @@ type
     ActionList1: TActionList;
     actionQsoStart: TAction;
     actionQsoComplete: TAction;
+    GroupBox2: TGroupBox;
+    radioWpx: TRadioButton;
+    radioAllja: TRadioButton;
+    radioAcag: TRadioButton;
+    actionPlayCq: TAction;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -259,6 +264,8 @@ type
     procedure editNumberChange(Sender: TObject);
     procedure actionQsoStartExecute(Sender: TObject);
     procedure actionQsoCompleteExecute(Sender: TObject);
+    procedure radioSimContestClick(Sender: TObject);
+    procedure actionPlayCqExecute(Sender: TObject);
   private
     MustAdvance: boolean;
     procedure ProcessSpace;
@@ -311,6 +318,12 @@ begin
 
   Panel2.DoubleBuffered := true;
   RichEdit1.Align := alClient;
+
+  case Ini.SimContest of
+    0: radioWpx.Checked := True;
+    1: radioAllja.Checked := True;
+    2: radioAcag.Checked := True;
+  end;
 end;
 
 
@@ -409,6 +422,8 @@ begin
       if not CallSent then SendMsg(msgHisCall);
       SendMsg(msgTU);
       Log.SaveQso;
+      RichEdit1.SetFocus();
+      Edit1.SetFocus();
       end;
 
     ' ': //next field
@@ -514,7 +529,12 @@ begin
   MustAdvance := false;
 
   if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0
-    then begin Log.SaveQso; Exit; end;
+    then begin
+      Log.SaveQso;
+      RichEdit1.SetFocus();
+      Edit1.SetFocus();
+      Exit;
+  end;
 
   //no QSO in progress, send CQ
   if Edit1.Text = '' then begin SendMsg(msgCq); Exit; end;
@@ -534,6 +554,8 @@ begin
       begin
       SendMsg(msgTU);
       Log.SaveQso;
+      RichEdit1.SetFocus();
+      Edit1.SetFocus();
       end
     else
       MustAdvance := true;
@@ -761,6 +783,10 @@ begin
   RunMode := Value;
 
   //main ctls
+  EnableCtl(radioWpx,  BStop);
+  EnableCtl(radioAllja,  BStop);
+  EnableCtl(radioAcag,  BStop);
+
   EnableCtl(editCallsign,  BStop);
   EnableCtl(editNumber,  BStop);
   EnableCtl(SpinEdit2, BStop);
@@ -824,7 +850,7 @@ begin
   EnableCtl(SpinEdit3, RunMode <> rmHst);
   if RunMode = rmHst then SpinEdit3.Value := 4;
 
-  EnableCtl(ComboBox2, RunMode <> rmHst);                
+  EnableCtl(ComboBox2, RunMode <> rmHst);
   if RunMode = rmHst then begin ComboBox2.ItemIndex :=10; SetBw(10); end;
 
   if RunMode = rmHst then ListView1.Visible := false
@@ -879,7 +905,6 @@ procedure TMainForm.WmTbDown(var Msg: TMessage);
 begin
   TToolbutton(Msg.LParam).Down := Boolean(Msg.WParam);
 end;
-
 
 procedure TMainForm.SetToolbuttonDown(Toolbutton: TToolbutton;
   ADown: boolean);
@@ -1071,6 +1096,10 @@ begin
   SetQsk(not QSK1.Checked);
 end;
 
+procedure TMainForm.radioSimContestClick(Sender: TObject);
+begin
+   Ini.SimContest := TRadioButton(Sender).Tag;
+end;
 
 procedure TMainForm.NWPMClick(Sender: TObject);
 begin
@@ -1186,6 +1215,11 @@ end;
 procedure TMainForm.actionQsoStartExecute(Sender: TObject);
 begin
    ProcessEnter;
+end;
+
+procedure TMainForm.actionPlayCqExecute(Sender: TObject);
+begin
+   SendMsg(msgCQ);
 end;
 
 procedure TMainForm.actionQsoCompleteExecute(Sender: TObject);

@@ -50,12 +50,13 @@ begin
 
   Wpm := Oper.GetWpm;
 
-  if Ini.JaMode = True then begin
-    NR2 := O.Number;
+  if Ini.SimContest = 0 then begin
+    NR := Oper.GetNR;
   end
   else begin
-    NR := Oper.GetNR;
+    NR2 := O.Number;
   end;
+
   if Ini.Lids and (Random < 0.03)
     then RST := 559 + 10*Random(4)
     else RST := 599;
@@ -152,11 +153,11 @@ begin
     begin
     TrueCall := Self.MyCall;
     TrueRst := Self.Rst;
-    if Ini.JaMode = True then begin
-      TrueNR := Self.NR2;
+    if Ini.SimContest = 0 then begin
+      TrueNR := Format('%.3d', [Self.NR]);
     end
     else begin
-      TrueNR := IntToStr(Self.NR);
+      TrueNR := Self.NR2;
     end;
 
   end;
