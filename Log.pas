@@ -8,7 +8,7 @@ unit Log;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, RndFunc, Math;
+  Windows, SysUtils, Classes, Graphics, RndFunc, Math, RichEdit, Forms;
 
 
 procedure SaveQso;
@@ -258,8 +258,6 @@ end;
 
 
 procedure LastQsoToScreen;
-const
-  EM_SCROLLCARET = $B7;
 var
   S: string;
 begin
@@ -280,6 +278,8 @@ begin
   MainForm.RichEdit1.SelStart := Length(MainForm.RichEdit1.Text) - 5;
   MainForm.RichEdit1.SelLength := 3;
   MainForm.RichEdit1.SelAttributes.Color := clRed;
+
+  MainForm.RichEdit1.SelStart := Length(MainForm.RichEdit1.Text);
   MainForm.RichEdit1.Perform(EM_SCROLLCARET, 0, 0);
 end;
 

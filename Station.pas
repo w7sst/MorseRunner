@@ -8,7 +8,7 @@ unit Station;
 interface
 
 uses
-  SysUtils, Classes, Math, SndTypes, Ini, MorseKey;
+  SysUtils, Classes, Math, StrUtils, SndTypes, Ini, MorseKey;
 
 const
   NEVER = MAXINT;
@@ -53,7 +53,7 @@ type
 
     constructor CreateStation;
 
-    procedure Tick; 
+    procedure Tick;
     function GetBlock: TSingleArray; virtual;
     procedure ProcessEvent(AEvent: TStationEvent); virtual; abstract;
 
@@ -157,7 +157,7 @@ begin
     SendPos := 0;
     FBfo := 0;
     end;
-    
+
   Keyer.Wpm := Wpm;
   Keyer.MorseMsg := AMorse;
   Envelope := Keyer.Envelope;
@@ -195,50 +195,71 @@ begin
 end;
 
 
-                                                
+
 function TStation.NrAsText: string;
 var
-  Idx: integer;
-begin
-  if Ini.JaMode = True then begin
-    Result := IntToStr(RST) + NR2;
-  end
-  else begin
-    Result := Format('%d%.3d', [RST, NR]);
+   Idx: integer;
+   S: string;
+   P: string;
 
-  if NrWithError then
-    begin
-    Idx := Length(Result);
+   function MakeMistake(S: string): string;
+   var
+      Idx: Integer;
+   begin
+      Idx := Length(S);
 
-    if not CharInset(Result[Idx], ['2'..'7']) then Dec(Idx);
-    if CharInset(Result[Idx], ['2'..'7']) then
-      begin
-      if Random < 0.5 then Dec(Result[Idx]) else Inc(Result[Idx]);
-      Result := Result + Format('EEEEE %.3d', [NR]);
+      if not CharInset(S[Idx], ['2' .. '7']) then begin
+         Dec(Idx);
       end;
-    NrWithError := false;
-    end;
-  end;
 
-  Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
+      if CharInset(S[Idx], ['2' .. '7']) then begin
+         if Random < 0.5 then
+            Dec(S[Idx])
+         else
+            Inc(S[Idx]);
+      end;
 
-  if Ini.RunMode <> rmHst then
-    begin
-    Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
-    Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
+      Result := S;
+   end;
+begin
+   if Ini.SimContest = 0 then begin
+      if NrWithError then begin
+         S := Format('%.3d', [NR]);
+         S := MakeMistake(S);
+         Result := Format('%d', [RST]) + S + Format('EEEEE %.3d', [NR]);
+         NrWithError := false;
+      end
+      else begin
+         Result := Format('%d%.3d', [RST, NR]);
+      end;
+   end
+   else begin
+      if NrWithError then begin
+         S := Copy(NR2, 1, Length(NR2) - 1);
+         P := RightStr(NR2, 1);
+         S := MakeMistake(S);
+         Result := IntToStr(RST) + S + 'EEEEE ' + NR2;
+         NrWithError := false;
+      end
+      else begin
+         Result := IntToStr(RST) + NR2;
+      end;
+   end;
 
-    if Random < 0.4
-      then Result := StringReplace(Result, '0', 'O', [rfReplaceAll])
-    else if Random < 0.97
-      then Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
+   Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
 
-    if Random < 0.97
-      then Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
-    end;
+   if Ini.RunMode <> rmHst then begin
+      Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
+      Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
+
+      if Random < 0.4 then
+         Result := StringReplace(Result, '0', 'O', [rfReplaceAll])
+      else if Random < 0.97 then
+         Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
+
+      if Random < 0.97 then
+         Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
+   end;
 end;
 
-
-
-
 end.
-

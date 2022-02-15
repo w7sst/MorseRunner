@@ -15,7 +15,7 @@ function PickCall: string;
 function PickCall2: TCall;
 
 var
-  Calls: TCallList;
+  Calls: array[0..2] of TCallList;
 
 
 
@@ -24,12 +24,9 @@ implementation
 
 procedure LoadCallList;
 begin
-   if Ini.JaMode = False then begin
-      Calls.LoadFromMaster();
-   end
-   else begin
-      Calls.LoadFromFile('DIC_ALLJA.DAT');
-   end;
+   Calls[0].LoadFromMaster();
+   Calls[1].LoadFromFile('DIC_ALLJA.DAT');
+   Calls[2].LoadFromFile('DIC_ACAG.DAT');
 end;
 
 
@@ -37,38 +34,48 @@ function PickCall: string;
 var
   Idx: integer;
   O: TCall;
+  N: Integer;
 begin
-  if Calls.Count = 0 then begin Result := 'P29SX'; Exit; end;
+  N := Ini.SimContest;
 
-  Idx := Random(Calls.Count);
-  O := Calls[Idx];
+  if Calls[N].Count = 0 then begin Result := 'P29SX'; Exit; end;
+
+  Idx := Random(Calls[N].Count);
+  O := Calls[N][Idx];
   Result := O.Callsign;
 
-  if Ini.RunMode = rmHst then Calls.Delete(Idx);
+  if Ini.RunMode = rmHst then Calls[N].Delete(Idx);
 end;
 
 function PickCall2: TCall;
 var
   Idx: integer;
   O: TCall;
+  N: Integer;
 begin
-  if Calls.Count = 0 then begin Result := nil; Exit; end;
+  N := Ini.SimContest;
 
-  Idx := Random(Calls.Count);
+  if Calls[N].Count = 0 then begin Result := nil; Exit; end;
+
+  Idx := Random(Calls[N].Count);
   O := TCall.Create();
-  O.Callsign := Calls[Idx].Callsign;
-  O.Number := Calls[Idx].Number;
+  O.Callsign := Calls[N][Idx].Callsign;
+  O.Number := Calls[N][Idx].Number;
 
   Result := O;
 
-  if Ini.RunMode = rmHst then Calls.Delete(Idx);
+  if Ini.RunMode = rmHst then Calls[N].Delete(Idx);
 end;
 
 initialization
-  Calls := TCallList.Create;
+  Calls[0] := TCallList.Create;
+  Calls[1] := TCallList.Create;
+  Calls[2] := TCallList.Create;
 
 finalization
-  Calls.Free;
+  Calls[0].Free;
+  Calls[1].Free;
+  Calls[2].Free;
 
 end.
 

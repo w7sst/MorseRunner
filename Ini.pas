@@ -50,7 +50,7 @@ var
   SaveWav: boolean = false;
   CallsFromKeyer: boolean = false;
 
-  JaMode: Boolean = True;
+  SimContest: Integer = 0;
 
 procedure FromIni;
 procedure ToIni;
@@ -114,7 +114,7 @@ begin
 
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
 
-      JaMode := ReadBool('mode', 'ja', True);
+      SimContest := ReadInteger(SEC_TST, 'SimContest', 0);
     finally
       Free;
     end;
@@ -144,6 +144,7 @@ begin
       WriteInteger(SEC_TST, 'Duration', Duration);
       WriteInteger(SEC_TST, 'HiScore', HiScore);
       WriteInteger(SEC_TST, 'CompetitionDuration', CompDuration);
+      WriteInteger(SEC_TST, 'SimContest', SimContest);
 
       V := Round(80 * (MainForm.VolumeSlider1.Value - 0.75));
       WriteInteger(SEC_STN, 'SelfMonVolume', V);
