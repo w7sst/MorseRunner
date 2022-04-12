@@ -4,13 +4,10 @@
 //file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //------------------------------------------------------------------------------
 unit Log;
-
 interface
-
 uses
   Windows, SysUtils, Classes, Graphics, RndFunc, Math, Controls,
   StdCtrls, ExtCtrls, ARRL, PerlRegEx, pcre;
-
 
 procedure SaveQso;
 procedure LastQsoToScreen;
@@ -20,14 +17,13 @@ procedure UpdateStatsHst;
 procedure CheckErr;
 //procedure PaintHisto;
 procedure ShowRate;
-procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6 :string);
-procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6 :string);
+procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
+procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
 procedure ScoreTableUpdateCheck;
 function FormatScore(const AScore: integer):string;
 procedure UpdateSbar(const ACallsign: string);
 function ExtractCallsign(Call: string): string;
 function ExtractPrefix(Call: string): string;
-
 type
   PQso = ^TQso;
   TQso = record
@@ -35,11 +31,12 @@ type
     Call, TrueCall, RawCallsign: string;
     Rst, TrueRst: integer;
     Nr, TrueNr: integer;
+    OpName, TrueOpName: string;
+    TrueWpm: integer;
     Pfx: string;
     Dupe: boolean;
     Err: string;
   end;
-
   THisto= class(TObject)
     private Histo: array[0..47] of integer;
     //private w, h, CallCount: integer;
@@ -49,34 +46,27 @@ type
     public procedure ReCalc(ADuration: integer);
     public procedure Repaint;
   end;
-
 const
   EM_SCROLLCARET = $B7;
   WM_VSCROLL= $0115;
-
 var
   QsoList: array of TQso;
   PfxList: TStringList;
   CallSent, NrSent: boolean;
   Histo: THisto;
 
-
 implementation
-
 uses
   Contest, Main, DxStn, DxOper, Ini, MorseKey;
-
 
 constructor THisto.Create(APaintBox: TPaintBOx);
 begin
   Self.PaintBoxH:= APaintBox;
 end;
-
 procedure THisto.ReCalc(ADuration: integer);
 begin
   Self.Duration:= ADuration;
 end;
-
 procedure THisto.Repaint;
 var
   //Histo: array[0..47] of integer;
@@ -84,12 +74,10 @@ var
   x, y, w: integer;
 begin
   FillChar(Histo, SizeOf(Histo), 0);
-
   for i:=0 to High(QsoList) do begin
     x := Trunc(QsoList[i].T * 1440) div 5;  // How Many QSO in 5mins
     Inc(Histo[x]);
   end;
-
   with Self.PaintBoxH, Self.PaintBoxH.Canvas do begin
     w:= Trunc(ClientWidth / 48);
     Brush.Color := Color;
@@ -102,13 +90,11 @@ begin
     end;
   end;
 end;
-
 function FormatScore(const AScore: integer):string;
 begin
   FormatScore:= format('%6d', [AScore]);
 end;
-
-procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6 :string);
+procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
 begin
   MainForm.ListView2.Column[0].Caption:= ACol1;
   MainForm.ListView2.Column[1].Caption:= ACol2;
@@ -116,9 +102,9 @@ begin
   MainForm.ListView2.Column[3].Caption:= ACol4;
   MainForm.ListView2.Column[4].Caption:= ACol5;
   MainForm.ListView2.Column[5].Caption:= ACol6;
+  MainForm.ListView2.Column[6].Caption:= ACol7;
 end;
-
-procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6 :string);
+procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
 begin
   with MainForm.ListView2.Items.Add do begin
     Caption:= ACol1;
@@ -127,12 +113,12 @@ begin
     SubItems.Add(ACol4);
     SubItems.Add(ACol5);
     SubItems.Add(ACol6);
+    SubItems.Add(ACol7);
     Selected:= True;
   end;
   //UpdateSbar(MainForm.ListView2.Items.Count);
   MainForm.ListView2.Perform(WM_VSCROLL, SB_BOTTOM, 0);
 end;
-
 //Update Callsign info
 procedure UpdateSbar(const ACallsign: string);
 var
@@ -145,14 +131,12 @@ begin
         MainForm.sbar.Caption:= '  Unknow';
 end;
 
-
 procedure ScoreTableUpdateCheck;
 begin
   with MainForm.ListView2 do begin
     Items[Items.Count-1].SubItems[4]:= QsoList[High(QsoList)].Err;
   end;
 end;
-
 procedure Clear;
 var
   Empty: string;
@@ -162,25 +146,25 @@ begin
   MainForm.RichEdit1.Lines.Clear;
   MainForm.RichEdit1.DefAttributes.Name:= 'Consolas';
   if Ini.RunMode = rmHst then
-    ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk')
+    ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
   else
-    ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk');
+    if Ini.RunMode = rmCwt then
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'NR', 'Pref', 'Chk', 'Wpm')
+    else
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
 
   if Ini.RunMode = rmHst then
     Empty := ''
   else
     Empty := FormatScore(0);
-
   MainForm.ListView1.Items[0].SubItems[0] := Empty;
   MainForm.ListView1.Items[1].SubItems[0] := Empty;
   MainForm.ListView1.Items[0].SubItems[1] := Empty;
   MainForm.ListView1.Items[1].SubItems[1] := Empty;
   MainForm.ListView1.Items[2].SubItems[0] := FormatScore(0);
   MainForm.ListView1.Items[2].SubItems[1] := FormatScore(0);
-
   MainForm.PaintBox1.Invalidate;
 end;
-
 
 function CallToScore(S: string): integer;
 var
@@ -195,7 +179,6 @@ begin
       ' ': Inc(Result, 2);
     end;
 end;
-
 procedure UpdateStatsHst;
 var
   CallScore, RawScore, Score: integer;
@@ -203,43 +186,34 @@ var
 begin
   RawScore := 0;
   Score := 0;
-
   for i:=0 to High(QsoList) do begin
     CallScore := CallToScore(QsoList[i].Call);
     Inc(RawScore, CallScore);
     if QsoList[i].Err = '   ' then
       Inc(Score, CallScore);
   end;
-
   MainForm.ListView1.Items[0].SubItems[0] := '';
   MainForm.ListView1.Items[1].SubItems[0] := '';
   MainForm.ListView1.Items[2].SubItems[0] := FormatScore(RawScore);
-
   MainForm.ListView1.Items[0].SubItems[1] := '';
   MainForm.ListView1.Items[1].SubItems[1] := '';
   MainForm.ListView1.Items[2].SubItems[1] := FormatScore(Score);
-
   MainForm.PaintBox1.Invalidate;
-
   //MainForm.Panel11.Caption := IntToStr(Score);
 end;
-
 procedure UpdateStats;
 var
   i, Pts, Mul: integer;
 begin
   //raw
-
   Pts := Length(QsoList);
   PfxList.Clear;
   for i:=0 to High(QsoList) do
      PfxList.Add(QsoList[i].Pfx);
   Mul := PfxList.Count;
-
   MainForm.ListView1.Items[0].SubItems[0] := FormatScore(Pts);
   MainForm.ListView1.Items[1].SubItems[0] := FormatScore(Mul);
   MainForm.ListView1.Items[2].SubItems[0] := FormatScore(Pts*Mul);
-
   //verified
   Pts := 0;
   PfxList.Clear;
@@ -249,14 +223,11 @@ begin
       PfxList.Add(QsoList[i].Pfx);
     end;
   Mul := PfxList.Count;
-
   MainForm.ListView1.Items[0].SubItems[1] := FormatScore(Pts);
   MainForm.ListView1.Items[1].SubItems[1] := FormatScore(Mul);
   MainForm.ListView1.Items[2].SubItems[1] := FormatScore(Pts*Mul);
-
   MainForm.PaintBox1.Invalidate;
 end;
-
 // Code by BG4FQD
 function ExtractCallsign(Call: string):string;
 var
@@ -280,7 +251,6 @@ begin
         reg.Free;
     end;
 end;
-
 function ExtractPrefix(Call: string): string;
 var
     reg: TPerlRegEx;
@@ -318,9 +288,7 @@ begin
     Result := '';
     Exit;
   end;
-
   Dig := '';
-
   //select shorter piece
   p := Pos('/', Call);
   if p = 0 then Result := Call
@@ -330,7 +298,6 @@ begin
     begin
     S1 := Copy(Call, 1, p-1);
     S2 := Copy(Call, p+1, MAXINT);
-
     if (Length(S1) = 1) and CharInSet(S1[1], DIGITS) then begin
         Dig := S1; Result := S2;
     end
@@ -349,7 +316,6 @@ begin
     Result := '';
     Exit;
   end;
-
   //delete trailing letters, retain at least 2 chars
   for p:= Length(Result) downto 3 do
 //    if Result[p] in DIGITS then
@@ -357,7 +323,6 @@ begin
       Break
     else
       Delete(Result, p, 1);
-
   //ensure digit
 //  if not (Result[Length(Result)] in DIGITS) then
   if not CharInSet(Result[Length(Result)], DIGITS) then
@@ -365,30 +330,41 @@ begin
   //replace digit
   if Dig <> '' then
     Result[Length(Result)] := Dig[1];
-
   Result := Copy(Result, 1, 5);
 end;
 }
-
 procedure SaveQso;
 var
   i: integer;
   Qso: PQso;
 begin
   with MainForm do begin
-    if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) <> 3) or (Edit3.Text = '') then begin
-      Beep;
-      Exit;
+    if RunMode = rmCwt  then begin
+       if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) < 2) or (Edit3.Text = '') then begin
+           Beep;
+           Exit;
+       end;
+    end
+    else begin
+       if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) <> 3) or (Edit3.Text = '') then begin
+           Beep;
+           Exit;
+       end;
     end;
 
     //add new entry to log
     SetLength(QsoList, Length(QsoList)+1);
     Qso := @QsoList[High(QsoList)];
-
     //save data
     Qso.T := BlocksToSeconds(Tst.BlockNumber) /  86400;
     Qso.Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
-    Qso.Rst := StrToInt(Edit2.Text);
+    if RunMode = rmCwt  then begin
+       Qso.OpName := Edit2.Text;
+       Qso.Rst := 599;
+    end
+    else  begin
+       Qso.Rst := StrToInt(Edit2.Text);
+    end;
     Qso.Nr := StrToInt(Edit3.Text);
     Qso.RawCallsign:= ExtractCallsign(Qso.Call);
     Qso.Pfx := ExtractPrefix(Qso.RawCallsign);
@@ -396,13 +372,20 @@ begin
     PfxList.Add(Qso.Pfx);
     if Ini.RunMode = rmHst then
       Qso.Pfx := IntToStr(CallToScore(Qso.Call));
-
     //mark if dupe
     Qso.Dupe := false;
     for i:=0 to High(QsoList)-1 do
       with QsoList[i] do
         if (Call = Qso.Call) and (Err = '   ') then
           Qso.Dupe := true;
+    //what's in the DX's log?
+    for i:=Tst.Stations.Count-1 downto 0 do
+      if Tst.Stations[i] is TDxStation then
+        with Tst.Stations[i] as TDxStation do
+          if (MyCall = Qso.Call) then begin
+            Qso.TrueWpm := Wpm;
+            Break;
+          end; //deletes the dx station!
 
     //what's in the DX's log?
     for i:=Tst.Stations.Count-1 downto 0 do
@@ -415,50 +398,68 @@ begin
     //QsoList[High(QsoList)].Err:= '...';
     CheckErr;
   end;
-
   LastQsoToScreen;
   if Ini.RunMode = rmHst then
     UpdateStatsHst
   else
     UpdateStats;
-
   //wipe
   MainForm.WipeBoxes;
   //inc NR
-  Inc(Tst.Me.NR);
+   if Ini.RunMode <> rmCwt then
+      Inc(Tst.Me.NR);
 end;
-
 
 procedure LastQsoToScreen;
 begin
   with QsoList[High(QsoList)] do begin
+  if Ini.RunMode = rmCwt then
+    ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+      , OpName
+      , format('%.d', [Nr])
+      , Pfx, Err,format('%.2d', [TrueWpm]))
+  else
     ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
       , format('%.3d %.4d', [Rst, Nr])
       , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
-      , Pfx, Err);
+      , Pfx, Err, format('%.3d', [TrueWpm]));
   end;
 end;
-
 
 procedure CheckErr;
 begin
   with QsoList[High(QsoList)] do begin
-    if TrueCall = '' then
-      Err := 'NIL'
-    else
-      if Dupe then
-        Err := 'DUP'
+    if RunMode <> rmCwt then begin
+      if TrueCall = '' then
+        Err := 'NIL'
       else
-        if TrueRst <> Rst then
-          Err := 'RST'
+        if Dupe then
+          Err := 'DUP'
         else
-          if TrueNr <> NR then
-            Err := 'NR '
+          if TrueRst <> Rst then
+            Err := 'RST'
           else
-            Err := '   ';
+            if TrueNr <> NR then
+              Err := 'NR '
+            else
+              Err := '   ';
+    end else begin
+      if TrueCall = '' then
+        Err := 'NIL'
+      else
+        if Dupe then
+          Err := 'DUP'
+        else
+          if TrueOpName <> OpName then
+            Err := 'NAME'
+          else
+            if TrueNr <> NR then
+              Err := 'NR '
+            else
+              Err := '   ';
     end;
+  end;
 end;
-
 {
 procedure PaintHisto;
 var
@@ -467,12 +468,10 @@ var
   x, y, w: integer;
 begin
   FillChar(Histo, SizeOf(Histo), 1);
-
   for i:=0 to High(QsoList) do begin
     x := Trunc(QsoList[i].T * 1440) div 5;  // How Many QSO in 5mins
     Inc(Histo[x]);
   end;
-
   with MainForm.PaintBox1, MainForm.PaintBox1.Canvas do begin
     w:= Trunc(ClientWidth / 48);
     Brush.Color := Color;
@@ -486,7 +485,6 @@ begin
   end;
 end;
 }
-
 procedure ShowRate;
 var
   i, Cnt: integer;
@@ -495,22 +493,16 @@ begin
   T := BlocksToSeconds(Tst.BlockNumber) / 86400;
   if T = 0 then Exit;
   D := Min(5/1440, T);
-
   Cnt := 0;
   for i:=High(QsoList) downto 0 do
     if QsoList[i].T > (T-D) then Inc(Cnt) else Break;
-
   MainForm.Panel7.Caption := Format('%d  qso/hr.', [Round(Cnt / D / 24)]);
 end;
-
 
 initialization
   PfxList := TStringList.Create;
   PfxList.Sorted := true;
   PfxList.Duplicates := dupIgnore;
-
 finalization
   PfxList.Free;
-
 end.
-

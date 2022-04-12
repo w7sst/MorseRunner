@@ -1,5 +1,4 @@
 program MorseRunner;
-
 uses
   Forms,
   Main in 'Main.pas' {MainForm},
@@ -33,14 +32,13 @@ uses
   WavFile in 'VCL\WavFile.pas',
   pcre in 'PerlRegEx\pcre.pas',
   PerlRegEx in 'PerlRegEx\PerlRegEx.pas',
-  ARRL in 'ARRL.pas';
+  ARRL in 'ARRL.pas',
+  CWOPS in 'CWOPS.pas';
 
 {$R *.RES}
-
 begin
   Application.Initialize;
   Application.Title := 'Morse Runner';
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.
-

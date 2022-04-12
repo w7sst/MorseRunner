@@ -22,12 +22,16 @@ const
 
   DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
-  TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
+  TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst, rmCwt);
   
 var
   Call: string = 'VE3NEA';
-  HamName: string;
+  HamName: string = 'Alex';
+  CWOPSNum: string = '1';
   Wpm: integer = 30;
+  MaxRxWpm: integer = 0;
+  MinRxWpm: integer = 0;
+  NRDigits: integer = 1;
   BandWidth: integer = 500;
   Pitch: integer = 600;
   Qsk: boolean = true;
@@ -43,6 +47,8 @@ var
   Qsb: boolean = true;
   Flutter: boolean = true;
   Lids: boolean = true;
+  NoActivityCnt: integer=0;
+  NoStopActivity: integer=0;
 
   Duration: integer = 30;
   RunMode: TRunMode = rmStop;
@@ -66,6 +72,7 @@ uses
 procedure FromIni;
 var
   V: integer;
+  x1: string;
 begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
@@ -74,8 +81,32 @@ begin
       MainForm.SetBw(ReadInteger(SEC_STN, 'BandWidth', 9));
 
       HamName := ReadString(SEC_STN, 'Name', '');
-      if HamName <> '' then
+      CWOPSNum :=  ReadString(SEC_STN, 'cwopsnum', '');
+      if HamName <> '' then begin
         MainForm.Caption := MainForm.Caption + ':  ' + HamName;
+        if CWOPSNum <> ''  then
+             MainForm.Caption := MainForm.Caption + ' ' + CWOPSNum;
+       end;
+
+      x1:= ReadString(SEC_STN, 'CWMaxRxSpeed', '');
+      if x1 = '' then
+           x1 := '0';
+      MaxRxWpm := strtoint(x1);
+      MainForm.UpdCWMaxRxSpeed(MaxRxWpm);
+
+
+      x1:= ReadString(SEC_STN, 'CWMinRxSpeed', '');
+      if x1 = '' then
+           x1 := '0';
+      MinRxWpm := strtoint(x1);
+      MainForm.UpdCWMinRxSpeed(MinRxWpm);
+
+      x1:= ReadString(SEC_STN, 'NRDigits', '');
+      if x1 = '' then
+           x1 := '1';
+      NRDigits := strtoint(x1);
+
+      MainForm.UpdNRDigits(NRDigits);
 
       Wpm := ReadInteger(SEC_STN, 'Wpm', Wpm);
       Wpm := Max(10, Min(120, Wpm));

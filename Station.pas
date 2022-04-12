@@ -4,25 +4,19 @@
 //file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //------------------------------------------------------------------------------
 unit Station;
-
 interface
-
 uses
   SysUtils, Classes, Math, SndTypes, Ini, MorseKey;
-
 const
   NEVER = MAXINT;
-
 type
   TStationMessage =  (msgNone, msgCQ, msgNR, msgTU, msgMyCall, msgHisCall,
     msgB4, msgQm, msgNil, msgGarbage, msgR_NR, msgR_NR2, msgDeMyCall1, msgDeMyCall2,
     msgDeMyCallNr1, msgDeMyCallNr2, msgNrQm, msgLongCQ, msgMyCallNr2,
     msgQrl, msgQrl2, msqQsy, msgAgn);
-
   TStationMessages = set of TStationMessage;
   TStationState = (stListening, stCopying, stPreparingToSend, stSending);
   TStationEvent = (evTimeout, evMsgSent, evMeStarted, evMeFinished);
-
 
   TStation = class (TCollectionItem)
   private
@@ -41,36 +35,28 @@ type
     Wpm: integer;
     Envelope: TSingleArray;
     State: TStationState;
-
     NR, RST: integer;
     MyCall, HisCall: string;
-
+    OpName: string;
+    CWOPSNR: integer;
     Msg: TStationMessages;
     MsgText: string;
-
     constructor CreateStation;
-
     procedure Tick; 
     function GetBlock: TSingleArray; virtual;
     procedure ProcessEvent(AEvent: TStationEvent); virtual; abstract;
-
     procedure SendMsg(AMsg: TStationMessage);
     procedure SendText(AMsg: string); virtual;
     procedure SendMorse(AMorse: string);
-
     property Pitch: integer read FPitch write SetPitch;
     property Bfo: Single read GetBfo;
   end;
-
 implementation
-
 { TStation }
-
 constructor TStation.CreateStation;
 begin
   inherited Create(nil);
 end;
-
 function TStation.GetBfo: Single;
 begin
   Result := FBfo;
@@ -78,25 +64,26 @@ begin
   if FBfo > TWO_PI then FBfo := FBfo - TWO_PI;
 end;
 
-
 function TStation.GetBlock: TSingleArray;
 begin
   Result := Copy(Envelope, SendPos, Ini.BufSize);
-
   //advance TX buffer
   Inc(SendPos, Ini.BufSize);
   if SendPos = Length(Envelope) then Envelope := nil;
 end;
-
 
 procedure TStation.SendMsg(AMsg: TStationMessage);
 begin
   if Envelope = nil then Msg := [];
   if AMsg = msgNone then begin State := stListening; Exit; End;
   Include(Msg, AMsg);
-
   case AMsg of
-    msgCQ: SendText('CQ <my> TEST');
+    msgCQ: begin
+       if RunMode = rmCwt then
+           SendText('CQ CWT <my>')
+       else
+           SendText('CQ <my> TEST');
+    end;
     msgNR: SendText('<#>');
     msgTU: SendText('TU');
     msgMyCall: SendText('<my>');
@@ -104,8 +91,18 @@ begin
     msgB4: SendText('QSO B4');
     msgQm: SendText('?');
     msgNil: SendText('NIL');
-    msgR_NR: SendText('R <#>');
-    msgR_NR2: SendText('R <#> <#>');
+    msgR_NR: begin
+        if RunMode = rmCwt then
+            SendText('<#>')
+        else
+            SendText('R <#>');
+    end;
+    msgR_NR2: begin
+         if RunMode = rmCwt then
+            SendText('<#>')
+         else
+            SendText('R <#> <#>');
+    end;
     msgDeMyCall1: SendText('DE <my>');
     msgDeMyCall2: SendText('DE <my> <my>');
     msgDeMyCallNr1: SendText('DE <my> <#>');
@@ -119,7 +116,6 @@ begin
     msgAgn: SendText('AGN');
     end;
 end;
-
 procedure TStation.SendText(AMsg: string);
 begin
   if Pos('<#>', AMsg) > 0 then
@@ -129,21 +125,17 @@ begin
     //error cleared
     AMsg := StringReplace(AMsg, '<#>', NrAsText, [rfReplaceAll]);
     end;
-
   AMsg := StringReplace(AMsg, '<my>', MyCall, [rfReplaceAll]);
-
 {
   if CallsFromKeyer
      then AMsg := StringReplace(AMsg, '<his>', ' ', [rfReplaceAll])
      else AMsg := StringReplace(AMsg, '<his>', HisCall, [rfReplaceAll]);
 }
-
   if MsgText <> ''
     then MsgText := MsgText + ' ' + AMsg
     else MsgText := AMsg;
   SendMorse(Keyer.Encode(MsgText));
 end;
-
 
 procedure TStation.SendMorse(AMorse: string);
 var
@@ -160,19 +152,15 @@ begin
   Envelope := Keyer.Envelope;
   for i:=0 to High(Envelope) do
     Envelope[i] := Envelope[i] * Amplitude;
-
   State := stSending;
   TimeOut := NEVER;
 end;
-
-
 
 procedure TStation.SetPitch(const Value: integer);
 begin
   FPitch := Value;
   dPhi := TWO_PI * FPitch / DEFAULTRATE;
 end;
-
 
 procedure TStation.Tick;
 begin
@@ -183,7 +171,6 @@ begin
     State := stListening;
     ProcessEvent(evMsgSent);
     end
-
   //check timeout
   else if State <> stSending then
     begin
@@ -192,14 +179,15 @@ begin
     end;
 end;
 
-
                                                 
 function TStation.NrAsText: string;
 var
   Idx: integer;
 begin
-  Result := Format('%d%.3d', [RST, NR]);
-
+  if RunMode <> rmCwt then
+      Result := Format('%d%.3d', [RST, NR])
+  else
+      Result := Format('%s  %.d', [OpName, NR]);
   if NrWithError then
     begin
     Idx := Length(Result);
@@ -214,26 +202,20 @@ begin
     end;
     NrWithError := false;
     end;
-
   Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
-
   if Ini.RunMode <> rmHst then
     begin
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
-
     if Random < 0.4
       then Result := StringReplace(Result, '0', 'O', [rfReplaceAll])
     else if Random < 0.97
       then Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
-
     if Random < 0.97
       then Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
     end;
+
 end;
 
 
-
-
 end.
-

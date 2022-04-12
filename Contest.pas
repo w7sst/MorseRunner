@@ -4,13 +4,10 @@
 //file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //------------------------------------------------------------------------------
 unit Contest;
-
 interface
-
 uses
   SysUtils, SndTypes, Station, StnColl, MyStn, Math,  Ini,
   MovAvg, Mixers, VolumCtl, RndFunc, TypInfo, DxStn, DxOper, Log;
-
 type
   TContest = class
   private
@@ -25,7 +22,6 @@ type
     Modul: TModulator;
     RitPhase: Single;
     FStopPressed: boolean;
-
     constructor Create;
     destructor Destroy; override;
     procedure Init;
@@ -34,18 +30,13 @@ type
     procedure OnMeFinishedSending;
     procedure OnMeStartedSending;
   end;
-
 var
   Tst: TContest;
 
-
 implementation
-
 uses
   Main;
-
 { TContest }
-
 constructor TContest.Create;
 begin
   Me := TMyStation.CreateStation;
@@ -53,29 +44,24 @@ begin
   Filt := TMovingAverage.Create(nil);
   Modul := TModulator.Create;
   Agc := TVolumeControl.Create(nil);
-
   Filt.Points := Round(0.7 * DEFAULTRATE / Ini.BandWidth);
   Filt.Passes := 3;
   Filt.SamplesInInput := Ini.BufSize;
   Filt.GainDb := 10 * Log10(500/Ini.Bandwidth);
-
   Filt2 := TMovingAverage.Create(nil);
   Filt2.Passes := Filt.Passes;
   Filt2.SamplesInInput := Filt.SamplesInInput;
   Filt2.GainDb := Filt.GainDb;
-
   Modul.SamplesPerSec := DEFAULTRATE;
   Modul.CarrierFreq := Ini.Pitch;
-
   Agc.NoiseInDb := 76;
   Agc.NoiseOutDb := 76;
   Agc.AttackSamples := 155;   //AGC attack 5 ms
   Agc.HoldSamples := 155;
   Agc.AgcEnabled := true;
-
+  NoActivityCnt :=0;
   Init;
 end;
-
 
 destructor TContest.Destroy;
 begin
@@ -86,14 +72,12 @@ begin
   inherited;
 end;
 
-
 procedure TContest.Init;
 begin
   Me.Init;
   Stations.Clear;
   BlockNumber := 0;
 end;
-
 
 function TContest.GetAudio: TSingleArray;
 const
@@ -109,7 +93,6 @@ begin
   SetLength(Result, 1);
   Inc(BlockNumber);
   if BlockNumber < 6 then Exit;
-
   //complex noise
   SetLengthReIm(ReIm, Ini.BufSize);
   for i:=0 to High(ReIm.Re) do
@@ -117,7 +100,6 @@ begin
     ReIm.Re[i] := 3 * NOISEAMP * (Random-0.5);
     ReIm.Im[i] := 3 * NOISEAMP * (Random-0.5);
     end;
-
   //QRN
   if Ini.Qrn then
     begin
@@ -127,10 +109,8 @@ begin
     //burst
     if Random < 0.01 then Stations.AddQrn;
     end;
-
   //QRM
   if Ini.Qrm and (Random < 0.0002) then Stations.AddQrm;
-
 
   //audio from stations
   Blk := nil;
@@ -145,13 +125,11 @@ begin
         ReIm.Im[i] := ReIm.Im[i] - Blk[i] * Sin(Bfo);
         end;
       end;               
-
   //Rit
   RitPhase := RitPhase + Ini.BufSize * TWO_PI * Ini.Rit / DEFAULTRATE;
   while RitPhase > TWO_PI do RitPhase := RitPhase - TWO_PI;
   while RitPhase < -TWO_PI do RitPhase := RitPhase + TWO_PI;
   
-
   //my audio
   if Me.State = stSending then
     begin
@@ -176,12 +154,10 @@ begin
           end;
     end;
 
-
   //LPF
   Filt2.Filter(ReIm);
   ReIm := Filt.Filter(ReIm);
   if (BlockNumber mod 10) = 0 then SwapFilters;
-
   //mix up to Pitch frequency
   Result := Modul.Modulate(ReIm);
   //AGC
@@ -189,11 +165,9 @@ begin
   //save
   with MainForm.AlWavFile1 do
    if IsOpen then WriteFrom(@Result[0], nil, Ini.BufSize);
-
   //timer tick
   Me.Tick;
   for Stn:=Stations.Count-1 downto 0 do Stations[Stn].Tick;
-
 
   //if DX is done, write to log and kill
     for i:=Stations.Count-1 downto 0 do
@@ -216,7 +190,6 @@ begin
   MainForm.Panel2.Caption := FormatDateTime('hh:nn:ss', BlocksToSeconds(BlockNumber) /  86400);
   if Ini.RunMode = rmPileUp then
     MainForm.Panel4.Caption := Format('Pile-Up:  %d', [DxCount]);
-
   if (RunMode = rmSingle) and (DxCount = 0) then begin
      Me.Msg := [msgCq]; //no need to send cq in this mode
      Stations.AddCaller.ProcessEvent(evMeFinished);
@@ -227,7 +200,6 @@ begin
       for i:=DxCount+1 to Activity do
         Stations.AddCaller.ProcessEvent(evMeFinished);
     end;
-
 
   if (BlocksToSeconds(BlockNumber) >= (Duration * 60)) or FStopPressed then
     begin
@@ -256,7 +228,6 @@ begin
     end;
 end;
 
-
 function TContest.DxCount: integer;
 var
   i: integer;
@@ -268,28 +239,41 @@ begin
       then Inc(Result);
 end;
 
-
 function TContest.Minute: Single;
 begin
   Result := BlocksToSeconds(BlockNumber) / 60;
 end;
 
-
 procedure TContest.OnMeFinishedSending;
 var
   i: integer;
+  z: integer;
 begin
   //the stations heard my CQ and want to call
   if (not (RunMode in [rmSingle, RmHst])) then
     if (msgCQ in Me.Msg) or
        ((QsoList <> nil) and (msgTU in Me.Msg) and (msgMyCall in Me.Msg))then
-    for i:=1 to RndPoisson(Activity / 2) do Stations.AddCaller;
+       begin
+          z := 0;
+          for i:=1 to RndPoisson(Activity / 2) do
+             begin
+                 Stations.AddCaller;
+                 z := 1;
+             end;
+             if z=0 then begin
+                // No maximo fica 3 cq sem contesters
+                inc(NoActivityCnt);
+                if ((NoActivityCnt > 2) or (NoStopActivity > 0) )  then begin
+                    Stations.AddCaller;
+                    NoActivityCnt := 0;
+                end;
 
+             end;
+       end;
   //tell callers that I finished sending
   for i:=Stations.Count-1 downto 0 do
     Stations[i].ProcessEvent(evMeFinished);
 end;
-
 
 procedure TContest.OnMeStartedSending;
 var
@@ -299,7 +283,6 @@ begin
   for i:=Stations.Count-1 downto 0 do
     Stations[i].ProcessEvent(evMeStarted);
 end;
-
 
 procedure TContest.SwapFilters;
 var
@@ -311,7 +294,4 @@ begin
   Filt2.Reset;
 end;
 
-
-
 end.
-
