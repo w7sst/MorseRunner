@@ -80,9 +80,11 @@ end;
 destructor TContest.Destroy;
 begin
   Me.Free;
+  FreeAndNil(Stations);
   Filt.Free;
   Filt2.Free;
   Modul.Free;
+  FreeAndNil(Agc);
   inherited;
 end;
 
