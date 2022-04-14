@@ -66,31 +66,13 @@ begin
 end;
 
 function TDxOperator.GetWpm: integer;
-Var
-   xmin: integer;
-   xmax: integer;
-   xupdown: integer;
 begin
   if RunMode = rmHst
     then Result := Ini.Wpm
-    else begin
-       if (MaxRxWpm=0) and (MinRxWpm=0) then
-           Result := Round(Ini.Wpm * 0.5 * (1 + Random))
-       else  begin
-           if (MinRxWpm > 0) and (MaxRxWpm > 0) then begin
-               xupdown := random (2);
-           end else begin
-             if MinRxWpm > 0 then
-                 xupdown := 0
-             else
-                 xupdown := 1;
-           end;
-           if xupdown = 0 then
-               result := Ini.Wpm - random(MinRxWpm+1)
-           else
-               result := Ini.Wpm + random(maxRxWpm+1);
-       end;
-    end;
+  else if (MaxRxWpm = -1) or (MinRxWpm = -1) { use original algorithm }
+    then Result := Round(Ini.Wpm * 0.5 * (1 + Random))
+  else
+    Result := Round(Ini.Wpm - MinRxWpm + (MinRxWpm + MaxRxWpm) * Random);
 end;
 
 function TDxOperator.GetNR: integer;
