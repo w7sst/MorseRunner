@@ -5,10 +5,12 @@
 //------------------------------------------------------------------------------
 unit BaseComp;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Controls, Forms;
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Controls, Forms;
 
 type
   {this component adds a window handle to the standard TControl
@@ -21,7 +23,7 @@ type
     FEnabled : boolean;
     procedure SetEnabled(AEnabled: boolean);
     procedure WndProc(var Message: TMessage);
-    procedure WMQueryEndSession(var Message: TMessage); message WM_QUERYENDSESSION;
+    //procedure WMQueryEndSession(var Message: TMessage); message WM_QUERYENDSESSION;
   protected
     procedure DoSetEnabled(AEnabled: boolean); virtual;
     procedure Loaded; override;
@@ -73,12 +75,12 @@ begin
   end;
 end;
 
-procedure TBaseComponent.WMQueryEndSession(var Message: TMessage);
-begin
-  try Enabled := false; except; end;
-  inherited;
-  Message.Result := integer(true);
-end;
+//procedure TBaseComponent.WMQueryEndSession(var Message: TMessage);
+//begin
+//  try Enabled := false; except; end;
+//  inherited;
+//  Message.Result := integer(true);
+//end;
 
 procedure TBaseComponent.SetEnabled (AEnabled: boolean);
 begin

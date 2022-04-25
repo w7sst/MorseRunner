@@ -1,0 +1,192 @@
+MorseRunner.lpi Note: Added defines -dBorland -dVer150 -dDelphi7 -dCompiler6_Up -dPUREPASCAL in custom options
+ Progress: Found all unit files
+MorseRunner.lpr(1,21) Note: Added MODE Delphi syntax modifier after unit name.
+ : 
+ : *** Converting unit files belonging to project/package ***
+Main.pas Note: Changed encoding from ansi to UTF-8
+Main.pas Note: Changed encoding from ansi to UTF-8
+Main.pas Note: Removed unit "jpeg" from uses section.
+Main.pas Note: Removed unit "ShellApi" from uses section.
+Main.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+Main.pas(6,11) Note: Added MODE Delphi syntax modifier after unit name.
+Main.pas(1084,3) Note: Replaced call ShellExecute(GetDesktopWindow, 'open', PChar(FileName), '', '', SW_SHOWNORMAL); with  OpenDocument(PChar(FileName)); { *Converted from ShellExecute* }
+Main.pas(922,3) Note: Replaced call ShellExecute(GetDesktopWindow, 'open', PChar(Url), '', '', SW_SHOWNORMAL); with  OpenDocument(PChar(Url)); { *Converted from ShellExecute* }
+Main.pas(689,3) Note: Replaced call ShellExecute(GetDesktopWindow, 'open', PChar(FileName), '', '', SW_SHOWNORMAL); with  OpenDocument(PChar(FileName)); { *Converted from ShellExecute* }
+Contest.pas(6,14) Note: Added MODE Delphi syntax modifier after unit name.
+RndFunc.pas(6,14) Note: Added MODE Delphi syntax modifier after unit name.
+Ini.pas(6,10) Note: Added MODE Delphi syntax modifier after unit name.
+Station.pas(6,14) Note: Added MODE Delphi syntax modifier after unit name.
+MorseKey.pas(6,15) Note: Added MODE Delphi syntax modifier after unit name.
+StnColl.pas(6,14) Note: Added MODE Delphi syntax modifier after unit name.
+DxStn.pas(6,12) Note: Added MODE Delphi syntax modifier after unit name.
+MyStn.pas(6,12) Note: Added MODE Delphi syntax modifier after unit name.
+CallLst.pas(6,14) Note: Added MODE Delphi syntax modifier after unit name.
+QrmStn.pas Note: Replaced unit "QuickAvg" with "uickAvg" in uses section.
+QrmStn.pas(6,13) Note: Added MODE Delphi syntax modifier after unit name.
+Log.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+Log.pas(6,10) Note: Added MODE Delphi syntax modifier after unit name.
+Qsb.pas Note: Replaced unit "QuickAvg" with "uickAvg" in uses section.
+Qsb.pas(6,10) Note: Added MODE Delphi syntax modifier after unit name.
+DxOper.pas(6,13) Note: Added MODE Delphi syntax modifier after unit name.
+QrnStn.pas Note: Replaced unit "QuickAvg" with "uickAvg" in uses section.
+QrnStn.pas(6,13) Note: Added MODE Delphi syntax modifier after unit name.
+ScoreDlg.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+ScoreDlg.pas(6,15) Note: Added MODE Delphi syntax modifier after unit name.
+BaseComp.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+BaseComp.pas(6,15) Note: Added MODE Delphi syntax modifier after unit name.
+PermHint.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+PermHint.pas(6,15) Note: Added MODE Delphi syntax modifier after unit name.
+Crc32.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+Crc32.pas(6,12) Note: Added MODE Delphi syntax modifier after unit name.
+SndCustm.pas Note: Removed unit "MMSystem" from uses section.
+SndCustm.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+SndCustm.pas(6,15) Note: Added MODE Delphi syntax modifier after unit name.
+SndTypes.pas Note: Removed unit "MMSystem" from uses section.
+SndTypes.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+SndTypes.pas(1,15) Note: Added MODE Delphi syntax modifier after unit name.
+SndOut.pas Note: Removed unit "MMSystem" from uses section.
+SndOut.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+SndOut.pas(6,13) Note: Added MODE Delphi syntax modifier after unit name.
+MorseTbl.pas(7,12) Note: Added MODE Delphi syntax modifier after unit name.
+QuickAvg.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+QuickAvg.pas(6,15) Note: Added MODE Delphi syntax modifier after unit name.
+MovAvg.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+MovAvg.pas(6,13) Note: Added MODE Delphi syntax modifier after unit name.
+Mixers.pas(6,13) Note: Added MODE Delphi syntax modifier after unit name.
+VolumCtl.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+VolumCtl.pas(6,15) Note: Added MODE Delphi syntax modifier after unit name.
+VolmSldr.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+VolmSldr.pas(1,15) Note: Added MODE Delphi syntax modifier after unit name.
+WavFile.pas Note: Removed unit "MMSystem" from uses section.
+WavFile.pas Note: Replaced unit "Windows" with "LCLIntf, LCLType, LMessages" in uses section.
+WavFile.pas(6,14) Note: Added MODE Delphi syntax modifier after unit name.
+ : 
+ : *** Converting unit files found during conversion ***
+ : 
+ : *** Fixing used units and Repairing form files ***
+Main.pas Note: Removed property "MaxLength".
+Main.pas Note: Removed property "MaxLength".
+Main.pas Note: Removed property "MaxLength".
+Main.pas Note: Replaced type "TRichEdit" with "TMemo".
+Main.pas Note: Removed property "Items.Data".
+Main.pas Note: Removed property "TextHeight".
+Main.pas Note: Removed property "OldCreateOrder".
+Main.pas Note: Removed property "Icon.Data".
+Main.pas Note: Changed Top coord of TToolBar from "5" to "3" inside TPanel.
+Main.pas Note: Changed Left coord of TToolBar from "13" to "11" inside TPanel.
+Main.pas Note: Changed Top coord of TSpinEdit from "7" to "5" inside TPanel.
+Main.pas Note: Changed Left coord of TSpinEdit from "122" to "120" inside TPanel.
+Main.pas Note: Changed Top coord of TLabel from "9" to "7" inside TPanel.
+Main.pas Note: Changed Left coord of TLabel from "103" to "101" inside TPanel.
+Main.pas Note: Changed Top coord of TLabel from "9" to "7" inside TPanel.
+Main.pas Note: Changed Left coord of TLabel from "173" to "171" inside TPanel.
+Main.pas Note: Changed Top coord of TPanel from "253" to "251" inside TPanel.
+Main.pas Note: Changed Left coord of TPanel from "0" to "0" inside TPanel.
+Main.pas Note: Changed Top coord of TComboBox from "100" to "86" inside TGroupBox.
+Main.pas Note: Changed Left coord of TComboBox from "88" to "86" inside TGroupBox.
+Main.pas Note: Changed Top coord of TComboBox from "72" to "58" inside TGroupBox.
+Main.pas Note: Changed Left coord of TComboBox from "88" to "86" inside TGroupBox.
+Main.pas Note: Changed Top coord of TCheckBox from "18" to "4" inside TGroupBox.
+Main.pas Note: Changed Left coord of TCheckBox from "140" to "138" inside TGroupBox.
+Main.pas Note: Changed Top coord of TSpinEdit from "44" to "30" inside TGroupBox.
+Main.pas Note: Changed Left coord of TSpinEdit from "88" to "86" inside TGroupBox.
+Main.pas Note: Changed Top coord of TEdit from "16" to "2" inside TGroupBox.
+Main.pas Note: Changed Left coord of TEdit from "36" to "34" inside TGroupBox.
+Main.pas Note: Changed Top coord of TLabel from "134" to "120" inside TGroupBox.
+Main.pas Note: Changed Left coord of TLabel from "12" to "10" inside TGroupBox.
+Main.pas Note: Changed Top coord of TVolumeSlider from "132" to "118" inside TGroupBox.
+Main.pas Note: Changed Left coord of TVolumeSlider from "89" to "87" inside TGroupBox.
+Main.pas Note: Changed Top coord of TLabel from "104" to "90" inside TGroupBox.
+Main.pas Note: Changed Left coord of TLabel from "12" to "10" inside TGroupBox.
+Main.pas Note: Changed Top coord of TLabel from "76" to "62" inside TGroupBox.
+Main.pas Note: Changed Left coord of TLabel from "12" to "10" inside TGroupBox.
+Main.pas Note: Changed Top coord of TLabel from "48" to "34" inside TGroupBox.
+Main.pas Note: Changed Left coord of TLabel from "12" to "10" inside TGroupBox.
+Main.pas Note: Changed Top coord of TLabel from "48" to "34" inside TGroupBox.
+Main.pas Note: Changed Left coord of TLabel from "156" to "154" inside TGroupBox.
+Main.pas Note: Changed Top coord of TLabel from "20" to "6" inside TGroupBox.
+Main.pas Note: Changed Left coord of TLabel from "12" to "10" inside TGroupBox.
+Main.pas Note: Changed Top coord of TGroupBox from "6" to "4" inside TPanel.
+Main.pas Note: Changed Left coord of TGroupBox from "9" to "7" inside TPanel.
+Main.pas Note: Changed Top coord of TSpinEdit from "32" to "18" inside TGroupBox.
+Main.pas Note: Changed Left coord of TSpinEdit from "144" to "142" inside TGroupBox.
+Main.pas Note: Changed Top coord of TCheckBox from "40" to "26" inside TGroupBox.
+Main.pas Note: Changed Left coord of TCheckBox from "76" to "74" inside TGroupBox.
+Main.pas Note: Changed Top coord of TCheckBox from "18" to "4" inside TGroupBox.
+Main.pas Note: Changed Left coord of TCheckBox from "76" to "74" inside TGroupBox.
+Main.pas Note: Changed Top coord of TCheckBox from "18" to "4" inside TGroupBox.
+Main.pas Note: Changed Left coord of TCheckBox from "12" to "10" inside TGroupBox.
+Main.pas Note: Changed Top coord of TCheckBox from "38" to "24" inside TGroupBox.
+Main.pas Note: Changed Left coord of TCheckBox from "12" to "10" inside TGroupBox.
+Main.pas Note: Changed Top coord of TCheckBox from "58" to "44" inside TGroupBox.
+Main.pas Note: Changed Left coord of TCheckBox from "12" to "10" inside TGroupBox.
+Main.pas Note: Changed Top coord of TLabel from "16" to "2" inside TGroupBox.
+Main.pas Note: Changed Left coord of TLabel from "144" to "142" inside TGroupBox.
+Main.pas Note: Changed Top coord of TGroupBox from "170" to "168" inside TPanel.
+Main.pas Note: Changed Left coord of TGroupBox from "9" to "7" inside TPanel.
+Main.pas Note: Changed Top coord of TMemo from "239" to "237" inside TPanel.
+Main.pas Note: Changed Left coord of TMemo from "0" to "0" inside TPanel.
+Main.pas Note: Changed Top coord of TLabel from "128" to "126" inside TPanel.
+Main.pas Note: Changed Left coord of TLabel from "198" to "196" inside TPanel.
+Main.pas Note: Changed Top coord of TLabel from "108" to "106" inside TPanel.
+Main.pas Note: Changed Left coord of TLabel from "106" to "104" inside TPanel.
+Main.pas Note: Changed Top coord of TLabel from "55" to "53" inside TPanel.
+Main.pas Note: Changed Left coord of TLabel from "70" to "68" inside TPanel.
+Main.pas Note: Changed Top coord of TLabel from "56" to "54" inside TPanel.
+Main.pas Note: Changed Left coord of TLabel from "71" to "69" inside TPanel.
+Main.pas Note: Changed Top coord of TLabel from "60" to "58" inside TPanel.
+Main.pas Note: Changed Left coord of TLabel from "76" to "74" inside TPanel.
+Main.pas Note: Changed Top coord of TShape from "0" to "0" inside TPanel.
+Main.pas Note: Changed Left coord of TShape from "0" to "0" inside TPanel.
+Main.pas Note: Changed Top coord of TListView from "1" to "0" inside TPanel.
+Main.pas Note: Changed Left coord of TListView from "1" to "0" inside TPanel.
+Main.pas Note: Changed Top coord of TPanel from "44" to "42" inside TPanel.
+Main.pas Note: Changed Left coord of TPanel from "529" to "527" inside TPanel.
+Main.pas Note: Changed Top coord of TShape from "1" to "0" inside TPanel.
+Main.pas Note: Changed Left coord of TShape from "81" to "79" inside TPanel.
+Main.pas Note: Changed Top coord of TPanel from "103" to "101" inside TPanel.
+Main.pas Note: Changed Left coord of TPanel from "292" to "290" inside TPanel.
+Main.pas Note: Changed Top coord of TPanel from "8" to "6" inside TPanel.
+Main.pas Note: Changed Left coord of TPanel from "412" to "410" inside TPanel.
+Main.pas Note: Changed Top coord of TPanel from "8" to "6" inside TPanel.
+Main.pas Note: Changed Left coord of TPanel from "292" to "290" inside TPanel.
+Main.pas Note: Changed Top coord of TPaintBox from "1" to "0" inside TPanel.
+Main.pas Note: Changed Left coord of TPaintBox from "1" to "0" inside TPanel.
+Main.pas Note: Changed Top coord of TPanel from "35" to "33" inside TPanel.
+Main.pas Note: Changed Left coord of TPanel from "292" to "290" inside TPanel.
+Main.pas Note: Changed Top coord of TPanel from "8" to "6" inside TPanel.
+Main.pas Note: Changed Left coord of TPanel from "529" to "527" inside TPanel.
+Main.pas Note: Changed Top coord of TEdit from "28" to "26" inside TPanel.
+Main.pas Note: Changed Left coord of TEdit from "220" to "218" inside TPanel.
+Main.pas Note: Changed Top coord of TEdit from "28" to "26" inside TPanel.
+Main.pas Note: Changed Left coord of TEdit from "168" to "166" inside TPanel.
+Main.pas Note: Changed Top coord of TEdit from "28" to "26" inside TPanel.
+Main.pas Note: Changed Left coord of TEdit from "12" to "10" inside TPanel.
+Main.pas Note: Changed Top coord of TBevel from "6" to "4" inside TPanel.
+Main.pas Note: Changed Left coord of TBevel from "277" to "275" inside TPanel.
+Main.pas Note: Changed Top coord of TLabel from "12" to "10" inside TPanel.
+Main.pas Note: Changed Left coord of TLabel from "224" to "222" inside TPanel.
+Main.pas Note: Changed Top coord of TLabel from "12" to "10" inside TPanel.
+Main.pas Note: Changed Left coord of TLabel from "172" to "170" inside TPanel.
+Main.pas Note: Changed Top coord of TSpeedButton from "92" to "90" inside TPanel.
+Main.pas Note: Changed Left coord of TSpeedButton from "204" to "202" inside TPanel.
+Main.pas Note: Changed Top coord of TSpeedButton from "92" to "90" inside TPanel.
+Main.pas Note: Changed Left coord of TSpeedButton from "140" to "138" inside TPanel.
+Main.pas Note: Changed Top coord of TSpeedButton from "92" to "90" inside TPanel.
+Main.pas Note: Changed Left coord of TSpeedButton from "76" to "74" inside TPanel.
+Main.pas Note: Changed Top coord of TSpeedButton from "92" to "90" inside TPanel.
+Main.pas Note: Changed Left coord of TSpeedButton from "12" to "10" inside TPanel.
+Main.pas Note: Changed Top coord of TSpeedButton from "68" to "66" inside TPanel.
+Main.pas Note: Changed Left coord of TSpeedButton from "204" to "202" inside TPanel.
+Main.pas Note: Changed Top coord of TSpeedButton from "68" to "66" inside TPanel.
+Main.pas Note: Changed Left coord of TSpeedButton from "140" to "138" inside TPanel.
+Main.pas Note: Changed Top coord of TSpeedButton from "68" to "66" inside TPanel.
+Main.pas Note: Changed Left coord of TSpeedButton from "76" to "74" inside TPanel.
+Main.pas Note: Changed Top coord of TSpeedButton from "68" to "66" inside TPanel.
+Main.pas Note: Changed Left coord of TSpeedButton from "12" to "10" inside TPanel.
+Main.pas Note: Changed Top coord of TLabel from "12" to "10" inside TPanel.
+Main.pas Note: Changed Left coord of TLabel from "16" to "14" inside TPanel.
+ScoreDlg.pas Note: Removed property "TextHeight".
+ScoreDlg.pas Note: Removed property "OldCreateOrder".
+ Progress: Conversion took: 00:00:19
+ : Conversion Ready.

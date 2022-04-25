@@ -5,11 +5,13 @@
 //------------------------------------------------------------------------------
 unit SndOut;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  BaseComp, MMSystem, SndTypes, SndCustm, Math;
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  BaseComp, SndTypes, SndCustm, Math;
 
 type
   TAlSoundOut = class(TCustomSoundInOut)
@@ -21,7 +23,7 @@ type
     function  NextEmptyBuffer: PWaveBuffer;
     procedure Unprepare(Buf: PWaveBuffer);
   protected
-    procedure BufferDone(AHdr: PWaveHdr); override;
+    //procedure BufferDone(AHdr: PWaveHdr); override;
     procedure Start; override;
     procedure Stop; override;
   public
@@ -56,14 +58,14 @@ end;
 //                              Err handling
 //------------------------------------------------------------------------------
 procedure TAlSoundOut.CheckErr;
-var
-  Buf: array [0..MAXERRORLENGTH-1] of Char;
+//var
+//  Buf: array [0..MAXERRORLENGTH-1] of Char;
 begin
-  if rc = MMSYSERR_NOERROR then Exit;
-
-  if waveOutGetErrorText(rc, Buf, MAXERRORLENGTH) = MMSYSERR_NOERROR
-    then Err(Buf)
-    else Err('Unknown error: ' + IntToStr(rc));
+//  if rc = MMSYSERR_NOERROR then Exit;
+//
+//  if waveOutGetErrorText(rc, Buf, MAXERRORLENGTH) = MMSYSERR_NOERROR
+//    then Err(Buf)
+//    else Err('Unknown error: ' + IntToStr(rc));
 end;
 
 
@@ -79,7 +81,7 @@ var
   i: integer;
 begin
   //open device
-  rc := waveOutOpen(@DeviceHandle, DeviceID, @WaveFmt, GetThreadID, 0, CALLBACK_THREAD);
+  //rc := waveOutOpen(@DeviceHandle, DeviceID, @WaveFmt, GetThreadID, 0, CALLBACK_THREAD);
   CheckErr;
 
   //send all buffers to the player
@@ -94,11 +96,11 @@ var
   i: integer;
 begin
   //stop playback
-  rc := waveOutReset(DeviceHandle);
+  //rc := waveOutReset(DeviceHandle);
   CheckErr;
   for i:=0 to High(Buffers) do Unprepare(@Buffers[i]);
   //close device
-  rc := waveOutClose(DeviceHandle);
+  //rc := waveOutClose(DeviceHandle);
   CheckErr;
 end;
 
@@ -116,9 +118,9 @@ function  TAlSoundOut.NextEmptyBuffer: PWaveBuffer;
 var
   i: integer;
 begin
-  for i:=0 to High(Buffers) do
-    if (Buffers[i].Hdr.dwFlags and (WHDR_INQUEUE or WHDR_PREPARED)) = 0 then
-      begin Result := @Buffers[i]; Exit; end;
+  //for i:=0 to High(Buffers) do
+  //  if (Buffers[i].Hdr.dwFlags and (WHDR_INQUEUE or WHDR_PREPARED)) = 0 then
+  //    begin Result := @Buffers[i]; Exit; end;
 
   Result := nil;
   //Err('Output buffers full');
@@ -128,13 +130,13 @@ end;
 
 procedure TAlSoundOut.Unprepare(Buf: PWaveBuffer);
 begin
-    if (Buf.Hdr.dwFlags and WHDR_PREPARED) <> 0 then
-      begin
-      rc := WaveOutUnprepareHeader(DeviceHandle, @Buf.Hdr, SizeOf(TWaveHdr));
-      Buf.Data := nil;
-      Inc(FBufsDone);
+    //if (Buf.Hdr.dwFlags and WHDR_PREPARED) <> 0 then
+    //  begin
+    //  rc := WaveOutUnprepareHeader(DeviceHandle, @Buf.Hdr, SizeOf(TWaveHdr));
+    //  Buf.Data := nil;
+    //  Inc(FBufsDone);
       //CheckErr;
-      end;
+      //end;
 end;
 
 
@@ -158,19 +160,19 @@ begin
     Buf.Data[i] := Max(-32767, Min(32767, Round(Data[i])));
 
   //fill header
-  FillChar(Buf.Hdr, SizeOf(TWaveHdr), 0);
-  with Buf.Hdr do
-    begin
-    lpData := @Buf.Data[0];
-    dwBufferLength := Length(Buf.Data) * SizeOf(SmallInt);
-    dwUser := DWORD(Buf);
-    end;
-
-  //send buffer
-  rc := waveOutPrepareHeader(DeviceHandle, @Buf.Hdr, SizeOf(TWaveHdr));
-  CheckErr;
-  rc := waveOutWrite(DeviceHandle, @Buf.Hdr, SizeOf(TWaveHdr));
-  CheckErr;
+  //FillChar(Buf.Hdr, SizeOf(TWaveHdr), 0);
+  //with Buf.Hdr do
+  //  begin
+  //  lpData := @Buf.Data[0];
+  //  dwBufferLength := Length(Buf.Data) * SizeOf(SmallInt);
+  //  dwUser := DWORD(Buf);
+  //  end;
+  //
+  ////send buffer
+  //rc := waveOutPrepareHeader(DeviceHandle, @Buf.Hdr, SizeOf(TWaveHdr));
+  //CheckErr;
+  //rc := waveOutWrite(DeviceHandle, @Buf.Hdr, SizeOf(TWaveHdr));
+  //CheckErr;
 
   Inc(FBufsAdded);
 end;
@@ -182,14 +184,14 @@ end;
 //------------------------------------------------------------------------------
 //                              events
 //------------------------------------------------------------------------------
-procedure TAlSoundOut.BufferDone(AHdr: PWaveHdr);
-begin
-  Unprepare(PWaveBuffer(AHdr.dwUser));
-
-  if FCloseWhenDone and (FBufsDone = FBufsAdded)
-    then Enabled := false
-    else if Assigned(FOnBufAvailable) then FOnBufAvailable(Self);
-end;
+//procedure TAlSoundOut.BufferDone(AHdr: PWaveHdr);
+//begin
+//  Unprepare(PWaveBuffer(AHdr.dwUser));
+//
+//  if FCloseWhenDone and (FBufsDone = FBufsAdded)
+//    then Enabled := false
+//    else if Assigned(FOnBufAvailable) then FOnBufAvailable(Self);
+//end;
 
 
 

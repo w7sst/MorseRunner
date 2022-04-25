@@ -5,6 +5,8 @@
 //------------------------------------------------------------------------------
 unit WavFile;
 
+{$MODE Delphi}
+
 //TSingleArray input and output buffers are normalized: Abs() <= 32767
 
 //to do: direct read/write mmio buffer like in lowpass.c MS demo (sdk_Graphics_AUDIO_lowpass.exe)
@@ -15,21 +17,21 @@ unit WavFile;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  MMSystem, SndTypes;
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SndTypes;
 
 type
   TByteArray = array of byte;
 
   TAlWavFile = class(TComponent)
   private
-    ckInfoRIFF, ckInfo: TMmckInfo;
-    WaveFmt: TPcmWaveFormat;
+    //ckInfoRIFF, ckInfo: TMmckInfo;
+    //WaveFmt: TPcmWaveFormat;
 
     FFileName: TFileName;
     FIsOpen: boolean;
-    rc: HMMIO;
-    FHandle: HMMIO;
+    //rc: HMMIO;
+    //FHandle: HMMIO;
     FStereo: boolean;
     FSamplesPerSec: LongWord;
     FBytesPerSample: LongWord;
@@ -123,138 +125,138 @@ end;
 
 procedure TAlWavFile.OpenRead;
 begin
-  ErrIf(FIsOpen, 'File already open');
-
-  FWriteMode := false;
-  FCurrentSample := 0;
-
-  //open
-  FHandle := mmioOpen(pchar(FFileName), nil, MMIO_READ or MMIO_ALLOCBUF or MMIO_DENYWRITE);
-  ErrIf(FHandle = 0, 'Unable to open file');
-  try
-    //go to wav section
-    ckInfoRiff.fccType := mmioStringToFOURCCA('WAVE', 0);
-    rc := mmioDescend(FHandle, @ckInfoRIFF, nil, MMIO_FINDRIFF);
-    ChkErr;
-
-    //read Info strings
-    ReadInfo;
-
-    //go to format header
-    ckInfo.ckid := mmioStringToFOURCCA('fmt ', 0);
-    rc := mmioDescend(FHandle, @ckInfo, @ckInfoRIFF, MMIO_FINDCHUNK);
-    ChkErr;
-    ErrIf(ckInfo.cksize < SizeOf(TPcmWaveFormat), 'Invalid header size');
-    //read header
-    rc := mmioRead(FHandle, @WaveFmt, SizeOf(TPcmWaveFormat));
-    ErrIf(rc <> SizeOf(TPcmWaveFormat), 'Unable to read header');
-    ErrIf(WaveFmt.wf.wFormatTag <> WAVE_FORMAT_PCM, 'Unsupported compression method');
-    //store parameters
-    FStereo := WaveFmt.wf.nChannels = 2;
-    FSamplesPerSec := WaveFmt.wf.nSamplesPerSec;
-    FBytesPerSample := WaveFmt.wBitsPerSample shr 3;
-
-    case WaveFmt.wf.nBlockAlign of
-      1: FAlignBits := 0;
-      2: FAlignBits := 1;
-      4: FAlignBits := 2;
-      end;
-
-    //go to data
-    rc := mmioAscend(FHandle, @ckInfo, 0);
-    ChkErr;
-    ckInfo.ckid := mmioStringToFOURCCA('data', 0);
-    rc := mmioDescend(FHandle, @ckInfo, @ckInfoRiff, MMIO_FINDCHUNK);
-    ChkErr;
-
-    FSampleCnt := ckInfo.ckSize shr FAlignBits;
-  except
-    mmioClose(FHandle, 0);
-    raise;
-  end;
-
-  FIsOpen := true;
+  //ErrIf(FIsOpen, 'File already open');
+  //
+  //FWriteMode := false;
+  //FCurrentSample := 0;
+  //
+  ////open
+  //FHandle := mmioOpen(pchar(FFileName), nil, MMIO_READ or MMIO_ALLOCBUF or MMIO_DENYWRITE);
+  //ErrIf(FHandle = 0, 'Unable to open file');
+  //try
+  //  //go to wav section
+  //  ckInfoRiff.fccType := mmioStringToFOURCCA('WAVE', 0);
+  //  rc := mmioDescend(FHandle, @ckInfoRIFF, nil, MMIO_FINDRIFF);
+  //  ChkErr;
+  //
+  //  //read Info strings
+  //  ReadInfo;
+  //
+  //  //go to format header
+  //  ckInfo.ckid := mmioStringToFOURCCA('fmt ', 0);
+  //  rc := mmioDescend(FHandle, @ckInfo, @ckInfoRIFF, MMIO_FINDCHUNK);
+  //  ChkErr;
+  //  ErrIf(ckInfo.cksize < SizeOf(TPcmWaveFormat), 'Invalid header size');
+  //  //read header
+  //  rc := mmioRead(FHandle, @WaveFmt, SizeOf(TPcmWaveFormat));
+  //  ErrIf(rc <> SizeOf(TPcmWaveFormat), 'Unable to read header');
+  //  ErrIf(WaveFmt.wf.wFormatTag <> WAVE_FORMAT_PCM, 'Unsupported compression method');
+  //  //store parameters
+  //  FStereo := WaveFmt.wf.nChannels = 2;
+  //  FSamplesPerSec := WaveFmt.wf.nSamplesPerSec;
+  //  FBytesPerSample := WaveFmt.wBitsPerSample shr 3;
+  //
+  //  case WaveFmt.wf.nBlockAlign of
+  //    1: FAlignBits := 0;
+  //    2: FAlignBits := 1;
+  //    4: FAlignBits := 2;
+  //    end;
+  //
+  //  //go to data
+  //  rc := mmioAscend(FHandle, @ckInfo, 0);
+  //  ChkErr;
+  //  ckInfo.ckid := mmioStringToFOURCCA('data', 0);
+  //  rc := mmioDescend(FHandle, @ckInfo, @ckInfoRiff, MMIO_FINDCHUNK);
+  //  ChkErr;
+  //
+  //  FSampleCnt := ckInfo.ckSize shr FAlignBits;
+  //except
+  //  mmioClose(FHandle, 0);
+  //  raise;
+  //end;
+  //
+  //FIsOpen := true;
 end;
 
 
 procedure TAlWavFile.OpenWrite;
 begin
-  ErrIf(FIsOpen, 'File already open');
-
-  FWriteMode := true;
-  FCurrentSample := 0;
-
-  //open
-  FHandle := mmioOpen(pchar(FFileName), nil, MMIO_CREATE or MMIO_ALLOCBUF or MMIO_WRITE or MMIO_DENYWRITE);
-  ErrIf(FHandle = 0, 'Unable to open file');
-  try
-    //fill WaveFmt
-    with WaveFmt.wf do
-      begin
-      wFormatTag := WAVE_FORMAT_PCM;
-      if FStereo
-        then nChannels := 2
-        else nChannels := 1;
-      nSamplesPerSec := FSamplesPerSec;
-      nAvgBytesPerSec := FSamplesPerSec shl FAlignBits;
-      nBlockAlign := 1  shl FAlignBits;
-      WaveFmt.wBitsPerSample := (16 shl FAlignBits) shr nChannels;
-      end;
-
-    ckInfoRIFF.fccType := mmioStringToFOURCCA('WAVE', 0);
-    rc := mmioCreateChunk(FHandle, @ckInfoRIFF, MMIO_CREATERIFF);
-    ChkErr;
-
-    //save Info strings
-    {!}//WriteInfo;
-
-    ckInfo.ckId := mmioStringToFOURCCA('fmt ', 0);
-    ckInfo.ckSize := SizeOf(TPcmWaveFormat);
-    rc := mmioCreateChunk(FHandle, @ckInfo, 0);
-    ChkErr;
-    rc := mmioWrite(FHandle, @WaveFmt, SizeOf(TPcmWaveFormat));
-    ErrIf(rc <> SizeOf(TPcmWaveFormat), 'WAV write error');
-
-    rc := mmioAscend(FHandle, @ckInfo, 0);
-    ChkErr;
-
-    ckInfo.ckid := mmioStringToFOURCCA('data', 0);
-    //ckInfo.ckSize := 0;
-    rc := mmioCreateChunk(FHandle, @ckInfo, 0);
-    ChkErr;
-  except
-    mmioClose(FHandle, 0);
-    raise;
-  end;
-
-  FSampleCnt := 0;
-  FIsOpen := true;
+  //ErrIf(FIsOpen, 'File already open');
+  //
+  //FWriteMode := true;
+  //FCurrentSample := 0;
+  //
+  ////open
+  //FHandle := mmioOpen(pchar(FFileName), nil, MMIO_CREATE or MMIO_ALLOCBUF or MMIO_WRITE or MMIO_DENYWRITE);
+  //ErrIf(FHandle = 0, 'Unable to open file');
+  //try
+  //  //fill WaveFmt
+  //  with WaveFmt.wf do
+  //    begin
+  //    wFormatTag := WAVE_FORMAT_PCM;
+  //    if FStereo
+  //      then nChannels := 2
+  //      else nChannels := 1;
+  //    nSamplesPerSec := FSamplesPerSec;
+  //    nAvgBytesPerSec := FSamplesPerSec shl FAlignBits;
+  //    nBlockAlign := 1  shl FAlignBits;
+  //    WaveFmt.wBitsPerSample := (16 shl FAlignBits) shr nChannels;
+  //    end;
+  //
+  //  ckInfoRIFF.fccType := mmioStringToFOURCCA('WAVE', 0);
+  //  rc := mmioCreateChunk(FHandle, @ckInfoRIFF, MMIO_CREATERIFF);
+  //  ChkErr;
+  //
+  //  //save Info strings
+  //  {!}//WriteInfo;
+  //
+  //  ckInfo.ckId := mmioStringToFOURCCA('fmt ', 0);
+  //  ckInfo.ckSize := SizeOf(TPcmWaveFormat);
+  //  rc := mmioCreateChunk(FHandle, @ckInfo, 0);
+  //  ChkErr;
+  //  rc := mmioWrite(FHandle, @WaveFmt, SizeOf(TPcmWaveFormat));
+  //  ErrIf(rc <> SizeOf(TPcmWaveFormat), 'WAV write error');
+  //
+  //  rc := mmioAscend(FHandle, @ckInfo, 0);
+  //  ChkErr;
+  //
+  //  ckInfo.ckid := mmioStringToFOURCCA('data', 0);
+  //  //ckInfo.ckSize := 0;
+  //  rc := mmioCreateChunk(FHandle, @ckInfo, 0);
+  //  ChkErr;
+  //except
+  //  mmioClose(FHandle, 0);
+  //  raise;
+  //end;
+  //
+  //FSampleCnt := 0;
+  //FIsOpen := true;
 end;
 
 
 procedure TAlWavFile.Close;
 begin
-  ErrIf(not FIsOpen, 'File not open');
-
-  if FWriteMode then
-    begin
-    //ascend from 'data'
-    rc := mmioAscend(FHandle, @ckInfo, 0);
-    {ChkErr;}
-
-    {!}
-    if FWriteMode then WriteInfo;
-
-    //ascend from 'RIFF'
-    rc := mmioAscend(FHandle, @ckInfoRiff, 0);
-    {ChkErr;}
-    end;
-
-  rc := mmioClose(FHandle, 0);
-  {ChkErr;}
-
-  FIsOpen := false;
-  FCurrentSample := 0;
+  //ErrIf(not FIsOpen, 'File not open');
+  //
+  //if FWriteMode then
+  //  begin
+  //  //ascend from 'data'
+  //  rc := mmioAscend(FHandle, @ckInfo, 0);
+  //  {ChkErr;}
+  //
+  //  {!}
+  //  if FWriteMode then WriteInfo;
+  //
+  //  //ascend from 'RIFF'
+  //  rc := mmioAscend(FHandle, @ckInfoRiff, 0);
+  //  {ChkErr;}
+  //  end;
+  //
+  //rc := mmioClose(FHandle, 0);
+  //{ChkErr;}
+  //
+  //FIsOpen := false;
+  //FCurrentSample := 0;
 end;
 
 
@@ -262,16 +264,16 @@ procedure TAlWavFile.Seek(SampleNo: LongWord);
 var
   NewPos: integer;
 begin
-  ErrIf(not IsOpen, 'File not open');
-  //ErrIf(FWriteMode, 'Cannot seek in write mode');
-  ErrIf(SampleNo > FSampleCnt, 'Invalid Seek position');
-
-  NewPos := ckInfo.dwDataOffset + (SampleNo shl FAlignBits);
-
-  rc := mmioSeek(FHandle, NewPos, SEEK_SET);
-  ErrIf(rc <> NewPos, 'WAV seek failed');
-
-  FCurrentSample := SampleNo;
+  //ErrIf(not IsOpen, 'File not open');
+  ////ErrIf(FWriteMode, 'Cannot seek in write mode');
+  //ErrIf(SampleNo > FSampleCnt, 'Invalid Seek position');
+  //
+  //NewPos := ckInfo.dwDataOffset + (SampleNo shl FAlignBits);
+  //
+  //rc := mmioSeek(FHandle, NewPos, SEEK_SET);
+  //ErrIf(rc <> NewPos, 'WAV seek failed');
+  //
+  //FCurrentSample := SampleNo;
 end;
 
 
@@ -332,7 +334,7 @@ begin
   SetLength(Buf, ASampleCnt shl FAlignBits);
   try
     //read
-    ASampleCnt := mmioRead(FHandle, @Buf[0], Length(Buf));
+    //ASampleCnt := mmioRead(FHandle, @Buf[0], Length(Buf));
     ErrIf(Integer(ASampleCnt) = -1, 'WAV read error');
     //ErrIf(ASampleCnt = 0, 'End of file');
     ASampleCnt := ASampleCnt shr FAlignBits;
@@ -470,8 +472,8 @@ begin
       end;
 
     //write
-    rc := mmioWrite(FHandle, @Buf[0], Length(Buf));
-    ErrIf(rc <> Length(Buf), 'WAV write error');
+    //rc := mmioWrite(FHandle, @Buf[0], Length(Buf));
+    //ErrIf(rc <> Length(Buf), 'WAV write error');
     Inc(FSampleCnt, ASampleCnt);
     FCurrentSample := FSampleCnt;
   finally
@@ -543,79 +545,79 @@ var
   i: integer;
   InfName: string;
   InfValue: string;
-  ckInfoLIST, ckInfoPiece: TMmckInfo;
+  //ckInfoLIST, ckInfoPiece: TMmckInfo;
 begin
-  //remove invalid info entries
-  for i:= FInfo.Count-1 downto 0 do
-    if (Length(FInfo[i]) < 6) or (FInfo[i][5] <> '=') then FInfo.Delete(i);
-  //do not save empty info list
-  if FInfo.Count = 0 then Exit;
-
-  //create LIST chunk
-  ckInfoLIST.fccType := mmioStringToFOURCCA('INFO', 0);
-  rc := mmioCreateChunk(FHandle, @ckInfoLIST, MMIO_CREATELIST);
-  ChkErr;
-
-  //save info entries
-  for i:= 0 to FInfo.Count-1 do
-    begin
-    InfName := Copy(FInfo[i], 1, 4);
-    InfValue := Copy(FInfo[i], 6, MAXINT);
-    //create subchunk
-    ckInfoPiece.ckId := mmioStringToFOURCCA(PChar(InfName), 0);
-    ckInfoPiece.ckSize := Length(InfValue);
-    rc := mmioCreateChunk(FHandle, @ckInfoPiece, 0);
-    ChkErr;
-    //save subchunk data
-    rc := mmioWrite(FHandle, PChar(InfValue), Length(InfValue));
-    ErrIf(rc <> Length(InfValue), 'WAV write error');
-    //exit subchunk
-    rc := mmioAscend(FHandle, @ckInfoPiece, 0);
-    ChkErr;
-    end;
-
-  //exit LIST
-  rc := mmioAscend(FHandle, @ckInfoLIST, 0);
-  ChkErr;
+  ////remove invalid info entries
+  //for i:= FInfo.Count-1 downto 0 do
+  //  if (Length(FInfo[i]) < 6) or (FInfo[i][5] <> '=') then FInfo.Delete(i);
+  ////do not save empty info list
+  //if FInfo.Count = 0 then Exit;
+  //
+  ////create LIST chunk
+  //ckInfoLIST.fccType := mmioStringToFOURCCA('INFO', 0);
+  //rc := mmioCreateChunk(FHandle, @ckInfoLIST, MMIO_CREATELIST);
+  //ChkErr;
+  //
+  ////save info entries
+  //for i:= 0 to FInfo.Count-1 do
+  //  begin
+  //  InfName := Copy(FInfo[i], 1, 4);
+  //  InfValue := Copy(FInfo[i], 6, MAXINT);
+  //  //create subchunk
+  //  ckInfoPiece.ckId := mmioStringToFOURCCA(PChar(InfName), 0);
+  //  ckInfoPiece.ckSize := Length(InfValue);
+  //  rc := mmioCreateChunk(FHandle, @ckInfoPiece, 0);
+  //  ChkErr;
+  //  //save subchunk data
+  //  rc := mmioWrite(FHandle, PChar(InfValue), Length(InfValue));
+  //  ErrIf(rc <> Length(InfValue), 'WAV write error');
+  //  //exit subchunk
+  //  rc := mmioAscend(FHandle, @ckInfoPiece, 0);
+  //  ChkErr;
+  //  end;
+  //
+  ////exit LIST
+  //rc := mmioAscend(FHandle, @ckInfoLIST, 0);
+  //ChkErr;
 end;
 
 
 procedure TAlWavFile.ReadInfo;
 var
   Data: string;
-  ckInfoLIST: TMmckInfo;
+  //ckInfoLIST: TMmckInfo;
   InfName: string;
   InfValue: string;
   Len: integer;
 begin
-  FInfo.Clear;
-  //descend into LIST/INFO
-  ckInfoLIST.fccType := mmioStringToFOURCCA('INFO', 0);
-  rc := mmioDescend(FHandle, @ckInfoLIST, @ckInfoRIFF, MMIO_FINDLIST);
-  try
-    if rc <> MMSYSERR_NOERROR then Exit;
-    //read info
-    SetLength(Data, ckInfoLIST.cksize - 4 {4-char list type});
-    rc := mmioRead(FHandle, @Data[1], Length(Data));
-    ErrIf(rc <> Length(Data), 'Unable to read header');
-    //exit LIST
-    rc := mmioAscend(FHandle, @ckInfoLIST, 0);
-    ChkErr;
-  finally
-    //always rewind
-    mmioSeek(FHandle, ckInfoRIFF.dwDataOffset + 4, SEEK_SET); 
-  end;
-
-  //parse info
-  while Length(Data) > 8 {4 for chunk ID and 4 for length} do
-    begin
-    InfName := Copy(Data, 1, 4);
-    Len := PInteger(@Data[5])^;
-    InfValue := Copy(Data, 9, Len);
-    Delete(Data, 1, 8+Len);
-    if Copy(Data, 1, 1) = #0 then Delete(Data, 1, 1); //padded byte
-    FInfo.Add(InfName + '=' + InfValue);
-    end;
+  //FInfo.Clear;
+  ////descend into LIST/INFO
+  //ckInfoLIST.fccType := mmioStringToFOURCCA('INFO', 0);
+  //rc := mmioDescend(FHandle, @ckInfoLIST, @ckInfoRIFF, MMIO_FINDLIST);
+  //try
+  //  if rc <> MMSYSERR_NOERROR then Exit;
+  //  //read info
+  //  SetLength(Data, ckInfoLIST.cksize - 4 {4-char list type});
+  //  rc := mmioRead(FHandle, @Data[1], Length(Data));
+  //  ErrIf(rc <> Length(Data), 'Unable to read header');
+  //  //exit LIST
+  //  rc := mmioAscend(FHandle, @ckInfoLIST, 0);
+  //  ChkErr;
+  //finally
+  //  //always rewind
+  //  mmioSeek(FHandle, ckInfoRIFF.dwDataOffset + 4, SEEK_SET); 
+  //end;
+  //
+  ////parse info
+  //while Length(Data) > 8 {4 for chunk ID and 4 for length} do
+  //  begin
+  //  InfName := Copy(Data, 1, 4);
+  //  Len := PInteger(@Data[5])^;
+  //  InfValue := Copy(Data, 9, Len);
+  //  Delete(Data, 1, 8+Len);
+  //  if Copy(Data, 1, 1) = #0 then Delete(Data, 1, 1); //padded byte
+  //  FInfo.Add(InfName + '=' + InfValue);
+  //  end;
 end;
 
 
@@ -629,14 +631,14 @@ end;
 //------------------------------------------------------------------------------
 
 procedure TAlWavFile.ChkErr;
-var
-  Buf: array [0..MAXERRORLENGTH-1] of Char;
+//var
+  //Buf: array [0..MAXERRORLENGTH-1] of Char;
 begin
-  if rc = MMSYSERR_NOERROR then Exit;
-
-  if waveInGetErrorText(rc, Buf, MAXERRORLENGTH) = MMSYSERR_NOERROR
-    then raise Exception.Create(Buf)
-    else raise Exception.Create('Unknown error: ' + IntToStr(rc));
+  //if rc = MMSYSERR_NOERROR then Exit;
+  //
+  //if waveInGetErrorText(rc, Buf, MAXERRORLENGTH) = MMSYSERR_NOERROR
+  //  then raise Exception.Create(Buf)
+  //  else raise Exception.Create('Unknown error: ' + IntToStr(rc));
 end;
 
 

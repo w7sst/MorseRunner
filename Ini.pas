@@ -5,10 +5,12 @@
 //------------------------------------------------------------------------------
 unit Ini;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  SysUtils, IniFiles, SndTypes, Math;
+  SysUtils, IniFiles, Math;
 
 const
   SEC_STN = 'Station';

@@ -1,9 +1,11 @@
 unit SndTypes;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  Windows, SysUtils, MMSystem, Math, ComObj;
+  LCLIntf, LCLType, LMessages, SysUtils, Math{, ComObj};
 
 const
   FOUR_PI = 4 * Pi;
@@ -48,7 +50,7 @@ type
 
   PWaveBuffer = ^TWaveBuffer;
   TWaveBuffer = record
-    Hdr: TWaveHdr;
+    //Hdr: TWaveHdr;
     Data: TSmallIntArray;
     end;
 

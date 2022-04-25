@@ -5,10 +5,12 @@
 //------------------------------------------------------------------------------
 unit SndCustm;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, MMSystem, SndTypes,
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Forms, SyncObjs, SndTypes,
   Ini;
 
 type
@@ -38,9 +40,9 @@ type
     procedure SetBufCount(const Value: LongWord);
   protected
     FThread: TWaitThread;
-    rc: MMRESULT;
-    DeviceHandle: HWAVEOUT;
-    WaveFmt: TPCMWaveFormat;
+    rc: UINT;
+    DeviceHandle: UINT;
+    WaveFmt: UINT;
     Buffers: array of TWaveBuffer;
     FBufsAdded: LongWord;
     FBufsDone: LongWord;
@@ -52,10 +54,10 @@ type
     //override these
     procedure Start; virtual; abstract;
     procedure Stop; virtual; abstract;
-    procedure BufferDone(AHdr: PWaveHdr); virtual; abstract;
+    procedure BufferDone(AHdr: string); virtual; abstract;
 
     property Enabled: boolean read FEnabled write SetEnabled default false;
-    property DeviceID: UINT read FDeviceID write SetDeviceID default WAVE_MAPPER;
+    property DeviceID: UINT read FDeviceID write SetDeviceID default 0;
     property SamplesPerSec: LongWord read GetSamplesPerSec write SetSamplesPerSec default 48000;
     property BufsAdded: LongWord read FBufsAdded;
     property BufsDone: LongWord read FBufsDone;
@@ -79,30 +81,30 @@ implementation
 
 procedure TWaitThread.Execute;
 begin
-  Priority := tpTimeCritical;
-
-  while GetMessage(Msg, 0, 0, 0) do
-    if Terminated then Exit
-    else if Msg.hwnd <> 0 then Continue
-    else
-      case Msg.Message of
-        MM_WIM_DATA, MM_WOM_DONE: Synchronize(ProcessEvent);
-        MM_WIM_CLOSE: Terminate;
-        end;
+  //Priority := tpTimeCritical;
+  //
+  //while GetMessage(Msg, 0, 0, 0) do
+  //  if Terminated then Exit
+  //  else if Msg.hwnd <> 0 then Continue
+  //  else
+  //    case Msg.Message of
+  //      MM_WIM_DATA, MM_WOM_DONE: Synchronize(ProcessEvent);
+  //      MM_WIM_CLOSE: Terminate;
+  //      end;
 end;
 
 
 procedure TWaitThread.ProcessEvent;
 begin
-  try
-    if Msg.wParam = Owner.DeviceHandle then
-      Owner.BufferDone(PWaveHdr(Msg.lParam));
-  except on E: Exception do
-    begin
-    Application.ShowException(E);
-    Terminate;
-    end;
-  end;
+  //try
+  //  if Msg.wParam = Owner.DeviceHandle then
+  //    Owner.BufferDone(PWaveHdr(Msg.lParam));
+  //except on E: Exception do
+  //  begin
+  //  Application.ShowException(E);
+  //  Terminate;
+  //  end;
+  //end;
 end;
 
 
@@ -121,16 +123,16 @@ begin
 
   SetBufCount(DEFAULTBUFCOUNT);
 
-  FDeviceID := WAVE_MAPPER;
+  //FDeviceID := WAVE_MAPPER;
 
   //init WaveFmt
-  with WaveFmt do
-    begin
-    wf.wFormatTag := WAVE_FORMAT_PCM;
-    wf.nChannels := 1;             //mono
-    wf.nBlockAlign := 2;           //SizeOf(SmallInt) * nChannels;
-    wBitsPerSample := 16;          //SizeOf(SmallInt) * 8;
-    end;
+  //with WaveFmt do
+  //  begin
+  //  wf.wFormatTag := WAVE_FORMAT_PCM;
+  //  wf.nChannels := 1;             //mono
+  //  wf.nBlockAlign := 2;           //SizeOf(SmallInt) * nChannels;
+  //  wBitsPerSample := 16;          //SizeOf(SmallInt) * 8;
+  //  end;
 
   //fill nSamplesPerSec, nAvgBytesPerSec in WaveFmt
   SamplesPerSec := 48000;
@@ -182,28 +184,28 @@ end;
 
 procedure TCustomSoundInOut.DoSetEnabled(AEnabled: boolean);
 begin
-  if AEnabled
-    then
-      begin
-      //reset counts
-      FBufsAdded := 0;
-      FBufsDone := 0;
-      //create waiting thread
-      FThread := TWaitThread.Create(true);
-      FThread.FreeOnTerminate := true;
-      FThread.Owner := Self;
-      //FThread.Priority := tpTimeCritical;
-      //start
-      FEnabled := true;
-      try Start; except FreeAndNil(FThread); raise; end;
-      //device started ok, wait for events
-      FThread.Resume;
-      end
-    else
-      begin
-      FThread.Terminate;
-      Stop;
-      end;
+  //if AEnabled
+  //  then
+  //    begin
+  //    //reset counts
+  //    FBufsAdded := 0;
+  //    FBufsDone := 0;
+  //    //create waiting thread
+  //    FThread := TWaitThread.Create(true);
+  //    FThread.FreeOnTerminate := true;
+  //    FThread.Owner := Self;
+  //    //FThread.Priority := tpTimeCritical;
+  //    //start
+  //    FEnabled := true;
+  //    try Start; except FreeAndNil(FThread); raise; end;
+  //    //device started ok, wait for events
+  //    FThread.Resume;
+  //    end
+  //  else
+  //    begin
+  //    FThread.Terminate;
+  //    Stop;
+  //    end;
 end;
 
 
@@ -218,17 +220,17 @@ procedure TCustomSoundInOut.SetSamplesPerSec(const Value: LongWord);
 begin
   Enabled := false;
 
-  with WaveFmt.wf do
-    begin
-    nSamplesPerSec := Value;
-    nAvgBytesPerSec := nSamplesPerSec * nBlockAlign;
-    end;
+  //with WaveFmt.wf do
+  //  begin
+  //  nSamplesPerSec := Value;
+  //  nAvgBytesPerSec := nSamplesPerSec * nBlockAlign;
+  //  end;
 end;
 
 
 function TCustomSoundInOut.GetSamplesPerSec: LongWord;
 begin
-  Result := WaveFmt.wf.nSamplesPerSec;
+  //Result := WaveFmt.wf.nSamplesPerSec;
 end;
 
 
@@ -243,7 +245,7 @@ end;
 
 function TCustomSoundInOut.GetThreadID: THandle;
 begin
-  Result := FThread.ThreadID;
+  //Result := FThread.ThreadID;
 end;
 
 

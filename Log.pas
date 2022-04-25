@@ -5,10 +5,12 @@
 //------------------------------------------------------------------------------
 unit Log;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, RndFunc, Math;
+  LCLIntf, LCLType, LMessages, SysUtils, Classes, Graphics, RndFunc, Math;
 
 
 procedure SaveQso;
@@ -60,17 +62,17 @@ begin
     else MainForm.RichEdit1.Lines.Add(' UTC       Call          Recv      Sent      Pref   Chk');
   MainForm.RichEdit1.SelStart := 1;
   MainForm.RichEdit1.SelLength := Length(MainForm.RichEdit1.Lines[0]);
-  MainForm.RichEdit1.SelAttributes.Style := [fsUnderline];
-  MainForm.RichEdit1.SelAttributes.Color := clBlue;
+  //MainForm.RichEdit1.SelAttributes.Style := [fsUnderline];
+  //MainForm.RichEdit1.SelAttributes.Color := clBlue;
 
   if Ini.RunMode = rmHst then Empty := '' else Empty := '0';
 
-  MainForm.ListView1.Items[0].SubItems[0] := Empty;
-  MainForm.ListView1.Items[1].SubItems[0] := Empty;
-  MainForm.ListView1.Items[0].SubItems[1] := Empty;
-  MainForm.ListView1.Items[1].SubItems[1] := Empty;
-  MainForm.ListView1.Items[2].SubItems[0] := '0';
-  MainForm.ListView1.Items[2].SubItems[1] := '0';
+  //MainForm.ListView1.Items[0].SubItems[0] := Empty;
+  //MainForm.ListView1.Items[1].SubItems[0] := Empty;
+  //MainForm.ListView1.Items[0].SubItems[1] := Empty;
+  //MainForm.ListView1.Items[1].SubItems[1] := Empty;
+  //MainForm.ListView1.Items[2].SubItems[0] := '0';
+  //MainForm.ListView1.Items[2].SubItems[1] := '0';
 
   MainForm.PaintBox1.Invalidate;
 end;
@@ -130,9 +132,9 @@ begin
   for i:=0 to High(QsoList) do PfxList.Add(QsoList[i].Pfx);
   Mul := PfxList.Count;
 
-  MainForm.ListView1.Items[0].SubItems[0] := IntToStr(Pts);
-  MainForm.ListView1.Items[1].SubItems[0] := IntToStr(Mul);
-  MainForm.ListView1.Items[2].SubItems[0] := IntToStr(Pts*Mul);
+  //MainForm.ListView1.Items[0].SubItems[0] := IntToStr(Pts);
+  //MainForm.ListView1.Items[1].SubItems[0] := IntToStr(Mul);
+  //MainForm.ListView1.Items[2].SubItems[0] := IntToStr(Pts*Mul);
 
   //verified
 
@@ -146,9 +148,9 @@ begin
     end;
   Mul := PfxList.Count;
 
-  MainForm.ListView1.Items[0].SubItems[1] := IntToStr(Pts);
-  MainForm.ListView1.Items[1].SubItems[1] := IntToStr(Mul);
-  MainForm.ListView1.Items[2].SubItems[1] := IntToStr(Pts*Mul);
+  //MainForm.ListView1.Items[0].SubItems[1] := IntToStr(Pts);
+  //MainForm.ListView1.Items[1].SubItems[1] := IntToStr(Mul);
+  //MainForm.ListView1.Items[2].SubItems[1] := IntToStr(Pts*Mul);
 
   MainForm.PaintBox1.Invalidate;
 end;
@@ -273,7 +275,7 @@ begin
   MainForm.RichEdit1.Lines.Add(S);
   MainForm.RichEdit1.SelStart := Length(MainForm.RichEdit1.Text) - 5;
   MainForm.RichEdit1.SelLength := 3;
-  MainForm.RichEdit1.SelAttributes.Color := clRed;
+  //MainForm.RichEdit1.SelAttributes.Color := clRed;
   MainForm.RichEdit1.Perform(EM_SCROLLCARET, 0, 0);
 end;
 

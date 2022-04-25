@@ -5,13 +5,15 @@
 //------------------------------------------------------------------------------
 unit Main;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
-  ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32, 
+  ComCtrls, Spin, SndTypes, ToolWin, ImgList, Crc32,
   WavFile, IniFiles;
 
 const
@@ -59,7 +61,7 @@ type
     Panel5: TPanel;
     Exit1: TMenuItem;
     Panel6: TPanel;
-    RichEdit1: TRichEdit;
+    RichEdit1: TMemo;
     Label12: TLabel;
     Label13: TLabel;
     Label14: TLabel;
@@ -283,7 +285,7 @@ implementation
 
 uses ScoreDlg;
 
-{$R *.DFM}
+{$R *.lfm}
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
@@ -686,7 +688,7 @@ var
   FileName: string;
 begin
   FileName := ExtractFilePath(ParamStr(0)) + 'readme.txt';
-  ShellExecute(GetDesktopWindow, 'open', PChar(FileName), '', '', SW_SHOWNORMAL);
+   OpenDocument(PChar(FileName)); { *Converted from ShellExecute* }
 end;
 
 
@@ -855,7 +857,7 @@ end;
 procedure TMainForm.SetToolbuttonDown(Toolbutton: TToolbutton;
   ADown: boolean);
 begin
-  Windows.PostMessage(Handle, WM_TBDOWN, Integer(ADown), Integer(Toolbutton));
+  //Windows.PostMessage(Handle, WM_TBDOWN, Integer(ADown), Integer(Toolbutton));
 end;
 
 
@@ -919,7 +921,7 @@ end;
 
 procedure OpenWebPage(Url: string);
 begin
-  ShellExecute(GetDesktopWindow, 'open', PChar(Url), '', '', SW_SHOWNORMAL);
+   OpenDocument(PChar(Url)); { *Converted from ShellExecute* }
 end;
 
 
@@ -1081,7 +1083,7 @@ var
   FileName: string;
 begin
   FileName := ChangeFileExt(ParamStr(0), '.wav');
-  ShellExecute(GetDesktopWindow, 'open', PChar(FileName), '', '', SW_SHOWNORMAL);
+   OpenDocument(PChar(FileName)); { *Converted from ShellExecute* }
 end;
 
 
