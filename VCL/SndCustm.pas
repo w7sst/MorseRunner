@@ -81,30 +81,30 @@ implementation
 
 procedure TWaitThread.Execute;
 begin
-  //Priority := tpTimeCritical;
-  //
-  //while GetMessage(Msg, 0, 0, 0) do
-  //  if Terminated then Exit
-  //  else if Msg.hwnd <> 0 then Continue
-  //  else
-  //    case Msg.Message of
-  //      MM_WIM_DATA, MM_WOM_DONE: Synchronize(ProcessEvent);
-  //      MM_WIM_CLOSE: Terminate;
-  //      end;
+   Priority := tpTimeCritical;
+  
+   while GetMessage(Msg, 0, 0, 0) do
+      if Terminated then Exit
+      else if Msg.hwnd <> 0 then Continue
+      else
+	 case Msg.Message of
+	   MM_WIM_DATA, MM_WOM_DONE: Synchronize(ProcessEvent);
+	   MM_WIM_CLOSE: Terminate;
+	 end;
 end;
 
 
 procedure TWaitThread.ProcessEvent;
 begin
-  //try
-  //  if Msg.wParam = Owner.DeviceHandle then
-  //    Owner.BufferDone(PWaveHdr(Msg.lParam));
-  //except on E: Exception do
-  //  begin
-  //  Application.ShowException(E);
-  //  Terminate;
-  //  end;
-  //end;
+  try
+    if Msg.wParam = Owner.DeviceHandle then
+      Owner.BufferDone(PWaveHdr(Msg.lParam));
+  except on E: Exception do
+    begin
+    Application.ShowException(E);
+    Terminate;
+    end;
+  end;
 end;
 
 
@@ -184,28 +184,27 @@ end;
 
 procedure TCustomSoundInOut.DoSetEnabled(AEnabled: boolean);
 begin
-  //if AEnabled
-  //  then
-  //    begin
-  //    //reset counts
-  //    FBufsAdded := 0;
-  //    FBufsDone := 0;
-  //    //create waiting thread
-  //    FThread := TWaitThread.Create(true);
-  //    FThread.FreeOnTerminate := true;
-  //    FThread.Owner := Self;
-  //    //FThread.Priority := tpTimeCritical;
-  //    //start
-  //    FEnabled := true;
-  //    try Start; except FreeAndNil(FThread); raise; end;
-  //    //device started ok, wait for events
-  //    FThread.Resume;
-  //    end
-  //  else
-  //    begin
-  //    FThread.Terminate;
-  //    Stop;
-  //    end;
+   if AEnabled then
+     begin
+	//reset counts
+	FBufsAdded := 0;
+	FBufsDone := 0;
+	//create waiting thread
+	FThread := TWaitThread.Create(true);
+	FThread.FreeOnTerminate := true;
+	FThread.Owner := Self;
+	FThread.Priority := tpTimeCritical;
+	//start
+	FEnabled := true;
+        try Start; except FreeAndNil(FThread); raise; end;
+        //device started ok, wait for events
+        FThread.Resume;
+      end
+   else
+      begin
+	 FThread.Terminate;
+	 Stop;
+   end;
 end;
 
 
@@ -245,7 +244,7 @@ end;
 
 function TCustomSoundInOut.GetThreadID: THandle;
 begin
-  //Result := FThread.ThreadID;
+  Result := FThread.ThreadID;
 end;
 
 

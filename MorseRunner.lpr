@@ -3,6 +3,7 @@ program MorseRunner;
 {$MODE Delphi}
 
 uses
+  cthreads,
   Forms, Interfaces,
   Main in 'Main.pas' {MainForm},
   Contest in 'Contest.pas',
