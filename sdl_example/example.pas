@@ -1,4 +1,5 @@
 { Reminds me how to work with SDL under Free Pascal                       }
+{                                                                         }
 { Portions (C) Zach Metzinger are under BSD license:                      }
 {                                                                         }
 { Redistribution and use in source and binary forms, with or without      }
@@ -22,10 +23,13 @@
 { OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF     }
 { SUCH DAMAGE.                                                               }
 
+{ I am not a Pascal programmer, bur, rather, a C programmer..               }
+{  .. so this will be fast and loose. Don't take this as best practices.    }
+
 program sdltest;
 {$linklib gcc}
 {$linklib SDLmain}
-uses sdl;
+uses sdl, strings;
 
 var
    abuf	: PUInt8;
@@ -37,17 +41,17 @@ var
    i : Integer;
    j : UInt32;
 begin
-   j := acur;
+   j := UInt32(userdata^);
    WriteLn('acur = ', j, ' userdata^ = ', UInt32(userdata^));
    for i := 0 to len-1 do
       begin
 	 stream[i] := abuf[j];
 	 j := j + 1;
       end;
-   acur := acur + len;
-   if acur > alen then
+   UInt32(userdata^) := UInt32(userdata^) + len;
+   if UInt32(userdata^) > alen then
       begin
-	 acur := 0;
+	 UInt32(userdata^) := 0;
       end;
 end;
 
@@ -58,6 +62,7 @@ var
    des, got	    : PSDL_AudioSpec;
    err		    : String;
    evt		    : PSDL_Event;
+   fname	    : PChar;
 begin
    if SDL_Init(SDL_INIT_VIDEO or SDL_INIT_AUDIO) < 0 then Exit;
    // Create a software window of 640x480x8 and assign to scr
@@ -65,6 +70,7 @@ begin
    des := New(PSDL_AudioSpec);
    got := New(PSDL_AudioSpec);
    evt := New(PSDL_Event);
+   fname := StrAlloc (255+1);
    with des^ do
       begin
 	 freq := 44100;
@@ -80,11 +86,34 @@ begin
 	 WriteLn('OpenAudio failed: ', err);
 	 Exit;
       end;
+
    WriteLn('OpenAudio got ', got^.freq, ' ', got^.format, ' ', got^.channels, ' ', got^.samples);
+
    got^.freq := 0;
-   if SDL_LoadWAV('../budweiser_fixed.wav', got, @abuf, @alen) = nil then Exit;
+
+   if ParamCount() < 1 then
+      begin
+	 WriteLn('usage: ', ParamStr(0), ' <something.wav>');
+	 Exit;
+      end;
+
+   StrPCopy(fname, ParamStr(1));
+   
+   if SDL_LoadWAV(fname, got, @abuf, @alen) = nil then
+      begin
+	 WriteLn('Unable to load WAV file: ', fname);
+	 Exit;
+      end;
+   
    WriteLn('LoadWAV got ', got^.freq, ' ', got^.format, ' ', got^.channels, ' ', got^.samples,
 	   ' length: ', alen);
+   
+   if alen < (des^.samples * des^.channels * 2) then
+      begin
+	 WriteLn('Not enough samples in WAV file: ', des^.samples);
+	 Exit;
+      end;
+   
    acur := 0;
    while Run = True do
       begin
