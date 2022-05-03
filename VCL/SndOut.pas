@@ -23,7 +23,7 @@ type
     function  NextEmptyBuffer: PWaveBuffer;
     procedure Unprepare(Buf: PWaveBuffer);
   protected
-    //procedure BufferDone(AHdr: PWaveHdr); override;
+    procedure BufferDone; override;
     procedure Start; override;
     procedure Stop; override;
   public
@@ -134,7 +134,7 @@ begin
     //  begin
     //  rc := WaveOutUnprepareHeader(DeviceHandle, @Buf.Hdr, SizeOf(TWaveHdr));
     //  Buf.Data := nil;
-    //  Inc(FBufsDone);
+   Inc(FBufsDone);
       //CheckErr;
       //end;
 end;
@@ -174,7 +174,7 @@ begin
   //rc := waveOutWrite(DeviceHandle, @Buf.Hdr, SizeOf(TWaveHdr));
   //CheckErr;
 
-  Inc(FBufsAdded);
+   Inc(FBufsAdded);
 end;
 
 
@@ -184,14 +184,15 @@ end;
 //------------------------------------------------------------------------------
 //                              events
 //------------------------------------------------------------------------------
-//procedure TAlSoundOut.BufferDone(AHdr: PWaveHdr);
-//begin
-//  Unprepare(PWaveBuffer(AHdr.dwUser));
-//
-//  if FCloseWhenDone and (FBufsDone = FBufsAdded)
-//    then Enabled := false
-//    else if Assigned(FOnBufAvailable) then FOnBufAvailable(Self);
-//end;
+procedure TAlSoundOut.BufferDone;
+begin
+   Writeln('BufferDone');
+   Unprepare(@Buffers[0]);
+
+   if FCloseWhenDone and (FBufsDone = FBufsAdded)
+      then Enabled := false
+   else if Assigned(FOnBufAvailable) then FOnBufAvailable(Self);
+end;
 
 
 

@@ -54,7 +54,7 @@ type
     //override these
     procedure Start; virtual; abstract;
     procedure Stop; virtual; abstract;
-    procedure BufferDone(AHdr: string); virtual; abstract;
+    procedure BufferDone; virtual; abstract;
 
     property Enabled: boolean read FEnabled write SetEnabled default false;
     property DeviceID: UINT read FDeviceID write SetDeviceID default 0;
@@ -82,29 +82,37 @@ implementation
 procedure TWaitThread.Execute;
 begin
    Priority := tpTimeCritical;
-  
-   while GetMessage(Msg, 0, 0, 0) do
-      if Terminated then Exit
-      else if Msg.hwnd <> 0 then Continue
-      else
-	 case Msg.Message of
-	   MM_WIM_DATA, MM_WOM_DONE: Synchronize(ProcessEvent);
-	   MM_WIM_CLOSE: Terminate;
-	 end;
+   while not Terminated do
+      begin
+	 Writeln('Tick');
+	 Queue(ProcessEvent);
+	 Sleep(1000);
+      end;
+//   while GetMessage(Msg, 0, 0, 0) do
+//      if Terminated then Exit
+//      else if Msg.hwnd <> 0 then Continue
+//      else
+//	 case Msg.Message of
+//	   MM_WIM_DATA, MM_WOM_DONE: Synchronize(ProcessEvent);
+//	   MM_WIM_CLOSE: Terminate;
+//	 end;
 end;
 
 
 procedure TWaitThread.ProcessEvent;
 begin
-  try
-    if Msg.wParam = Owner.DeviceHandle then
-      Owner.BufferDone(PWaveHdr(Msg.lParam));
-  except on E: Exception do
-    begin
-    Application.ShowException(E);
-    Terminate;
-    end;
-  end;
+   Writeln('ProcessEvent Main Thread');
+   Owner.BufferDone;
+   Writeln('ProcessEvent Done');
+//  try
+//    if Msg.wParam = Owner.DeviceHandle then
+//      Owner.BufferDone(PWaveHdr(Msg.lParam));
+//  except on E: Exception do
+//   begin
+//    Application.ShowException(E);
+//    Terminate;
+//    end;
+//  end;
 end;
 
 
@@ -186,6 +194,7 @@ procedure TCustomSoundInOut.DoSetEnabled(AEnabled: boolean);
 begin
    if AEnabled then
      begin
+	Writeln('DoSetEnabled true');
 	//reset counts
 	FBufsAdded := 0;
 	FBufsDone := 0;
@@ -198,10 +207,11 @@ begin
 	FEnabled := true;
         try Start; except FreeAndNil(FThread); raise; end;
         //device started ok, wait for events
-        FThread.Resume;
+        FThread.Start;
       end
    else
       begin
+	 Writeln('DoSetEnabled false');
 	 FThread.Terminate;
 	 Stop;
    end;
@@ -219,6 +229,7 @@ procedure TCustomSoundInOut.SetSamplesPerSec(const Value: LongWord);
 begin
   Enabled := false;
 
+   Writeln('SetSamplesPerSec ', Value);
   //with WaveFmt.wf do
   //  begin
   //  nSamplesPerSec := Value;
@@ -244,7 +255,7 @@ end;
 
 function TCustomSoundInOut.GetThreadID: THandle;
 begin
-  Result := FThread.ThreadID;
+   Result := THandle(FThread.ThreadID);
 end;
 
 
