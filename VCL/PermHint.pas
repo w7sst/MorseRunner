@@ -84,6 +84,7 @@ var
     function FindScanline(Source: Pointer; MaxLen: Cardinal;
       Value: Cardinal): Cardinal; assembler;
     asm
+            {
             PUSH    ECX
             MOV     ECX,EDX
             MOV     EDX,EDI
@@ -92,6 +93,7 @@ var
             REPE    SCASB
             MOV     EAX,ECX
             MOV     EDI,EDX
+            }
     end;
 
 begin
