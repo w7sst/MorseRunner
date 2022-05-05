@@ -23,6 +23,7 @@ type
   public
     QsbLevel: Single;
     constructor Create;
+    destructor Destroy; override;
     procedure ApplyTo(Arr: TSingleArray);
     property Bandwidth: Single read FBandwidth write SetBandwidth;
   end;
@@ -37,6 +38,12 @@ begin
   Filt.Passes := 3;
   QsbLevel := 1;//0.5 + 0.5 * RndUShaped;
   Bandwidth := 0.1;
+end;
+
+destructor TQsb.Destroy;
+begin
+  FreeAndNil(Filt);
+  inherited;
 end;
 
 function TQsb.NewGain: Single;
