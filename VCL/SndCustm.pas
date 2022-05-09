@@ -210,7 +210,7 @@ begin
       FBufsAdded := 0;
       FBufsDone := 0;
       //create waiting thread
-      FThread := TWaitThread.Create(true);
+      FThread := TWaitThread.Create({CreateSuspended=}true);
       FThread.FreeOnTerminate := true;
       FThread.Owner := Self;
       //FThread.Priority := tpTimeCritical;
@@ -220,7 +220,7 @@ begin
       try Start; except FreeAndNil(FThread); end;
       //device started ok, wait for events
       DebugLn('  starting audio thread');
-      FThread.Resume;
+      FThread.Start;
       end
     else
       begin
