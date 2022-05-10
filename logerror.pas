@@ -6,7 +6,10 @@ interface
 
 uses
   SysUtils;
+
 procedure LogError(msg:string);
+function EnumToStr<T>(val : T) : string;
+
 
 implementation
 procedure LogError(msg:string);
@@ -28,6 +31,13 @@ begin
   writeln(F, msg);
   CloseFile(F);
 end;
+
+function EnumToStr<T>(val : T) : string;
+begin
+  WriteStr(result, val);
+end;
+
+
 end.
 
 
