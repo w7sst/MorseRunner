@@ -10,7 +10,7 @@ unit Station;
 interface
 
 uses
-  SysUtils, Classes, Math, SndTypes, Ini, MorseKey, Logerrorx;
+  SysUtils, Classes, Math, SndTypes, Ini, MorseKey, LazLoggerBase;
 
 const
   NEVER = MAXINT;
@@ -67,7 +67,12 @@ type
     property Bfo: Single read GetBfo;
   end;
 
+function DbgS(const msg : TStationMessage) : string; overload;
+function DbgS(const state : TStationState) : string; overload;
+function DbgS(const event : TStationEvent) : string; overload;
+
 implementation
+
 
 { TStation }
 
@@ -86,6 +91,7 @@ end;
 
 function TStation.GetBlock: TSingleArray;
 begin
+  //DebugLn('TStation.GetBlock');
   Result := Copy(Envelope, SendPos, Ini.BufSize);
 
   //advance TX buffer
@@ -95,9 +101,9 @@ end;
 
 
 procedure TStation.SendMsg(AMsg: TStationMessage);
-var
-  tempstr:String;
 begin
+  try
+  DebugLnEnter('TStation(%s).SendMsg %s', [MyCall, DbgS(AMsg)]);
   if Envelope = nil then Msg := [];
   if AMsg = msgNone then begin State := stListening; Exit; End;
   Include(Msg, AMsg);
@@ -135,8 +141,6 @@ begin
   end
   else  //controlled by N1MM or DXLog
   begin
- // WriteStr(tempstr, AMsg);
-  // logerror('in TStation.SendMsg ' + tempstr);
   // raise Exception.Create('in Tstation.SendMsg');
   case AMsg of
     msgCQ:
@@ -184,7 +188,10 @@ begin
     msgAgn: SendText('AGN');
     end;
   end;
+  finally
+    DebugLnExit([]);
   end;
+end;
 
 
 procedure TStation.SendText(AMsg: string);
@@ -208,7 +215,7 @@ begin
   if MsgText <> ''
     then MsgText := MsgText + ' ' + AMsg
     else MsgText := AMsg;
-  //logerror('Tstation.SendText ' + MsgText);
+  DebugLn('TStation(%s).SendText -> ''%s''', [MyCall, MsgText]);
   SendMorse(Keyer.Encode(MsgText));
 end;
 
@@ -242,19 +249,28 @@ end;
 
 procedure TStation.Tick;
 begin
+  //DebugLn('TStation(%s).Tick: State=%s', [MyCall, DbgS(State)]);
   //just finished sending
   if (State = stSending) and (Envelope = nil) then
     begin
+    DebugLnEnter('TStation(%s).Tick: State=%s, finished sending, now stListening',
+                 [MyCall, DbgS(State)]);
     MsgText := '';
     State := stListening;
     ProcessEvent(evMsgSent);
+    DebugLnExit([]);
     end
 
   //check timeout
   else if State <> stSending then
     begin
     if TimeOut > -1 then Dec(TimeOut);
-    if TimeOut = 0 then ProcessEvent(evTimeout);
+    if TimeOut = 0 then
+      begin
+      DebugLnEnter('TStation(%s).Tick: State=%s, Timeout = 0', [MyCall, DbgS(State)]);
+      ProcessEvent(evTimeout);
+      DebugLnExit([]);
+      end;
     end;
 end;
 
@@ -306,5 +322,22 @@ begin
     Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
     end;
   end;
+
+
+function DbgS(const msg : TStationMessage) : string; overload;
+begin
+  WriteStr(Result, msg);
+end;
+
+function DbgS(const state : TStationState) : string; overload;
+begin
+  WriteStr(Result, state);
+end;
+
+function DbgS(const event : TStationEvent) : string; overload;
+begin
+  WriteStr(Result, event);
+end;
+
 end.
 

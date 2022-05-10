@@ -10,7 +10,7 @@ unit CallLst;
 interface
 
 uses
-  SysUtils, Classes, Ini, FileUtil, Logerrorx;
+  SysUtils, Classes, Ini, FileUtil, LazLoggerBase;
 
 procedure LoadCallList;
 function PickCall: string;
@@ -73,7 +73,7 @@ begin
          end;
       end;
 
-     // LogError(intToStr(numparsed));
+     // DebugLn(DbgS(numparsed));
     end;
 
     // Done so close the file

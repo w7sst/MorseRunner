@@ -10,7 +10,8 @@ unit MyStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Ini, SndTypes, MorseKey, Forms;
+  SysUtils, Classes, Station, RndFunc, Ini, SndTypes, MorseKey, Forms,
+  LazLoggerBase;
 
 type
   TMyStation = class(TStation)
@@ -91,6 +92,7 @@ end;
 
 procedure TMyStation.SendText(AMsg: string);
 begin
+  DebugLnEnter('TMyStation(%s).SendText ''%s''', [MyCall, AMsg]);
   AddToPieces(AMsg);
   if State <> stSending then
     begin
@@ -101,6 +103,7 @@ begin
     SendNextPiece;
     Tst.OnMeStartedSending;
     end;
+  DebugLnExit([]);
 end;
 
 
@@ -138,6 +141,7 @@ end;
 
 function TMyStation.GetBlock: TSingleArray;
 begin
+  //DebugLn('TMyStation.GetBlock');
   Result := inherited GetBlock;
   if Envelope = nil then
     begin

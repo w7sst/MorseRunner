@@ -11,6 +11,7 @@ interface
 
 uses
   LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Forms, SyncObjs, MMSystem, SndTypes,
+  LazLoggerBase,
   Ini, Windows, Dialogs;
 
 type
@@ -81,6 +82,7 @@ implementation
 
 procedure TWaitThread.Execute;
 begin
+  DebugLn('TWaitThread.Execute (audio thread): thread %d', [GetCurrentThreadID()]);
   Priority := tpTimeCritical;
 
   while GetMessage(Msg, 0, 0, 0) do
@@ -96,6 +98,7 @@ end;
 
 procedure TWaitThread.ProcessEvent;
 begin
+  //DebugLnEnter('TWaitThread.ProcessEvent, %d', [GetCurrentThreadID()]);
   try
     if Msg.wParam = Owner.DeviceHandle then
       Owner.BufferDone(PWaveHdr(Msg.lParam));
@@ -106,6 +109,7 @@ begin
     Terminate;
     end;
   end;
+  //DebugLnExit([]);
 end;
 
 
@@ -186,6 +190,7 @@ end;
 
 procedure TCustomSoundInOut.DoSetEnabled(AEnabled: boolean);
 begin
+  DebugLn('TCustomSoundInOut.DoSetEnabled: enabled=', DbgS(AEnabled));
   if AEnabled
     then
       begin
@@ -202,10 +207,12 @@ begin
      // try Start; except FreeAndNil(FThread); raise; end;
       try Start; except FreeAndNil(FThread); end;
       //device started ok, wait for events
+      DebugLn('  starting audio thread');
       FThread.Resume;
       end
     else
       begin
+      DebugLn('  stopping audio thread');
       FThread.Terminate;
       Stop;
       end;

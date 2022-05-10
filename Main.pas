@@ -7,6 +7,8 @@ unit Main;
 
 {$MODE Delphi}
 
+{$define DEBUG_LOGGING}  // enables LazLogging to Documents\N1MM Logger+\debug.txt
+
 interface
 
 uses
@@ -14,6 +16,7 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, {VolumCtl,} StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
   ComCtrls, Spin, {SndTypes, ToolWin,} ImgList, FileUtil, Crc32,
+  {$ifdef DEBUG_LOGGING}LazLogger{$else}LazLoggerDummy{$endif},
   WavFile, IniFiles, Windows, {UdpHandler,} ARRLFD;
 
 const
@@ -363,7 +366,7 @@ var
 
 implementation
 
-uses ScoreDlg, LogErrorx;
+uses ScoreDlg;
 
 {$R *.lfm}
 
@@ -371,29 +374,30 @@ function WndCallback(Ahwnd: HWND; uMsg: UINT; wParam: WParam; lParam: LParam):LR
 var
   strlen: integer;
 begin
-  // LogError('uMsg = ' + intToStr(uMsg));
-  //LogError('wParam = ' + intToStr(wParam));
+  //DebugLn('uMsg = ', intToStr(uMsg));
+  //DebugLn('wParam = ', intToStr(wParam));
   case uMsg of
      WM_KEYDOWN:
           case wParam of
                KeysF1:
                begin
-                    // logerror('received msgCQ');
+                    DebugLn('WM_KEYDOWN.KeysF1: received msgCQ');
                     MainForm.SendMsg(TStationMessage.msgCQ);
                     exit;
                end;
 
                KeysInsert:
                  begin
-                     // logerror('received KeysInsert');
                       if CallSent = True then // correct call TU message
                       begin
+                           DebugLn('WM_KEYDOWN.KeysInsert: CallSent is true, sending msgHisCall, msgNr');
                            MainForm.SendMsg(TStationMessage.msgHisCall);
                            MainForm.SendMsg(TStationMessage.msgNr);
                       end
                       else
                       begin
-                          MainForm.ProcessEnter;
+                           DebugLn('WM_KEYDOWN.KeysInsert: CallSent is false, calling MainForm.ProcessEnter');
+                           MainForm.ProcessEnter;
                       end;
                       //MainForm.Advance;
                       exit;
@@ -439,7 +443,7 @@ begin
        begin
             Ini.RadioAudio := lParam;
             MainForm.AlSoundOut1.ChangeSoundLevel;
-            //LogError('setaudio = ' + intToStr(lParam));
+            DebugLn('setaudio = ', intToStr(lParam));
             exit;
 
        end;
@@ -455,6 +459,7 @@ begin
              result := 0;
              exit;
            end;
+           DebugLn('WM_GETTXSTATUS: result=', intToStr(result));
            exit;
       end;
      WM_RITUP:
@@ -490,8 +495,8 @@ begin
 
      WM_SETBC:
        begin
-       // LogError('wParam = ' + intToStr(wParam));
-       //LogError('lParam = ' + intToStr(lParam));
+       //DebugLn('wParam = ', intToStr(wParam));
+       //DebugLn('lParam = ', intToStr(lParam));
          Ini.Standalone := False; //controlled by N1MM or DXLog
           case wParam of
                   WM_SETQRM:
@@ -520,17 +525,17 @@ begin
        end;
      WM_COPYDATA :
        begin
-            //LogError('wParam = ' + intToStr(wParam));
+            //DebugLn('wParam = ', intToStr(wParam));
             recvdata := PCopyDataStruct(lParam);
             msgtype := recvdata^.dwData;
             msglen := recvdata^.cbData;
             str := StrPas(PCHAR(Recvdata^.lpData));
-           //LogError('msgtype = ' + intToStr(msgtype));
-          // LogError('str = ' + str);
+           //DebugLn('WM_COPYDATA.msgtype = ', intToStr(msgtype));
+           //DebugLn('WM_COPYDATA.str = ', str);
            case msgtype of
               WM_SETCWSPEED:
                 begin
-                    //LogError('setting CW speed');
+                     DebugLn('WM_SETCWSPEED: str=', str);
                      MainForm.SpinEdit1.Value := StrToInt(str);
                      Tst.Me.Wpm := StrToInt(str);
                      Wpm := StrToInt(str);
@@ -538,56 +543,66 @@ begin
                 end;
               WM_SETMYCALL:
                 begin
+                    DebugLn('WM_SETMYCALL: str=', str);
                     MainForm.SetMyCall(str);
                     Call := str;
                     exit;
                 end;
               WM_SETMYZONE:
                 begin
+                    DebugLn('WM_SETMYZONE: str=', str);
                     MainForm.SetMyZone(str);
                     NR := str;
                     exit;
                 end;
               WM_SETACTIVITY:
                 begin
+                     DebugLn('WM_SETACTIVITY: str=', str);
                      Activity := StrToInt(str);
                      MainForm.SpinEdit3.Value := Activity;
                      exit;
                 end;
               WM_SETDURATION:
                 begin
+                     DebugLn('WM_SETDURATION: str=', str);
                      Duration := StrToInt(str);
                      MainForm.SpinEdit2.Value := Duration;
                      exit;
                 end;
               WM_SETMSGCQ:
                 begin
+                     DebugLn('WM_SETMSGCQ: str=', str);
                      Ini.Messagecq := str;
                      exit;
                 end;
               WM_SETCALL:
                 begin
+                     DebugLn('WM_SETCALL: str=', str);
                      MainForm.Edit1.Text := str;
                      MainForm.Edit1Change(tmpobj);
                      exit;
                 end;
               WM_SETRST:
                 begin
+                     DebugLn('WM_SETRST: str=', str);
                      MainForm.Edit2.Text := str;
                      exit;
                 end;
               WM_SETNR:
                 begin
+                     DebugLn('WM_SETNR: str=', str);
                      MainForm.Edit3.Text := str;
                      exit;
                 end;
               WM_SETMSGTU:
                 begin
+                    DebugLn('WM_SETMSGTU: str=', str);
                     Ini.Messagetu := str;
                     exit;
                 end;
               WM_SETMSGNR:
                 begin
+                    DebugLn('WM_SETMSGNR: str=', str);
                     strlen := Length(str);
                     str := RightStr(str, (strlen-4));
                     Tst.Me.NR := StrToInt(str);
@@ -595,6 +610,7 @@ begin
                 end;
               WM_PITCHSET:
                 begin
+                    DebugLn('WM_PITCHSET: str=', str);
                     Pitch := (StrToInt(str) div 50) - 6;
                     MainForm.SetPitch(Pitch);
                     exit;
@@ -602,9 +618,9 @@ begin
            end;
        end;
     end;
-  //LogError('uMsg = ' + intToStr(uMsg));
-  //LogError('wParam = ' + intToStr(wParam));
-  //LogError('lParam = ' + intToStr(lParam));
+  //DebugLn('uMsg = ', intToStr(uMsg));
+  //DebugLn('wParam = ', intToStr(wParam));
+  //DebugLn('lParam = ', intToStr(lParam));
   result:=CallWindowProc(PrevWndProc,Ahwnd, uMsg, WParam, LParam);
 end;
 
@@ -615,6 +631,13 @@ var programname : Ansistring;
 arg1 : Ansistring;
 arg2 : Ansistring;
 begin
+{$ifdef DEBUG_LOGGING}
+  userdir := GetUserDir;
+  DebugLogger.LogName:= Format('%sDocuments\N1MM Logger+\debug.txt', [userdir]);
+{$endif}
+  DebugLn('----------------------------------------');
+  DebugLn('TMainForm.FormCreate: GetCurrentThreadID %d', [GetCurrentThreadID()]);
+
   PrevWndProc:=Windows.WNDPROC(SetWindowLongPtr(Self.Handle,GWL_WNDPROC,PtrInt(@WndCallback)));
   Randomize;
   Tst := TContest.Create;
@@ -630,8 +653,8 @@ begin
   Ini.RadioAudio := 0;
   programname := ParamStr(0);
 
-  //LogError('arg1 = ' + arg1);
-  //LogError('arg2 = ' + arg2);
+  DebugLn('arg1 = ', arg1);
+  DebugLn('arg2 = ', arg2);
 
   Hide_form := False;
   //arg1 := '';
@@ -696,11 +719,13 @@ end;
 procedure TMainForm.SendClick(Sender: TObject);
 var
   Msg: TStationMessage;
+
 begin
   Msg := TStationMessage((Sender as TComponent).Tag);
+  DebugLnEnter('TMainForm.SendClick, Msg=%s', [DbgS(Msg)]);
     //If Ini.Standalone = False then
     //begin
-    //    // LogError('TMainForm.SendClick exit ' + inttoStr((Sender as TComponent).Tag ));
+    //    // DebugLnExit('TMainForm.SendClick exit ', DbgS(Msg));
     //exit;
     //end;
 
@@ -710,6 +735,7 @@ begin
     msgHisCall: CallSent:= true;
     msgNR: NrSent:= true;
     end;
+  DebugLnExit([]);
 end;
 
 
@@ -813,7 +839,7 @@ begin
 
     '\': // = F1
       begin
-    //  LogError('in FormKeyPress F1');
+    //  DebugLn('in FormKeyPress F1');
       SendMsg(msgCQ);
       end;
 
@@ -926,10 +952,11 @@ procedure TMainForm.ProcessEnter;
 var
   C, N, R: boolean;
 begin
+  DebugLnEnter('ProcessEnter...');
   MustAdvance := false;
 
   if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0
-    then begin Log.SaveQso; Exit; end;
+    then begin Log.SaveQso; DebugLnExit([]); Exit; end;
 
   // for certain contests (e.g. ARRL Field Day), update update status bar
   if Ini.ContestName = 'arrlfd' then
@@ -938,8 +965,9 @@ begin
   //no QSO in progress, send CQ
   if Edit1.Text = '' then
   begin
-     //  LogError('in ProcessEnter sendCQ');
+     //  DebugLn('in ProcessEnter sendCQ');
        SendMsg(msgCq);
+       DebugLnExit([]);
        Exit;
   end;
 
@@ -961,6 +989,7 @@ begin
       end
     else
       MustAdvance := true;
+  DebugLnExit([]);
 end;
 
 
@@ -1067,7 +1096,7 @@ begin
   if (BwNo < 0) or (BwNo >= ComboBox2.Items.Count) then Exit;
 
   Ini.Bandwidth := 100 + BwNo * 50;
-  //LogError('Bandwidth = ' + IntToStr(Ini.Bandwidth));
+  //DebugLn('Bandwidth = ', IntToStr(Ini.Bandwidth));
   ComboBox2.ItemIndex := BwNo;
 
   Tst.Filt.Points := Round(0.7 * DEFAULTRATE / Ini.BandWidth);
@@ -1242,6 +1271,7 @@ var
   BCompet, BStop: boolean;
 begin
   if Value = Ini.RunMode then Exit;
+  DebugLnEnter('TMainForm.Run: %s', [DbgS(Value)]);
 
   BStop := Value = rmStop;
   BCompet := Value in [rmWpx, rmHst];
@@ -1372,6 +1402,7 @@ begin
 //  UdpThread.Start;
 
   AlSoundOut1.Enabled := not BStop;
+  DebugLnExit([]);
 end;
 
 procedure TMainForm.RunBtnClick(Sender: TObject);

@@ -11,6 +11,7 @@ interface
 
 uses
   SysUtils, Classes, Station, RndFunc, Ini, ARRLFD,
+  LazLoggerBase,
   CallLst, Qsb, DxOper, Log, SndTypes;
 
 type
@@ -133,6 +134,10 @@ procedure TDxStation.ProcessEvent(AEvent: TStationEvent);
 var
   i: integer;
 begin
+try
+  DebugLnEnter('TDxStation(%s).ProcessEvent: %s, %s',
+               [MyCall, DbgS(AEvent), DbgS(State)]);
+
   if Oper.State = osDone then Exit;
 
   case AEvent of
@@ -153,7 +158,11 @@ begin
         end;
       //preparations to send are done, now send
       if State = stPreparingToSend then
-        for i:=1 to Oper.RepeatCnt do SendMsg(Oper.GetReply)
+         begin
+         if Oper.RepeatCnt>1 then DebugLn('repeat %d msgs...', [Oper.RepeatCnt]);
+         for i:=1 to Oper.RepeatCnt do
+             SendMsg(Oper.GetReply);
+         end;
       end;
 
     evMeFinished: //he finished sending
@@ -187,6 +196,10 @@ begin
       TimeOut := NEVER;
       end;
     end;
+finally
+  //DebugLnExit('  --> new State = %s', [DbgS(State)]);
+  DebugLnExit([]);
+  end;
 end;
 
 
@@ -211,6 +224,7 @@ end;
 
 function TDxStation.GetBlock: TSingleArray;
 begin
+  //DebugLn('TDxStation.GetBlock');
   Result := inherited GetBlock;
   if Ini.Qsb then Qsb.ApplyTo(Result);
 end;

@@ -10,8 +10,9 @@ unit UdpHandler;
 interface
 
 uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Forms, SyncObjs, MMSystem, SndTypes,
-  Windows, Station, blcksock, logerrorx;
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Interfaces, Forms,
+  SyncObjs, MMSystem, SndTypes,
+  Windows, Station, blcksock, LazLoggerBase;
 
 Type
     TUdpThread = class(TThread)
@@ -70,7 +71,7 @@ Implementation
 
   procedure TUdpThread.SendEnter;
   begin
-     //LogError('in TUdpThread.SendEnter');
+     DebugLn('in TUdpThread.SendEnter');
      MainForm.ProcessEnter;
   end;
 

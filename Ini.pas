@@ -10,7 +10,7 @@ unit Ini;
 interface
 
 uses
-  SysUtils, IniFiles, SndTypes, Math;
+  SysUtils, IniFiles, SndTypes, Math, LazLoggerBase;
 
 const
   SEC_STN = 'Station';
@@ -63,12 +63,13 @@ var
 procedure FromIni;
 procedure ToIni;
 
+function DbgS(const mode : TRunMode) : string; overload;
 
 
 implementation
 
 uses
-  Main, Contest, logerrorx;
+  Main, Contest;
 
 procedure FromIni;
 var
@@ -76,7 +77,7 @@ var
 begin
   if Standalone = true then
   begin
-  //LogError('standalone');
+  DebugLn('standalone');
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
       MainForm.SetMyCall(ReadString(SEC_STN, 'Call', Call));
@@ -143,7 +144,7 @@ begin
       //MainForm.SetPitch(ReadInteger(SEC_STN, 'Pitch', 3));
       MainForm.SetPitch(3);
       //MainForm.SetBw(ReadInteger(SEC_STN, 'BandWidth', 9));
-      //LogError('calling SetBW');
+      //DebugLn('calling SetBW');
       MainForm.SetBW(3);
 
       //HamName := ReadString(SEC_STN, 'Radio', '');
@@ -236,6 +237,10 @@ begin
 end;
 
 
+function DbgS(const mode : TRunMode) : string; overload;
+begin
+  WriteStr(Result, mode);
+end;
 
 
 end.

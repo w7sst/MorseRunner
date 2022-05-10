@@ -7,11 +7,18 @@ unit Contest;
 
 {$MODE Delphi}
 
+//{$define DEBUG_LOGGING_THREADS enables additional logging}
+
 interface
 
 uses
   SysUtils, SndTypes, Station, StnColl, MyStn, Math,  Ini,
-  MovAvg, Mixers, VolumCtl, RndFunc, TypInfo, DxStn, DxOper, Log, Logerrorx;
+  MovAvg, Mixers, VolumCtl, RndFunc, TypInfo, DxStn, DxOper, Log,
+{$ifdef DEBUG_LOGGING_THREADS} // thread-specific log messages
+  LazLoggerBase;
+{$else}
+  LazLoggerDummy;
+{$endif}
 
 type
   TContest = class
@@ -108,6 +115,11 @@ var
   Smg, Rfg: Single;
   Temp: Single;
 begin
+try
+{$ifdef DEBUG_LOGGING_THREADS}
+  DebugLnEnter('TContest.GetAudio: BlkNum %d, thread %d',
+               [BlockNumber+1, GetCurrentThreadID()]);
+{$endif}
   //minimize audio output delay
   SetLength(Result, 1);
   Inc(BlockNumber);
@@ -158,6 +170,10 @@ begin
   //my audio
   if Me.State = stSending then
     begin
+    {$ifdef DEBUG_LOGGING_THREADS}
+    DebugLnEnter('TContest.GetAudio: my audio, calling GetBlock, BlkNum %d, thread %d',
+                 [BlockNumber, GetCurrentThreadID()]);
+    {$endif}
     Blk := Me.GetBlock;
     //self-mon. gain
     Temp := MainForm.VolumeSlider1.Value;
@@ -178,6 +194,7 @@ begin
           ReIm.Re[i] := Smg * (Blk[i]);
           ReIm.Im[i] := Smg * (Blk[i]);
           end;
+    DebugLnExit([]);
     end;
 
 
@@ -261,6 +278,11 @@ begin
       else MainForm.Run(rmStop);
 }
     end;
+finally
+{$ifdef DEBUG_LOGGING_THREADS}
+  DebugLnExit([]);
+{$endif}
+end;
 end;
 
 
