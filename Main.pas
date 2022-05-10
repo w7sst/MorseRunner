@@ -977,6 +977,14 @@ begin
   case ActiveContestExchType1 of
     etRST:
       begin
+        if RunMode <> rmHst then
+          begin
+            // for RST field, map (A,N) to (1,9)
+            case Key of
+              'a', 'A': Key := '1';
+              'n', 'N': Key := '9';
+            end;
+          end;
         // valid RST characters...
         if not CharInSet(Key, ['0'..'9', #8]) then
           Key := #0;
@@ -1004,12 +1012,22 @@ begin
   case ActiveContestExchType2 of
     etSerialNr, etCwopsNumber, etCqZone, etItuZone, etAge:
       begin
+        if RunMode <> rmHst then
+          begin
+            // map (A,N,T) to (1,9,0)
+            case Key of
+              'a', 'A': Key := '1';
+              'n', 'N': Key := '9';
+              't', 'T': Key := '0';
+            end;
+          end;
         // valid Zone or NR field characters...
         if not CharInSet(Key, ['0'..'9', #8]) then
           Key := #0;
       end;
     etPower:
       begin
+        // map (A,N,T) to (1,9,0)
         case Key of
           'a', 'A': Key := '1';
           'n', 'N': Key := '9';
