@@ -1,0 +1,12 @@
+*.bak
+*.compiled
+*.o
+*.ppu
+*.swp
+MorseRunner.dbg
+MorseRunner.exe
+MorseRunner.obj
+MorseRunner.or
+MorseRunner.lps
+backup/
+units/
