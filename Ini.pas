@@ -57,7 +57,7 @@ var
   Messagenr: string;
   Messagetu: string = 'TU';
   Standalone: boolean = true;
-  ContestName: string = 'cqww';
+  ContestName: string = 'arrlfd';  //'cqww';
 
 
 procedure FromIni;
