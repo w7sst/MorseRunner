@@ -10,8 +10,7 @@ unit MovAvg;
 interface
 
 uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  SndTypes, Math;
+  Classes, SndTypes, Math;
 
 type
   TMovingAverage = class(TComponent)

@@ -10,7 +10,7 @@ unit BaseComp;
 interface
 
 uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Controls, Forms;
+  Messages, SysUtils, Classes, Controls, Forms;
 
 type
   {this component adds a window handle to the standard TControl

@@ -10,8 +10,7 @@ unit QuickAvg;
 interface
 
 uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Math, SndTypes;
+  Classes, Math, SndTypes;
 
 type
   TDoubleArray2D = array of array of Double;

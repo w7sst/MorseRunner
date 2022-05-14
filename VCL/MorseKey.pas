@@ -10,7 +10,7 @@ unit MorseKey;
 interface
 
 uses
-  SysUtils, Classes, SndTypes, MorseTbl, Math, Ini;
+  SysUtils, SndTypes, MorseTbl, Math;
 
 
 type

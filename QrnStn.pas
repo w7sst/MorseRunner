@@ -10,7 +10,7 @@ unit QrnStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Ini, CallLst, QuickAvg, SndTypes,
+  SysUtils, Classes, Station, RndFunc, Ini, CallLst,
   Math;
 
 type

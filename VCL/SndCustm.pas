@@ -10,7 +10,7 @@ unit SndCustm;
 interface
 
 uses
-  LCLIntf, LCLType, SysUtils, Classes, Forms, SyncObjs, MMSystem, SndTypes,
+  LCLIntf, LCLType, SysUtils, Classes, Forms, {SyncObjs,} MMSystem, SndTypes,
   LazLoggerBase, LCLProc,
   Windows, Dialogs;
 

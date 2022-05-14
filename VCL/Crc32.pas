@@ -9,7 +9,7 @@ unit Crc32;
 
 interface
 
-uses SysUtils, LCLIntf, LCLType, LMessages;
+uses SysUtils;
 
 function CalculateCRC32(AStr: string; ACrc: DWord): DWord;
 

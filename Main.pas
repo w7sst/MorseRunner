@@ -14,7 +14,7 @@ unit Main;
 interface
 
 uses
-  LCLIntf, LCLType, {LMessages, Messages,} SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, {VolumCtl,} StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
   ComCtrls, Spin, {SndTypes, ToolWin,} ImgList, FileUtil, Crc32,
@@ -23,7 +23,6 @@ uses
 {$else}
   LazLoggerDummy,  // this unit disables debug logging
 {$endif}
-  LCLProc,
   WavFile, IniFiles, Windows, {UdpHandler,} ARRLFD;
 
 const

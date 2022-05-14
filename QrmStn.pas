@@ -10,8 +10,7 @@ unit QrmStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Ini, CallLst, QuickAvg, SndTypes,
-  Math;
+  SysUtils, Classes, Station, RndFunc, Ini, CallLst;
 
 type
   TQrmStation = class(TStation)
