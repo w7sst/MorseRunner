@@ -23,12 +23,10 @@ uses
   BaseComp in 'VCL\BaseComp.pas',
   PermHint in 'VCL\PermHint.pas',
   Crc32 in 'VCL\Crc32.pas',
-  SndTypes in 'VCL\SndTypes.pas',
   MorseTbl in 'VCL\MorseTbl.pas',
   QuickAvg in 'VCL\QuickAvg.pas',
   MovAvg in 'VCL\MovAvg.pas',
   Mixers in 'VCL\Mixers.pas',
-  WavFile in 'VCL\WavFile.pas',
   VolumCtl in 'VCL\VolumCtl.pas';
 
 {$R *.res}

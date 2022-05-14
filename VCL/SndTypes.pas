@@ -5,7 +5,7 @@ unit SndTypes;
 interface
 
 uses
-  LCLIntf, LCLType, LMessages, SysUtils, MMSystem, Math, ComObj;
+  LCLIntf, LCLType, SysUtils, MMSystem, ComObj;
 
 const
   FOUR_PI = 4 * Pi;

@@ -583,10 +583,9 @@ begin
      WM_SETAUDIO:
        begin
             Ini.RadioAudio := lParam;
-            MainForm.AlSoundOut1.ChangeSoundLevel;
+            MainForm.AlSoundOut1.ChangeSoundLevel(Ini.RadioAudio);
             DebugLn('WM_SETAUDIO: setaudio = ', intToStr(lParam));
             exit;
-
        end;
      WM_GETTXSTATUS:
       begin
@@ -891,7 +890,7 @@ begin
   //FromIni;
   //LoadCallList;
   //
-  AlSoundOut1.BufCount := 4;
+  AlSoundOut1.Init(Ini.RadioAudio, 4);
 
   MakeKeyer;
   Keyer.Rate := DEFAULTRATE;

@@ -44,6 +44,7 @@ type
     procedure SetBufCount(const Value: LongWord);
   protected
     FThread: TWaitThread;
+    FRadioAudio: integer;
     rc: MMRESULT;
     DeviceHandle: HWAVEOUT;
     WaveFmt: TPCMWaveFormat;
@@ -138,6 +139,7 @@ begin
 
   SetBufCount(DEFAULTBUFCOUNT);
 
+  FRadioAudio := 0; // ARadioAudio;
   FDeviceID := WAVE_MAPPER;
 
   //init WaveFmt

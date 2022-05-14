@@ -10,8 +10,8 @@ unit SndOut;
 interface
 
 uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  BaseComp, MMSystem, SndTypes, SndCustm, Math, Ini;
+  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  MMSystem, SndTypes, SndCustm, Math;
 
 type
   TAlSoundOut = class(TCustomSoundInOut)
@@ -27,9 +27,11 @@ type
     procedure Start; override;
     procedure Stop; override;
   public
+    procedure Init(const ARadioAudio : integer = 0;
+      const ABufCount : LongWord = DEFAULTBUFCOUNT);
     function PutData(Data: TSingleArray): boolean;
     procedure Purge;
-    procedure ChangeSoundLevel;
+    procedure ChangeSoundLevel(ARadioAudio : integer);
   published
     property Enabled;
     property DeviceID;
@@ -55,6 +57,14 @@ end;
 
 { TAlSoundOut }
 
+procedure TAlSoundOut.Init(const ARadioAudio : integer;
+  const ABufCount : LongWord);
+begin
+  FRadioAudio := ARadioAudio;
+  BufCount := ABufCount;
+end;
+
+
 //------------------------------------------------------------------------------
 //                              Err handling
 //------------------------------------------------------------------------------
@@ -69,24 +79,14 @@ begin
     else Err('Unknown error: ' + IntToStr(rc));
 end;
 
-procedure TAlSoundOut.ChangeSoundLevel;
+procedure TAlSoundOut.ChangeSoundLevel(ARadioAudio : integer);
 begin
-     if Ini.RadioAudio = 1 then
-     begin
-       waveOutSetVolume(DeviceID, $0000FFFF);
-     end
-     else if Ini.RadioAudio = 2 then
-     begin
-       waveOutSetVolume(DeviceID, $FFFF0000);
-     end
-     else if Ini.RadioAudio = 0 then
-     begin
-       waveOutSetVolume(DeviceID, $FFFFFFFF);
-     end
-     else if Ini.RadioAudio = 3 then
-     begin
-       waveOutSetVolume(DeviceID, $00000000);
-     end;
+  case ARadioAudio of
+     1: waveOutSetVolume(DeviceID, $0000FFFF);
+     2: waveOutSetVolume(DeviceID, $FFFF0000);
+     0: waveOutSetVolume(DeviceID, $FFFFFFFF);
+     3: waveOutSetVolume(DeviceID, $00000000);
+  end;
 end;
 
 
@@ -99,7 +99,7 @@ var
   i: integer;
   numdev: integer;
 
-  begin
+begin
   //open device
   numdev := waveoutgetnumdevs();
 
@@ -115,14 +115,11 @@ var
   //open device
   rc := waveOutOpen(@DeviceHandle, DeviceID, @WaveFmt, GetThreadID, 0, CALLBACK_THREAD);
 
-  waveOutSetVolume(DeviceID, $FFFFFFFF);
-  if Ini.RadioAudio = 1 then
-    begin
-       waveOutSetVolume(DeviceID, $0000FFFF);
-    end
-  else if Ini.RadioAudio = 2 then
-  begin
-      waveOutSetVolume(DeviceID, $FFFF0000);
+  case FRadioAudio of
+    1: waveOutSetVolume(DeviceID, $0000FFFF);
+    2: waveOutSetVolume(DeviceID, $FFFF0000);
+    else
+      waveOutSetVolume(DeviceID, $FFFFFFFF);
   end;
 
   CheckErr;
@@ -240,7 +237,8 @@ end;
 
 procedure TAlSoundOut.Purge;
 begin
-  Stop; Start;
+  Stop;
+  Start;
 end;
 
 
