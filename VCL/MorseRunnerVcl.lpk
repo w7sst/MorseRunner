@@ -21,30 +21,66 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Files Count="5">
+    <Files Count="14">
       <Item1>
+        <Filename Value="BaseComp.pas"/>
+        <UnitName Value="BaseComp"/>
+      </Item1>
+      <Item2>
+        <Filename Value="Crc32.pas"/>
+        <UnitName Value="Crc32"/>
+      </Item2>
+      <Item3>
+        <Filename Value="Mixers.pas"/>
+        <UnitName Value="Mixers"/>
+      </Item3>
+      <Item4>
+        <Filename Value="MorseKey.pas"/>
+        <UnitName Value="MorseKey"/>
+      </Item4>
+      <Item5>
+        <Filename Value="MorseTbl.pas"/>
+        <UnitName Value="MorseTbl"/>
+      </Item5>
+      <Item6>
+        <Filename Value="MovAvg.pas"/>
+        <UnitName Value="MovAvg"/>
+      </Item6>
+      <Item7>
+        <Filename Value="PermHint.pas"/>
+        <UnitName Value="PermHint"/>
+      </Item7>
+      <Item8>
+        <Filename Value="QuickAvg.pas"/>
+        <UnitName Value="QuickAvg"/>
+      </Item8>
+      <Item9>
+        <Filename Value="SndCustm.pas"/>
+        <UnitName Value="SndCustm"/>
+      </Item9>
+      <Item10>
         <Filename Value="SndOut.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="SndOut"/>
-      </Item1>
-      <Item2>
-        <Filename Value="WavFile.pas"/>
-        <HasRegisterProc Value="True"/>
-        <UnitName Value="WavFile"/>
-      </Item2>
-      <Item3>
+      </Item10>
+      <Item11>
         <Filename Value="SndTypes.pas"/>
         <UnitName Value="SndTypes"/>
-      </Item3>
-      <Item4>
-        <Filename Value="SndCustm.pas"/>
-        <UnitName Value="SndCustm"/>
-      </Item4>
-      <Item5>
+      </Item11>
+      <Item12>
         <Filename Value="VolmSldr.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="VolmSldr"/>
-      </Item5>
+      </Item12>
+      <Item13>
+        <Filename Value="VolumCtl.pas"/>
+        <UnitName Value="VolumCtl"/>
+      </Item13>
+      <Item14>
+        <Filename Value="WavFile.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="WavFile"/>
+      </Item14>
     </Files>
     <RequiredPkgs Count="2">
       <Item1>

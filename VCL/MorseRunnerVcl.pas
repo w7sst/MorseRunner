@@ -8,15 +8,16 @@ unit MorseRunnerVcl;
 interface
 
 uses
-  SndOut, WavFile, SndTypes, SndCustm, VolmSldr, LazarusPackageIntf;
+  BaseComp, Crc32, Mixers, MorseKey, MorseTbl, MovAvg, PermHint, QuickAvg, 
+  SndCustm, SndOut, SndTypes, VolmSldr, VolumCtl, WavFile, LazarusPackageIntf;
 
 implementation
 
 procedure Register;
 begin
   RegisterUnit('SndOut', @SndOut.Register);
-  RegisterUnit('WavFile', @WavFile.Register);
   RegisterUnit('VolmSldr', @VolmSldr.Register);
+  RegisterUnit('WavFile', @WavFile.Register);
 end;
 
 initialization
