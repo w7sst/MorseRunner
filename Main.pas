@@ -679,10 +679,11 @@ end;
 procedure TMainForm.About1Click(Sender: TObject);
 const
   Msg = 'CW CONTEST SIMULATOR'#13#13 +
-        'Copyright © 2004-2006 Alex Shovkoplyas, VE3NEA'#13#13 +
-        've3nea@dxatlas.com'#13;
+        'Copyright (c) 2004-2006 Alex Shovkoplyas, VE3NEA'#13#13 +
+        'Portions Copyright (c) 2022 Zach Metzinger, N0ZGO'#13#13 +
+        've3nea@dxatlas.com, n0zgo@pobox.com'#13;
 begin
-  Application.MessageBox(Msg, 'Morse Runner 1.68', MB_OK or MB_ICONINFORMATION);
+  Application.MessageBox(Msg, 'Morse Runner 1.68z', MB_OK or MB_ICONINFORMATION);
 end;          
 
 

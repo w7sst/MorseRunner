@@ -387,7 +387,7 @@ object MainForm: TMainForm
       Top = 106
       Width = 245
       Height = 13
-      Caption = 'Copyright © 2004-2006 Alex Shovkoplyas, VE3NEA'
+      Caption = 'Copyright (c) 2004-2006 Alex Shovkoplyas, VE3NEA'
       Transparent = True
     end
     object Label16: TLabel
