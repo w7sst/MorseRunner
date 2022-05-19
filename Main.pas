@@ -20,7 +20,8 @@ uses
   LazLogger,       // this unit enables debug logging
 {$else}
   LazLoggerDummy,  // this unit disables debug logging
-{$endif},
+{$endif}
+  LCLProc,
   WavFile, IniFiles, Windows, {UdpHandler,} ARRLFD;
 
 const
@@ -641,6 +642,7 @@ begin
 {$endif}
   DebugLn('----------------------------------------');
   DebugLn('TMainForm.FormCreate: GetCurrentThreadID %d', [GetCurrentThreadID()]);
+  //DebugLnThreadLog('TMainForm.FormCreate...');
 
   PrevWndProc:=Windows.WNDPROC(SetWindowLongPtr(Self.Handle,GWL_WNDPROC,PtrInt(@WndCallback)));
   Randomize;
@@ -715,6 +717,7 @@ end;
 
 procedure TMainForm.AlSoundOut1BufAvailable(Sender: TObject);
 begin
+  //DebugLnThreadLog('TMainForm.AlSoundOut1BufAvailable');
   if AlSoundOut1.Enabled then
     try AlSoundOut1.PutData(Tst.GetAudio); except end;
 end;
@@ -1092,6 +1095,8 @@ begin
   Ini.Pitch := 300 + PitchNo * 50;
   ComboBox1.ItemIndex := PitchNo;
   Tst.Modul.CarrierFreq := Ini.Pitch;
+  DebugLn('TMainForm.SetPitch(%d): Pitch %d, Tst.Modul.CarrierFreq %f',
+    [PitchNo, Ini.Pitch, Tst.Modul.CarrierFreq]);
 end;
 
 
@@ -1100,13 +1105,14 @@ begin
   if (BwNo < 0) or (BwNo >= ComboBox2.Items.Count) then Exit;
 
   Ini.Bandwidth := 100 + BwNo * 50;
-  //DebugLn('Bandwidth = ', IntToStr(Ini.Bandwidth));
   ComboBox2.ItemIndex := BwNo;
 
   Tst.Filt.Points := Round(0.7 * DEFAULTRATE / Ini.BandWidth);
   Tst.Filt.GainDb := 10 * Log10(500/Ini.Bandwidth);
   Tst.Filt2.Points := Tst.Filt.Points;
   Tst.Filt2.GainDb := Tst.Filt.GainDb;
+  DebugLn('TMainForm.SetBw(%d): Bandwidth %d, Filt.Points %d, Filt.GainDb %f',
+    [BwNo, Ini.Bandwidth, Tst.Filt.Points, Tst.Filt.GainDb]);
 
   UpdateRitIndicator;
 end;

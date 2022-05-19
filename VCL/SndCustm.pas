@@ -10,9 +10,12 @@ unit SndCustm;
 interface
 
 uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Forms, SyncObjs, MMSystem, SndTypes,
-  LazLoggerBase,
-  Ini, Windows, Dialogs;
+  LCLIntf, LCLType, SysUtils, Classes, Forms, SyncObjs, MMSystem, SndTypes,
+  LazLoggerBase, LCLProc,
+  Windows, Dialogs;
+
+const
+  DEFAULTBUFCOUNT = 8;
 
 type
   TCustomSoundInOut = class;
@@ -83,9 +86,13 @@ implementation
 procedure TWaitThread.Execute;
 begin
   DebugLn('TWaitThread.Execute (audio thread): thread %d', [GetCurrentThreadID()]);
+  //DebugLnThreadLog('TWaitThread.Execute (audio thread)');
   Priority := tpTimeCritical;
 
   while GetMessage(Msg, 0, 0, 0) do
+  begin
+    //DebugLnEnter('TWaitThread.Execute: msg %u', [Msg.Message]);
+    //DebugLnThreadLog('TWaitThread.Execute: msg ' + DbgS(Msg.Message));
     if Terminated then Exit
     else if Msg.hwnd <> 0 then Continue
     else
@@ -93,12 +100,15 @@ begin
         MM_WIM_DATA, MM_WOM_DONE: Synchronize(ProcessEvent);
         MM_WIM_CLOSE: Terminate;
         end;
+    //DebugLnExit([]);
+  end;
 end;
 
 
 procedure TWaitThread.ProcessEvent;
 begin
   //DebugLnEnter('TWaitThread.ProcessEvent, %d', [GetCurrentThreadID()]);
+  //DebugLnThreadLog('TWaitThread.ProcessEvent');
   try
     if Msg.wParam = Owner.DeviceHandle then
       Owner.BufferDone(PWaveHdr(Msg.lParam));

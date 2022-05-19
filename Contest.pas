@@ -122,18 +122,25 @@ var
   Bfo: Single;
   Smg, Rfg: Single;
   Temp: Single;
-begin
-try
 {$ifdef DEBUG_AUDIO_DETAIL}
-  if HasPendingLastBlockStations then
+  Debug: Boolean;
+{$endif}
+begin
+{$ifdef DEBUG_AUDIO_DETAIL}
+  Debug := HasPendingLastBlockStations or (BlockNumber < 32);
+  if Debug then
     DebugLnEnter('TContest.GetAudio: BlkNum %d', [BlockNumber+1]);
 {$endif}
+try
   //minimize audio output delay
   SetLength(Result, 1);
   Inc(BlockNumber);
   if BlockNumber < 6 then Exit;
 
   //complex noise
+{$ifdef DEBUG_AUDIO_DETAIL}
+  if debug then DebugLn('add noise');
+{$endif}
   SetLengthReIm(ReIm, Ini.BufSize);
   for i:=0 to High(ReIm.Re) do
     begin
@@ -144,6 +151,9 @@ try
   //QRN
   if Ini.Qrn then
     begin
+{$ifdef DEBUG_AUDIO_DETAIL}
+    if debug then DebugLn('add QRN...');
+{$endif}
     //background
     for i:=0 to High(ReIm.Re) do
       if Random < 0.01 then ReIm.Re[i] := 60 * NOISEAMP * (Random-0.5);
@@ -160,6 +170,10 @@ try
   for Stn:=0 to Stations.Count-1 do
     if Stations[Stn].State = stSending then
       begin
+{$ifdef DEBUG_AUDIO_DETAIL}
+      if debug then DebugLnEnter('add audio from %s, Bfo %f, RitPhase %f, Rit %d',
+        [Stations[Stn].MyCall, Stations[Stn].Bfo, RitPhase, Ini.Rit]);
+{$endif}
       Blk := Stations[Stn].GetBlock;
       for i:=0 to High(Blk) do
         begin
@@ -167,17 +181,26 @@ try
         ReIm.Re[i] := ReIm.Re[i] + Blk[i] * Cos(Bfo);
         ReIm.Im[i] := ReIm.Im[i] - Blk[i] * Sin(Bfo);
         end;
-      end;               
+{$ifdef DEBUG_AUDIO_DETAIL}
+      if debug then DebugLnExit([]);
+{$endif}
+      end;
 
   //Rit
   RitPhase := RitPhase + Ini.BufSize * TWO_PI * Ini.Rit / DEFAULTRATE;
   while RitPhase > TWO_PI do RitPhase := RitPhase - TWO_PI;
   while RitPhase < -TWO_PI do RitPhase := RitPhase + TWO_PI;
-  
+{$ifdef DEBUG_AUDIO_DETAIL}
+  if debug then DebugLn('add Rit %f radians, %d Hz', [RitPhase, Ini.Rit]);
+{$endif}
+
 
   //my audio
   if Me.State = stSending then
     begin
+{$ifdef DEBUG_AUDIO_DETAIL}
+    if debug then DebugLnEnter('adding my audio');
+{$endif}
     Blk := Me.GetBlock;
     //self-mon. gain
     Temp := MainForm.VolumeSlider1.Value;
@@ -198,25 +221,49 @@ try
           ReIm.Re[i] := Smg * (Blk[i]);
           ReIm.Im[i] := Smg * (Blk[i]);
           end;
+{$ifdef DEBUG_AUDIO_DETAIL}
+    if debug then DebugLnExit([]);
+{$endif}
     end;
 
 
   //LPF
+{$ifdef DEBUG_AUDIO_DETAIL}
+  if debug then DebugLn('apply LPF');
+{$endif}
   Filt2.Filter(ReIm);
   ReIm := Filt.Filter(ReIm);
-  if (BlockNumber mod 10) = 0 then SwapFilters;
+  if (BlockNumber mod 10) = 0 then
+    begin
+{$ifdef DEBUG_AUDIO_DETAIL}
+      if debug then DebugLn('SwapFilters');
+{$endif}
+      SwapFilters;
+    end;
 
   //mix up to Pitch frequency
+{$ifdef DEBUG_AUDIO_DETAIL}
+  if debug then DebugLn('mix up to Pitch freq %f', [Modul.CarrierFreq]);
+{$endif}
   Result := Modul.Modulate(ReIm);
   //AGC
+{$ifdef DEBUG_AUDIO_DETAIL}
+  if debug then DebugLn('apply AGC');
+{$endif}
   Result := Agc.Process(Result);
   //save
   with MainForm.AlWavFile1 do
    if IsOpen then WriteFrom(@Result[0], nil, Ini.BufSize);
 
   //timer tick
+{$ifdef DEBUG_AUDIO_DETAIL}
+  if debug then DebugLnEnter('timer tick...');
+{$endif}
   Me.Tick;
   for Stn:=Stations.Count-1 downto 0 do Stations[Stn].Tick;
+{$ifdef DEBUG_AUDIO_DETAIL}
+  if debug then DebugLnExit([]);
+{$endif}
 
 
   //if DX is done, write to log and kill
@@ -226,6 +273,7 @@ try
           if (Oper.State = osDone) and (QsoList <> nil) and (MyCall = QsoList[High(QsoList)].Call)
             then
               begin
+              DebugLnEnter('dx is done, write log and delete');
               DataToLastQso; // deletes this TDxStation from Stations[]
               with MainForm.RichEdit1.Lines do Delete(Count-1);
               Log.CheckErr;
@@ -233,6 +281,7 @@ try
               if Ini.RunMode = RmHst
                 then Log.UpdateStatsHst
                 else Log.UpdateStats;
+              DebugLnExit([]);
               end;
 
 
@@ -245,14 +294,18 @@ try
 
   if ((RunMode = rmSingle){ or (Ini.ContestName = 'arrlfd')}) and (DxCount = 0) then
      begin
+     DebugLnEnter('adding new calling station');
      Me.Msg := [msgCq]; //no need to send cq in this mode
      Stations.AddCaller.ProcessEvent(evMeFinished);
+     DebugLnExit([]);
      end
   else if (RunMode = rmHst) and (DxCount < Activity) then
      begin
+     DebugLnEnter('adding callers');
      Me.Msg := [msgCq];
      for i:=DxCount+1 to Activity do
        Stations.AddCaller.ProcessEvent(evMeFinished);
+     DebugLnExit([]);
      end;
 
 
@@ -283,7 +336,7 @@ try
     end;
 finally
 {$ifdef DEBUG_AUDIO_DETAIL}
-  DebugLnExit([]);
+  if debug then DebugLnExit([]);
 {$endif}
 end;
 end;

@@ -10,6 +10,7 @@ unit Mixers;
 interface
 
 uses
+  LazLoggerBase, LCLProc,
   SysUtils, Classes, SndTypes, Math;
 
 type
@@ -75,7 +76,6 @@ type
 
 
 implementation
-
 
 //------------------------------------------------------------------------------
 //                              TDownMixer
@@ -214,6 +214,7 @@ var
   dFi: Single;
   i: integer;
 begin
+  //DebugLnThreadLog('TModulator.CalcSinCos');
   Cnt := Round(FSamplesPerSec / FCarrierFreq);
   FCarrierFreq := FSamplesPerSec / Cnt;
   dFi := TWO_PI / Cnt;

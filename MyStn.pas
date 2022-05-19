@@ -140,8 +140,11 @@ end;
 
 
 function TMyStation.GetBlock: TSingleArray;
+var
+  debug: Boolean;
 begin
-  if IsLastBlock then DebugLn('TMyStation.GetBlock');
+  debug := IsLastBlock;
+  if debug then DebugLnEnter('TMyStation.GetBlock');
   Result := inherited GetBlock;
   if Envelope = nil then
     begin
@@ -150,6 +153,7 @@ begin
     //cursor to exchange field
     MainForm.Advance;
     end;
+  if debug then DebugLnExit([]);
 end;
 
 
