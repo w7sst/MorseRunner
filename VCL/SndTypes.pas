@@ -50,9 +50,9 @@ type
 
   PWaveBuffer = ^TWaveBuffer;
   TWaveBuffer = record
-    //Hdr : TWaveHdr;
-    used : integer;
-    Data : TSmallIntArray;
+    used   : integer;
+    len    : integer;		  
+    Data   : TSmallIntArray;
     end;	       
 
 procedure SetLengthReIm(var Arr: TReImArrays; Len: integer);

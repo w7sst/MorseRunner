@@ -91,7 +91,6 @@ begin
   if Assigned(FOnBufAvailable) then
     for i:=0 to Length(Buffers)-1 do
       begin
-	Writeln('SoundOut buffer ', i);
 	Buffers[i].used := 0;
 	FOnBufAvailable(Self);
       end;
@@ -126,8 +125,6 @@ end;
 //                                Buffers
 //------------------------------------------------------------------------------
 function  TAlSoundOut.NextEmptyBuffer: PWaveBuffer;
-var
-  i: integer;
 begin
   //for i:=0 to Length(Buffers)-1 do
      //if (Buffers[i].Hdr.dwFlags and (WHDR_INQUEUE or WHDR_PREPARED)) = 0 thne
@@ -175,7 +172,10 @@ begin
 
   //Writeln('PutData ', High(Data), ' ', Length(Data));
 
+  Buf.len := Length(Data);
   Buf.used := 1;
+
+  // This is Windows crap .. excise!
   //fill header
   //FillChar(Buf.Hdr, SizeOf(TWaveHdr), 0);
   //with Buf.Hdr do
@@ -207,18 +207,34 @@ var
   p : PUInt8Array;
   u : PInteger;
 begin
-  //Writeln('BufferDone');
   p := PUInt8Array(stream);
-  
-  for i := 0 to len-1 do
-  begin
-    p[i] := Buffers[0].Data[i];
-  end;
+
+  //Writeln('BufferDone len ', len, ' Buffers.Data ', Length(Buffers[0].Data));
+
+  // The generator code sometimes gives us wrongly-sized buffers
+  if len = (2 * Buffers[0].len) then
+    begin
+      for i := 0 to (len div 2)-1 do
+      begin
+	p[2*i] := Buffers[0].Data[i] and $ff;
+	p[(2*i)+1] := Buffers[0].Data[i] shr 8;
+      end;
+    end
+  else
+    begin
+      Writeln('BufferDone len ', len, ' != 2 * Buffers[0].len ', Buffers[0].len);
+      for i := 0 to len do
+      begin
+	p[i] := 0; // Silence
+      end;
+    end;
+
   Unprepare(@Buffers[0]);
   
   if FCloseWhenDone and (FBufsDone = FBufsAdded)
     then Enabled := false
   else if Assigned(FOnBufAvailable) then FOnBufAvailable(Self);
+
 end;
 
 
