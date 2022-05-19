@@ -11,7 +11,7 @@ interface
 
 uses
   LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Forms, SyncObjs, SndTypes,
-  Ini;
+  Ini, sdl;
 
 type
   TCustomSoundInOut = class;
@@ -67,10 +67,13 @@ type
     destructor Destroy; override;
   end;
 
-
-
-
 implementation
+
+
+procedure BufferDoneSDL(userdata : Pointer; stream : PUInt8; len : LongInt); cdecl;
+begin
+   Writeln('BufferDoneSDL');
+end;
 
 
 { TWaitThread }
@@ -84,9 +87,9 @@ begin
    Priority := tpTimeCritical;
    while not Terminated do
       begin
-	 Writeln('Tick');
-	 Queue(ProcessEvent);
-	 Sleep(1000);
+	 //Writeln('Tick');
+	 Synchronize(ProcessEvent);
+	 Sleep(75);
       end;
 //   while GetMessage(Msg, 0, 0, 0) do
 //      if Terminated then Exit
@@ -101,9 +104,9 @@ end;
 
 procedure TWaitThread.ProcessEvent;
 begin
-   Writeln('ProcessEvent Main Thread');
+   //Writeln('ProcessEvent Main Thread');
    Owner.BufferDone;
-   Writeln('ProcessEvent Done');
+   //Writeln('ProcessEvent Done');
 //  try
 //    if Msg.wParam = Owner.DeviceHandle then
 //      Owner.BufferDone(PWaveHdr(Msg.lParam));
@@ -131,6 +134,14 @@ begin
 
   SetBufCount(DEFAULTBUFCOUNT);
 
+  if SDL_Init(SDL_INIT_AUDIO) < 0 then
+     begin
+	Writeln('SDL_Init failed.');
+	Exit;
+     end;
+
+   Writeln('SDL_Init OK');
+   
   //FDeviceID := WAVE_MAPPER;
 
   //init WaveFmt
@@ -218,18 +229,42 @@ begin
 end;
 
 
-
-
-
 //------------------------------------------------------------------------------
 //                              get/set
 //------------------------------------------------------------------------------
 
 procedure TCustomSoundInOut.SetSamplesPerSec(const Value: LongWord);
+var
+   des, got	    : PSDL_AudioSpec;
+   err		    : String;
 begin
-  Enabled := false;
+   Enabled := false;
 
    Writeln('SetSamplesPerSec ', Value);
+
+   SDL_CloseAudio();
+
+   des := New(PSDL_AudioSpec);
+   got := New(PSDL_AudioSpec);
+   with des^ do
+      begin
+	 freq := Value;
+	 format := AUDIO_S16LSB;
+	 channels := 1;
+	 samples := 8192;
+	 callback := @BufferDoneSDL;
+	 //userdata := @acur;
+      end;
+
+   if SDL_OpenAudio(des, got) < 0 then
+   begin
+      err := SDL_GetError();
+      WriteLn('OpenAudio failed: ', err);
+      Exit;
+   end;
+
+   WriteLn('OpenAudio got ', got^.freq, ' ', got^.format, ' ', got^.channels, ' ', got^.samples);
+
   //with WaveFmt.wf do
   //  begin
   //  nSamplesPerSec := Value;

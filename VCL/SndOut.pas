@@ -11,7 +11,7 @@ interface
 
 uses
   LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  BaseComp, SndTypes, SndCustm, Math;
+  BaseComp, SndTypes, SndCustm, Math, sdl;
 
 type
   TAlSoundOut = class(TCustomSoundInOut)
@@ -82,8 +82,11 @@ var
 begin
   //open device
   //rc := waveOutOpen(@DeviceHandle, DeviceID, @WaveFmt, GetThreadID, 0, CALLBACK_THREAD);
+  Writeln('SoundOut.Start');
   CheckErr;
 
+  SDL_PauseAudio(0);
+   
   //send all buffers to the player
   if Assigned(FOnBufAvailable) then
     for i:=0 to High(Buffers) do
@@ -97,7 +100,11 @@ var
 begin
   //stop playback
   //rc := waveOutReset(DeviceHandle);
+  Writeln('SoundOut.Stop');
   CheckErr;
+
+  SDL_PauseAudio(1);
+   
   for i:=0 to High(Buffers) do Unprepare(@Buffers[i]);
   //close device
   //rc := waveOutClose(DeviceHandle);
@@ -186,7 +193,7 @@ end;
 //------------------------------------------------------------------------------
 procedure TAlSoundOut.BufferDone;
 begin
-   Writeln('BufferDone');
+   //Writeln('BufferDone');
    Unprepare(@Buffers[0]);
 
    if FCloseWhenDone and (FBufsDone = FBufsAdded)
