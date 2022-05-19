@@ -54,7 +54,7 @@ type
     //override these
     procedure Start; virtual; abstract;
     procedure Stop; virtual; abstract;
-    procedure BufferDone; virtual; abstract;
+    procedure BufferDone(userdata : Pointer; stream : PUint8; len : LongInt); virtual; abstract;
 
     property Enabled: boolean read FEnabled write SetEnabled default false;
     property DeviceID: UINT read FDeviceID write SetDeviceID default 0;
@@ -67,12 +67,17 @@ type
     destructor Destroy; override;
   end;
 
+var
+  SndObj : TCustomSoundInOut;
+  bufidx : integer;
+    
 implementation
 
 
 procedure BufferDoneSDL(userdata : Pointer; stream : PUInt8; len : LongInt); cdecl;
 begin
-   Writeln('BufferDoneSDL');
+  //Writeln('BufferDoneSDL');
+   SndObj.BufferDone(userdata, stream, len);
 end;
 
 
@@ -88,7 +93,7 @@ begin
    while not Terminated do
       begin
 	 //Writeln('Tick');
-	 Synchronize(ProcessEvent);
+	 //Synchronize(ProcessEvent);
 	 Sleep(75);
       end;
 //   while GetMessage(Msg, 0, 0, 0) do
@@ -105,7 +110,7 @@ end;
 procedure TWaitThread.ProcessEvent;
 begin
    //Writeln('ProcessEvent Main Thread');
-   Owner.BufferDone;
+   //Owner.BufferDone;
    //Writeln('ProcessEvent Done');
 //  try
 //    if Msg.wParam = Owner.DeviceHandle then
@@ -133,6 +138,7 @@ begin
   inherited Create(AOwner);
 
   SetBufCount(DEFAULTBUFCOUNT);
+  Writeln('Buffers ', GetBufCount());
 
   if SDL_Init(SDL_INIT_AUDIO) < 0 then
      begin
@@ -213,6 +219,8 @@ begin
 	FThread := TWaitThread.Create(true);
 	FThread.FreeOnTerminate := true;
 	FThread.Owner := Self;
+	SndObj := Self;
+        bufidx := 0;
 	FThread.Priority := tpTimeCritical;
 	//start
 	FEnabled := true;
@@ -251,9 +259,9 @@ begin
 	 freq := Value;
 	 format := AUDIO_S16LSB;
 	 channels := 1;
-	 samples := 8192;
+	 samples := 512;
 	 callback := @BufferDoneSDL;
-	 //userdata := @acur;
+	 userdata := @bufidx;
       end;
 
    if SDL_OpenAudio(des, got) < 0 then

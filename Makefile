@@ -2,4 +2,4 @@ all:
 	lazbuild MorseRunner.lpr
 
 clean:
-	rm -rf lib
+	rm -rf lib MorseRunner.core

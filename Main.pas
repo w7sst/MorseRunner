@@ -318,7 +318,7 @@ procedure TMainForm.AlSoundOut1BufAvailable(Sender: TObject);
 begin
   if AlSoundOut1.Enabled then
      begin
-	//Writeln('AlSoundOut1BufAvailable');
+       //Writeln('AlSoundOut1BufAvailable');
 	try AlSoundOut1.PutData(Tst.GetAudio); except end;
      end; 
 end;

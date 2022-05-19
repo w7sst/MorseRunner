@@ -18,7 +18,7 @@ const
   SEC_TST = 'Contest';
   SEC_SYS = 'System';
 
-  DEFAULTBUFCOUNT = 8;
+  DEFAULTBUFCOUNT = 1;
   DEFAULTBUFSIZE = 512;
   DEFAULTRATE = 11025;
 

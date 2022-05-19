@@ -23,7 +23,7 @@ type
     function  NextEmptyBuffer: PWaveBuffer;
     procedure Unprepare(Buf: PWaveBuffer);
   protected
-    procedure BufferDone; override;
+    procedure BufferDone(userdata : Pointer; stream : PUint8; len : LongInt); override;
     procedure Start; override;
     procedure Stop; override;
   public
@@ -89,8 +89,12 @@ begin
    
   //send all buffers to the player
   if Assigned(FOnBufAvailable) then
-    for i:=0 to High(Buffers) do
-      FOnBufAvailable(Self);
+    for i:=0 to Length(Buffers)-1 do
+      begin
+	Writeln('SoundOut buffer ', i);
+	Buffers[i].used := 0;
+	FOnBufAvailable(Self);
+      end;
 end;
 
 
@@ -105,7 +109,7 @@ begin
 
   SDL_PauseAudio(1);
    
-  for i:=0 to High(Buffers) do Unprepare(@Buffers[i]);
+  for i:=0 to Length(Buffers)-1 do Unprepare(@Buffers[i]);
   //close device
   //rc := waveOutClose(DeviceHandle);
   CheckErr;
@@ -125,12 +129,14 @@ function  TAlSoundOut.NextEmptyBuffer: PWaveBuffer;
 var
   i: integer;
 begin
-  //for i:=0 to High(Buffers) do
-  //  if (Buffers[i].Hdr.dwFlags and (WHDR_INQUEUE or WHDR_PREPARED)) = 0 then
-  //    begin Result := @Buffers[i]; Exit; end;
+  //for i:=0 to Length(Buffers)-1 do
+     //if (Buffers[i].Hdr.dwFlags and (WHDR_INQUEUE or WHDR_PREPARED)) = 0 thne
+  if (Buffers[0].used = 0) then
+    begin Result := @Buffers[0]; Exit; end;
 
-  Result := nil;
-  //Err('Output buffers full');
+  //Result := nil;
+  Err('Output buffers full');
+
 end;
 
 
@@ -141,7 +147,8 @@ begin
     //  begin
     //  rc := WaveOutUnprepareHeader(DeviceHandle, @Buf.Hdr, SizeOf(TWaveHdr));
     //  Buf.Data := nil;
-   Inc(FBufsDone);
+  Buf.used := 0;
+  Inc(FBufsDone);
       //CheckErr;
       //end;
 end;
@@ -166,6 +173,9 @@ begin
   for i:=0 to High(Data) do
     Buf.Data[i] := Max(-32767, Min(32767, Round(Data[i])));
 
+  //Writeln('PutData ', High(Data), ' ', Length(Data));
+
+  Buf.used := 1;
   //fill header
   //FillChar(Buf.Hdr, SizeOf(TWaveHdr), 0);
   //with Buf.Hdr do
@@ -191,14 +201,24 @@ end;
 //------------------------------------------------------------------------------
 //                              events
 //------------------------------------------------------------------------------
-procedure TAlSoundOut.BufferDone;
+procedure TAlSoundOut.BufferDone(userdata : Pointer; stream : PUInt8; len : LongInt);
+var
+  i : Integer;
+  p : PUInt8Array;
+  u : PInteger;
 begin
-   //Writeln('BufferDone');
-   Unprepare(@Buffers[0]);
-
-   if FCloseWhenDone and (FBufsDone = FBufsAdded)
-      then Enabled := false
-   else if Assigned(FOnBufAvailable) then FOnBufAvailable(Self);
+  //Writeln('BufferDone');
+  p := PUInt8Array(stream);
+  
+  for i := 0 to len-1 do
+  begin
+    p[i] := Buffers[0].Data[i];
+  end;
+  Unprepare(@Buffers[0]);
+  
+  if FCloseWhenDone and (FBufsDone = FBufsAdded)
+    then Enabled := false
+  else if Assigned(FOnBufAvailable) then FOnBufAvailable(Self);
 end;
 
 
