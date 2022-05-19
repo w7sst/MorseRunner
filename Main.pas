@@ -986,12 +986,25 @@ procedure TMainForm.Advance;
 begin
   if not MustAdvance then Exit;
 
-  if Edit2.Text = '' then Edit2.Text := '599';
+   Writeln('.Advance start');
+   //if Edit2.Text = '' then Edit2.Text := '599';
 
-  if Pos('?', Edit1.Text) = 0 then ActiveControl := Edit3
-  else if ActiveControl = Edit1 then Edit1Enter(nil)
-  else ActiveControl := Edit1;
-
+  if Pos('?', Edit1.Text) = 0 then
+  begin
+     Writeln('.Advance edit3 start');
+     ActiveControl := Edit3;
+     Writeln('.Advance edit3 end');
+  end
+  else if ActiveControl = Edit1 then
+     begin
+	Writeln('.Advance edit1 start');
+	Edit1Enter(nil);
+	Writeln('.Advance edit1 end');
+     end
+  else
+     ActiveControl := Edit1;
+   
+  Writeln('.Advance end');
   MustAdvance := false;
 end;
 
