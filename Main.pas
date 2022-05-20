@@ -14,7 +14,7 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
   ComCtrls, Spin, SndTypes, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles;
+  WavFile, IniFiles, sdl;
 
 const
   WM_TBDOWN = WM_USER+1;
@@ -986,26 +986,22 @@ procedure TMainForm.Advance;
 begin
   if not MustAdvance then Exit;
 
-   Writeln('.Advance start');
-   //if Edit2.Text = '' then Edit2.Text := '599';
+   if Edit2.Text = '' then Edit2.Text := '599';
+
 
   if Pos('?', Edit1.Text) = 0 then
   begin
-     Writeln('.Advance edit3 start');
      ActiveControl := Edit3;
-     Writeln('.Advance edit3 end');
   end
   else if ActiveControl = Edit1 then
      begin
-	Writeln('.Advance edit1 start');
 	Edit1Enter(nil);
-	Writeln('.Advance edit1 end');
      end
   else
      ActiveControl := Edit1;
    
-  Writeln('.Advance end');
   MustAdvance := false;
+
 end;
 
 
