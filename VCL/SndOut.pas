@@ -23,7 +23,7 @@ type
     function  NextEmptyBuffer: PWaveBuffer;
     procedure Unprepare(Buf: PWaveBuffer);
   protected
-    procedure BufferDone(userdata : Pointer; stream : PUint8; len : LongInt); override;
+    procedure BufferDone(Buf : PWaveBuffer); override;
     procedure Start; override;
     procedure Stop; override;
   public
@@ -85,7 +85,7 @@ begin
   Writeln('SoundOut.Start');
   CheckErr;
 
-  SDL_PauseAudio(0);
+   SDL_PauseAudio(0);
    
   //send all buffers to the player
   if Assigned(FOnBufAvailable) then
@@ -106,7 +106,7 @@ begin
   Writeln('SoundOut.Stop');
   CheckErr;
 
-  SDL_PauseAudio(1);
+   SDL_PauseAudio(1);
    
   for i:=0 to Length(Buffers)-1 do Unprepare(@Buffers[i]);
   //close device
@@ -140,14 +140,8 @@ end;
 
 procedure TAlSoundOut.Unprepare(Buf: PWaveBuffer);
 begin
-    //if (Buf.Hdr.dwFlags and WHDR_PREPARED) <> 0 then
-    //  begin
-    //  rc := WaveOutUnprepareHeader(DeviceHandle, @Buf.Hdr, SizeOf(TWaveHdr));
-    //  Buf.Data := nil;
-  Buf.used := 0;
+  //Writeln('unprepare used = ', Buf.used);
   Inc(FBufsDone);
-      //CheckErr;
-      //end;
 end;
 
 
@@ -201,36 +195,10 @@ end;
 //------------------------------------------------------------------------------
 //                              events
 //------------------------------------------------------------------------------
-procedure TAlSoundOut.BufferDone(userdata : Pointer; stream : PUInt8; len : LongInt);
-var
-  i : Integer;
-  p : PUInt8Array;
-  u : PInteger;
+procedure TAlSoundOut.BufferDone(Buf : PWaveBuffer);
 begin
-  p := PUInt8Array(stream);
+  Unprepare(Buf);
 
-  //Writeln('BufferDone len ', len, ' Buffers.Data ', Length(Buffers[0].Data));
-
-  // The generator code sometimes gives us wrongly-sized buffers
-  if len = (2 * Buffers[0].len) then
-    begin
-      for i := 0 to (len div 2)-1 do
-      begin
-	p[2*i] := Buffers[0].Data[i] and $ff;
-	p[(2*i)+1] := Buffers[0].Data[i] shr 8;
-      end;
-    end
-  else
-    begin
-      Writeln('BufferDone len ', len, ' != 2 * Buffers[0].len ', Buffers[0].len);
-      for i := 0 to len do
-      begin
-	p[i] := 0; // Silence
-      end;
-    end;
-
-  Unprepare(@Buffers[0]);
-  
   if FCloseWhenDone and (FBufsDone = FBufsAdded)
     then Enabled := false
   else if Assigned(FOnBufAvailable) then FOnBufAvailable(Self);
