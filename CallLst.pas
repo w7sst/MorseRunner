@@ -49,8 +49,18 @@ begin
   Calls.Clear;
 
   FileName := ExtractFilePath(ParamStr(0)) + 'Master.dta';
-  if not FileExists(FileName) then Exit;
+  if not FileExists(FileName) then
+     begin
+	GetDir(0, FileName);
+	FileName := Filename + '/Master.dta';
+	if not FileExists(FileName) then
+	   begin
+	      Writeln('Unable to load call file, default single call used');
+	      Exit;
+	   end;
+     end;
 
+  Writeln('Using calls from file: ', Filename);
   with TFileStream.Create(FileName, fmOpenRead) do
     try
       FFileSize := Size;
