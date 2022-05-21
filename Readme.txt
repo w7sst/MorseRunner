@@ -1,10 +1,11 @@
-                              MORSE RUNNER  1.68
+                              MORSE RUNNER  1.68z
 
                               Contest Simulator
 
                                   freeware
 
                Copyright (C) 2004-2006 Alex Shovkoplyas, VE3NEA
+	       Lazarus/FPC conversions by Zach Metzinger, N0ZGO
 
                       http://www.dxatlas.com/MorseRunner/
 
@@ -13,6 +14,7 @@
 
 PLATFORMS
 
+  - FreeBSD 12.x (and probably others with Lazarus/FPC/SDL 1.2)
   - Windows 95/98/ME/NT4/2000/XP;
   - works on Linux systems under WINE (info TNX F8BQQ).
 
@@ -20,8 +22,8 @@ PLATFORMS
 
 INSTALLATION
 
-  - run Setup.exe and follow the on-screen instructions.
-
+  - Windows: run Setup.exe and follow the on-screen instructions.
+  - "Real" OSen: compile from source and install as you see fit. :-)
 
 
 UNINSTALLATION
