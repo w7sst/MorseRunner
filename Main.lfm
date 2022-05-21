@@ -273,7 +273,7 @@ object MainForm: TMainForm
       Width = 163
       Height = 68
       BevelOuter = bvLowered
-      Caption = '0'
+      Caption = ''
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
@@ -281,6 +281,28 @@ object MainForm: TMainForm
       Font.Style = [fsBold]
       ParentFont = False
       TabOrder = 8
+      object LabelScoreRaw: TLabel
+        Caption = 'Raw'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clBlack
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = True
+	Align = alTop
+      end
+      object LabelScoreVer: TLabel
+        Caption = 'Ver'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clBlack
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = True
+	Align = alBottom
+      end
       object ListView1: TListView
         Left = 0
         Top = 0
@@ -310,6 +332,7 @@ object MainForm: TMainForm
         TabOrder = 0
         TabStop = False
         ViewStyle = vsReport
+        Visible = False
       end
     end
   end

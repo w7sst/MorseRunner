@@ -136,6 +136,9 @@ begin
   //MainForm.ListView1.Items[1].SubItems[0] := IntToStr(Mul);
   //MainForm.ListView1.Items[2].SubItems[0] := IntToStr(Pts*Mul);
 
+  // Used in placed of ListView1, as there are layout problems with the Form
+  MainForm.LabelScoreRaw.Caption := 'Raw ' + IntToStr(Pts) + ' / ' + IntToStr(Mul) + ' / ' + IntToStr(Pts*Mul);
+  
   //verified
 
   Pts := 0;
@@ -152,6 +155,9 @@ begin
   //MainForm.ListView1.Items[1].SubItems[1] := IntToStr(Mul);
   //MainForm.ListView1.Items[2].SubItems[1] := IntToStr(Pts*Mul);
 
+  // Used in placed of ListView1, as there are layout problems with the Form
+  MainForm.LabelScoreVer.Caption := 'Ver ' + IntToStr(Pts) + ' / ' + IntToStr(Mul) + ' / ' + IntToStr(Pts*Mul);
+  
   MainForm.PaintBox1.Invalidate;
 end;
 

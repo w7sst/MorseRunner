@@ -195,6 +195,8 @@ type
     HSTCompetition1: TMenuItem;
     HSTCompetition2: TMenuItem;
     Panel11: TPanel;
+    LabelScoreRaw: TLabel;
+    LabelScoreVer: TLabel;
     ListView1: TListView;
     Operator1: TMenuItem;
     procedure FormCreate(Sender: TObject);
@@ -805,8 +807,8 @@ begin
   EnableCtl(ComboBox2, RunMode <> rmHst);                
   if RunMode = rmHst then begin ComboBox2.ItemIndex :=10; SetBw(10); end;
 
-  if RunMode = rmHst then ListView1.Visible := false
-  else if RunMode <> rmStop then ListView1.Visible := true;
+  //if RunMode = rmHst then ListView1.Visible := false
+  //else if RunMode <> rmStop then ListView1.Visible := true;
 
 
   //mode caption
