@@ -11,7 +11,7 @@ interface
 
 uses
   LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Forms, SyncObjs, SndTypes,
-  Ini, sdl;
+  Ini, MorseKey, Contest, sdl;
 
 type
   TCustomSoundInOut = class;
@@ -231,7 +231,7 @@ begin
 	   freq := nSamplesPerSec;
 	   format := AUDIO_S16LSB;
 	   channels := 1;
-	   samples := 512;
+	   samples := 512; // Linux gives us 256. At 128, audio is choppy. < 128 sounds bad.
 	   callback := @BufferDoneSDL;
 	   userdata := nil;
 	end;
@@ -244,9 +244,13 @@ begin
 	end;
 
 	WriteLn('OpenAudio got ', got^.freq, ' ', got^.format, ' ', got^.channels, ' ', got^.samples);
-	// No fancy buffer management done here. Set buffer length directly.
+	// Gah. So, this is terribly dirty.. but it fixes the Linux problem right now
+	// FIXME
 	Ini.BufSize := got^.samples;
-	
+	Keyer.BufSize := Ini.BufSize;
+	Tst.Filt.SamplesInInput := Ini.BufSize;
+	Tst.Filt2.SamplesInInput := Ini.BufSize;
+
 	Writeln('DoSetEnabled true');
 	//reset counts
 	FBufsAdded := 0;
