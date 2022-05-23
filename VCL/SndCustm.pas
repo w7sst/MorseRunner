@@ -46,7 +46,8 @@ type
     Buffers: array of TWaveBuffer;
     FBufsAdded: LongWord;
     FBufsDone: LongWord;
-
+    nSamplesPerSec: LongWord;
+    
     procedure Loaded; override;
     procedure Err(Txt: string);
     function GetThreadID: THandle;
@@ -214,9 +215,38 @@ end;
 
 
 procedure TCustomSoundInOut.DoSetEnabled(AEnabled: boolean);
+var
+   des, got	    : PSDL_AudioSpec;
+   err		    : String;
 begin
    if AEnabled then
      begin
+
+	SDL_CloseAudio();
+
+	des := New(PSDL_AudioSpec);
+	got := New(PSDL_AudioSpec);
+	with des^ do
+	begin
+	   freq := nSamplesPerSec;
+	   format := AUDIO_S16LSB;
+	   channels := 1;
+	   samples := 512;
+	   callback := @BufferDoneSDL;
+	   userdata := nil;
+	end;
+
+	if SDL_OpenAudio(des, got) < 0 then
+	begin
+	   err := SDL_GetError();
+	   WriteLn('OpenAudio failed: ', err);
+	   Exit;
+	end;
+
+	WriteLn('OpenAudio got ', got^.freq, ' ', got^.format, ' ', got^.channels, ' ', got^.samples);
+	// No fancy buffer management done here. Set buffer length directly.
+	Ini.BufSize := got^.samples;
+	
 	Writeln('DoSetEnabled true');
 	//reset counts
 	FBufsAdded := 0;
@@ -247,48 +277,18 @@ end;
 //------------------------------------------------------------------------------
 
 procedure TCustomSoundInOut.SetSamplesPerSec(const Value: LongWord);
-var
-   des, got	    : PSDL_AudioSpec;
-   err		    : String;
 begin
    Enabled := false;
 
    Writeln('SetSamplesPerSec ', Value);
 
-   SDL_CloseAudio();
-
-   des := New(PSDL_AudioSpec);
-   got := New(PSDL_AudioSpec);
-   with des^ do
-      begin
-	 freq := Value;
-	 format := AUDIO_S16LSB;
-	 channels := 1;
-	 samples := 512;
-	 callback := @BufferDoneSDL;
-	 userdata := nil;
-      end;
-
-   if SDL_OpenAudio(des, got) < 0 then
-   begin
-      err := SDL_GetError();
-      WriteLn('OpenAudio failed: ', err);
-      Exit;
-   end;
-
-   WriteLn('OpenAudio got ', got^.freq, ' ', got^.format, ' ', got^.channels, ' ', got^.samples);
-
-  //with WaveFmt.wf do
-  //  begin
-  //  nSamplesPerSec := Value;
-  //  nAvgBytesPerSec := nSamplesPerSec * nBlockAlign;
-  //  end;
+   nSamplesPerSec := Value;   
 end;
 
 
 function TCustomSoundInOut.GetSamplesPerSec: LongWord;
 begin
-  //Result := WaveFmt.wf.nSamplesPerSec;
+  Result := nSamplesPerSec;
 end;
 
 
