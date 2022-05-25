@@ -60,7 +60,7 @@ type
     function GetBlock: TSingleArray; virtual;
     procedure ProcessEvent(AEvent: TStationEvent); virtual; abstract;
 
-    procedure SendMsg(AMsg: TStationMessage);
+    procedure SendMsg(AMsg: TStationMessage); virtual;
     procedure SendText(AMsg: string); virtual;
     procedure SendMorse(AMorse: string);
 
