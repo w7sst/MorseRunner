@@ -140,6 +140,7 @@ type
     File1: TMenuItem;
     N40dB1: TMenuItem;
     N50dB1: TMenuItem;
+    sbar: TPanel;
     Send1: TMenuItem;
     CQ1: TMenuItem;
     Number1: TMenuItem;
@@ -1909,6 +1910,8 @@ begin
     Log.Clear;
     WipeBoxes;
     RichEdit1.Visible := true;
+    sbar.Align:= alBottom;
+    sbar.Visible:= true;  // mnuShowCallsignInfo.Checked;
     {! ?}Panel5.Update;
     end;
 
@@ -2041,6 +2044,7 @@ var
   FName: string;
 begin
   RichEdit1.Clear;
+  sbar.Visible:= false;
   FName := ChangeFileExt(ParamStr(0), '.lst');
   if FileExists(FName) { *Converted from FileExists* }
     then RichEdit1.Lines.LoadFromFile(FName)

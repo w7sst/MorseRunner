@@ -1,16 +1,17 @@
 object MainForm: TMainForm
-  Left = 778
-  Height = 443
-  Top = 206
-  Width = 777
+  Left = 525
+  Height = 554
+  Top = 153
+  Width = 971
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Morse Runner'
-  ClientHeight = 423
-  ClientWidth = 777
+  ClientHeight = 529
+  ClientWidth = 971
   Color = clBtnFace
+  DesignTimePPI = 120
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -14
   Font.Name = 'MS Sans Serif'
   KeyPreview = True
   Menu = MainMenu1
@@ -22,136 +23,184 @@ object MainForm: TMainForm
   OnKeyUp = FormKeyUp
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '1.4.4.0'
+  LCLVersion = '2.0.12.0'
   object Bevel1: TBevel
     Left = 0
     Height = 2
     Top = 0
-    Width = 777
+    Width = 971
     Align = alTop
   end
   object Panel1: TPanel
     Left = 0
-    Height = 119
-    Top = 304
-    Width = 777
+    Height = 149
+    Top = 380
+    Width = 971
     Align = alBottom
     BevelInner = bvRaised
     BevelOuter = bvLowered
-    ClientHeight = 119
-    ClientWidth = 777
+    ClientHeight = 149
+    ClientWidth = 971
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'MS Sans Serif'
+    ParentFont = False
     TabOrder = 0
     object Label1: TLabel
-      Left = 14
-      Height = 13
-      Top = 10
-      Width = 17
+      Left = 18
+      Height = 16
+      Top = 12
+      Width = 23
       Caption = 'Call'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       ParentColor = False
+      ParentFont = False
     end
     object SpeedButton4: TSpeedButton
       Tag = 1
-      Left = 14
-      Height = 17
-      Top = 66
-      Width = 61
+      Left = 12
+      Height = 21
+      Top = 82
+      Width = 76
       Caption = 'F1  CQ'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       OnClick = SendClick
+      ParentFont = False
     end
     object SpeedButton5: TSpeedButton
       Tag = 2
-      Left = 74
-      Height = 17
-      Top = 66
-      Width = 61
+      Left = 92
+      Height = 21
+      Top = 82
+      Width = 76
       Caption = 'F2  <#>'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       OnClick = SendClick
+      ParentFont = False
     end
     object SpeedButton6: TSpeedButton
       Tag = 3
-      Left = 138
-      Height = 17
-      Top = 66
-      Width = 61
+      Left = 172
+      Height = 21
+      Top = 82
+      Width = 76
       Caption = 'F3  TU'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       OnClick = SendClick
+      ParentFont = False
     end
     object SpeedButton7: TSpeedButton
       Tag = 4
-      Left = 202
-      Height = 17
-      Top = 66
-      Width = 61
+      Left = 252
+      Height = 21
+      Top = 82
+      Width = 76
       Caption = 'F4  <my>'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       OnClick = SendClick
+      ParentFont = False
     end
     object SpeedButton8: TSpeedButton
       Tag = 5
-      Left = 10
-      Height = 17
-      Top = 90
-      Width = 61
+      Left = 12
+      Height = 21
+      Top = 112
+      Width = 76
       Caption = 'F5  <his>'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       OnClick = SendClick
+      ParentFont = False
     end
     object SpeedButton9: TSpeedButton
       Tag = 6
-      Left = 74
-      Height = 17
-      Top = 90
-      Width = 61
+      Left = 92
+      Height = 21
+      Top = 112
+      Width = 76
       Caption = 'F6  B4'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       OnClick = SendClick
+      ParentFont = False
     end
     object SpeedButton10: TSpeedButton
       Tag = 7
-      Left = 138
-      Height = 17
-      Top = 90
-      Width = 61
+      Left = 172
+      Height = 21
+      Top = 112
+      Width = 76
       Caption = 'F7  ?'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       OnClick = SendClick
+      ParentFont = False
     end
     object SpeedButton11: TSpeedButton
       Tag = 8
-      Left = 202
-      Height = 17
-      Top = 90
-      Width = 61
+      Left = 252
+      Height = 21
+      Top = 112
+      Width = 76
       Caption = 'F8  NIL'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       OnClick = SendClick
+      ParentFont = False
     end
     object Label2: TLabel
-      Left = 170
-      Height = 13
-      Top = 10
-      Width = 22
+      Left = 212
+      Height = 16
+      Top = 12
+      Width = 28
       Caption = 'RST'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       ParentColor = False
+      ParentFont = False
     end
     object Label3: TLabel
-      Left = 222
-      Height = 13
-      Top = 10
-      Width = 25
+      Left = 278
+      Height = 16
+      Top = 12
+      Width = 31
       Caption = 'Zone'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       ParentColor = False
+      ParentFont = False
     end
     object Bevel2: TBevel
-      Left = 275
-      Height = 107
-      Top = 4
+      Left = 344
+      Height = 134
+      Top = 5
       Width = 2
     end
     object Edit1: TEdit
-      Left = 10
-      Height = 28
-      Top = 26
-      Width = 149
+      Left = 12
+      Height = 33
+      Top = 32
+      Width = 186
       AutoSelect = False
       CharCase = ecUppercase
       Font.Color = clWindowText
-      Font.Height = -16
+      Font.Height = -20
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       MaxLength = 12
@@ -162,14 +211,14 @@ object MainForm: TMainForm
       TabOrder = 0
     end
     object Edit2: TEdit
-      Left = 166
-      Height = 28
-      Top = 26
-      Width = 45
+      Left = 208
+      Height = 33
+      Top = 32
+      Width = 56
       AutoSelect = False
       CharCase = ecUppercase
       Font.Color = clWindowText
-      Font.Height = -16
+      Font.Height = -20
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       MaxLength = 3
@@ -179,14 +228,14 @@ object MainForm: TMainForm
       TabOrder = 1
     end
     object Edit3: TEdit
-      Left = 218
-      Height = 28
-      Top = 26
-      Width = 45
+      Left = 272
+      Height = 33
+      Top = 32
+      Width = 56
       AutoSelect = False
       CharCase = ecUppercase
       Font.Color = clWindowText
-      Font.Height = -16
+      Font.Height = -20
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       MaxLength = 4
@@ -196,121 +245,139 @@ object MainForm: TMainForm
       TabOrder = 2
     end
     object Panel2: TPanel
-      Left = 527
-      Height = 31
-      Top = 6
-      Width = 163
+      Left = 659
+      Height = 39
+      Top = 8
+      Width = 204
       BevelOuter = bvLowered
       Caption = '00:00:00'
       Color = clBlack
       Font.CharSet = ANSI_CHARSET
       Font.Color = 14151712
-      Font.Height = -24
+      Font.Height = -30
       Font.Name = 'Arial'
       ParentColor = False
       ParentFont = False
       TabOrder = 3
     end
     object Panel3: TPanel
-      Left = 290
-      Height = 61
-      Top = 33
-      Width = 225
+      Left = 362
+      Height = 76
+      Top = 41
+      Width = 281
       BevelOuter = bvLowered
-      ClientHeight = 61
-      ClientWidth = 225
+      ClientHeight = 76
+      ClientWidth = 281
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
+      ParentFont = False
       TabOrder = 4
       object PaintBox1: TPaintBox
         Left = 1
-        Height = 59
+        Height = 74
         Top = 1
-        Width = 223
+        Width = 279
         Align = alClient
         Color = clInfoBk
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         ParentColor = False
+        ParentFont = False
         OnPaint = PaintBox1Paint
       end
     end
     object Panel4: TPanel
-      Left = 290
-      Height = 21
-      Top = 6
-      Width = 114
+      Left = 362
+      Height = 26
+      Top = 8
+      Width = 142
       BevelOuter = bvLowered
       Font.Color = clRed
-      Font.Height = -11
+      Font.Height = -14
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
       TabOrder = 5
     end
     object Panel7: TPanel
-      Left = 410
-      Height = 21
-      Top = 6
-      Width = 104
+      Left = 512
+      Height = 26
+      Top = 8
+      Width = 130
       BevelOuter = bvLowered
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
+      ParentFont = False
       TabOrder = 6
     end
     object Panel8: TPanel
       Cursor = crHandPoint
-      Left = 290
-      Height = 9
+      Left = 362
+      Height = 11
       Hint = 'RIT'
-      Top = 101
-      Width = 225
+      Top = 126
+      Width = 281
       BevelOuter = bvLowered
-      ClientHeight = 9
-      ClientWidth = 225
+      ClientHeight = 11
+      ClientWidth = 281
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
+      ParentFont = False
       ParentShowHint = False
       ShowHint = True
       TabOrder = 7
       OnMouseDown = Panel8MouseDown
       object Shape2: TShape
         Cursor = crHandPoint
-        Left = 79
-        Height = 7
+        Left = 99
+        Height = 9
         Top = 0
-        Width = 32
+        Width = 40
         Brush.Color = 12902431
         OnMouseDown = Shape2MouseDown
       end
     end
     object Panel11: TPanel
-      Left = 527
-      Height = 68
-      Top = 42
-      Width = 163
+      Left = 659
+      Height = 85
+      Top = 52
+      Width = 204
       BevelOuter = bvLowered
       Caption = '0'
-      ClientHeight = 68
-      ClientWidth = 163
+      ClientHeight = 85
+      ClientWidth = 204
       Font.Color = clWindowText
-      Font.Height = -19
+      Font.Height = -24
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
       TabOrder = 8
       object ListView1: TListView
         Left = 1
-        Height = 66
+        Height = 83
         Top = 1
-        Width = 161
+        Width = 202
         Align = alClient
         BorderStyle = bsNone
         Columns = <        
           item
-            Width = 41
+            Width = 51
           end        
           item
             Caption = 'Raw'
+            Width = 62
           end        
           item
             Caption = 'Verified'
+            Width = 62
           end>
         ColumnClick = False
         Font.Color = clWindowText
-        Font.Height = -11
+        Font.Height = -14
         Font.Name = 'MS Sans Serif'
         Items.LazData = {
           8000000003000000FFFFFFFFFFFFFFFFFFFFFFFF020000000300000050747300
@@ -329,101 +396,119 @@ object MainForm: TMainForm
   end
   object Panel5: TPanel
     Left = 0
-    Height = 8
-    Top = 296
-    Width = 777
+    Height = 10
+    Top = 370
+    Width = 971
     Align = alBottom
     BevelOuter = bvNone
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'MS Sans Serif'
+    ParentFont = False
     TabOrder = 1
   end
   object Panel6: TPanel
     Left = 0
-    Height = 294
+    Height = 368
     Top = 2
-    Width = 578
+    Width = 722
     Align = alClient
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 290
-    ClientWidth = 574
+    ClientHeight = 364
+    ClientWidth = 718
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'MS Sans Serif'
+    ParentFont = False
     TabOrder = 2
     object Shape1: TShape
       Left = 0
-      Height = 249
+      Height = 342
       Top = 0
-      Width = 574
+      Width = 718
       Align = alClient
       Brush.Color = 16711401
       Pen.Style = psClear
     end
     object Label14: TLabel
-      Left = 74
-      Height = 40
-      Top = 58
-      Width = 330
+      Left = 92
+      Height = 50
+      Top = 72
+      Width = 415
       Caption = 'Morse Runner 1.68+'
       Font.CharSet = ANSI_CHARSET
       Font.Color = 12369084
-      Font.Height = -35
+      Font.Height = -44
       Font.Name = 'Arial'
       Font.Style = [fsBold, fsItalic]
       ParentColor = False
       ParentFont = False
     end
     object Label12: TLabel
-      Left = 69
-      Height = 40
-      Top = 54
-      Width = 330
+      Left = 86
+      Height = 50
+      Top = 68
+      Width = 415
       Caption = 'Morse Runner 1.68+'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clAqua
-      Font.Height = -35
+      Font.Height = -44
       Font.Name = 'Arial'
       Font.Style = [fsBold, fsItalic]
       ParentColor = False
       ParentFont = False
     end
     object Label13: TLabel
-      Left = 68
-      Height = 40
-      Top = 53
-      Width = 452
+      Left = 85
+      Height = 50
+      Top = 66
+      Width = 571
       Caption = 'Morse Runner 1.70+CQWW'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clGreen
-      Font.Height = -35
+      Font.Height = -44
       Font.Name = 'Arial'
       Font.Style = [fsBold, fsItalic]
       ParentColor = False
       ParentFont = False
     end
     object Label15: TLabel
-      Left = 104
-      Height = 13
-      Top = 106
-      Width = 245
+      Left = 130
+      Height = 16
+      Top = 132
+      Width = 301
       Caption = 'Copyright © 2004-2017 Alex Shovkoplyas, VE3NEA'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       ParentColor = False
+      ParentFont = False
     end
     object Label16: TLabel
-      Left = 196
-      Height = 13
-      Top = 152
-      Width = 61
+      Left = 245
+      Height = 16
+      Top = 190
+      Width = 77
       Caption = 'FREEWARE'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       ParentColor = False
+      ParentFont = False
     end
     object RichEdit1: TMemo
+      AnchorSideBottom.Control = sbar
       Left = 0
-      Height = 41
-      Top = 249
-      Width = 574
-      Align = alBottom
+      Height = 44
+      Top = 298
+      Width = 718
+      Align = alCustom
+      Anchors = [akLeft, akRight, akBottom]
       BorderStyle = bsNone
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
-      Font.Height = -13
+      Font.Height = -16
       Font.Name = 'Courier New'
       ParentFont = False
       ReadOnly = True
@@ -433,205 +518,301 @@ object MainForm: TMainForm
       Visible = False
     end
     object Label19: TLabel
-      Left = 176
-      Height = 13
-      Top = 128
-      Width = 111
+      Left = 220
+      Height = 16
+      Top = 160
+      Width = 136
       Caption = 'Modified by N2IC, 2020'
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
       ParentColor = False
+      ParentFont = False
+    end
+    object sbar: TPanel
+      Left = 0
+      Height = 22
+      Top = 342
+      Width = 718
+      Align = alBottom
+      Alignment = taLeftJustify
+      BevelOuter = bvNone
+      BorderWidth = 12
+      Color = clBtnFace
+      DoubleBuffered = False
+      ParentBackground = False
+      ParentColor = False
+      ParentDoubleBuffered = False
+      TabOrder = 1
+      Visible = False
     end
   end
   object Panel9: TPanel
-    Left = 578
-    Height = 294
+    Left = 722
+    Height = 368
     Top = 2
-    Width = 199
+    Width = 249
     Align = alRight
     BevelOuter = bvNone
-    ClientHeight = 294
-    ClientWidth = 199
+    ClientHeight = 368
+    ClientWidth = 249
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'MS Sans Serif'
+    ParentFont = False
     TabOrder = 3
     object GroupBox3: TGroupBox
-      Left = 7
-      Height = 81
-      Top = 168
-      Width = 194
+      Left = 9
+      Height = 101
+      Top = 210
+      Width = 242
       Caption = ' Band Conditions '
-      ClientHeight = 63
-      ClientWidth = 190
+      ClientHeight = 80
+      ClientWidth = 238
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
+      ParentFont = False
       TabOrder = 0
       object Label11: TLabel
-        Left = 142
-        Height = 13
+        Left = 178
+        Height = 16
         Top = 2
-        Width = 34
+        Width = 42
         Caption = 'Activity'
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         ParentColor = False
+        ParentFont = False
       end
       object CheckBox2: TCheckBox
-        Left = 10
-        Height = 19
-        Top = 44
-        Width = 42
+        Left = 12
+        Height = 23
+        Top = 55
+        Width = 52
         Caption = 'QSB'
         Checked = True
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         OnClick = CheckBoxClick
+        ParentFont = False
         State = cbChecked
         TabOrder = 0
         TabStop = False
       end
       object CheckBox3: TCheckBox
-        Left = 10
-        Height = 19
-        Top = 24
-        Width = 45
+        Left = 12
+        Height = 23
+        Top = 30
+        Width = 55
         Caption = 'QRM'
         Checked = True
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         OnClick = CheckBoxClick
+        ParentFont = False
         State = cbChecked
         TabOrder = 1
         TabStop = False
       end
       object CheckBox4: TCheckBox
-        Left = 10
-        Height = 19
-        Top = 4
-        Width = 44
+        Left = 12
+        Height = 23
+        Top = 5
+        Width = 54
         Caption = 'QRN'
         Checked = True
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         OnClick = CheckBoxClick
+        ParentFont = False
         State = cbChecked
         TabOrder = 2
         TabStop = False
       end
       object CheckBox5: TCheckBox
-        Left = 74
-        Height = 19
-        Top = 4
-        Width = 49
+        Left = 92
+        Height = 23
+        Top = 5
+        Width = 60
         Caption = 'Flutter'
         Checked = True
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         OnClick = CheckBoxClick
+        ParentFont = False
         State = cbChecked
         TabOrder = 3
         TabStop = False
       end
       object CheckBox6: TCheckBox
-        Left = 74
-        Height = 19
-        Top = 26
-        Width = 44
+        Left = 92
+        Height = 23
+        Top = 32
+        Width = 54
         Caption = 'LID''s'
         Checked = True
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         OnClick = CheckBoxClick
+        ParentFont = False
         State = cbChecked
         TabOrder = 4
         TabStop = False
       end
       object SpinEdit3: TSpinEdit
-        Left = 142
-        Height = 21
-        Top = 18
-        Width = 37
+        Left = 178
+        Height = 24
+        Top = 22
+        Width = 46
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         MaxValue = 9
         MinValue = 1
         OnChange = SpinEdit3Change
+        ParentFont = False
         TabStop = False
         TabOrder = 5
         Value = 3
       end
     end
     object GroupBox1: TGroupBox
-      Left = 7
-      Height = 159
-      Top = 4
-      Width = 194
+      Left = 9
+      Height = 199
+      Top = 5
+      Width = 242
       Caption = ' Station '
-      ClientHeight = 141
-      ClientWidth = 190
+      ClientHeight = 178
+      ClientWidth = 238
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
+      ParentFont = False
       TabOrder = 1
       object Label4: TLabel
-        Left = 10
-        Height = 13
-        Top = 6
-        Width = 17
+        Left = 12
+        Height = 16
+        Top = 8
+        Width = 23
         Caption = 'Call'
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         ParentColor = False
+        ParentFont = False
       end
       object Label5: TLabel
-        Left = 154
-        Height = 13
-        Top = 34
-        Width = 27
+        Left = 192
+        Height = 16
+        Top = 42
+        Width = 33
         Caption = 'WPM'
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         ParentColor = False
+        ParentFont = False
       end
       object Label6: TLabel
-        Left = 10
-        Height = 13
-        Top = 34
-        Width = 52
+        Left = 12
+        Height = 16
+        Top = 42
+        Width = 66
         Caption = 'CW Speed'
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         ParentColor = False
+        ParentFont = False
       end
       object Label7: TLabel
-        Left = 10
-        Height = 13
-        Top = 62
-        Width = 45
+        Left = 12
+        Height = 16
+        Top = 78
+        Width = 54
         Caption = 'CW Pitch'
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         ParentColor = False
+        ParentFont = False
       end
       object Label9: TLabel
-        Left = 10
-        Height = 13
-        Top = 90
-        Width = 68
+        Left = 12
+        Height = 16
+        Top = 112
+        Width = 83
         Caption = 'RX Bandwidth'
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         ParentColor = False
+        ParentFont = False
       end
       object Edit4: TEdit
-        Left = 34
-        Height = 21
+        Left = 42
+        Height = 24
         Top = 2
-        Width = 89
+        Width = 111
         CharCase = ecUppercase
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         OnChange = Edit4Change
+        ParentFont = False
         TabStop = False
         TabOrder = 0
         Text = 'VE3NEA'
       end
       object SpinEdit1: TSpinEdit
-        Left = 86
-        Height = 21
-        Top = 30
-        Width = 65
+        Left = 108
+        Height = 24
+        Top = 38
+        Width = 81
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         MaxValue = 120
         MinValue = 10
         OnChange = SpinEdit1Change
+        ParentFont = False
         TabStop = False
         TabOrder = 1
         Value = 30
       end
       object CheckBox1: TCheckBox
-        Left = 138
-        Height = 19
-        Top = 4
-        Width = 42
+        Left = 172
+        Height = 23
+        Top = 5
+        Width = 51
         Caption = 'QSK'
         Checked = True
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         OnClick = CheckBox1Click
+        ParentFont = False
         State = cbChecked
         TabOrder = 2
         TabStop = False
       end
       object ComboBox1: TComboBox
-        Left = 86
-        Height = 21
-        Top = 58
-        Width = 65
+        Left = 108
+        Height = 24
+        Top = 72
+        Width = 81
         DropDownCount = 12
-        ItemHeight = 13
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
+        ItemHeight = 16
         Items.Strings = (
           '300 Hz'
           '350 Hz'
@@ -648,17 +829,21 @@ object MainForm: TMainForm
           '900 Hz'
         )
         OnChange = ComboBox1Change
+        ParentFont = False
         Style = csDropDownList
         TabOrder = 3
         TabStop = False
       end
       object ComboBox2: TComboBox
-        Left = 86
-        Height = 21
-        Top = 86
-        Width = 65
+        Left = 108
+        Height = 24
+        Top = 108
+        Width = 81
         DropDownCount = 12
-        ItemHeight = 13
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
+        ItemHeight = 16
         Items.Strings = (
           '100 Hz'
           '150 Hz'
@@ -673,69 +858,95 @@ object MainForm: TMainForm
           '600 Hz'
         )
         OnChange = ComboBox2Change
+        ParentFont = False
         Style = csDropDownList
         TabOrder = 4
         TabStop = False
       end
       object Label20: TLabel
-        Left = 10
-        Height = 13
-        Top = 118
-        Width = 25
+        Left = 12
+        Height = 16
+        Top = 148
+        Width = 31
         Caption = 'Zone'
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         ParentColor = False
+        ParentFont = False
       end
     end
     object Panel10: TPanel
       Left = 0
-      Height = 31
-      Top = 263
-      Width = 199
+      Height = 39
+      Top = 329
+      Width = 249
       Align = alBottom
       BevelOuter = bvNone
-      ClientHeight = 31
-      ClientWidth = 199
+      ClientHeight = 39
+      ClientWidth = 249
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'MS Sans Serif'
+      ParentFont = False
       TabOrder = 2
       object Label8: TLabel
-        Left = 171
-        Height = 13
-        Top = 7
-        Width = 19
+        Left = 214
+        Height = 16
+        Top = 9
+        Width = 24
         Caption = 'min.'
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         ParentColor = False
+        ParentFont = False
       end
       object Label10: TLabel
-        Left = 101
-        Height = 13
-        Top = 7
-        Width = 12
+        Left = 126
+        Height = 16
+        Top = 9
+        Width = 15
         Caption = 'for'
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         ParentColor = False
+        ParentFont = False
       end
       object SpinEdit2: TSpinEdit
-        Left = 120
-        Height = 21
-        Top = 5
-        Width = 45
+        Left = 150
+        Height = 24
+        Top = 6
+        Width = 56
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         MaxValue = 240
         MinValue = 1
         OnChange = SpinEdit2Change
+        ParentFont = False
         TabStop = False
         TabOrder = 0
         Value = 30
       end
       object ToolBar1: TToolBar
-        Left = 11
-        Height = 24
-        Top = 3
-        Width = 84
+        Left = 14
+        Height = 30
+        Top = 4
+        Width = 105
         Align = alNone
-        ButtonWidth = 65
+        ButtonHeight = 35
+        ButtonWidth = 81
         Caption = 'ToolBar1'
         EdgeBorders = []
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
         Images = ImageList1
         Indent = 3
         List = True
+        ParentFont = False
         ShowCaptions = True
         TabOrder = 1
         object ToolButton1: TToolButton
@@ -754,44 +965,55 @@ object MainForm: TMainForm
     end
   end
   object VolumeSlider1: TVolumeSlider
-    Left = 704
-    Height = 20
+    Left = 880
+    Height = 25
     Hint = '-15.0 dB'
-    Top = 136
-    Width = 60
+    Top = 170
+    Width = 75
     ShowHint = True
     Margin = 5
     Value = 0.75
     Overloaded = False
     OnChange = VolumeSlider1Change
     OnDblClick = VolumeSliderDblClick
-    DbMax = 0
     DbScale = 60
     Db = -15
   end
   object Label17: TLabel
-    Left = 104
-    Height = 13
-    Top = 106
-    Width = 245
+    Left = 130
+    Height = 16
+    Top = 132
+    Width = 301
     Caption = 'Copyright © 2004-2020 Alex Shovkoplyas, VE3NEA'
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'MS Sans Serif'
     ParentColor = False
+    ParentFont = False
   end
   object Label18: TLabel
-    Left = 10
-    Height = 13
-    Top = 10
-    Width = 38
+    Left = 12
+    Height = 16
+    Top = 12
+    Width = 48
     Caption = 'Label18'
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'MS Sans Serif'
     ParentColor = False
+    ParentFont = False
   end
   object Edit5: TEdit
-    Left = 656
-    Height = 21
-    Top = 135
+    Left = 820
+    Height = 24
+    Top = 169
     Width = 100
     CharCase = ecUppercase
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'MS Sans Serif'
     OnExit = ExchangeEditExit
+    ParentFont = False
     TabStop = False
     TabOrder = 4
     Text = '8'
@@ -802,8 +1024,8 @@ object MainForm: TMainForm
     OnBufAvailable = AlSoundOut1BufAvailable
   end
   object MainMenu1: TMainMenu
-    left = 304
-    top = 160
+    Left = 380
+    Top = 200
     object File1: TMenuItem
       Caption = 'File'
       OnClick = File1Click
@@ -1287,8 +1509,8 @@ object MainForm: TMainForm
     end
   end
   object PopupMenu1: TPopupMenu
-    left = 440
-    top = 152
+    Left = 550
+    Top = 190
     object PileupMNU: TMenuItem
       Tag = 1
       Caption = 'Pile-Up'
@@ -1320,8 +1542,8 @@ object MainForm: TMainForm
     end
   end
   object ImageList1: TImageList
-    left = 416
-    top = 176
+    Left = 520
+    Top = 220
     Bitmap = {
       4C69020000001000000010000000000000000000000000000000000000000000
       00FF000000000000000000000000000000000000000000000000000000000000

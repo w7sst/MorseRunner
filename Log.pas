@@ -64,9 +64,9 @@ begin
     s := ''; // s := ARRLDX.Search(ACallsign);
 
   // '&' are suppressed in this control; replace with '&&'
-  s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
+  //s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
 
-  //MainForm.sbar.Caption:= '  ' + s;
+  MainForm.sbar.Caption:= {'  ' +} s;
 end;
 
 procedure Clear;
@@ -97,6 +97,7 @@ begin
   MainForm.ListView1.Items[2].SubItems[1] := '0';
 
   MainForm.PaintBox1.Invalidate;
+  MainForm.sbar.Caption:= '';
 end;
 
 
