@@ -392,9 +392,8 @@ object MainForm: TMainForm
       Align = alClient
       Brush.Color = 16711401
       Pen.Style = psClear
-      ExplicitTop = 0
-      ExplicitWidth = 484
-      ExplicitHeight = 239
+      ExplicitLeft = -4
+      ExplicitTop = 48
     end
     object Label14: TLabel
       Left = 76
@@ -552,6 +551,7 @@ object MainForm: TMainForm
       ParentBackground = False
       TabOrder = 2
       Visible = False
+      ExplicitLeft = -4
     end
   end
   object Panel9: TPanel
