@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Morse Runner'
-  ClientHeight = 469
+  ClientHeight = 506
   ClientWidth = 729
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -70,13 +70,14 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Top = 334
+    Top = 371
     Width = 729
     Height = 135
     Align = alBottom
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 0
+    ExplicitTop = 334
     object Label1: TLabel
       Left = 16
       Top = 12
@@ -368,7 +369,7 @@ object MainForm: TMainForm
   end
   object Panel5: TPanel
     Left = 0
-    Top = 324
+    Top = 361
     Width = 729
     Height = 10
     Align = alBottom
@@ -379,7 +380,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 2
     Width = 517
-    Height = 322
+    Height = 359
     Align = alClient
     BevelOuter = bvNone
     BorderStyle = bsSingle
@@ -388,12 +389,12 @@ object MainForm: TMainForm
       Left = 0
       Top = 54
       Width = 513
-      Height = 201
+      Height = 238
       Align = alClient
       Brush.Color = 16711401
       Pen.Style = psClear
-      ExplicitLeft = -4
-      ExplicitTop = 48
+      ExplicitLeft = 2
+      ExplicitTop = 60
     end
     object Label14: TLabel
       Left = 76
@@ -467,7 +468,7 @@ object MainForm: TMainForm
     end
     object RichEdit1: TRichEdit
       Left = 0
-      Top = 277
+      Top = 314
       Width = 513
       Height = 41
       TabStop = False
@@ -542,7 +543,7 @@ object MainForm: TMainForm
     end
     object sbar: TPanel
       Left = 0
-      Top = 255
+      Top = 292
       Width = 513
       Height = 22
       Align = alBottom
@@ -551,22 +552,21 @@ object MainForm: TMainForm
       ParentBackground = False
       TabOrder = 2
       Visible = False
-      ExplicitLeft = -4
     end
   end
   object Panel9: TPanel
     Left = 517
     Top = 2
     Width = 212
-    Height = 322
+    Height = 359
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 3
     object GroupBox3: TGroupBox
-      Left = 9
-      Top = 171
+      Left = 6
+      Top = 238
       Width = 194
-      Height = 87
+      Height = 84
       Caption = ' Band Conditions '
       TabOrder = 0
       object Label11: TLabel
@@ -651,50 +651,50 @@ object MainForm: TMainForm
       end
     end
     object GroupBox1: TGroupBox
-      Left = 9
-      Top = 6
+      Left = 6
+      Top = 51
       Width = 194
-      Height = 163
+      Height = 181
       Caption = ' Station '
       TabOrder = 1
       object Label4: TLabel
         Left = 12
-        Top = 26
+        Top = 21
         Width = 20
         Height = 15
         Caption = 'Call'
       end
       object Label5: TLabel
-        Left = 156
-        Top = 54
+        Left = 162
+        Top = 70
         Width = 29
         Height = 15
         Caption = 'WPM'
       end
       object Label6: TLabel
         Left = 12
-        Top = 54
+        Top = 70
         Width = 54
         Height = 15
         Caption = 'CW Speed'
       end
       object Label7: TLabel
-        Left = 12
-        Top = 82
+        Left = 13
+        Top = 100
         Width = 49
         Height = 15
         Caption = 'CW Pitch'
       end
       object Label9: TLabel
         Left = 12
-        Top = 110
+        Top = 130
         Width = 74
         Height = 15
         Caption = 'RX Bandwidth'
       end
       object VolumeSlider1: TVolumeSlider
         Left = 89
-        Top = 138
+        Top = 151
         Width = 60
         Height = 20
         Hint = '-15,0 dB'
@@ -709,14 +709,21 @@ object MainForm: TMainForm
       end
       object Label18: TLabel
         Left = 12
-        Top = 140
+        Top = 156
         Width = 58
         Height = 15
         Caption = 'Mon. Level'
       end
+      object Label17: TLabel
+        Left = 12
+        Top = 44
+        Width = 51
+        Height = 15
+        Caption = 'Exchange'
+      end
       object Edit4: TEdit
-        Left = 43
-        Top = 22
+        Left = 45
+        Top = 15
         Width = 89
         Height = 23
         TabStop = False
@@ -732,8 +739,8 @@ object MainForm: TMainForm
         OnChange = Edit4Change
       end
       object SpinEdit1: TSpinEdit
-        Left = 88
-        Top = 50
+        Left = 91
+        Top = 67
         Width = 65
         Height = 24
         TabStop = False
@@ -746,7 +753,7 @@ object MainForm: TMainForm
       end
       object CheckBox1: TCheckBox
         Left = 140
-        Top = 24
+        Top = 17
         Width = 45
         Height = 17
         TabStop = False
@@ -757,8 +764,8 @@ object MainForm: TMainForm
         OnClick = CheckBox1Click
       end
       object ComboBox1: TComboBox
-        Left = 88
-        Top = 78
+        Left = 92
+        Top = 97
         Width = 65
         Height = 23
         Style = csDropDownList
@@ -782,8 +789,8 @@ object MainForm: TMainForm
           '900 Hz')
       end
       object ComboBox2: TComboBox
-        Left = 88
-        Top = 106
+        Left = 92
+        Top = 126
         Width = 65
         Height = 23
         Style = csDropDownList
@@ -804,10 +811,19 @@ object MainForm: TMainForm
           '550 Hz'
           '600 Hz')
       end
+      object ExchangeEdit: TEdit
+        Left = 72
+        Top = 41
+        Width = 116
+        Height = 23
+        CharCase = ecUpperCase
+        TabOrder = 5
+        Text = '3A OR'
+      end
     end
     object Panel10: TPanel
       Left = 0
-      Top = 285
+      Top = 322
       Width = 212
       Height = 37
       Align = alBottom
@@ -815,21 +831,21 @@ object MainForm: TMainForm
       TabOrder = 2
       object Label8: TLabel
         Left = 179
-        Top = 11
+        Top = 13
         Width = 24
         Height = 15
         Caption = 'min.'
       end
       object Label10: TLabel
-        Left = 109
-        Top = 11
+        Left = 107
+        Top = 13
         Width = 15
         Height = 15
         Caption = 'for'
       end
       object SpinEdit2: TSpinEdit
         Left = 128
-        Top = 8
+        Top = 10
         Width = 45
         Height = 24
         TabStop = False
@@ -868,6 +884,26 @@ object MainForm: TMainForm
           Style = tbsDropDown
           OnClick = RunBtnClick
         end
+      end
+    end
+    object ContestGroup: TGroupBox
+      Left = 6
+      Top = 6
+      Width = 195
+      Height = 44
+      Caption = 'Contest'
+      TabOrder = 3
+      object SimContestCombo: TComboBox
+        Left = 15
+        Top = 16
+        Width = 169
+        Height = 23
+        Style = csDropDownList
+        TabOrder = 0
+        OnChange = SimContestComboChange
+        Items.Strings = (
+          'WPX'
+          'HST')
       end
     end
   end

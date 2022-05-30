@@ -222,6 +222,10 @@ type
     CWMaxRxSpeedSet8: TMenuItem;
     CWMaxRxSpeedSet10: TMenuItem;
     NRQM: TMenuItem;
+    ContestGroup: TGroupBox;
+    SimContestCombo: TComboBox;
+    Label17: TLabel;
+    ExchangeEdit: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -288,6 +292,8 @@ type
     procedure ListView2SelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
     procedure mnuShowCallsignInfoClick(Sender: TObject);
+    procedure SimContestComboChange(Sender: TObject);
+
   private
     MustAdvance: boolean;
     procedure ProcessSpace;
@@ -307,7 +313,7 @@ type
     procedure PopupScoreWpx;
     procedure PopupScoreHst;
     procedure Advance;
-
+    procedure SetContest(AContestNum: integer);
     procedure SetQsk(Value: boolean);
     procedure SetMyCall(ACall: string);
     procedure SetPitch(PitchNo: integer);
@@ -493,8 +499,13 @@ begin
         Log.SaveQso;
       end;
 
-    ' ': //next field
-      ProcessSpace;
+    ' ': // advance to next exchange field
+      if (ActiveControl = Edit1) or
+         (ActiveControl = Edit2) or
+         (ActiveControl = Edit3) then
+        ProcessSpace
+      else
+        Exit;
 
     //'\': // = F1
     //  SendMsg(msgCQ);
@@ -682,6 +693,11 @@ begin
   SetMyCall(Trim(Edit4.Text));
 end;
 
+procedure TMainForm.SetContest(AContestNum: integer);
+begin
+  //Ini.ContestNumber:= AContestNum;
+end;
+
 procedure TMainForm.SetMyCall(ACall: string);
 begin
   Ini.Call := ACall;
@@ -716,6 +732,10 @@ begin
   UpdateRitIndicator;
 end;
 
+procedure TMainForm.SimContestComboChange(Sender: TObject);
+begin
+  SetContest(SimContestCombo.ItemIndex);
+end;
 
 procedure TMainForm.ComboBox2Change(Sender: TObject);
 begin
