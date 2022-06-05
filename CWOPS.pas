@@ -112,7 +112,7 @@ function TCWOPS.IsNum(Num: String): Boolean;
 var
    X : Integer;
 begin
-   Result := True;
+   Result := Length(Num) > 0;
    for X := 1 to Length(Num) do begin
        if Pos(copy(Num,X,1),'0123456789') = 0 then begin
            Result := False;
