@@ -12,7 +12,7 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles, Idhttp, ARRL, CWOPS , System.ImageList;
+  WavFile, IniFiles, Idhttp, ARRL, CWOPS;
 
 const
   WM_TBDOWN = WM_USER+1;
@@ -331,6 +331,12 @@ uses ScoreDlg, Log;
 
 {$R *.DFM}
 
+{ return whether the Edit2 control is the RST exchange field. }
+function Edit2IsRST: Boolean;
+begin
+  Result := RunMode in [rmPileup, rmSingle, rmWpx, rmHst];
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Randomize;
@@ -567,40 +573,33 @@ end;
 procedure TMainForm.ProcessSpace;
 begin
   MustAdvance := false;
-  if RunMode <> rmCwt then begin
-    if ActiveControl = Edit1 then
+
+  if Edit2IsRST then
     begin
-      if Edit2.Text = '' then
-        Edit2.Text := '599';
-      ActiveControl := Edit3;
-    end
-    else
-      if ActiveControl = Edit2 then
-      begin
-        if Edit2.Text = '' then
-          Edit2.Text := '599';
-        ActiveControl := Edit3;
-      end
+      if ActiveControl = Edit1 then
+        begin
+          if Edit2.Text = '' then
+            Edit2.Text := '599';
+          ActiveControl := Edit3;
+        end
+      else if ActiveControl = Edit2 then
+        begin
+          if Edit2.Text = '' then
+            Edit2.Text := '599';
+          ActiveControl := Edit3;
+        end
       else
         ActiveControl := Edit1;
-  end else begin
-   if ActiveControl = Edit1 then
-    begin
-      if Edit2.Text = '' then
-      ActiveControl := Edit2;
     end
-    else
-      if ActiveControl = Edit2 then
-      begin
-        if Edit2.Text = '' then
+  else {otherwise, space bar moves cursor to next field}
+    begin
+      if ActiveControl = Edit1 then
           ActiveControl := Edit2
-        else
-          ActiveControl := Edit3;
-      end
-  //    else
-  //      ActiveControl := Edit3;
-
-  end;
+      else if ActiveControl = Edit2 then
+        ActiveControl := Edit3
+      else
+        ActiveControl := Edit1;
+    end;
 end;
 
 
@@ -835,10 +834,20 @@ end;
 
 procedure TMainForm.Edit2Enter(Sender: TObject);
 begin
-if RunMode <> rmCwt then  begin
-  if Length(Edit2.Text) = 3 then
-    begin Edit2.SelStart := 1; Edit2.SelLength := 1; end;
-  end
+  if Edit2IsRST then
+    begin
+      // for RST field, select middle digit
+      if Length(Edit2.Text) = 3 then
+	begin
+	  Edit2.SelStart := 1;
+	  Edit2.SelLength := 1;
+	end;
+    end
+  else // otherwise select entire field
+    begin
+      Edit2.SelStart := 0;
+      Edit2.SelLength := Edit2.GetTextLen;
+    end;
 end;
 
 
@@ -1181,28 +1190,42 @@ begin
 end;
 
 
+{
+  Move cursor to next exchange field.
+  Called by TMyStation.GetBlock after callsign is sent.
+  If the callsign field (Edit1) contains a '?', the active control is
+  set to Edit1 and the '?' is selected.
+  For contests with an RST field, the RST field is set to 599 and the active
+  control is then set to Edit3 (skipping the RST field). Note that using
+  TAB will select the RST field with the middle digit selected.
+  For contests without an RST field, the active control is advanced to the
+  next exchange field.
+}
 procedure TMainForm.Advance;
 begin
   if not MustAdvance then
     Exit;
-  if RunMode <> rmCwt then begin
-    if Edit2.Text = '' then
-      Edit2.Text := '599';
-    if Pos('?', Edit1.Text) = 0 then
-      ActiveControl := Edit3
-    else
+
+  if Edit2IsRST and (Edit2.Text = '') then
+    Edit2.Text := '599';
+
+  if Pos('?', Edit1.Text) > 0 then
+    begin
+      { stay in callsign field if callsign has a '?' }
       if ActiveControl = Edit1 then
         Edit1Enter(nil)
       else
         ActiveControl := Edit1;
-  end else begin
-     if Edit2.Text = '' then
+    end
+  else
+    begin
+      { otherwise advance to next field, skipping RST }
+      if Edit2IsRST then
+        ActiveControl := Edit3
+      else
         ActiveControl := Edit2;
-      if ActiveControl = Edit1 then
-        Edit1Enter(nil)
-      else
-        ActiveControl := Edit1;
-  end;
+    end;
+
   MustAdvance := false;
 end;
 
