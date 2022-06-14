@@ -87,7 +87,7 @@ object MainForm: TMainForm
     end
     object SpeedButton4: TSpeedButton
       Tag = 1
-      Left = 12
+      Left = 9
       Top = 66
       Width = 61
       Height = 26
@@ -232,8 +232,8 @@ object MainForm: TMainForm
       OnKeyPress = Edit3KeyPress
     end
     object Panel2: TPanel
-      Left = 529
-      Top = 6
+      Left = 522
+      Top = 5
       Width = 191
       Height = 33
       BevelOuter = bvLowered
@@ -483,7 +483,7 @@ object MainForm: TMainForm
       ParentFont = False
       ReadOnly = True
       ScrollBars = ssVertical
-      TabOrder = 0
+      TabOrder = 1
       Visible = False
       Zoom = 100
     end
@@ -537,7 +537,8 @@ object MainForm: TMainForm
       ParentShowHint = False
       ShowWorkAreas = True
       ShowHint = True
-      TabOrder = 1
+      TabOrder = 0
+      TabStop = False
       ViewStyle = vsReport
       OnCustomDrawSubItem = ListView2CustomDrawSubItem
       OnSelectItem = ListView2SelectItem
@@ -694,7 +695,7 @@ object MainForm: TMainForm
         Caption = 'RX Bandwidth'
       end
       object VolumeSlider1: TVolumeSlider
-        Left = 89
+        Left = 92
         Top = 151
         Width = 60
         Height = 20
@@ -727,7 +728,6 @@ object MainForm: TMainForm
         Top = 15
         Width = 89
         Height = 23
-        TabStop = False
         CharCase = ecUpperCase
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
@@ -748,7 +748,7 @@ object MainForm: TMainForm
         MaxLength = 3
         MaxValue = 120
         MinValue = 10
-        TabOrder = 1
+        TabOrder = 3
         Value = 30
         OnChange = SpinEdit1Change
       end
@@ -761,7 +761,7 @@ object MainForm: TMainForm
         Caption = 'QSK'
         Checked = True
         State = cbChecked
-        TabOrder = 2
+        TabOrder = 1
         OnClick = CheckBox1Click
       end
       object ComboBox1: TComboBox
@@ -771,7 +771,7 @@ object MainForm: TMainForm
         Height = 23
         Style = csDropDownList
         DropDownCount = 12
-        TabOrder = 3
+        TabOrder = 4
         TabStop = False
         OnChange = ComboBox1Change
         Items.Strings = (
@@ -796,7 +796,7 @@ object MainForm: TMainForm
         Height = 23
         Style = csDropDownList
         DropDownCount = 12
-        TabOrder = 4
+        TabOrder = 5
         TabStop = False
         OnChange = ComboBox2Change
         Items.Strings = (
@@ -813,12 +813,13 @@ object MainForm: TMainForm
           '600 Hz')
       end
       object ExchangeEdit: TEdit
-        Left = 72
-        Top = 41
+        Left = 75
+        Top = 40
         Width = 116
         Height = 23
+        AutoSelect = False
         CharCase = ecUpperCase
-        TabOrder = 5
+        TabOrder = 2
         Text = '3A OR'
       end
     end
@@ -895,12 +896,13 @@ object MainForm: TMainForm
       Caption = 'Contest'
       TabOrder = 3
       object SimContestCombo: TComboBox
-        Left = 15
-        Top = 16
+        Left = 23
+        Top = 18
         Width = 169
         Height = 23
         Style = csDropDownList
         TabOrder = 0
+        TabStop = False
         OnChange = SimContestComboChange
         Items.Strings = (
           'WPX'
