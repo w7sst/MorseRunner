@@ -220,6 +220,7 @@ object MainForm: TMainForm
       Width = 45
       Height = 27
       AutoSelect = False
+      CharCase = ecUpperCase
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
