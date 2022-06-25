@@ -254,9 +254,11 @@ begin
     case State of
       osNeedPrevEnd: ;
       osNeedQso: State := osNeedPrevEnd;
-      osNeedNr: if (Random < 0.9) or (RunMode = rmHst) then SetState(osNeedEnd);
+      osNeedNr: if (Random < 0.9) or (RunMode in [rmHst, rmSingle]) then
+        SetState(osNeedEnd);
       osNeedCall: ;
-      osNeedCallNr: if (Random < 0.9) or (RunMode = rmHst) then SetState(osNeedCall);
+      osNeedCallNr: if (Random < 0.9) or (RunMode in [rmHst, rmSingle]) then
+        SetState(osNeedCall);
       osNeedEnd: ;
       end;
 

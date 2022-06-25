@@ -60,7 +60,8 @@ const
 var
   QsoList: array of TQso;
   PfxList: TStringList;
-  CallSent, NrSent: boolean;
+  CallSent: boolean; // msgHisCall has been sent; cleared upon edit.
+  NrSent: boolean;   // msgNR has been sent. Seems to imply exchange sent.
   Histo: THisto;
 
 
