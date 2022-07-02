@@ -58,6 +58,9 @@ begin
   Pitch := Ini.Pitch;
   Wpm := Ini.Wpm;
   Amplitude := 300000;
+
+  // Adding a contest: Initialize Exch1 and Exch2
+  // (try to use the generalized Exch1 and Exch2 fields for new contests.)
   OpName := HamName;
   CWOPSNR := strtoint(CWOPSNum);
 end;
@@ -82,9 +85,16 @@ end;
 
 procedure TMyStation.SendText(AMsg: string);
 begin
-  OpName := HamName;
-  if RunMode = rmCwt then
-        NR := strtoint(CWOPSNum);
+  if ActiveContest.ExchType1 = etOpName then
+    begin
+    assert(OpName = HamName, 'HamName doesn''t change; should already be set');
+    OpName := HamName;
+    end;
+  if ActiveContest.ExchType2 = etCwopsNumber then
+    begin
+    //assert(NR = strtoint(CWOPSNUM), 'CWOPS Num doesn''t change, should be set');
+    NR := strtoint(CWOPSNum);
+    end;
   AddToPieces(AMsg);
   if State <> stSending then
     begin

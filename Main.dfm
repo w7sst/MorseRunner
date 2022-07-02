@@ -77,7 +77,6 @@ object MainForm: TMainForm
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 0
-    ExplicitTop = 334
     object Label1: TLabel
       Left = 16
       Top = 12
@@ -699,7 +698,7 @@ object MainForm: TMainForm
         Top = 129
         Width = 60
         Height = 20
-        Hint = '-15,0 dB'
+        Hint = '-15.0 dB'
         ShowHint = True
         Margin = 5
         Value = 0.750000000000000000
@@ -895,8 +894,9 @@ object MainForm: TMainForm
         TabStop = False
         OnChange = SimContestComboChange
         Items.Strings = (
-          'WPX'
-          'HST')
+          'CQ WPX'
+          'CWOPS CWT'
+          'HST (High Speed Test)')
       end
       object ExchangeEdit: TEdit
         Left = 76
@@ -906,6 +906,7 @@ object MainForm: TMainForm
         CharCase = ecUpperCase
         TabOrder = 1
         Text = '3A OR'
+        OnExit = ExchangeEditExit
       end
     end
   end
@@ -974,11 +975,6 @@ object MainForm: TMainForm
         Tag = 4
         Caption = 'HST Competition'
         ShortCut = 16504
-        OnClick = RunMNUClick
-      end
-      object CWTCompetition3: TMenuItem
-        Tag = 5
-        Caption = 'CWT Competition'
         OnClick = RunMNUClick
       end
       object Stop1MNU: TMenuItem
@@ -1530,11 +1526,6 @@ object MainForm: TMainForm
     object HSTCompetition1: TMenuItem
       Tag = 4
       Caption = 'HST Competition'
-      OnClick = RunMNUClick
-    end
-    object CWTCompetition1: TMenuItem
-      Tag = 5
-      Caption = 'CWT Competition'
       OnClick = RunMNUClick
     end
     object StopMNU: TMenuItem

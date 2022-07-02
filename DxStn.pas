@@ -38,12 +38,15 @@ begin
   inherited Create(nil);
 
   HisCall := Ini.Call;
-  if RunMode <> rmCwt then
-       MyCall := PickCall     // Pick one Callsign from Calllist
-   else begin
+  // Adding a contest: DxStation.CreateStation - load a random callsign
+  case SimContest of
+    scCwt: begin
        Operid := CWOPSCWT.getcwopsid();
        MyCall :=  CWOPSCWT.getcwopscall(Operid);
-   end;
+    end;
+    else
+       MyCall := PickCall;     // Pick one Callsign from Calllist
+  end;
 
   Oper := TDxOperator.Create;
   Oper.Call := MyCall;
@@ -52,12 +55,15 @@ begin
   NrWithError := Ini.Lids and (Random < 0.1);
 
   Wpm := Oper.GetWpm;
-  OpName := 'ALEX';
-  if RunMode <> rmCwt then
-       NR := Oper.GetNR
-  else begin
-       OpName := CWOPSCWT.getcwopsname(Operid);
-       NR :=  CWOPSCWT.getcwopsnum(Operid);
+
+  // Adding a contest: DxStation.CreateStation - get Exch1 (e.g. Name), Exch2 (e.g. NR), and optional UserText
+  case SimContest of
+    scCwt: begin
+      OpName := CWOPSCWT.getcwopsname(Operid);
+      NR :=  CWOPSCWT.getcwopsnum(Operid);
+    end;
+    else
+      NR := Oper.GetNR;
   end;
   //showmessage(MyCall);
 
@@ -87,8 +93,6 @@ begin
   Qsb.Free;
   inherited;
 end;
-
-
 
 
 procedure TDxStation.ProcessEvent(AEvent: TStationEvent);
@@ -160,7 +164,18 @@ begin
     TrueCall := Self.MyCall;
     TrueRst := Self.Rst;
     TrueNR := Self.NR;
-    TrueOpName := Self.OpName;
+    case ActiveContest.ExchType1 of
+      etRST: TrueExch1 := IntToStr(Self.NR);
+      etOpName: TrueExch1 := Self.OpName;
+      else
+        assert(false);
+    end;
+    case ActiveContest.ExchType2 of
+      etSerialNr: TrueExch2 := IntToStr(Self.NR);
+      etCwopsNumber: TrueExch2 := IntToStr(Self.NR);
+      else
+        assert(false);
+    end;
   end;
 
   Free; // removes Self from Stations[] container

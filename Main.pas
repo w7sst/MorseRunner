@@ -5,6 +5,10 @@
 //------------------------------------------------------------------------------
 unit Main;
 
+{$ifdef FPC}
+{$MODE Delphi}
+{$endif}
+
 interface
 
 uses
@@ -12,13 +16,59 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles, Idhttp, ARRL, CWOPS;
+  WavFile, IniFiles, Idhttp, ARRL, CWOPS, System.ImageList;
 
 const
   WM_TBDOWN = WM_USER+1;
   sVersion: String = '1.71a';
 
 type
+
+  {
+    Defines the characteristics and behaviors of an exchange field.
+    Used to declare various exchange field behaviors. Field Definitions
+    are indexed by a contest definition (e.g. ARRL FD uses etFdClass and
+    etStateProc). As new contests are added, new field definition
+    may be required. When adding a new exchange field definition,
+    search for existing code usages to find areas that will require changes.
+  }
+  TFieldDefinition = record
+    C: PChar;     // Caption
+    R: PChar;     // Regular Expression
+    L: smallint;  // MaxLength
+    T: smallint;  // Type
+  end;
+
+  PFieldDefinition = ^TFieldDefinition;
+
+const
+  // Exchange Field 1 settings/rules
+  Exchange1Settings: array[TExchange1Type] of TFieldDefinition = (
+    (C: 'RST';   R: '5[9N][9N]';        L: 3;  T:Ord(etRST)),
+    (C: 'Name';  R: '[A-Z][A-Z]*';      L: 10; T:Ord(etOpName)),
+    (C: 'Class'; R: '[1-9][0-9]*[A-F]'; L: 3;  T:Ord(etFdClass))
+  );
+
+  // Exchange Field 2 settings/rules
+  Exchange2Settings: array[TExchange2Type] of TFieldDefinition = (
+    (C: 'Nr.';        R: '([0-9][0-9]*)|(#)';              L: 4;  T:Ord(etSerialNr)),
+    (C: 'Number';     R: '[1-9][0-9]*';                    L: 10; T:Ord(etCwopsNumber)),
+    (C: 'Section';    R: '([A-Z][A-Z])|([A-Z][A-Z][A-Z])'; L: 3;  T:Ord(etArrlSection)),
+    (C: 'State/Prov'; R: '[A-Z]*';                         L: 6;  T:Ord(etStateProv)),
+    (C: 'Zone';       R: '[0-9]*';                         L: 2;  T:Ord(etCqZone)),
+    (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
+    (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
+    (C: 'Power';      R: '([0-9]*)|(KW)|([0-9][OT]*)';     L: 4;  T:Ord(etPower)),
+    (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode))
+  );
+
+  { display parsed Exchange field settings }
+  BDebugExchSettings: boolean = false;
+
+type
+
+  { TMainForm }
+
   TMainForm = class(TForm)
     AlSoundOut1: TAlSoundOut;
     MainMenu1: TMainMenu;
@@ -70,14 +120,14 @@ type
     PileupMNU: TMenuItem;
     SingleCallsMNU: TMenuItem;
     CompetitionMNU: TMenuItem;
-    CWTCompetition1: TMenuItem;
+    HSTCompetition1: TMenuItem;
     StopMNU: TMenuItem;
     ImageList1: TImageList;
     Run1: TMenuItem;
     PileUp1: TMenuItem;
     SingleCalls1: TMenuItem;
     Competition1: TMenuItem;
-    CWTCompetition3: TMenuItem;
+    HSTCompetition2: TMenuItem;
     Stop1MNU: TMenuItem;
     ViewScoreBoardMNU: TMenuItem;
     ViewScoreTable1: TMenuItem;
@@ -190,8 +240,6 @@ type
     PlayRecordedAudio1: TMenuItem;
     N8: TMenuItem;
     AudioRecordingEnabled1: TMenuItem;
-    HSTCompetition1: TMenuItem;
-    HSTCompetition2: TMenuItem;
     Panel11: TPanel;
     ListView1: TListView;
     Operator1: TMenuItem;
@@ -289,13 +337,24 @@ type
     procedure ListView2CustomDrawSubItem(Sender: TCustomListView;
       Item: TListItem; SubItem: Integer; State: TCustomDrawState;
       var DefaultDraw: Boolean);
+    //procedure SimContestComboClick(Sender: TObject);
     procedure ListView2SelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
     procedure mnuShowCallsignInfoClick(Sender: TObject);
     procedure SimContestComboChange(Sender: TObject);
+    procedure ExchangeEditExit(Sender: TObject);
 
   private
     MustAdvance: boolean;
+    ExchangeField1Type: TExchange1Type;
+    ExchangeField2Type: TExchange2Type;
+    procedure ConfigureExchangeFields(
+      AExchType1: TExchange1Type;
+      AExchType2: TExchange2Type);
+    procedure SetMyExch1(const AExchType: TExchange1Type; const Avalue: string);
+    procedure SetMyExch2(const AExchType: TExchange2Type; const Avalue: string);
+    function ValidateExchField(const FieldDef: PFieldDefinition;
+      const Avalue: string) : Boolean;
     procedure ProcessSpace;
     procedure SendMsg(Msg: TStationMessage);
     procedure ProcessEnter;
@@ -314,6 +373,7 @@ type
     procedure PopupScoreHst;
     procedure Advance;
     procedure SetContest(AContestNum: TSimContest);
+    procedure SetMyExchange(const AExchange: string);
     procedure SetQsk(Value: boolean);
     procedure SetMyCall(ACall: string);
     procedure SetPitch(PitchNo: integer);
@@ -328,19 +388,33 @@ type
 
   end;
 
+function ToStr(const val : TExchange1Type): string; overload;
+function ToStr(const val : TExchange2Type): string; overload;
+
 var
   MainForm: TMainForm;
 
 implementation
-
-uses ScoreDlg, Log;
+uses TypInfo, ScoreDlg, Log, PerlRegEx;
 
 {$R *.DFM}
+
+function ToStr(const val : TExchange1Type) : string; overload;
+begin
+  Result := GetEnumName(typeInfo(TExchange1Type ), Ord(val));
+end;
+
+function ToStr(const val : TExchange2Type) : string; overload;
+begin
+  Result := GetEnumName(typeInfo(TExchange2Type ), Ord(val));
+end;
 
 { return whether the Edit2 control is the RST exchange field. }
 function Edit2IsRST: Boolean;
 begin
-  Result := RunMode in [rmPileup, rmSingle, rmWpx, rmHst];
+  assert((not (SimContest in [scWpx, scHst])) or
+    (MainForm.ExchangeField1Type = etRST));
+  Result := MainForm.ExchangeField1Type = etRST;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -361,6 +435,7 @@ begin
   Tst := TContest.Create;
   LoadCallList;
 
+  // Adding a contest: load call history file (be sure to delete it below).
   ARRLDX:= TARRL.Create;
   CWOPSCWT := TCWOPS.Create;
 
@@ -433,20 +508,63 @@ end;
 
 procedure TMainForm.Edit2KeyPress(Sender: TObject; var Key: Char);
 begin
-   if RunMode <> rmCwt then begin
-      if not CharInSet(Key, ['0'..'9', #8]) then
-         Key := #0;
-   end
-   else begin
-      if not CharInSet(Key, ['A'..'Z','a'..'z', #8]) then
-       Key := #0;
-   end;
+  case ExchangeField1Type of
+    etRST:
+      begin
+        if RunMode <> rmHst then
+        begin
+          // for RST field, map (A,N) to (1,9)
+          case Key of
+            'a', 'A': Key := '1';
+            'n', 'N': Key := '9';
+          end;
+        end;
+        // valid RST characters...
+        if not CharInSet(Key, ['0'..'9', #8]) then
+          Key := #0;
+      end;
+    etOpName:
+      begin
+        // valid operator name characters
+        if not CharInSet(Key, ['A'..'Z','a'..'z', #8]) then
+          Key := #0;
+      end;
+    else
+      assert(false, Format('invalid exchange field 1 type: %s',
+        [ToStr(ExchangeField1Type)]));
+  end;
 end;
 
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not CharInSet(Key, ['0'..'9', #8]) then
-    Key := #0;
+  case ExchangeField2Type of
+    etSerialNr, etCwopsNumber, etCqZone, etItuZone, etAge:
+      begin
+        if RunMode <> rmHst then
+          case Key of
+            'a', 'A': Key := '1';
+            'n', 'N': Key := '9';
+            't', 'T': Key := '0';
+          end;
+        // valid Zone or NR field characters...
+        if not CharInSet(Key, ['0'..'9', #8]) then
+          Key := #0;
+      end;
+    etPower:
+      begin
+        case Key of
+          'a', 'A': Key := '1';
+          'n', 'N': Key := '9';
+          't', 'T': Key := '0';
+        end;
+        // valid Power characters, including KW...
+        if not CharInSet(Key, ['0'..'9', 'K', 'k', 'W', 'w', #8]) then
+          Key := #0;
+      end;
+    else
+      assert(false, Format('invalid exchange field 2 type: %s',
+        [ToStr(ExchangeField2Type)]));
+  end;
 end;
 
 
@@ -605,7 +723,7 @@ begin
   else {otherwise, space bar moves cursor to next field}
     begin
       if ActiveControl = Edit1 then
-          ActiveControl := Edit2
+        ActiveControl := Edit2
       else if ActiveControl = Edit2 then
         ActiveControl := Edit3
       else
@@ -618,6 +736,11 @@ procedure TMainForm.ProcessEnter;
 var
   C, N, R, Q: boolean;
 begin
+  if ActiveControl = ExchangeEdit then
+    begin
+      ExchangeEditExit(ActiveControl);
+      Exit;
+    end;
   MustAdvance := false;
 
   if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0 then
@@ -693,18 +816,97 @@ begin
   SetMyCall(Trim(Edit4.Text));
 end;
 
+procedure TMainForm.ExchangeEditExit(Sender: TObject);
+begin
+  SetMyExchange(Trim(ExchangeEdit.Text));
+end;
+
 procedure TMainForm.SetContest(AContestNum: TSimContest);
 begin
   // validate selected contest
-  if not (AContestNum in [scWpx, scHst]) then
+  if not (AContestNum in [scWpx, scCwt, scHst]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex:= Ord(Ini.SimContest);
     Exit;
   end;
 
+  assert(ContestDefinitions[AContestNum].T = AContestNum,
+    'Contest definitions are out of order');
   Ini.SimContest := AContestNum;
+  Ini.ActiveContest := @ContestDefinitions[AContestNum];
+  SimContestCombo.ItemIndex := Ord(AContestNum);
+  WipeBoxes;
+
+  // clear any status messages
+  sbar.Caption := '';
+  sbar.Font.Color := clDefault;
+  sbar.Visible := mnuShowCallsignInfo.Checked;
+
+  // update Exchange field labels and length settings (e.g. RST, Nr.)
+  ConfigureExchangeFields(ActiveContest.ExchType1, ActiveContest.ExchType2);
 end;
+
+{procedure TMainForm.SetNumber(ANumber: string);
+begin
+   Ini.Number := ANumber;
+   editNumber.Text := ANumber;
+   Tst.Me.NR2 := ANumber;
+end;}
+
+{
+  Set my exchange fields using the exchange string containing two values,
+  separated by a space. Error/warning messages are displayed in the status bar.
+}
+procedure TMainForm.SetMyExchange(const AExchange: string);
+var
+  sl: TStringList;
+  Field1Def: PFieldDefinition;
+  Field2Def: PFieldDefinition;
+begin
+  sl:= TStringList.Create;
+  try
+    Field1Def := @Exchange1Settings[ActiveContest.ExchType1];
+    Field2Def := @Exchange2Settings[ActiveContest.ExchType2];
+
+    // parse into two strings [Exch1, Exch2]
+    ExtractStrings([' '], [], PChar(AExchange), sl);
+    if sl.Count = 0 then
+      sl.AddStrings(['', '']);
+    if sl.Count = 1 then
+      sl.AddStrings(['']);
+
+    // validate exchange string
+    if not ValidateExchField(Field1Def, sl[0]) or
+       not ValidateExchField(Field2Def, sl[1]) then
+      begin
+        sbar.Caption := Format('Invalid exchange: ''%s'' - expecting %s.',
+          [AExchange, ActiveContest.Msg]);
+
+        sbar.Align:= alBottom;
+        sbar.Visible:= true;
+        sbar.Font.Color := clRed;
+      end
+    else
+      begin
+        sbar.Visible := mnuShowCallsignInfo.Checked;
+        sbar.Font.Color := clDefault;
+        sbar.Caption := '';
+      end;
+
+    // set contest-specific exchange values
+    SetMyExch1(ActiveContest.ExchType1, sl[0]);
+    SetMyExch2(ActiveContest.ExchType2, sl[1]);
+
+    // update the Exchange field value
+    ExchangeEdit.Text := AExchange;
+    Ini.UserExchangeTbl[SimContest]:= AExchange;
+
+  finally
+    sl.Free;
+  end;
+end;
+
 
 procedure TMainForm.SetMyCall(ACall: string);
 begin
@@ -713,6 +915,161 @@ begin
   Tst.Me.MyCall := ACall;
 end;
 
+{
+  Exchange Field types are determined by each contest.
+  Exchange field labels and exchange field maximum length are set.
+  Prior field values from .INI file are applied.
+  This procedure is called by SetContest() whenever the contest changes.
+}
+procedure TMainForm.ConfigureExchangeFields(
+  AExchType1: TExchange1Type;
+  AExchType2: TExchange2Type);
+const
+  { the logic below allows Exchange label to be optional.
+    If necessary, move this value into ContestDefinitions[] table. }
+  AExchangeLabel: PChar = 'Exchange';
+
+var
+  Visible: Boolean;
+
+begin
+  // Optional Contest Exchange label and field
+  Visible := AExchangeLabel <> '';
+  Label17.Visible:= Visible;
+  ExchangeEdit.Visible:= Visible;
+  Label17.Caption:= AExchangeLabel;
+
+  // The Exchange field is editable in some contests
+  ExchangeEdit.Enabled := ActiveContest.ExchFieldEditable;
+
+  // setup Exchange Field 1 (e.g. RST)
+  assert(AExchType1 = TExchange1Type(Exchange1Settings[AExchType1].T),
+    Format('Exchange1Settings[%d] ordering error: found %s, expecting %s.',
+      [Ord(AExchType1), ToStr(AExchType1),
+      ToStr(TExchange1Type(Exchange1Settings[AExchType1].T))]));
+  Label2.Caption:= Exchange1Settings[AExchType1].C;
+  Edit2.MaxLength:= Exchange1Settings[AExchType1].L;
+  ExchangeField1Type := AExchType1;
+
+  // setup Exchange Field 2 (e.g. Serial #)
+  assert(AExchType2 = TExchange2Type(Exchange2Settings[AExchType2].T),
+    Format('Exchange2Settings[%d] ordering error: found %s, expecting %s.',
+      [Ord(AExchType2), ToStr(AExchType2),
+      ToStr(TExchange2Type(Exchange2Settings[AExchType2].T))]));
+  Label3.Caption := Exchange2Settings[AExchType2].C;
+  Edit3.MaxLength := Exchange2Settings[AExchType2].L;
+  ExchangeField2Type := AExchType2;
+
+  // Set my exchange value (from INI file)
+  SetMyExchange(Ini.UserExchangeTbl[SimContest]);
+end;
+
+procedure TMainForm.SetMyExch1(const AExchType: TExchange1Type;
+  const Avalue: string);
+begin
+  case AExchType of
+    etRST:
+      begin
+        // Format('invalid RST (%s)', [AValue]));
+        Ini.UserExchange1[SimContest] := Avalue;
+        if BDebugExchSettings then Edit2.Text := Avalue; // testing only
+      end;
+    etOpName: // e.g. scCwt (David)
+      begin
+        // Format('invalid OpName (%s)', [AValue]));
+        Ini.HamName:= Avalue;
+        Ini.UserExchange1[SimContest] := Avalue;
+        Tst.Me.OpName := Avalue;
+        if BDebugExchSettings then Edit2.Text := Avalue; // testing only
+
+        //UpdateAppTitle; or move to Edit2Change().
+        if HamName <> '' then
+          begin
+            Caption := 'Morse Runner:  ' + HamName;
+            if CWOPSNum <> ''  then
+                Caption := 'Morse Runner:  ' + HamName + ' ' + CWOPSNum;
+          end
+        else
+          Caption := 'Morse Runner';
+      end;
+    else
+      assert(false, Format('Unsupported exchange 1 type: %s.', [ToStr(AExchType)]));
+  end;
+end;
+
+procedure TMainForm.SetMyExch2(const AExchType: TExchange2Type;
+  const Avalue: string);
+var
+  i: integer;
+begin
+  case AExchType of
+    etSerialNr:
+      begin
+        Ini.UserExchange2[SimContest] := Avalue;
+        if not IsNum(Avalue) or (RunMode = rmHst) then
+          Tst.Me.Nr := 1
+        else
+          Tst.Me.Nr := StrToInt(Avalue);
+
+        if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
+      end;
+    etCwopsNumber:  // e.g. scCwt (123)
+      begin
+        {Edit3.Text := sl[1];
+        Ini.CWOPSNum:= sl[1];
+        Tst.Me.CWOPSNR := StrToInt(sl[1]); }
+        // todo - verify this is a number
+        i := StrToIntDef(Avalue, 0);
+        Ini.UserExchange2[SimContest] := Avalue;
+        Ini.CWOPSNum:= IntToStr(i);
+        // ExchangeEdit.Text := Avalue;
+        if Avalue <> '' then
+          Tst.Me.CWOPSNR := StrToIntDef(Avalue, 0)
+        else
+          Tst.Me.CWOPSNR := 0;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+
+        if HamName <> '' then begin
+          Caption := 'Morse Runner:  ' + HamName;
+          if CWOPSNum <> ''  then
+              Caption := 'Morse Runner:  ' + HamName + ' ' + CWOPSNum;
+        end else
+          Caption := 'Morse Runner';
+      end;
+    //etArrlSection:  // e.g. Field Day (OR)
+    //etStateProv:
+    //etCqZone:
+    //etItuZone:
+    //etAge:
+    //etPower:
+    //etJarlOblastCode:
+    else
+      assert(false, Format('Unsupported exchange 2 type: %s.', [ToStr(AExchType)]));
+  end;
+end;
+
+
+function TMainForm.ValidateExchField(const FieldDef: PFieldDefinition;
+  const Avalue: string) : Boolean;
+var
+  reg: TPerlRegEx;
+  s: string;
+begin
+  reg := TPerlRegEx.Create();
+  try
+    reg.Subject := UTF8Encode(Avalue);
+    s:= '^(' + FieldDef.R + ')$';
+    reg.RegEx:= UTF8Encode(s);
+    Result:= Reg.Match;
+  finally
+    reg.Free;
+  end;
+end;
+
+{
+  Set pitch based on menu item number.
+  Must be within range [0, ComboBox1.Items.Count).
+}
 procedure TMainForm.SetPitch(PitchNo: integer);
 begin
   PitchNo := Max(0, Min(PitchNo, ComboBox1.Items.Count-1));
@@ -866,10 +1223,10 @@ begin
     begin
       // for RST field, select middle digit
       if Length(Edit2.Text) = 3 then
-	begin
-	  Edit2.SelStart := 1;
-	  Edit2.SelLength := 1;
-	end;
+        begin
+          Edit2.SelStart := 1;
+          Edit2.SelLength := 1;
+        end;
     end
   else // otherwise select entire field
     begin
@@ -889,12 +1246,15 @@ begin
   else if Ctl is TEdit then (Ctl as TEdit).Color := Clr[AEnable];
 end;
 
+
 procedure TMainForm.Run(Value: TRunMode);
 const
-  Title: array[TRunMode] of string =
-    ('', 'Pile-Up', 'Single Calls', 'COMPETITION', 'H S T','CWOPS CWT');
+  Mode: array[TRunMode] of string =
+    ('', 'Pile-Up', 'Single Calls', 'COMPETITION', 'H S T');
+
 var
   BCompet, BStop: boolean;
+  //S: string;
 begin
   if Value = Ini.RunMode then
     Exit;
@@ -904,7 +1264,9 @@ begin
   RunMode := Value;
 
   //main ctls
+  EnableCtl(SimContestCombo, BStop);
   EnableCtl(Edit4,  BStop);
+  EnableCtl(ExchangeEdit, BStop);
   EnableCtl(SpinEdit2, BStop);
   SetToolbuttonDown(ToolButton1, not BStop);
 
@@ -933,14 +1295,6 @@ begin
     SpinEdit2.Value := CompDuration;
     end;
 
-  Label2.Caption := 'RST';
-  Edit2.MaxLength := 3;
-  // Cwt changes
-  if RunMode = rmCwt then
-    begin
-       Label2.Caption := 'Name';
-       Edit2.MaxLength := 10;
-    end;
   //button menu
   PileupMNU.Enabled := BStop;
   SingleCallsMNU.Enabled := BStop;
@@ -980,15 +1334,14 @@ begin
 
 
   //mode caption
-  Panel4.Caption := Title[Value];
-  if BCompet
-    then Panel4.Font.Color := clRed else Panel4.Font.Color := clGreen;
+  Panel4.Caption := Mode[Value];
+  Panel4.Font.Color := IfThen(BCompet, clRed, clGreen);
 
   if not BStop then
     begin
     Tst.Me.AbortSend;
     Tst.BlockNumber := 0;
-    Tst.Me.Nr := 1;
+    //Tst.Me.Nr := 1;
     Log.Clear;
     WipeBoxes;
 
@@ -1007,6 +1360,16 @@ begin
     IncRit(0);
 
   if BStop then begin
+    {// save NR back to .INI File.
+    // todo - there is a better way to this.
+    if (not BCompet) and
+      (Self.ExchangeField2Type = etSerialNr) and
+      (SimContest in [scWpx]) then
+      begin
+        S := IntToStr(Tst.Me.NR);
+        Self.SetMyExch2(etSerialNr, S);
+      end;
+      }
     if AlWavFile1.IsOpen then
       AlWavFile1.Close;
   end
@@ -1536,7 +1899,7 @@ end;
 
 procedure TMainForm.Operator1Click(Sender: TObject);
 begin
-  HamName := InputBox('HST Operator', 'Enter operator''s name', HamName);
+  HamName := InputBox('HST/CWOps Operator', 'Enter operator''s name', HamName);
   HamName := UpperCase(HamName);
   if HamName <> '' then begin
     Caption := 'Morse Runner:  ' + HamName;
@@ -1544,6 +1907,10 @@ begin
         Caption := 'Morse Runner:  ' + HamName + ' ' + CWOPSNum;
   end else
     Caption := 'Morse Runner';
+
+  Ini.UserExchangeTbl[scCwt] := Format('%s %s', [HamName, CWOPSNum]);
+  if SimContest = scCwt then
+    SetMyExchange(Ini.UserExchangeTbl[SimContest]);
 
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
@@ -1566,6 +1933,10 @@ begin
        exit;
   end;
     CWOPSNum := buf;
+
+  Ini.UserExchangeTbl[scCwt] := Format('%s %s', [HamName, CWOPSNum]);
+  if SimContest = scCwt then
+    SetMyExchange(Ini.UserExchangeTbl[SimContest]);
 
   if HamName <> '' then begin
     Caption := 'Morse Runner:  ' + HamName;
