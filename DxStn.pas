@@ -162,7 +162,8 @@ begin
     TrueNR := Self.NR;
     TrueOpName := Self.OpName;
   end;
-  Free;
+
+  Free; // removes Self from Stations[] container
 end;
 
 
