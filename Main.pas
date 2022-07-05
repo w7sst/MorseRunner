@@ -1367,63 +1367,22 @@ procedure TMainForm.CWMaxRxSpeedClick(Sender: TObject);
 Var
   maxspd:integer;
 begin
-
   maxspd := (Sender as TMenuItem).Tag;
 
   UpdCWMaxRxSpeed(maxspd);
-
-  MaxRxWpm := maxspd;
-
 end;
 
 
 procedure TMainForm.UpdCWMaxRxSpeed(Maxspd: integer);
-Var
-  xmax0:Boolean;
-  xmax1:Boolean;
-  xmax2:Boolean;
-  xmax4:Boolean;
-  xmax6:Boolean;
-  xmax8:Boolean;
-  xmax10:Boolean;
 begin
-
-  xmax0 := False;
-  xmax1 := False;
-  xmax2 := False;
-  xmax4 := False;
-  xmax6 := False;
-  xmax8 := False;
-  xmax10 := False;
-
-  if maxspd = 0 then
-       xmax0 := True;
-  if maxspd = 1 then
-       xmax1 := True;
-  if maxspd = 2 then
-       xmax2 := True;
-  if maxspd = 4 then
-       xmax4 := True;
-   if maxspd = 6 then
-       xmax6 := True;
-  if maxspd = 8 then
-       xmax8 := True;
-  if maxspd = 10 then
-       xmax10 := True;
-  CWMaxRxSpeedSet0.checked := xmax0;
-  CWMaxRxSpeedSet1.checked := xmax1;
-  CWMaxRxSpeedSet2.checked := xmax2;
-  CWMaxRxSpeedSet4.checked := xmax4;
-  CWMaxRxSpeedSet6.checked := xmax6;
-  CWMaxRxSpeedSet8.checked := xmax8;
-  CWMaxRxSpeedSet10.checked := xmax10;
-
-  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
-    try
-      WriteString(SEC_STN, 'CWMaxRxSpeed', inttostr(maxspd));
-    finally
-      Free;
-  end;
+  Ini.MaxRxWpm := Maxspd;
+  CWMaxRxSpeedSet0.checked := maxspd = 0;
+  CWMaxRxSpeedSet1.checked := maxspd = 1;
+  CWMaxRxSpeedSet2.checked := maxspd = 2;
+  CWMaxRxSpeedSet4.checked := maxspd = 4;
+  CWMaxRxSpeedSet6.checked := maxspd = 6;
+  CWMaxRxSpeedSet8.checked := maxspd = 8;
+  CWMaxRxSpeedSet10.checked := maxspd = 10;
 end;
 
 
@@ -1434,65 +1393,23 @@ begin
   minspd := (Sender as TMenuItem).Tag;
 
   UpdCWMinRxSpeed(minspd);
-
-  MinRxWpm := minspd;
 end;
 
 
 procedure TMainForm.UpdCWMinRxSpeed(minspd: integer);
-Var
-  xmin0:Boolean;
-  xmin1:Boolean;
-  xmin2:Boolean;
-  xmin4:Boolean;
-  xmin6:Boolean;
-  xmin8:Boolean;
-  xmin10:Boolean;
-
 begin
-
    if (Wpm < 15) and  (minspd > 4) then
             minspd := 4;
 
-  xmin0 := False;
-  xmin1 := False;
-  xmin2 := False;
-  xmin4 := False;
-  xmin6 := False;
-  xmin8 := False;
-  xmin10 := False;
-
-  if minspd = 0 then
-       xmin0 := True;
-  if minspd = 1 then
-       xmin1 := True;
-  if minspd = 2 then
-       xmin2 := True;
-  if minspd = 4 then
-       xmin4 := True;
-   if minspd = 6 then
-       xmin6 := True;
-  if minspd = 8 then
-       xmin8 := True;
-  if minspd = 10 then
-       xmin10 := True;
-
-  CWMinRxSpeedSet0.checked := xmin0;
-  CWMinRxSpeedSet1.checked := xmin1;
-  CWMinRxSpeedSet2.checked := xmin2;
-  CWMinRxSpeedSet4.checked := xmin4;
-  CWMinRxSpeedSet6.checked := xmin6;
-  CWMinRxSpeedSet8.checked := xmin8;
-  CWMinRxSpeedSet10.checked := xmin10;
-  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
-    try
-      WriteString(SEC_STN, 'CWMinRxSpeed', inttostr(minspd));
-    finally
-      Free;
-  end;
-
+  Ini.MinRxWpm := minspd;
+  CWMinRxSpeedSet0.checked := minspd = 0;
+  CWMinRxSpeedSet1.checked := minspd = 1;
+  CWMinRxSpeedSet2.checked := minspd = 2;
+  CWMinRxSpeedSet4.checked := minspd = 4;
+  CWMinRxSpeedSet6.checked := minspd = 6;
+  CWMinRxSpeedSet8.checked := minspd = 8;
+  CWMinRxSpeedSet10.checked := minspd = 10;
 end;
-
 
 procedure TMainForm.NRDigitsClick(Sender: TObject);
 Var
@@ -1501,41 +1418,16 @@ begin
   nrd := (Sender as TMenuItem).Tag;
 
   UpdNRDigits(nrd);
-
-  NRDigits := nrd;
 end;
 
 
 procedure TMainForm.UpdNRDigits(nrd: integer);
-Var
-  xdig1:Boolean;
-  xdig2:Boolean;
-  xdig3:Boolean;
-  xdig4:Boolean;
 begin
-  xdig1 := False;
-  xdig2 := False;
-  xdig3 := False;
-  xdig4 := False;
-  if nrd = 1 then
-       xdig1 := True;
-  if nrd = 2 then
-       xdig2 := True;
-  if nrd = 3 then
-       xdig3 := True;
-  if nrd = 4 then
-       xdig4 := True;
-  NRDigitsSet1.Checked := xdig1;
-  NRDigitsSet2.Checked := xdig2;
-  NRDigitsSet3.Checked := xdig3;
-  NRDigitsSet4.Checked := xdig4;
-
-  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
-    try
-      WriteString(SEC_STN, 'NRDigits', inttostr(nrd));
-    finally
-      Free;
-  end;
+  Ini.NRDigits := nrd;
+  NRDigitsSet1.Checked := nrd = 1;
+  NRDigitsSet2.Checked := nrd = 2;
+  NRDigitsSet3.Checked := nrd = 3;
+  NRDigitsSet4.Checked := nrd = 4;
 end;
 
 
