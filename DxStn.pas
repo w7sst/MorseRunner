@@ -44,7 +44,7 @@ begin
   inherited Create(nil);
   stringlist := TStringList.Create;
   stringlist.Delimiter := ';';
-
+try
   HisCall := Ini.Call;
 
   if Ini.ContestName = 'arrlfd' then
@@ -112,6 +112,10 @@ begin
   //the MeSent event will follow immediately
   TimeOut := NEVER;
   State := stCopying;
+
+finally
+  FreeAndNil(stringlist);
+end;
 end;
 
 

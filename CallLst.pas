@@ -42,15 +42,16 @@ var
   zone: string;
   FileName: string;
 begin
-     stringlist := TStringList.Create;
-     stringlist.Delimiter := ';';
-     Calls.Clear;
-     Zones.Clear;
-  Calls.Capacity := 20000;
-  Zones.Capacity := 20000;
-  FileName := ExtractFilePath(ParamStr(0)) + 'mr_db.txt';
-  // Set the name of the file that will be read
-  AssignFile(tfIn, FileName);
+  stringlist := TStringList.Create;
+  try
+    stringlist.Delimiter := ';';
+    Calls.Clear;
+    Zones.Clear;
+    Calls.Capacity := 20000;
+    Zones.Capacity := 20000;
+    FileName := ExtractFilePath(ParamStr(0)) + 'mr_db.txt';
+    // Set the name of the file that will be read
+    AssignFile(tfIn, FileName);
 
     // Open the file for reading
     reset(tfIn);
@@ -78,6 +79,9 @@ begin
     // Done so close the file
     CloseFile(tfIn);
 
+  finally
+    stringlist.Free;
+  end;
 end;
 
 procedure OldLoadCallList;

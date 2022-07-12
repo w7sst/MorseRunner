@@ -21,13 +21,14 @@ type
 
 TArrlFieldDay = class
 private
-  FdCallList: TList<TFdCallRec>;
+  FdCallList: TObjectList<TFdCallRec>;
   Comparer: IComparer<TFdCallRec>;
 
   procedure LoadFdHistoryFile;
 
 public
   constructor Create;
+  destructor Destroy; override;
   function pickStation(): integer;
   function getCall(id:integer): string;     // returns station callsign
   function getExch1(id:integer): string;    // returns station info (e.g. 3A)
@@ -62,7 +63,7 @@ begin
   tl.StrictDelimiter := True;
 
   try
-    FdCallList:= TList<TFdCallRec>.Create;
+    FdCallList:= TObjectList<TFdCallRec>.Create;
 
     slst.LoadFromFile(ParamStr(1) + 'FD_2021-008.txt');
 
@@ -99,6 +100,12 @@ begin
     inherited Create;
     Comparer := TComparer<TFdCallRec>.Construct(TFdCallRec.compareCall);
     LoadFdHistoryFile;
+end;
+
+destructor TArrlFieldDay.Destroy;
+begin
+  FreeAndNil(FdCallList);
+  inherited;
 end;
 
 function TArrlFieldDay.pickStation(): integer;
