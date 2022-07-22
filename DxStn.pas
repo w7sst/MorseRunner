@@ -8,7 +8,7 @@ unit DxStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Dialogs, Ini, ARRLFD, CWOPS,
+  SysUtils, Classes, Station, RndFunc, Dialogs, Ini, ARRLFD, NAQP, CWOPS,
   CallLst, Qsb, DxOper, Log, SndTypes;
 
 type
@@ -50,6 +50,10 @@ begin
        Operid := gARRLFD.pickStation();
        MyCall := gARRLFD.getCall(Operid);
     end;
+    scNaQp: begin
+       Operid := gNAQP.pickStation();
+       MyCall := gNAQP.getCall(Operid);
+    end;
     else
        MyCall := PickCall;     // Pick one Callsign from Calllist
   end;
@@ -72,6 +76,12 @@ begin
       Exch1 := gARRLFD.getExch1(Operid);
       Exch2 := gARRLFD.getExch2(Operid);
       UserText := gARRLFD.getUserText(Operid);
+    end;
+    scNaQp: begin
+      Exch1 := gNAQP.getExch1(Operid);
+      OpName := Exch1; // TODO - refactor etOpName to use Exch1
+      Exch2 := gNAQP.getExch2(Operid);
+      UserText := gNAQP.getUserText(Operid);
     end;
     else
       NR := Oper.GetNR;
@@ -206,6 +216,7 @@ begin
       etSerialNr: TrueExch2 := IntToStr(Self.NR);
       etCwopsNumber: TrueExch2 := IntToStr(Self.NR);
       etArrlSection: TrueExch2 := Self.Exch2;
+      etStateProv: TrueExch2 := Self.Exch2;
       else
         assert(false);
     end;

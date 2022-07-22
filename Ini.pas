@@ -22,7 +22,7 @@ const
 
   DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
-  TSimContest = (scWpx, scCwt, scFieldDay, scHst);
+  TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
   // Exchange Field #1 types
@@ -88,6 +88,16 @@ const
      Msg: '''<class> <section>'' (e.g. 3A OR)';
      T:scFieldDay),
      // expecting two strings [Class,Section] (e.g. 3A OR)
+
+    (Name: 'NCJ NAQP';
+     Key: 'NAQP';
+     ExchType1: etOpName;
+     ExchType2: etStateProv;
+     ExchFieldEditable: True;
+     ExchDefault: 'MIKE OR';
+     Msg: '''<name> <state-prov>'' (e.g. MIKE OR)';
+     T:scNaQp),
+     // expecting two strings [Name,State-Prov] (e.g. MIKE OR)
 
     (Name: 'HST (High Speed Test)';
      Key: 'HST';
@@ -170,6 +180,7 @@ begin
       UserExchangeTbl[scCwt] := ReadString(SEC_STN, 'CwtExchange',
         Format('%s 1234', [HamName]));
       UserExchangeTbl[scFieldDay] := ReadString(SEC_STN, 'ArrlFdExchange', '3A OR');
+      UserExchangeTbl[scNaQp] := ReadString(SEC_STN, 'NAQPExchange', 'MIKE OR');
       UserExchangeTbl[scHst] := ReadString(SEC_STN, 'HSTExchange', '5NN #');
 
       ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
@@ -246,6 +257,7 @@ begin
       WriteString(SEC_STN, 'CqWpxExchange', UserExchangeTbl[scWpx]);
       WriteString(SEC_STN, 'CwtExchange', UserExchangeTbl[scCwt]);
       WriteString(SEC_STN, 'ArrlFdExchange', UserExchangeTbl[scFieldDay]);
+      WriteString(SEC_STN, 'NAQPExchange', UserExchangeTbl[scNaQp]);
       WriteString(SEC_STN, 'HSTExchange', UserExchangeTbl[scHst]);
 
       WriteString(SEC_STN, 'ArrlClass', ArrlClass);

@@ -897,6 +897,7 @@ object MainForm: TMainForm
           'CQ WPX'
           'CWOPS CWT'
           'ARRL Field Day'
+          'NCJ NAQP'
           'HST (High Speed Test)')
       end
       object ExchangeEdit: TEdit

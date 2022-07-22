@@ -240,6 +240,8 @@ begin
       Result := Format('%s  %.d', [OpName, NR]);
     scFieldDay:
       Result := Format('%s %s', [Exch1, Exch2]);
+    scNaQp:
+      Result := Format('%s %s', [Exch1, Exch2]);
     else
       Result := Format('%d%.3d', [RST, NR]);
   end;

@@ -16,7 +16,7 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles, Idhttp, ARRL, ARRLFD, CWOPS, System.ImageList;
+  WavFile, IniFiles, Idhttp, ARRL, ARRLFD, NAQP, CWOPS, System.ImageList;
 
 const
   WM_TBDOWN = WM_USER+1;
@@ -439,6 +439,7 @@ begin
   // Adding a contest: load call history file (be sure to delete it below).
   ARRLDX:= TARRL.Create;
   gARRLFD := TArrlFieldDay.Create;
+  gNAQP := TNcjNaQp.Create;
   CWOPSCWT := TCWOPS.Create;
 
   Histo:= THisto.Create(PaintBox1);
@@ -459,6 +460,7 @@ begin
   ToIni;
   ARRLDX.Free;
   gARRLFD.Free;
+  gNAQP.Free;
   CWOPSCWT.Free;
   Histo.Free;
   Tst.Free;
@@ -574,6 +576,12 @@ begin
     etArrlSection:
       begin
         // valid Section characters (e.g. OR or STX)
+        if not CharInSet(Key, ['A'..'Z', 'a'..'z', #8]) then
+          Key := #0;
+      end;
+    etStateProv:
+      begin
+        // valid State/Prov characters (e.g. OR or BC)
         if not CharInSet(Key, ['A'..'Z', 'a'..'z', #8]) then
           Key := #0;
       end;
@@ -848,7 +856,7 @@ end;
 procedure TMainForm.SetContest(AContestNum: TSimContest);
 begin
   // validate selected contest
-  if not (AContestNum in [scWpx, scCwt, scFieldDay, scHst]) then
+  if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex:= Ord(Ini.SimContest);
@@ -1074,7 +1082,13 @@ begin
         Tst.Me.Exch2 := Avalue;
         if BDebugExchSettings then Edit3.Text := Avalue; // testing only
       end;
-    //etStateProv:
+    etStateProv:  // e.g. NAQP (OR)
+      begin
+        // 'expecting State or Providence (e.g. OR)'
+        Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
     //etCqZone:
     //etItuZone:
     //etAge:

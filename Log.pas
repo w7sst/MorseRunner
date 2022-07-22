@@ -9,7 +9,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Graphics, RndFunc, Math, Controls,
-  StdCtrls, ExtCtrls, ARRL, ARRLFD, PerlRegEx, pcre;
+  StdCtrls, ExtCtrls, ARRL, ARRLFD, NAQP, PerlRegEx, pcre;
 
 
 procedure SaveQso;
@@ -147,6 +147,8 @@ begin
   case Ini.SimContest of
   scFieldDay:
     s := gArrlFd.GetStationInfo(ACallsign);
+  scNaQp:
+    s := gNAQP.GetStationInfo(ACallsign);
   else
     s := ARRLDX.Search(ACallsign);
   end;
@@ -183,6 +185,8 @@ begin
         ScoreTableSetTitle('UTC', 'Call', 'Name', 'NR', 'Pref', 'Chk', 'Wpm');
       scFieldDay:
         ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
+      scNaQp:
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Chk', 'Wpm');
       else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
     end;
@@ -418,7 +422,7 @@ var
       etSerialNr:    Result := Length(text) > 0;
       etCwopsNumber: Result := Length(text) > 0;
       etArrlSection: Result := Length(text) > 1;
-      //etStateProv:
+      etStateProv:   Result := Length(text) > 1;
       //etCqZone:
       //etItuZone:
       //etAge:
@@ -462,7 +466,7 @@ begin
       etSerialNr:    Qso.Nr := StrToInt(Edit3.Text);
       etCwopsNumber: Qso.Nr := StrToInt(Edit3.Text);
       etArrlSection: Qso.Exch2 := Edit3.Text;
-      //etStateProv:
+      etStateProv:   Qso.Exch2 := Edit3.Text;
       //etCqZone:
       //etItuZone:
       //etAge:
@@ -540,6 +544,11 @@ begin
         , Exch1
         , Exch2
         , Pfx, Err, format('%.2d', [TrueWpm]));
+    scNaQp:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , Exch1
+        , Exch2
+        , Pfx, Err, format('%.2d', [TrueWpm]));
     scWpx, scHst:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d %.4d', [Rst, Nr])
@@ -573,7 +582,7 @@ begin
         etSerialNr:    if TrueNr <> NR then Err := 'NR ';
         etCwopsNumber: if TrueNr <> NR then Err := 'NR ';
         etArrlSection: if TrueExch2 <> Exch2 then Err := 'SEC';
-        //etStateProv:
+        etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';
         //etCqZone:
         //etItuZone:
         //etAge:
