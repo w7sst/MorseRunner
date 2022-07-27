@@ -654,9 +654,9 @@ object MainForm: TMainForm
     end
     object GroupBox1: TGroupBox
       Left = 6
-      Top = 51
+      Top = 81
       Width = 194
-      Height = 181
+      Height = 155
       Caption = ' Station '
       TabOrder = 1
       object Label4: TLabel
@@ -668,35 +668,35 @@ object MainForm: TMainForm
       end
       object Label5: TLabel
         Left = 162
-        Top = 70
+        Top = 46
         Width = 29
         Height = 15
         Caption = 'WPM'
       end
       object Label6: TLabel
         Left = 12
-        Top = 70
+        Top = 46
         Width = 54
         Height = 15
         Caption = 'CW Speed'
       end
       object Label7: TLabel
         Left = 13
-        Top = 100
+        Top = 76
         Width = 49
         Height = 15
         Caption = 'CW Pitch'
       end
       object Label9: TLabel
         Left = 12
-        Top = 130
+        Top = 106
         Width = 74
         Height = 15
         Caption = 'RX Bandwidth'
       end
       object VolumeSlider1: TVolumeSlider
         Left = 92
-        Top = 151
+        Top = 129
         Width = 60
         Height = 20
         Hint = '-15,0 dB'
@@ -711,17 +711,10 @@ object MainForm: TMainForm
       end
       object Label18: TLabel
         Left = 12
-        Top = 156
+        Top = 134
         Width = 58
         Height = 15
         Caption = 'Mon. Level'
-      end
-      object Label17: TLabel
-        Left = 12
-        Top = 44
-        Width = 51
-        Height = 15
-        Caption = 'Exchange'
       end
       object Edit4: TEdit
         Left = 45
@@ -741,14 +734,14 @@ object MainForm: TMainForm
       end
       object SpinEdit1: TSpinEdit
         Left = 91
-        Top = 67
+        Top = 43
         Width = 65
         Height = 24
         TabStop = False
         MaxLength = 3
         MaxValue = 120
         MinValue = 10
-        TabOrder = 3
+        TabOrder = 2
         Value = 30
         OnChange = SpinEdit1Change
       end
@@ -766,12 +759,12 @@ object MainForm: TMainForm
       end
       object ComboBox1: TComboBox
         Left = 92
-        Top = 97
+        Top = 73
         Width = 65
         Height = 23
         Style = csDropDownList
         DropDownCount = 12
-        TabOrder = 4
+        TabOrder = 3
         TabStop = False
         OnChange = ComboBox1Change
         Items.Strings = (
@@ -791,12 +784,12 @@ object MainForm: TMainForm
       end
       object ComboBox2: TComboBox
         Left = 92
-        Top = 126
+        Top = 102
         Width = 65
         Height = 23
         Style = csDropDownList
         DropDownCount = 12
-        TabOrder = 5
+        TabOrder = 4
         TabStop = False
         OnChange = ComboBox2Change
         Items.Strings = (
@@ -811,16 +804,6 @@ object MainForm: TMainForm
           '500 Hz'
           '550 Hz'
           '600 Hz')
-      end
-      object ExchangeEdit: TEdit
-        Left = 75
-        Top = 40
-        Width = 116
-        Height = 23
-        AutoSelect = False
-        CharCase = ecUpperCase
-        TabOrder = 2
-        Text = '3A OR'
       end
     end
     object Panel10: TPanel
@@ -892,9 +875,16 @@ object MainForm: TMainForm
       Left = 6
       Top = 6
       Width = 195
-      Height = 44
+      Height = 74
       Caption = 'Contest'
       TabOrder = 3
+      object Label17: TLabel
+        Left = 12
+        Top = 47
+        Width = 51
+        Height = 15
+        Caption = 'Exchange'
+      end
       object SimContestCombo: TComboBox
         Left = 23
         Top = 18
@@ -907,6 +897,15 @@ object MainForm: TMainForm
         Items.Strings = (
           'WPX'
           'HST')
+      end
+      object ExchangeEdit: TEdit
+        Left = 76
+        Top = 44
+        Width = 116
+        Height = 23
+        CharCase = ecUpperCase
+        TabOrder = 1
+        Text = '3A OR'
       end
     end
   end
