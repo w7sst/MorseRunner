@@ -105,6 +105,7 @@ VCL/Win64/
 MorseRunner.obj
 MorseRunner.res
 MorseRunner.stat
+sdl_example/example
 
 # Ignore my project's .ini file. This user file is regenerated at runtime.
 MorseRunner.ini
