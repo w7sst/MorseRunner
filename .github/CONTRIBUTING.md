@@ -258,9 +258,7 @@ Label name | Search | Description
 Label name | Search | Description
 -----------|--------|------------
 `good-first-issue` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Agood-first-issue) | Less complex issues which would be good first issues to work on for users who wanted to contribute to MorseRunner.
-`beginner` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aatom%2Fatom+label%3Abeginner) | Less complex issues which would be good first issues to work on for users who wanted to contribute to MorseRunner.
-`beginner` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+user%3Aatom+label%3Abeginner) | Less complex issues which would be good first issues to work on for users who wanted to contribute to MorseRunner.
-
+`beginner` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Abeginner) | Less complex issues which would be good first issues to work on for users who wanted to contribute to MorseRunner.
 
 #### Issue State
 
