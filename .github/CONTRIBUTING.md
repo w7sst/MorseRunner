@@ -145,7 +145,6 @@ Drag/drop the changes into your pull request.
 1. **Test your changes!** Please test your changes to best extent possible as there is no formal
 test plan or test suite for this project. Consider asking the issue's author if they are available
 for early testing. If so, push your branch and let them test it.
-<br>//1. Early testing is encouraged if the issue's submitter is available to test and provide early feedback.
 
 1. **Send the completed pull request** when your work is complete.
 This notifies the maintainer of your pending contribution who will in turn merge
@@ -258,7 +257,6 @@ Label name | Search | Description
 Label name | Search | Description
 -----------|--------|------------
 `good first issue` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"good+first+issue") | Less complex issues which would be good first issues to work on for users who wanted to contribute to MorseRunner.
-`beginner` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Abeginner) | Less complex issues which would be good first issues to work on for users who wanted to contribute to MorseRunner.
 
 #### Issue State
 
@@ -268,9 +266,9 @@ Label name | Search | Description
 `blocked` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Ablocked) | Issues blocked on other issues.
 `confirmed` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Aconfirmed) | Issues have been confirmed and ready to be fixed/implemented.
 `duplicate` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Aduplicate) | This issue or pull request already exists.
-`help-wanted` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Ahelp-wanted) | Extra attention is needed. The MorseRunner team would appreciate help from the community in resolving these issues.
+`help wanted` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"help+wanted") | Extra attention is needed. The MorseRunner team would appreciate help from the community in resolving these issues.
 `invalid` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Ainvalid) | Issues which aren't valid (e.g. user errors).
-`more-information-needed` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Amore-information-needed) | Likely bugs, but haven't been reliably reproduced.
+`more information needed` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"more+information+needed") | Likely bugs, but haven't been reliably reproduced.
 `wontfix` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Awontfix) | The MorseRunner reviewer team has decided not to fix these issues now, either because they're not working as intended or for some other reason.
 
 #### Topic Categories
@@ -287,11 +285,11 @@ Label name | Search | Description
 #### Pull Request Labels
 Label name | Search | Description
 -----------|--------|------------
-`needs-review` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Aneeds-review) | Pull requests which need code review, and approval from maintainers.
-`needs-testing` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Aneeds-testing) | Pull requests which need manual testing.
-`requires-changes` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Arequires-changes) | Pull requests which need to be updated based on review comments and then reviewed again.
-`under-review` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Aunder-review) | Pull requests being reviewed by maintainers.
-`work-in-progress` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Awork-in-progress)  | Pull requests which are still being worked on, more changes will follow.
+`needs review` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"needs+review") | Pull requests which need code review, and approval from maintainers.
+`needs testing` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"needs+testing") | Pull requests which need manual testing.
+`requires changes` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"requires+changes") | Pull requests which need to be updated based on review comments and then reviewed again.
+`under review` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"under+review") | Pull requests being reviewed by maintainers.
+`work in progress` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"work+in+progress")  | Pull requests which are still being worked on, more changes will follow.
 
 ## Additional Resources
 Initially, we have added lots of links here to get you started.
