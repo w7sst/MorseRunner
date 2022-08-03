@@ -35,7 +35,7 @@ maintain Morse Runner over time.
 By establishing a community-based approach focused on a common project, we will be
 more efficient than individual efforts working on separately forked/cloned projects.
 
-Please refer to [CONTRIBUTING.md](TODO) for more information.
+Please refer to [CONTRIBUTING.md](.github/CONTRIBUTING.md) for more information.
 
 ## Roadmap
 Below is a high-level overview of project activities over the next year.
