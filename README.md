@@ -42,17 +42,16 @@ Below is a high-level overview of project activities over the next year.
 
 Now (active) | Next (planned, this fall) | Later (future, next year)
 -------------|----------------|---------------
-**Community...**<br>Launch Community Repository | Foster Community Growth | Promote and adopt contest-advocate-developer model (this team will develop and test a new contest).
-Develop Community Guidelines | Trial contest-advocate-developer model (volunteers?) | Investigate using GitHub project boards for this roadmap
+**Community...**<br>Launch Community Repository | Foster Community Growth | Investigate using GitHub project boards for this roadmap
+Develop Community Guidelines | Trial team-based contest development model | Promote team-based contest development model
 **Development...**:<br>Standardize git setup | Multi-contest design | Multi-contest implementation
-Invite prior authors;<br>Solicit early feedback | Merge selected features and/or bug fixes [from prior authors](#morse-runner-release-history) | Maintain existing integration with N1MM and DxLog
+Invite prior authors;<br>Solicit early feedback | Merge selected features and bug fixes [from prior authors](#morse-runner-release-history) | Maintain existing integration with N1MM and DxLog
 **Contests...**<br>FD, CWT, WPX, NAQP, HST | CQWW, Sweepstakes?, others... | Perhaps IARU/HF, All Asia, IOTA, ...<br>(based on community input/suggestions)
 **Releases...**<br>FD prototype (v1.80) | v1.8x (based on FD prototype) | v2.0 (based on new design)
 
+### Roadmap - Additional details
 
-### Roadmap (Additional detail)
-
-#### Complete - Spring 2022 (Apr-June)
+***Complete - Spring 2022 (Apr-June)***
 - [x] **Develop FD prototype** - Build a FD prototype building upon work from
 [prior authors](#morse-runner-release-history).
 The approach taken introduces a table-driven
@@ -61,7 +60,7 @@ Contests include CQ WPX, CWOPS CWT, ARRL FD, NCJ NAQP, and HST.
 Contest is selected using a drop-down list.
 This prototype was shared with a few individuals in early June.
 
-#### Now - Summer 2022 (July-Sept)
+***Now - Summer 2022 (July-Sept)***
 Projects we are currently working on...
 - [ ] **Develop Community Guidelines** - Discuss and adopt community guidelines
 for contributing to this project, including roles, best practices, guidelines,
@@ -74,7 +73,7 @@ can be independently extracted and merged into a common development branch.
 
 - [ ] **Invite prior authors** - Invite all known MR authors to join and contribute
 to this effort.
-Encourage them to at least connect as a "Watcher" of this project and/or share any
+Encourage them to at least connect as a "Watcher" of this project and share any
 personal knowledge they may have with this project.
 
 - [ ] **Standardize git setup** - Resolve git setup issues with CRLF caused by different git
@@ -89,7 +88,7 @@ early feedback. Discussions can occur within github regarding this prototype and
 future directions.
 Ask users to suggest which contests should be added next.
 
-#### Next - Fall 2022 (Oct-Dec)
+***Next - Fall 2022 (Oct-Dec)***
 Projects we will work on next...
 
 - [ ] **Foster Community Growth** - We are looking for ways to grow this community.
@@ -108,12 +107,15 @@ Implement one or two more popular contests.
 Consider adding ARRL Sweepstakes; however this one might be a little harder since
 it has a complex exchange.
 
-- [ ] **Merge selected features and/or bug fixes** - Identify and integrate features from
+- [ ] **Merge selected features and bug fixes** - Identify and integrate features from
 [other MR branches](#morse-runner-release-history) into the main release branch.
 
-#### Later - 1st Half 2023 (Jan-June)
+***Later - 1st Half 2023 (Jan-June)***
+
 Projects that we'll work on later...
-- [ ] **Contest-advocate-developer model** - promote the notion of a contest development team with both a contest advocate and a contest developer. These two (or more) community members can develop and test the contest before being released to general use. Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in either an advocate or developer role for this contest. As a point of reference, adding the NAQP contest to the FD prototype codebase was completed in one afternoon.
+- [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
+This team will develop and test an individual contest before it is released.
+Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in either an advocate or developer role for this contest. As a point of reference, adding the NAQP contest to the FD prototype codebase was completed in one afternoon.
 - [ ] **Multi-contest implementation** - finish the initial implementation of the
 multi-contest codebase. Major interfaces are developed and running. Contests are
 added by extending these interfaces only. Most switch states in code have been removed.
@@ -127,7 +129,7 @@ popular logging programs.
 Perhaps adding a contest will need two people, a contest developer and a contest advocate.
 This team can develop and test a contest before releasing to general use.
 
-#### Future
+***Future***
 - [ ] **Project Wiki** - Explore idea of developing a project wiki containing additional
 project details, including recommended setups (both developer and user),
 design discussions, compile instructions, coding standards, release criteria, etc.
@@ -140,7 +142,7 @@ Is this implemented within github or elsewhere?
 TODO - add a paragraph or two regarding the history of MR.
 
 > VE3NEA, of CW Skimmer fame, was the original author of MorseRunner. 9A5K later made some changes and interfaced it with DXLog.Net. Later, I ported it to a development environment that was free (instead of $500) and interfaced it to N1MM+. Many thanks to K1XM for letting me peruse the DXLog.Net code.
-> **Source:** [Steve London, N2IC, N1MMLoggerPlus forum](https://groups.io/g/N1MMLoggerPlus/topic/n1mm_morserunner_field_day/92010360?p=,,,20,0,0,0::recentpostdate/sticky,,,20,2,100,92010360,previd%3D1656505378749563661,nextid%3D1656224384912816884&previd=1656505378749563661&nextid=1656224384912816884).
+> <br>**Source:** [Steve London, N2IC, N1MMLoggerPlus forum](https://groups.io/g/N1MMLoggerPlus/topic/n1mm_morserunner_field_day/92010360?p=,,,20,0,0,0::recentpostdate/sticky,,,20,2,100,92010360,previd%3D1656505378749563661,nextid%3D1656224384912816884&previd=1656505378749563661&nextid=1656224384912816884).
 
 ## Morse Runner Release History
 The following table shows the release history of Morse Runner.
