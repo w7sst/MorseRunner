@@ -158,6 +158,7 @@ Nov 2015       | DF9TS    | no release| Ansi support, some changes to Log displa
 July 2016      | BH1SCW (BG4FQD)   | [1.69](https://github.com/BH1SCW/MorseRunner/commits/master)      | adds Hi-Score web page, unicode support
 Aug 2016       | BH1SCW (BG4FQD)   | [1.70](https://github.com/BH1SCW/MorseRunner/commits/master)      | show callsign info in status window
 Sept-Nov 2016  | BH1SCW (BG4FQD)   | [1.71](https://github.com/BH1SCW/MorseRunner/commits/master)      | bug fixes
+Jan 2017       | BH1SCW (BG4FQD)   | [1.72](https://www.bh1scw.com/mr/score)      | bug fix/ export qso/ PgUp,PgDn functions/ prefix judgment/ slow cw settings
 Oct 2018       | F6FVY    | [1.68.2+](https://github.com/f6fvy/MorseRunner/commits/master)   | New callers are added after qso, F1 improvements, speed increment/decrement, remove beep after qso.
 Oct 2018       | F6FVY    | [1.68.3+](https://github.com/f6fvy/MorseRunner/commits/master)   | improve F7 ('?') to cause Dx stations to call again.
 Nov 2018       | F6FVY    | [1.68.4+](https://github.com/f6fvy/MorseRunner/commits/master)   | mouse wheel controls RIT, callsign lookup using master.dta.
