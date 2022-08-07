@@ -42,8 +42,8 @@ Below is a high-level overview of project activities over the next year.
 
 Now (active) | Next (planned, this fall) | Later (future, next year)
 -------------|----------------|---------------
-**Community...**<br>Launch Community Repository | Foster Community Growth | Promote and adopt contest-advocate-developer model (this team will develop and test a new contest).
-Develop Community Guidelines | Trial contest-advocate-developer model (volunteers?) | Investigate using GitHub project boards for this roadmap
+**Community...**<br>Launch Community Repository | Foster Community Growth | Promote and adopt contest-advocate developer model (this team will develop and test a new contest).
+Develop Community Guidelines | Trial contest-advocate developer model (volunteers?) | Investigate using GitHub project boards for this roadmap
 **Development...**:<br>Standardize git setup | Multi-contest design | Multi-contest implementation
 Invite prior authors;<br>Solicit early feedback | Merge selected features and/or bug fixes [from prior authors](#morse-runner-release-history) | Maintain existing integration with N1MM and DxLog
 **Contests...**<br>FD, CWT, WPX, NAQP, HST | CQWW, Sweepstakes?, others... | Perhaps IARU/HF, All Asia, IOTA, ...<br>(based on community input/suggestions)
@@ -64,7 +64,7 @@ This prototype was shared with a few individuals in early June.
 #### Now - Summer 2022 (July-Sept)
 Projects we are currently working on...
 - [ ] **Develop Community Guidelines** - Discuss and adopt community guidelines
-for contributing to this project, including roles, best practices, guidelines,
+for contributing to this project, including roles, code of conduct, best practices, guidelines,
 expectations, adherance to standards, etc.
 
 - [ ] **Launch Community Respository** - Create a single repository containing
@@ -113,7 +113,8 @@ it has a complex exchange.
 
 #### Later - 1st Half 2023 (Jan-June)
 Projects that we'll work on later...
-- [ ] **Contest-advocate-developer model** - promote the notion of a contest development team with both a contest advocate and a contest developer. These two (or more) community members can develop and test the contest before being released to general use. Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in either an advocate or developer role for this contest. As a point of reference, adding the NAQP contest to the FD prototype codebase was completed in one afternoon.
+- [ ] **Contest-advocate developer model** - promote the notion of a contest development team with both a contest advocate and a contest developer. This team of two or more community members can develop and test the contest before being released to general use. Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in either an advocate or developer role for this contest. As a point of reference, adding the NAQP contest to the FD prototype codebase was completed in one afternoon.
+
 - [ ] **Multi-contest implementation** - finish the initial implementation of the
 multi-contest codebase. Major interfaces are developed and running. Contests are
 added by extending these interfaces only. Most switch states in code have been removed.
@@ -178,4 +179,4 @@ Winter 2022    | W7SST    | 1.81      | First general release, adds CQ WW, and p
 - [ ] what other sections or topics should be included here?
 - [ ] Reach out to VE3NEA to see if he has any documentation, materials, or old emails
   that can be added to the wiki.
-- [ ] Explore using Mermaid or PlantUML languages for adding diagrams to this documentation. Perhaps Roadmap can use PlantUML Ghant chart syntax.
+- [ ] Explore using Mermaid or PlantUML languages for adding diagrams to this documentation. Perhaps the Roadmap iteself can be generated using PlantUML Ghant chart syntax. Or, we look into using GitHub's project boards.

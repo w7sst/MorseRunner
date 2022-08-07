@@ -21,13 +21,10 @@ in a pull request.
 
 > This file will help people contribute to the project. It explains what types of contributions are needed and describes how the process works.
 
-> You should try to build a draft of the CONTRIBUTING.md file with the core contributors to your project to help them feel a shared sense of responsibility and to create the best possible guide for encouraging new contributors. It is sometimes best to practice building a markdown file in an offline program like Mou or an online one like Dilliger before you post it online.   
-**Source**: https://mozillascience.github.io/working-open-workshop/contributing/
-
-> Much of this document is inspired by https://github.com/atom/atom/blob/master/CONTRIBUTING.md.
-
 #### Table of Contents
-[Code of Conduct](#code-of-conduct)
+<!-- [Code of Conduct](#code-of-conduct) -->
+
+[I have a Question or Feedback](#i-have-a-question-or-feedback)
 
 [What should I know before I get started?](#what-should-i-know-before-i-get-started)
 - [I'm new to open source software?](Im-new-to-open-source-software)
@@ -35,10 +32,12 @@ in a pull request.
 [How can I contribute?](#how-can-i-contribute)
 - [Reporting Bugs](#reporting-bugs)
 - [Suggesting Enhancements](#suggesting-enhancements)
+- [Suggesting New Contests](#suggesting-new-contests)
 - [Your First Code Contribution](#your-first-code-contribution)
 - [Pull Requests](#pull-requests)
 
 [Developer Guidelines](#developer-guidelines)
+- [General Guidelines](#general-guidelines)
 
 [Styleguides](#styleguides)
 - [Changelog entries](#changelog-entries)
@@ -56,11 +55,20 @@ in a pull request.
 
 [Credits & Attribution](#credits-and-attribution)
 
+<!-- TODO
 ## Code of Conduct
 This project and everyone participating in it is governed by the
-[Morse Runner Code of Conduct](TODO https://github.com/w7sst/MorseRunner/CODE_OF_CONDUCT.md).
+[Morse Runner Code of Conduct](https://github.com/w7sst/MorseRunner/CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code.
-Please report unacceptable behavior to (TODO).
+Please report unacceptable behavior to (TODO) or GitHub.
+-->
+
+## I have a Question or Feedback
+At this point, we do not yet have a general forum establish for Morse Runner. This will be added in the future. In the meantime:
+- Before submitting a new Issue, search existing [questions](https://github.com/search?q=is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Aquestion) or [feedback](https://github.com/search?q=is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Afeedback) to see if a similar topic has already been discussed.
+- Ask a **general question** or **request support** using the [Question/Support template](.github/ISSUE_TEMPLATE/question-support.md).
+- **Submit feedback:: using the [Feedback template](.github/ISSUE_TEMPLATE/feedback.md).
+- As a community member, if you feel qualified to answer a question, please feel free to do so.
 
 ## What should I know before I get started?
 
@@ -75,44 +83,122 @@ See [Additional Resources](#additional-resources) section below for additional i
 
 If you wish to fix a bug, add a new feature or contest, provide documentation, develop training materials, or help in any way, these steps will get you started.
 
-> The [atom editor project](https://www.github.com/atom/atom/) has provided some good content
-[here](https://github.com/atom/atom/blob/master/CONTRIBUTING.md).
-Their material applies to our project as well. Much of their material and text
-has been reproduced below.
+> The [atom editor project](https://www.github.com/atom/atom/) has provided some [good content](https://github.com/atom/atom/blob/master/CONTRIBUTING.md).
+Their material applies to our project as well and has inspired much of our content.
 
-### Reporting Bugs (Opening an Issue)
+### Reporting Bugs
 
-1. Check for open issues or open a fresh issue to start a discussion around
-a feature idea or a bug.
+This section guides you through submitting a bug report for Morse Runner.
 
-TBD...
-<br>
-**Possible Source:** https://github.com/atom/atom/blob/master/CONTRIBUTING.md
+#### Before submitting a bug report
+Before submitting bug reports, please consider the following as you may find you don't need to create one.
 
-### Suggesting Enhancements (or Contests)
+- Check for [existing issues](https://github.com/search?q=is%3Aissue+repo%3Aw7sst%2FMorseRunner) to see if the problem has already been reported.
+- If it has **and the issue is still open**, add a comment to the existing issue instead of opening a new one.
+- If you find a **Closed** issue that seems similar to the issue you are reporting, open a new issue and include a link to the original issue in the body of your new one.
+- **If you are available to help test** an existing issue, please indicate by adding a comment to the issue.
 
-TBD...
-<br>
-**Possible Source:** https://github.com/atom/atom/blob/master/CONTRIBUTING.md
+#### How to submit a (good) bug report?
 
-### Your First Code Contribution (Opening a Pull Request and making changes)
+Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/).
+When you create a bug report, please include as many details as possible.
+Please provide the following information by filling out the [bug report template](.github/ISSUE_TEMPLATE/bug-report.md).
+
+Explain the problem and include additional details to help maintainers reproduce the problem:
+- Use a clear and descriptive title.
+- Describe the exact steps which reproduce the problem.
+- Describe what Morse Runner mode you were running.
+- Describe the behavior you observed.
+- Explain the behavior you expected to see and why.
+- Include screenshots if appropriate.
+
+Provide more context by answering these questions:
+- Did the problem start happening recently (e.g. after updating a new version) or was this always a problem?
+- If the problem is recent, can you reproduce it in an older version? What's the most recent version in which the problem doesn't happen? You can download older versions from the [releases page **TBD**]().
+- Can you reliably reproduce the issue? If not, provide details on about how often the problem happens or the conditions under which it happens.
+
+Include details about your environment:
+- Which version of Morse Runner are you using? You can get the version number from the Morse Runner About Box or the splash screen after program startup.
+- What OS and version are you running?
+
+Can you help?
+- Are able to help the developer by answering questions or being available to test the solution once available?
+
+### Suggesting Enhancements
+
+This section guides you through an enhancement suggestion to Morse Runner, including complete new features or minor improvements to existing functionality.
+Keep in mind the MR team has limited resources so it's unlikely that we'll work on every request.
+We will however label these requests with the `help wanted` tag so other community members will see them.
+If we're interested in a particular feature however, we'll follow up and ask you to discuss it in more detail.
+
+#### Before Submitting An Enhancement Suggestion
+Before creating enhancement suggestions, please consider the following as you may find you don't need to create one.
+
+- [Perform a search](https://github.com/search?q=is%3Aissue+repo%3Aw7sst%2FMorseRunner) to see if the enhancement has already been suggested. Look for issues marked with the `enhancement` label.
+- **If it has**, add a comment to the existing issue instead of opening a new one.
+- **If you are available to help test** an existing issue, please indicate by adding a comment to the issue.
+
+#### How do I submit A (Good) Enhancement Suggestion?
+Enhancement suggestions are tracked as [GitHub issues](https://guides.github.com/features/issues/).
+Please provide the following information by filling in the [feature request template](.github/ISSUE_TEMPLATE/feature-request.md).
+
+Explain the feature request and describe why you think this feature is needed.
+- Use a clear and descriptive title.
+- Provide a step-by-step description of the suggested enhancement.
+- Describe the current behavior and explain which behavior you expected to see and why.
+- Include screenshots if appropriate.
+- Explain why this enhancement would be useful to most Morse Runner users.
+
+### Suggesting New Contests
+
+This section guides you through adding a contest request to Morse Runner.
+We will add the `contest` label to each request; community members can volunteer to implement or help test each new contest. We have limited resources so it's possible that every request will not be implemented.
+
+- Submitting a contest is similar to submitting a feature request.
+
+#### Before Submitting A Contest Request
+Before submitting a new contest, please search [contest requests](https://github.com/search?q=is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Acontest)
+to see if this contest has already been requested.
+- **If it has**, please add a comment indicating your support for this contest. Contest requests are sorted by comment count. We use comment count as a proxy vote for each contest.
+- **If you are available to help testing**, please add a comment to the request.
+
+#### How do I submit a (good) contest recommendation?
+Contest support suggestions are tracked as [GitHub issues](https://guides.github.com/features/issues/).
+Please provide the following information by filling in the [contest request template](.github/ISSUE_TEMPLATE/contest-request.md).
+
+- Explain the contest request and describe why you think this contest is needed.
+- Use a clear and descriptive title (e.g. Add Support for ARRL FD).
+- Provide a link to the contest rules.
+- Explain any special contest exchange behaviors that should be considered when adding this contest.
+
+### Your First Code Contribution
+
+Unsure of where to begin with Morse Runner? You can start by looking through these `good first issue` and `help wanted` issues:
+- [Beginner issues](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"good+first+issue"+label%3A"help+wanted"+sort%3Acomments-desc) - issues that will only require a few lines of code or perhaps some documentation changes.
+- [Help wanted issues](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"help+wanted"+-label%3A"good+first+issue"+sort%3Acomments-desc) - issues that are a bit more involved than `beginner` issues.
+
+Both issue lists are sorted by number of comments. Number of comments serves as a proxy for the impact a given change will make.
+
+**To make changes to the code:**
 
 1. **Select an issue** you would like to work on.
-Change the [issue state](#issue-state) to "active" to indicate you are
-actively working on this issue.
 There is a [good first issue](#issue-attributes) label for issues that should be
 ideal for people who are new to the MorseRunner project and code base.
+
+1. **Change the [issue state](#issue-state) to "active"** to indicate you are
+actively working on this issue.
  
-1. [Fork the respository](https://guides.github.com/activities/forking/) and
-clone it locally. Connect your local to the original "upstream" respository
+1. **[Fork the respository](https://guides.github.com/activities/forking/) and
+clone it locally.**
+Connect your local to the original "upstream" respository
 by adding it as a remote. Pull in changes from "upstream" often so that you stay
 up to date so when you submit your pull request, merge conflicts will be less likely.
-(See more detailed instructions [here](https://help.github.com/articles/syncing-a-fork).)
+(For more detailed instructions, see [syncing a fork](https://help.github.com/articles/syncing-a-fork).)
 
 1. **Open a pull request** to track the work associated with the issue you have selected. See [Pull Requests](#pull-requests) below for more information.
 Reference the issue # on which you are working.
 
-1. [Create a branch](https://guides.github.com/introduction/flow/) for your changes.
+1. **[Create a branch](https://guides.github.com/introduction/flow/) for your changes.**
 Please follow the additional [developer guidelines](#developer-guidelines) below.
 
 1. **Contribute in the style of the project** to the best of your abilities.
@@ -124,7 +210,7 @@ See [developer guidelines](#developer-guidelines) below for more information.
 1. [future] [Develop unit tests](#general-guidelines) to exercise the new
 functionality. Some low-level code can be tested at the unit-test level.
 
-1. Add a [changelog entry](#label-changelog) and update [Readme.txt](TODO) as appropriate.
+1. **Add a [changelog entry](#label-changelog)** and update [Readme.txt](Readme.txt) as appropriate.
 
 ### Pull Requests
 A pull request is used to track work being done within the project.
@@ -353,7 +439,7 @@ The following articles will help you better understand this role.
 We'd like to "tip our hats" and say "Thank you!" and acknowledge the following projects
 for providing insight into starting and supporting our community-maintained open source project.
 - https://opensoure.guide
-- https://github.com/atom/atom/blob/master/CONTRIBUTING.md
+- https://github.com/atom/atom, https://github.com/atom/atom/blob/master/CONTRIBUTING.md
 - https://mozillascience.github.io/working-open-workshop/contributing/ -
 How to build a contributing.md, including training for open source projects;
 includes nine presentations and handouts.
