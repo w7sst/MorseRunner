@@ -16,7 +16,7 @@ Please feel free to join in at whatever level you are comfortable.
 
 The following is a set of guidelines for contributing to Morse Runner CE.
 These are mostly guidelines, not rules.
-Use your best judgement, and feel free to propose changes to this document
+Use your best judgment, and feel free to propose changes to this document
 in a pull request.
 
 > This file will help people contribute to the project. It explains what types of contributions are needed and describes how the process works.
@@ -188,9 +188,9 @@ ideal for people who are new to the MorseRunner project and code base.
 1. **Change the [issue state](#issue-state) to "active"** to indicate you are
 actively working on this issue.
  
-1. **[Fork the respository](https://guides.github.com/activities/forking/) and
+1. **[Fork the repository](https://guides.github.com/activities/forking/) and
 clone it locally.**
-Connect your local to the original "upstream" respository
+Connect your local to the original "upstream" repository
 by adding it as a remote. Pull in changes from "upstream" often so that you stay
 up to date so when you submit your pull request, merge conflicts will be less likely.
 (For more detailed instructions, see [syncing a fork](https://help.github.com/articles/syncing-a-fork).)
@@ -223,7 +223,7 @@ at your changes.
 When your work is complete, the PR will be submitted for review by one or
 more of the reviewers.
 
-1. **Reference any relavent issues** or supporting documentation in your PR (for example, "Closes #13.") Usually a PR has an associated Issue #.
+1. **Reference any relevant issues** or supporting documentation in your PR (for example, "Closes #13.") Usually a PR has an associated Issue #.
 
 1. **Include screen shots of the before and after** if your change involves changes to the UI.
 Drag/drop the changes into your pull request.
@@ -243,7 +243,7 @@ additional changes.
 As contributors, we should adopt reasonable open source
 development processes and conventions.
 As a starting point, we can draw from www.opensource.guide.
-These guidelines are recommendations, not rules. Please use your own judgement.
+These guidelines are recommendations, not rules. Please use your own judgment.
 
 - [ ] TODO - identify other sources/examples of community development guidelines
 and best practices for open source projects.
@@ -270,9 +270,9 @@ user-entered string against a given callsign.
 should be performed on the feature branch as part of submitting the pull request.
 Doing so will help maintain a solid code base.
 Reviews also serve as a good way to learn details of the project.
-Reviewers are looking for bugs and adherance to coding standards.
+Reviewers are looking for bugs and adherence to coding standards.
 Additional code changes are often made after a review to incorporate suggested
-improvementment and/or suggestions.
+improvement and/or suggestions.
 Some reviewers may even contribute specific code changes as part of the review.
 Code reviews will typically occur near the end of development or after
 submitting your PR (Pull Request) for review.
@@ -280,7 +280,7 @@ submitting your PR (Pull Request) for review.
 Github has tools to facilitate code reviews.
 We need to find and adopt these tools and perhaps setup a automated processes if possible.
 
-1. **Code refactoring** is encouraged and should alway be performed independent of
+1. **Code refactoring** is encouraged and should always be performed independent of
 feature development or bug fixing.
 If working on a feature and you discover a refactoring opportunity,
 please do this refactoring using a separate feature branch before completing
@@ -332,7 +332,7 @@ Please open an issue if you have suggestions for new labels.
 #### Issue Type
 Label name | Search | Description
 -----------|--------|------------
-`bug` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Abug) | Confirmed bugs or reports that are very likey to be bugs.
+`bug` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Abug) | Confirmed bugs or reports that are very likely to be bugs.
 `documentation` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Adocumentation) | Related to any type of documentation.
 `enhancement` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Aenhancement) | New feature or requests, including contest nominations.
 `feedback` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Afeedback) | General feedback; more than bug reports and feature requests.
@@ -388,7 +388,7 @@ TODO - write install, setup and compilation instructions.
 ### Open Source Software
 The following resources are available to learn more about Open Source Software in general.
 - [Open Source Guides](https://opensource.guide) - they publish several guidebooks on various
-aspects of Open Source Software develoment:
+aspects of Open Source Software development:
    - [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/) - good for those new to open source.
    - [Starting an Open Source Project](https://opensource.guide/starting-a-project/) - ideas and suggestions used to get this project off the ground.
    - [Finding Users for Your Project](https://opensource.guide/finding-users/) - how to grow your project.

@@ -64,9 +64,9 @@ This prototype was shared with a few individuals in early June.
 Projects we are currently working on...
 - [ ] **Develop Community Guidelines** - Discuss and adopt community guidelines
 for contributing to this project, including roles, code of conduct, best practices, guidelines,
-expectations, adherance to standards, etc.
+expectations, adherence to standards, etc.
 
-- [ ] **Launch Community Respository** - Create a single repository containing
+- [ ] **Launch Community Repository** - Create a single repository containing
 most major development projects/branches by various MR authors.
 Over time portions these projects, including individual features and bug fixes,
 can be independently extracted and merged into a common development branch.
@@ -158,7 +158,7 @@ Date           | Repo/Author   | Version/Link   | Features/Contests
 unknown        | 9A5K (sk)| unknown   | additional changes; interface with DXLog.Net.
 June 2015      | VE3NEA   | [1.68](https://github.com/ve3nea/MorseRunner/commits/master)      | bug fixing; last release by Alex.
 Nov 2015       | DF9TS    | no release| Ansi support, some changes to Log display window.
-July 2016      | BH1SCW (BG4FQD)   | [1.69](https://github.com/BH1SCW/MorseRunner/commits/master)      | adds Hi-Score web page, unicode support
+July 2016      | BH1SCW (BG4FQD)   | [1.69](https://github.com/BH1SCW/MorseRunner/commits/master)      | adds Hi-Score web page, Unicode support
 Aug 2016       | BH1SCW (BG4FQD)   | [1.70](https://github.com/BH1SCW/MorseRunner/commits/master)      | show callsign info in status window
 Sept-Nov 2016  | BH1SCW (BG4FQD)   | [1.71](https://github.com/BH1SCW/MorseRunner/commits/master)      | bug fixes
 Jan 2017       | BH1SCW (BG4FQD)   | [1.72](https://www.bh1scw.com/mr/score)      | bug fix/ export qso/ PgUp,PgDn functions/ prefix judgment/ slow cw settings
@@ -182,4 +182,4 @@ Winter 2022    | W7SST    | 1.81      | First general release, adds CQ WW, and p
 - [ ] what other sections or topics should be included here?
 - [ ] Reach out to VE3NEA to see if he has any documentation, materials, or old emails
   that can be added to the wiki.
-- [ ] Explore using Mermaid or PlantUML languages for adding diagrams to this documentation. Perhaps the Roadmap iteself can be generated using PlantUML Ghant chart syntax. Or, we look into using GitHub's project boards.
+- [ ] Explore using Mermaid or PlantUML languages for adding diagrams to this documentation. Perhaps the Roadmap itself can be generated using PlantUML Ghant chart syntax. Or, we look into using GitHub's project boards.
