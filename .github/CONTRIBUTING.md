@@ -66,8 +66,8 @@ Please report unacceptable behavior to (TODO) or GitHub.
 ## I have a Question or Feedback
 At this point, we do not yet have a general forum establish for Morse Runner. This will be added in the future. In the meantime:
 - Before submitting a new Issue, search existing [questions](https://github.com/search?q=is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Aquestion) or [feedback](https://github.com/search?q=is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Afeedback) to see if a similar topic has already been discussed.
-- Ask a **general question** or **request support** using the [Question/Support template](.github/ISSUE_TEMPLATE/question-support.md).
-- **Submit feedback:: using the [Feedback template](.github/ISSUE_TEMPLATE/feedback.md).
+- Ask a **general question** or **request support** using the [Question/Support template](ISSUE_TEMPLATE/question-support.md).
+- **Submit feedback** using the [Feedback template](ISSUE_TEMPLATE/feedback.md).
 - As a community member, if you feel qualified to answer a question, please feel free to do so.
 
 ## What should I know before I get started?
@@ -102,7 +102,7 @@ Before submitting bug reports, please consider the following as you may find you
 
 Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/).
 When you create a bug report, please include as many details as possible.
-Please provide the following information by filling out the [bug report template](.github/ISSUE_TEMPLATE/bug-report.md).
+Please provide the following information by filling out the [bug report template](ISSUE_TEMPLATE/bug-report.md).
 
 Explain the problem and include additional details to help maintainers reproduce the problem:
 - Use a clear and descriptive title.
@@ -140,7 +140,7 @@ Before creating enhancement suggestions, please consider the following as you ma
 
 #### How do I submit A (Good) Enhancement Suggestion?
 Enhancement suggestions are tracked as [GitHub issues](https://guides.github.com/features/issues/).
-Please provide the following information by filling in the [feature request template](.github/ISSUE_TEMPLATE/feature-request.md).
+Please provide the following information by filling in the [feature request template](ISSUE_TEMPLATE/feature-request.md).
 
 Explain the feature request and describe why you think this feature is needed.
 - Use a clear and descriptive title.
@@ -164,7 +164,7 @@ to see if this contest has already been requested.
 
 #### How do I submit a (good) contest recommendation?
 Contest support suggestions are tracked as [GitHub issues](https://guides.github.com/features/issues/).
-Please provide the following information by filling in the [contest request template](.github/ISSUE_TEMPLATE/contest-request.md).
+Please provide the following information by filling in the [contest request template](ISSUE_TEMPLATE/contest-request.md).
 
 - Explain the contest request and describe why you think this contest is needed.
 - Use a clear and descriptive title (e.g. Add Support for ARRL FD).
@@ -223,7 +223,7 @@ at your changes.
 When your work is complete, the PR will be submitted for review by one or
 more of the reviewers.
 
-1. **Reference any relevant issues** or supporting documentation in your PR (for example, "Closes #13.") Usually a PR has an associated Issue #.
+1. **Reference any relevant issues** or supporting documentation in your PR (for example, "Closes #13."). Usually a PR has an associated Issue #.
 
 1. **Include screen shots of the before and after** if your change involves changes to the UI.
 Drag/drop the changes into your pull request.

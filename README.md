@@ -9,8 +9,7 @@ but not in a coordinated manner.
 
 In this project, Morse Runner will be enhanced to support multiple contests along with combining
 features and bug fixes from various independent development efforts.
-Initial contests will include ARRL Field Day, CQ WW, CWOPS CWT, NCJ NAQP,
-ARRL Sweepstakes, etc.
+Initial contests will include ARRL Field Day, CQ WW, CWOPS CWT, NCJ NAQP, etc.
 Any contest with a corresponding call history file could be implemented.
 
 ## Goals
@@ -150,7 +149,7 @@ The following table shows the release history of Morse Runner.
 Links are provided back the commit history page of the corresponding github repository.
 Please update this table if you find additional versions.
 > It is interesting to note that with all the independent work on Morse Runner
-over the years, there was no version number duplication.
+over the years, there have been no duplicate version numbers.
 
 Date           | Repo/Author   | Version/Link   | Features/Contests
 ---------------|----------|:---------:|---------
