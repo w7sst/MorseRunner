@@ -22,8 +22,9 @@ const
 
   DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
+  TSimContest = (scWpx, scCwt, scHst);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst, rmCwt);
-  
+ 
 var
   Call: string = 'VE3NEA';
   HamName: string = 'Alex';
@@ -58,6 +59,7 @@ var
   SaveWav: boolean = false;
   CallsFromKeyer: boolean = false;
 
+  SimContest: TSimContest = scWpx;
 
 procedure FromIni;
 procedure ToIni;
@@ -76,6 +78,11 @@ var
 begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
+      // Load SimContest, but don't call SetContest() until UI is initialized.
+      V:= ReadInteger(SEC_TST, 'SimContest', Ord(scWpx));
+      SimContest := TSimContest(V);
+      MainForm.SimContestCombo.ItemIndex := V;
+
       MainForm.SetMyCall(ReadString(SEC_STN, 'Call', Call));
       MainForm.SetPitch(ReadInteger(SEC_STN, 'Pitch', 3));
       MainForm.SetBw(ReadInteger(SEC_STN, 'BandWidth', 9));
@@ -175,6 +182,7 @@ begin
       WriteInteger(SEC_TST, 'Duration', Duration);
       WriteInteger(SEC_TST, 'HiScore', HiScore);
       WriteInteger(SEC_TST, 'CompetitionDuration', CompDuration);
+      WriteInteger(SEC_TST, 'SimContest', Ord(SimContest));
 
       V := Round(80 * (MainForm.VolumeSlider1.Value - 0.75));
       WriteInteger(SEC_STN, 'SelfMonVolume', V);

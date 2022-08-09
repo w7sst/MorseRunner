@@ -313,7 +313,7 @@ type
     procedure PopupScoreWpx;
     procedure PopupScoreHst;
     procedure Advance;
-    procedure SetContest(AContestNum: integer);
+    procedure SetContest(AContestNum: TSimContest);
     procedure SetQsk(Value: boolean);
     procedure SetMyCall(ACall: string);
     procedure SetPitch(PitchNo: integer);
@@ -373,7 +373,7 @@ begin
   Keyer.Rate := DEFAULTRATE;
   Keyer.BufSize := Ini.BufSize;
 
-
+  SetContest(Ini.SimContest);
 end;
 
 
@@ -693,9 +693,17 @@ begin
   SetMyCall(Trim(Edit4.Text));
 end;
 
-procedure TMainForm.SetContest(AContestNum: integer);
+procedure TMainForm.SetContest(AContestNum: TSimContest);
 begin
-  //Ini.ContestNumber:= AContestNum;
+  // validate selected contest
+  if not (AContestNum in [scWpx, scHst]) then
+  begin
+    ShowMessage('The selected contest is not yet supported.');
+    SimContestCombo.ItemIndex:= Ord(Ini.SimContest);
+    Exit;
+  end;
+
+  Ini.SimContest := AContestNum;
 end;
 
 procedure TMainForm.SetMyCall(ACall: string);
@@ -734,7 +742,7 @@ end;
 
 procedure TMainForm.SimContestComboChange(Sender: TObject);
 begin
-  SetContest(SimContestCombo.ItemIndex);
+  SetContest(TSimContest(SimContestCombo.ItemIndex));
 end;
 
 procedure TMainForm.ComboBox2Change(Sender: TObject);

@@ -240,7 +240,9 @@ begin
       FStopPressed := false;
       MainForm.PopupScoreHst;
       end        
-    else if (RunMode = rmWpx) and not FStopPressed then
+    else if (SimContest = scWpx) and
+      (RunMode in [rmHst, rmWpx]) and
+      not FStopPressed then
       begin
       MainForm.Run(rmStop);
       FStopPressed := false;

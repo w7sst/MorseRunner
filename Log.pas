@@ -468,16 +468,20 @@ end;
 procedure LastQsoToScreen;
 begin
   with QsoList[High(QsoList)] do begin
-  if Ini.RunMode = rmCwt then
-    ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-      , OpName
-      , format('%.d', [Nr])
-      , Pfx, Err,format('%.2d', [TrueWpm]))
-  else
-    ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-      , format('%.3d %.4d', [Rst, Nr])
-      , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
-      , Pfx, Err, format('%.3d', [TrueWpm]));
+    case Ini.SimContest of
+    scCwt:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , OpName
+        , format('%.d', [Nr])
+        , Pfx, Err, format('%.2d', [TrueWpm]));
+    scWpx, scHst:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d %.4d', [Rst, Nr])
+        , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
+        , Pfx, Err, format('%.3d', [TrueWpm]));
+    else
+      assert(false, 'missing case');
+    end;
   end;
 end;
 
