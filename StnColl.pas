@@ -23,6 +23,7 @@ type
     function AddQrn: TStation;
     function AddQrm: TStation;
     property Items[Index: Integer]: TStation read GetItem; default;
+    function AnyLastBlock: Boolean;
   end;
 
 implementation
@@ -65,7 +66,18 @@ begin
 end;
 
 
-
+function TStations.AnyLastBlock: Boolean;
+var
+  i : integer;
+begin
+  Result:= False;
+  for i:=Count-1 downto 0 do
+    if GetItem(i).IsLastBlock then
+    begin
+      Result:= True;
+      Break;
+    end;
+end;
 
 end.
 

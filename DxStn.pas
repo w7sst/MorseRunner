@@ -29,6 +29,7 @@ type
      Operid: integer;
   end;
 
+function DbgS(const station : TDxStation)    : string; overload;
 
 implementation
 
@@ -114,6 +115,7 @@ try
   TimeOut := NEVER;
   State := stCopying;
 
+  DebugLn('TDxStation.CreateStation -> %s, amplitude %f, pitch %d', [MyCall, Amplitude, Pitch]);
 finally
   FreeAndNil(stringlist);
 end;
@@ -207,6 +209,7 @@ end;
 // removes Self from Stations[] container array.
 procedure TDxStation.DataToLastQso;
 begin
+  DebugLn('TxDxStation.DataToLastQso: ', DbgS(Self));
   with QsoList[High(QsoList)] do
     begin
     TrueCall := Self.MyCall;
@@ -224,9 +227,15 @@ end;
 
 function TDxStation.GetBlock: TSingleArray;
 begin
-  //DebugLn('TDxStation.GetBlock');
+  if IsLastBlock then DebugLn('TDxStation(%s).GetBlock', [MyCall]);
   Result := inherited GetBlock;
   if Ini.Qsb then Qsb.ApplyTo(Result);
+end;
+
+
+function DbgS(const station : TDxStation)    : string; overload;
+begin
+  Result:= Format('TDxStation(%s)', [station.MyCall]);
 end;
 
 end.

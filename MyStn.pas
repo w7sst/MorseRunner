@@ -141,7 +141,7 @@ end;
 
 function TMyStation.GetBlock: TSingleArray;
 begin
-  //DebugLn('TMyStation.GetBlock');
+  if IsLastBlock then DebugLn('TMyStation.GetBlock');
   Result := inherited GetBlock;
   if Envelope = nil then
     begin

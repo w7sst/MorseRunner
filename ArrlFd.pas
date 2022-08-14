@@ -6,7 +6,7 @@ interface
 
 uses
   Generics.Defaults, Generics.Collections, {ARRL,}
-  SysUtils, Classes, Contnrs{, PerlRegEx, pcre};
+  SysUtils, Classes, Contnrs{, PerlRegEx, pcre}, LazLoggerBase;
 
 type
   TFdCallRec = class
@@ -65,6 +65,7 @@ begin
   try
     FdCallList:= TObjectList<TFdCallRec>.Create;
 
+    DebugLn('Calling slst.LoadFromFile(''%s'')', [ParamStr(1) + 'FD_2021-008.txt']);
     slst.LoadFromFile(ParamStr(1) + 'FD_2021-008.txt');
 
     for i:= 0 to slst.Count-1 do begin

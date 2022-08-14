@@ -7,14 +7,14 @@ unit Contest;
 
 {$MODE Delphi}
 
-//{$define DEBUG_LOGGING_THREADS enables additional logging}
+{$define DEBUG_AUDIO_DETAIL enables additional logging}
 
 interface
 
 uses
   SysUtils, SndTypes, Station, StnColl, MyStn, Math,  Ini,
   MovAvg, Mixers, VolumCtl, RndFunc, TypInfo, DxStn, DxOper, Log,
-{$ifdef DEBUG_LOGGING_THREADS} // thread-specific log messages
+{$ifdef DEBUG_AUDIO_DETAIL}
   LazLoggerBase;
 {$else}
   LazLoggerDummy;
@@ -39,6 +39,7 @@ type
     destructor Destroy; override;
     procedure Init;
     function Minute: Single;
+    function HasPendingLastBlockStations : Boolean;
     function GetAudio: TSingleArray;
     procedure OnMeFinishedSending;
     procedure OnMeStartedSending;
@@ -104,6 +105,13 @@ begin
 end;
 
 
+// return whether any stations (my or dx) are ready to send their last block.
+function TContest.HasPendingLastBlockStations : Boolean;
+begin
+   Result:= Me.IsLastBlock or Stations.AnyLastBlock;
+end;
+
+
 function TContest.GetAudio: TSingleArray;
 const
   NOISEAMP = 6000;
@@ -116,9 +124,9 @@ var
   Temp: Single;
 begin
 try
-{$ifdef DEBUG_LOGGING_THREADS}
-  DebugLnEnter('TContest.GetAudio: BlkNum %d, thread %d',
-               [BlockNumber+1, GetCurrentThreadID()]);
+{$ifdef DEBUG_AUDIO_DETAIL}
+  if HasPendingLastBlockStations then
+    DebugLnEnter('TContest.GetAudio: BlkNum %d', [BlockNumber+1]);
 {$endif}
   //minimize audio output delay
   SetLength(Result, 1);
@@ -170,10 +178,6 @@ try
   //my audio
   if Me.State = stSending then
     begin
-    {$ifdef DEBUG_LOGGING_THREADS}
-    DebugLnEnter('TContest.GetAudio: my audio, calling GetBlock, BlkNum %d, thread %d',
-                 [BlockNumber, GetCurrentThreadID()]);
-    {$endif}
     Blk := Me.GetBlock;
     //self-mon. gain
     Temp := MainForm.VolumeSlider1.Value;
@@ -194,7 +198,6 @@ try
           ReIm.Re[i] := Smg * (Blk[i]);
           ReIm.Im[i] := Smg * (Blk[i]);
           end;
-    DebugLnExit([]);
     end;
 
 
@@ -279,7 +282,7 @@ try
 }
     end;
 finally
-{$ifdef DEBUG_LOGGING_THREADS}
+{$ifdef DEBUG_AUDIO_DETAIL}
   DebugLnExit([]);
 {$endif}
 end;
@@ -308,6 +311,7 @@ procedure TContest.OnMeFinishedSending;
 var
   i: integer;
 begin
+  DebugLnEnter('TContest.OnMeFinishedSending');
   //the stations heard my CQ and want to call
   if (not (RunMode in [rmSingle, {rmFieldDay,} RmHst])) then
     if (msgCQ in Me.Msg) or
@@ -321,10 +325,12 @@ begin
                    end;
             end;
 
- // logerror('in TContest.OnMeFinishedSending, count = ' + inttostr(Stations.Count));
+ // DebugLn('in TContest.OnMeFinishedSending, count = ' + inttostr(Stations.Count));
   //tell callers that I finished sending
   for i:=Stations.Count-1 downto 0 do
     Stations[i].ProcessEvent(evMeFinished);
+
+  DebugLnExit([]);
 end;
 
 
@@ -332,9 +338,11 @@ procedure TContest.OnMeStartedSending;
 var
   i: integer;
 begin
+  DebugLnEnter('TContest.OnMeStartedSending');
   //tell callers that I started sending
   for i:=Stations.Count-1 downto 0 do
     Stations[i].ProcessEvent(evMeStarted);
+  DebugLnExit([]);
 end;
 
 

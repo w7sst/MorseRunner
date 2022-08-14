@@ -16,7 +16,11 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, {VolumCtl,} StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
   ComCtrls, Spin, {SndTypes, ToolWin,} ImgList, FileUtil, Crc32,
-  {$ifdef DEBUG_LOGGING}LazLogger{$else}LazLoggerDummy{$endif},
+{$ifdef DEBUG_LOGGING}
+  LazLogger,       // this unit enables debug logging
+{$else}
+  LazLoggerDummy,  // this unit disables debug logging
+{$endif},
   WavFile, IniFiles, Windows, {UdpHandler,} ARRLFD;
 
 const
@@ -1554,6 +1558,7 @@ end;
 procedure TMainForm.Advance;
 begin
   if not MustAdvance then Exit;
+  DebugLn('TMainForm.Advance');
 
   if Ini.ContestName = 'arrlfd' then
   begin // mikeb - todo - work this logic

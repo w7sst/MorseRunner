@@ -55,7 +55,8 @@ type
 
     constructor CreateStation;
 
-    procedure Tick; 
+    procedure Tick;
+    function IsLastBlock : boolean;
     function GetBlock: TSingleArray; virtual;
     procedure ProcessEvent(AEvent: TStationEvent); virtual; abstract;
 
@@ -70,6 +71,7 @@ type
 function DbgS(const msg : TStationMessage) : string; overload;
 function DbgS(const state : TStationState) : string; overload;
 function DbgS(const event : TStationEvent) : string; overload;
+function DbgS(const station : TStation)    : string; overload;
 
 implementation
 
@@ -89,9 +91,16 @@ begin
 end;
 
 
+// return whether the next block is the last block in current Envelope
+function TStation.IsLastBlock : boolean;
+begin
+  Result := ((SendPos + Ini.BufSize) = Length(Envelope)) or
+            (Timeout = 1);
+end;
+
 function TStation.GetBlock: TSingleArray;
 begin
-  //DebugLn('TStation.GetBlock');
+  //DebugLn('TStation(%s).GetBlock', [MyCall]);
   Result := Copy(Envelope, SendPos, Ini.BufSize);
 
   //advance TX buffer
@@ -338,6 +347,12 @@ function DbgS(const event : TStationEvent) : string; overload;
 begin
   WriteStr(Result, event);
 end;
+
+function DbgS(const station : TStation)    : string; overload;
+begin
+  Result:= Format('TStation(%s)', [station.MyCall]);
+end;
+
 
 end.
 

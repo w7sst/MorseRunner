@@ -11,7 +11,7 @@ interface
 
 uses
   LCLIntf, LCLType, LMessages, SysUtils, Classes, Graphics, RndFunc, Math,
-  ARRLFD;
+  ARRLFD, LazLoggerBase;
 
 
 procedure SaveQso;
@@ -234,6 +234,8 @@ var
   i: integer;
   Qso: PQso;
 begin
+  DebugLnEnter('SaveQso: ', MainForm.Edit1.Text);
+try
   with MainForm do
     begin
     if Ini.ContestName = 'arrlfd' then begin
@@ -252,6 +254,7 @@ begin
     end;
 
     //add new entry to log
+    DebugLn('Adding %s to QsoList[%d]', [Edit1.Text, Length(QsoList)+1]);
     SetLength(QsoList, Length(QsoList)+1);
     Qso := @QsoList[High(QsoList)];
     //save data
@@ -314,6 +317,9 @@ begin
   begin
        Tst.Me.NR := StrToInt(Ini.NR);
   end;
+finally
+  DebugLnExit([]);
+end;
 end;
 
 
