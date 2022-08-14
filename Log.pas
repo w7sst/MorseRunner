@@ -10,7 +10,8 @@ unit Log;
 interface
 
 uses
-  LCLIntf, LCLType, LMessages, SysUtils, Classes, Graphics, RndFunc, Math;
+  LCLIntf, LCLType, LMessages, SysUtils, Classes, Graphics, RndFunc, Math,
+  ARRLFD;
 
 
 procedure SaveQso;
@@ -21,16 +22,19 @@ procedure UpdateStatsHst;
 procedure CheckErr;
 procedure PaintHisto;
 procedure ShowRate;
-
+procedure UpdateSbar(const ACallsign: string);
 
 
 type
   PQso = ^TQso;
   TQso = record
     T: TDateTime;
-    Call, TrueCall: string;
+    Call, TrueCall, RawCallsign: string;
     Rst, TrueRst: integer;
     Nr, TrueNr: integer;
+    StnClass, TrueStnClass: string;
+    Section, TrueSection: string;
+    TrueWpm: integer;
     Pfx: string;
     Dupe: boolean;
     Err: string;
@@ -49,6 +53,22 @@ implementation
 uses
   Contest, Main, DxStn, DxOper, Ini, MorseKey;
 
+//Update Callsign info
+procedure UpdateSbar(const ACallsign: string);
+var
+  s: string;
+begin
+  if Ini.ContestName = 'arrlfd' then
+    s := gArrlFd.GetStationInfo(ACallsign)
+  else
+    s := ''; // s := ARRLDX.Search(ACallsign);
+
+  // '&' are suppressed in this control; replace with '&&'
+  s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
+
+  //MainForm.sbar.Caption:= '  ' + s;
+end;
+
 procedure Clear;
 var
   Empty: string;
@@ -59,6 +79,8 @@ begin
 
   if Ini.RunMode = rmHst
     then MainForm.RichEdit1.Lines.Add(' UTC       Call          Recv      Sent      Score  Chk')
+  else if Ini.ContestName = 'arrlfd'
+    then MainForm.RichEdit1.Lines.Add(' UTC       Call          Class     Section   Chk    Wpm')
     else MainForm.RichEdit1.Lines.Add(' UTC       Call          Recv      Sent');
   MainForm.RichEdit1.SelStart := 1;
   MainForm.RichEdit1.SelLength := Length(MainForm.RichEdit1.Lines[0]);
@@ -214,13 +236,20 @@ var
 begin
   with MainForm do
     begin
-    if Edit3.Text = '' then
-    Edit3.Text := '14';  //kludge for corrected call
-    if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) <> 3) or (Edit3.Text = '')
-      then begin
-      // Beep;
-      Exit;
+    if Ini.ContestName = 'arrlfd' then begin
+       if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) < 2) or (Length(Edit3.Text) < 2) then begin
+           Beep;
+           Exit;
+       end;
+    end
+    else begin
+      if Edit3.Text = '' then
+        Edit3.Text := '14';  //kludge for corrected call
+      if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) <> 3) or (Edit3.Text = '') then begin
+        // Beep;
+        Exit;
       end;
+    end;
 
     //add new entry to log
     SetLength(QsoList, Length(QsoList)+1);
@@ -228,12 +257,17 @@ begin
     //save data
     Qso.T := BlocksToSeconds(Tst.BlockNumber) /  86400;
     Qso.Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
-    Qso.Rst := StrToInt(Edit2.Text);
-    Qso.Nr := StrToInt(Edit3.Text);
+    if Ini.ContestName = 'arrlfd' then begin
+      Qso.StnClass := Edit2.Text;
+      Qso.Section  := Edit3.Text;
+    end
+    else begin
+      Qso.Rst := StrToInt(Edit2.Text);
+      Qso.Nr := StrToInt(Edit3.Text);
+    end;
     Qso.Pfx := ExtractPrefix(Qso.Call);
     {if PfxList.Find(Qso.Pfx, Idx) then Qso.Pfx := '' else }PfxList.Add(Qso.Pfx);
     if Ini.RunMode = rmHst then Qso.Pfx := IntToStr(CallToScore(Qso.Call));
-
 
     //mark if dupe
     Qso.Dupe := false;
@@ -241,13 +275,23 @@ begin
       with QsoList[i] do
         if (Call = Qso.Call) and (Err = '   ')
           then Qso.Dupe := true;
+ 
+    // find Wpm from DX's log
+    for i:=Tst.Stations.Count-1 downto 0 do
+      if Tst.Stations[i] is TDxStation then
+        with Tst.Stations[i] as TDxStation do
+          if (MyCall = Qso.Call) then
+          begin
+            Qso.TrueWpm := Wpm;
+            Break;
+          end;
 
     //what's in the DX's log?
     for i:=Tst.Stations.Count-1 downto 0 do
       if Tst.Stations[i] is TDxStation then
         with Tst.Stations[i] as TDxStation do
           if (Oper.State = osDone) and (MyCall = Qso.Call)
-            then begin DataToLastQso; Break; end; //deletes the dx station!
+            then begin DataToLastQso; Break; end; //deletes this dx station!
     CheckErr;
     end;
 
@@ -258,9 +302,11 @@ begin
 
   //wipe
   MainForm.WipeBoxes;
-  //inc NR
 
-  if Ini.ContestName = 'cqwpx' then
+  //inc NR
+  //if (not (Ini.RunMode in [rmCwt, rmFieldDay])) then
+  //  Inc(Tst.Me.NR);
+  if ((Ini.ContestName = 'cqwpx') or (Ini.ContestName = 'arrlfd')) then
   begin
      //Inc(Tst.Me.NR);
   end
@@ -278,6 +324,11 @@ var
   S: string;
 begin
   with QsoList[High(QsoList)] do
+  if Ini.ContestName = 'arrlfd' then
+    S := FormatDateTime(' hh:nn:ss  ', t) +
+         Format('%-12s  %-8s  %-8s  %-5s  %.2d',
+         [Call, StnClass, Section, Err, TrueWpm])
+  else
     S := FormatDateTime(' hh:nn:ss  ', t) +
          Format('%-12s  %.3d %.2d  %.3d %.2d',
          [Call, Rst, Nr, Tst.Me.Rst,
@@ -296,11 +347,26 @@ procedure CheckErr;
 begin
   with QsoList[High(QsoList)] do
     begin
-    if TrueCall = '' then Err := 'NIL'
-    else if Dupe then Err := 'DUP'
-    else if TrueRst <> Rst then Err := 'RST'
-    else if TrueNr <> NR then Err := 'NR '
-    else Err := '   ';
+      if Ini.ContestName = 'arrlfd' then
+      begin
+        if TrueCall = '' then
+          Err := 'NIL'
+        else if Dupe then
+          Err := 'DUP'
+        else if TrueStnClass <> StnClass then
+          Err := 'CL '
+        else if TrueSection <> Section then
+          Err := 'SEC'
+        else
+          Err := '   ';
+      end
+      else begin
+        if TrueCall = '' then Err := 'NIL'
+        else if Dupe then Err := 'DUP'
+        else if TrueRst <> Rst then Err := 'RST'
+        else if TrueNr <> NR then Err := 'NR '
+        else Err := '   ';
+      end;
     end;
 end;
 
@@ -315,7 +381,7 @@ begin
 
   for i:=0 to High(QsoList) do
     begin
-    x := Trunc(QsoList[i].T * 1440) div 5;
+    x := Trunc(QsoList[i].T * 1440) div 5;  // How Many QSO in 5mins
     Inc(Histo[x]);
     end;
 

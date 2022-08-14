@@ -10,7 +10,8 @@ unit DxStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Ini, CallLst, Qsb, DxOper, Log, SndTypes;
+  SysUtils, Classes, Station, RndFunc, Ini, ARRLFD,
+  CallLst, Qsb, DxOper, Log, SndTypes;
 
 type
   TDxStation = class(TStation)
@@ -23,6 +24,8 @@ type
     procedure ProcessEvent(AEvent: TStationEvent); override;
     procedure DataToLastQso;
     function GetBlock: TSingleArray; override;
+  var
+     Operid: integer;
   end;
 
 
@@ -43,9 +46,18 @@ begin
   stringlist.Delimiter := ';';
 
   HisCall := Ini.Call;
-  callzone := PickCallAndZone;
-  stringlist.DelimitedText := callzone;
-  MyCall := stringlist[0];
+
+  if Ini.ContestName = 'arrlfd' then
+  begin
+    Operid := gARRLFD.pickStation();
+    MyCall := gARRLFD.getCall(Operid);
+  end
+  else
+  begin
+    callzone := PickCallAndZone;
+    stringlist.DelimitedText := callzone;  // Pick one Callsign from Calllist
+    MyCall := stringlist[0];
+  end;
 
   Oper := TDxOperator.Create;
   Oper.Call := MyCall;
@@ -58,9 +70,15 @@ begin
   begin
       NR := Oper.GetNR;
   end
+  else if Ini.ContestName = 'arrlfd' then
+  begin
+    Exch1 := gARRLFD.getExch1(Operid);
+    Exch2 := gARRLFD.getExch2(Operid);
+    UserText := gARRLFD.getUserText(Operid);
+  end
   else
   begin
-       NR := StrToInt(stringlist[1]);
+       NR := StrToInt(stringlist[1]);  // store Zone in Station.NR
   end;
   //if LeftStr(Oper.Call, 1) = 'K' then
   //begin
@@ -168,7 +186,8 @@ begin
 end;
 
 
-
+// copies data from this DxStation to top of QsoList[].
+// removes Self from Stations[] container array.
 procedure TDxStation.DataToLastQso;
 begin
   with QsoList[High(QsoList)] do
@@ -176,9 +195,11 @@ begin
     TrueCall := Self.MyCall;
     TrueRst := Self.Rst;
     TrueNR := Self.NR;
+    TrueStnClass := Self.Exch1; //StnClass; // mikeb - todo
+    TrueSection := Self.Exch2;  //Section;
     end;
 
-  Free;
+  Free; // removes Self from Stations[] container
 end;
 
 

@@ -167,6 +167,7 @@ object MainForm: TMainForm
       Top = 26
       Width = 45
       AutoSelect = False
+      CharCase = ecUppercase
       Font.Color = clWindowText
       Font.Height = -16
       Font.Name = 'MS Sans Serif'
@@ -183,6 +184,7 @@ object MainForm: TMainForm
       Top = 26
       Width = 45
       AutoSelect = False
+      CharCase = ecUppercase
       Font.Color = clWindowText
       Font.Height = -16
       Font.Name = 'MS Sans Serif'

@@ -43,7 +43,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="30">
+    <Units Count="31">
       <Unit0>
         <Filename Value="MorseRunner.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -171,6 +171,11 @@
         <Filename Value="VCL\SndOut.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit29>
+      <Unit30>
+        <Filename Value="ArrlFd.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ARRLFD"/>
+      </Unit30>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

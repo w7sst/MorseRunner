@@ -67,6 +67,8 @@ begin
   Pitch := Ini.Pitch;
   Wpm := Ini.Wpm;
   Amplitude := 300000;
+  Exch1 := '3A';
+  Exch2 := 'OR'; { TODO -omikeb -cfeature : User can enter their exchange (e.g. 3A OR) }
 end;
 
 

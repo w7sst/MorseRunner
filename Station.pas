@@ -47,6 +47,9 @@ type
     NR, RST: integer;
     MyCall, HisCall: string;
 
+    Exch1: string;  // field day classification (e.g. 3A)
+    Exch2: string;  // field day section (e.g. OR)
+    UserText: string; // club name or description (from fdHistory file)
     Msg: TStationMessages;
     MsgText: string;
 
@@ -101,7 +104,13 @@ begin
   if Ini.Standalone = True then
   begin
   case AMsg of
-    msgCQ: SendText('CQ <my>');
+    msgCQ:
+      begin
+        if Ini.ContestName = 'arrlfd' then
+          SendText('CQ FD <my>')
+        else
+          SendText('CQ <my>');
+      end;
     msgNR: SendText('<#>');
     msgTU: SendText('TU <my>');
     msgMyCall: SendText('<my>');
@@ -132,13 +141,22 @@ begin
   case AMsg of
     msgCQ:
       begin
-      if Ini.Messagecq = 'CQ' then
+        if Ini.Messagecq = 'CQ' then
+        begin
+          if Ini.ContestName = 'arrlfd' then
+            Ini.Messagecq := 'CQ FD '+ Ini.Call
+          else
+            Ini.Messagecq := 'CQ '+ Ini.Call;
+        end;
+        SendText(Ini.Messagecq);
+      end;
+    msgNR:
       begin
-           Ini.Messagecq := 'CQ '+ Ini.Call;
+        if Ini.ContestName = 'arrlfd' then
+          SendText('R <#>')
+        else
+          SendText('<#>');
       end;
-      SendText(Ini.Messagecq);
-      end;
-    msgNR: SendText('<#>');
     msgTU: SendText(Ini.Messagetu);
     msgMyCall: SendText('<my>');
     msgHisCall: SendText('<his>');
@@ -153,7 +171,13 @@ begin
     msgDeMyCallNr2: SendText('DE <my> <my> <#>');
     msgMyCallNr2: SendText('<my> <my> <#>');
     msgNrQm: SendText('NR?');
-    msgLongCQ: SendText('CQ CQ TEST <my> <my>');
+    msgLongCQ:
+      begin
+        if Ini.ContestName = 'arrlfd' then
+          SendText('CQ CQ FD <my> <my>')
+        else
+          SendText('CQ CQ TEST <my> <my>');
+        end;
     msgQrl: SendText('QRL?');
     msgQrl2: SendText('QRL?   QRL?');
     msqQsy: SendText('<his>  QSY QSY');
@@ -240,8 +264,11 @@ function TStation.NrAsText: string;
 var
   Idx: integer;
 begin
-  // Result := Format('%d%.2d', [RST, NR]);
-  Result := Format('%d%d', [RST, NR]);
+  if Ini.ContestName = 'arrlfd' then
+      Result := Format('%s %s', [Exch1, Exch2])
+  else
+      // Result := Format('%d%.2d', [RST, NR]);
+      Result := Format('%d%d', [RST, NR]);
 
 
   if NrWithError then
@@ -256,9 +283,11 @@ begin
     NrWithError := false;
     end;
 
-  Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
+  // if Contest.ExchangeHasRST...
+  if Ini.ContestName <> 'arrlfd' then
+    Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
 
-  if Ini.RunMode <> rmHst then
+  if (Ini.RunMode <> rmHst) and (Ini.ContestName <> 'arrlfd') then
     begin
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="C:\lazarus\fpc\3.2.0\bin\x86_64-win64\fpc.exe" Date="1381338938"/>
+  <Params Value=" -Twin64 -MDelphi -Scaghi -CX -O1 -g -gl -XX -WG -l -vewnhibq -FiC:\Users\mikeb\Documents\Code\n2ic\MorseRunner\VCL -FiC:\Users\mikeb\Documents\Code\n2ic\lazurus\synapse40\source\lib -FiC:\Users\mikeb\Documents\Code\n2ic\lazarus\synapse40\source\lib -FuC:\Users\mikeb\Documents\Code\n2ic\MorseRunner\VCL -FuC:\Users\mikeb\Documents\Code\n2ic\lazurus\synapse40\source\lib -FuC:\Users\mikeb\Documents\Code\n2ic\lazarus\synapse40\source\lib -FuC:\lazarus\lcl\units\x86_64-win64\win32 -FuC:\lazarus\lcl\units\x86_64-win64 -FuC:\lazarus\components\lazutils\lib\x86_64-win64 -FuC:\lazarus\packager\units\x86_64-win64 -FuC:\Users\mikeb\Documents\Code\n2ic\MorseRunner\ &quot;-FEC:\Users\mikeb\Documents\N1MM Logger+\SupportFiles\&quot; &quot;-oC:\Users\mikeb\Documents\N1MM Logger+\SupportFiles\morserunner4.exe&quot; -dLCL -dLCLwin32 -dBorland -dVer150 -dDelphi7 -dCompiler6_Up -dPUREPASCAL MorseRunner.lpr"/>
+</CONFIG>

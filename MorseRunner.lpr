@@ -28,6 +28,7 @@ uses
   QuickAvg in 'VCL\QuickAvg.pas',
   MovAvg in 'VCL\MovAvg.pas',
   Mixers in 'VCL\Mixers.pas',
+  WavFile in 'VCL\WavFile.pas',
   VolumCtl in 'VCL\VolumCtl.pas',
   LogErrorx in 'logerror.pas';
 

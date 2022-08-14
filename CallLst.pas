@@ -163,7 +163,12 @@ begin
   Idx := Random(Calls.Count);
   Result := Calls[Idx] + ';' + Zones[Idx];
 
-  if Ini.RunMode = rmHst then Calls.Delete(Idx);
+  if (Ini.RunMode = rmHst) or
+    (Ini.ContestName = 'arrlfd') then
+  begin
+    Calls.Delete(Idx);
+    Zones.Delete(Idx);
+  end;
 end;
 
 

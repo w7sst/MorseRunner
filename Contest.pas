@@ -206,7 +206,7 @@ begin
           if (Oper.State = osDone) and (QsoList <> nil) and (MyCall = QsoList[High(QsoList)].Call)
             then
               begin
-              DataToLastQso;
+              DataToLastQso; // deletes this TDxStation from Stations[]
               with MainForm.RichEdit1.Lines do Delete(Count-1);
               Log.CheckErr;
               Log.LastQsoToScreen;
@@ -223,7 +223,7 @@ begin
     MainForm.Panel4.Caption := Format('Pile-Up:  %d', [DxCount]);
 
 
-  if (RunMode = rmSingle) and (DxCount = 0) then
+  if ((RunMode = rmSingle){ or (Ini.ContestName = 'arrlfd')}) and (DxCount = 0) then
      begin
      Me.Msg := [msgCq]; //no need to send cq in this mode
      Stations.AddCaller.ProcessEvent(evMeFinished);
@@ -287,7 +287,7 @@ var
   i: integer;
 begin
   //the stations heard my CQ and want to call
-  if (not (RunMode in [rmSingle, RmHst])) then
+  if (not (RunMode in [rmSingle, {rmFieldDay,} RmHst])) then
     if (msgCQ in Me.Msg) or
     //   ((QsoList <> nil) and (msgTU in Me.Msg) and (msgMyCall in Me.Msg))then
     //for i:=1 to RndPoisson(Activity / 2) do Stations.AddCaller;

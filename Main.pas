@@ -10,11 +10,11 @@ unit Main;
 interface
 
 uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, {LMessages, Messages,} SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
-  VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
-  ComCtrls, Spin, SndTypes, ToolWin, ImgList, FileUtil, Crc32,
-  WavFile, IniFiles, Windows, UdpHandler;
+  VolmSldr, {VolumCtl,} StdCtrls, Station, Menus, ExtCtrls, Log, MAth,
+  ComCtrls, Spin, {SndTypes, ToolWin,} ImgList, FileUtil, Crc32,
+  WavFile, IniFiles, Windows, {UdpHandler,} ARRLFD;
 
 const
     WM_TBDOWN = WM_USER+1;
@@ -52,6 +52,7 @@ const
     WM_COPYDATA = 74;
     WM_SETFREQUENCY = 32768 + 31;
     WM_PITCHSET = 32768 + 34;
+    WM_ARRLFD = 32768 + 35;
     KeysF1 = 112;
     KeysF2 = 113;
     KeysF3 = 114;
@@ -418,6 +419,12 @@ begin
             MainForm.Run(rmPileUp);
             exit;
        end;
+     WM_ARRLFD:
+       begin
+            Ini.ContestName := 'arrlfd';
+            MainForm.Run(rmPileUp);
+            exit;
+       end;
      WM_STOP:
        begin
             MainForm.Run(rmStop);
@@ -619,6 +626,7 @@ begin
   end;
   FromIni;
   LoadCallList;
+  gARRLFD := TArrlFieldDay.Create;
   Ini.RadioAudio := 0;
   programname := ParamStr(0);
 
@@ -671,6 +679,7 @@ begin
   begin
        ToIni;
   end;
+  gARRLFD.Free;
   Tst.Free;
   DestroyKeyer;
 end;
@@ -726,12 +735,43 @@ end;
 
 procedure TMainForm.Edit2KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['0'..'9', #8]) then Key := #0;
+  if Ini.ContestName = 'arrlfd' then
+  begin
+    // validate Station Classification, [0-9]*[A-F]|DX
+    if not CharInSet(Key, ['0'..'9','A'..'F','a'..'f','X','x',#8]) then
+       Key := #0;
+  end
+  else if RunMode = rmHst then
+  begin
+    if not (Key in ['0'..'9', #8]) then
+      Key := #0;
+  end
+  else
+  begin
+    // for RST field, map (A,N) to (1,9)
+    if not (Key in ['0'..'9', #8]) then
+      Key := #0;
+  end;
 end;
 
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['0'..'9', #8]) then Key := #0;
+  if Ini.ContestName = 'arrlfd' then
+  begin
+    // validate Section (e.g. OR or STX)
+    if not (Key in ['A'..'Z', 'a'..'z', #8]) then
+      Key := #0;
+  end
+  else if RunMode = rmHst then
+  begin
+    if not (Key in ['0'..'9', #8]) then
+      Key := #0;
+  end
+  else begin
+    // treat as a NR or Zone field
+    if not (Key in ['0'..'9', #8]) then
+      Key := #0;
+    end
 end;
 
 
@@ -851,21 +891,34 @@ end;
 procedure TMainForm.ProcessSpace;
 begin
   MustAdvance := false;
-
-  if ActiveControl = Edit1 then
+  if Ini.ContestName = 'arrlfd' then
+  begin
+    if ActiveControl = Edit1 then
     begin
-    if Edit2.Text = '' then Edit2.Text := '599';
-    if Edit3.Text = '' then Edit3.Text := '14';
-    ActiveControl := Edit3;
+      UpdateSbar(Edit1.Text);
+      ActiveControl := Edit2;
     end
-  else if ActiveControl = Edit2 then
+    else if ActiveControl = Edit2 then
+      ActiveControl := Edit3
+    else
+      ActiveControl := Edit1;
+  end
+  else begin
+    if ActiveControl = Edit1 then
     begin
-    if Edit2.Text = '' then Edit2.Text := '599';
-    if Edit3.Text = '' then Edit3.Text := '14';
-    ActiveControl := Edit3;
+      if Edit2.Text = '' then Edit2.Text := '599';
+      if Edit3.Text = '' then Edit3.Text := '14';
+      ActiveControl := Edit3;
     end
-  else
-    ActiveControl := Edit1;
+    else if ActiveControl = Edit2 then
+    begin
+      if Edit2.Text = '' then Edit2.Text := '599';
+      if Edit3.Text = '' then Edit3.Text := '14';
+      ActiveControl := Edit3;
+    end
+    else
+      ActiveControl := Edit1;
+  end;
 end;
 
 
@@ -877,6 +930,10 @@ begin
 
   if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0
     then begin Log.SaveQso; Exit; end;
+
+  // for certain contests (e.g. ARRL Field Day), update update status bar
+  if Ini.ContestName = 'arrlfd' then
+    UpdateSbar(Edit1.Text);
 
   //no QSO in progress, send CQ
   if Edit1.Text = '' then
@@ -1140,14 +1197,31 @@ end;
 
 procedure TMainForm.Edit2Enter(Sender: TObject);
 begin
- if Length(Edit2.Text) = 3 then
- begin Edit2.SelStart := 1; Edit2.SelLength := 1; end;
+  // if Tst.Exch2IsRST() then
+  if Ini.ContestName <> 'arrlfd' then
+  begin
+    // for RST field, select middle digit
+    if Length(Edit2.Text) = 3 then
+    begin
+      Edit2.SelStart := 1;
+      Edit2.SelLength := 1;
+    end;
+  end
+  else // otherwise select entire field
+  begin
+    Edit2.SelStart := 0;
+    Edit2.SelLength := Edit2.GetTextLen;
+  end;
 end;
 
 procedure TMainForm.Edit3Enter(Sender: TObject);
 begin
- if Length(Edit3.Text) > 0 then
- begin Edit3.SelStart := 0; Edit3.SelLength := Length(Edit3.Text); end;
+  if ContestName = 'arrlfd' then
+  begin
+    // select entire field
+    Edit3.SelStart := 0;
+    Edit3.SelLength := Edit3.GetTextLen;
+  end;
 end;
 
 procedure TMainForm.EnableCtl(Ctl: TWinControl; AEnable: boolean);
@@ -1204,6 +1278,17 @@ begin
     SpinEdit2.Value := CompDuration;
     end;
 
+  Label2.Caption := 'RST';
+  Edit2.MaxLength := 3;
+  Label3.Caption := 'Nr.';
+  Edit3.MaxLength := 4;
+  if Ini.ContestName = 'arrlfd' then
+  begin // field day changes
+    Label2.Caption := 'Class';
+    Edit2.MaxLength := 3;
+    Label3.Caption := 'Section';
+    Edit3.MaxLength := 3;
+  end;
   //button menu
   PileupMNU.Enabled := BStop;
   SingleCallsMNU.Enabled := BStop;
@@ -1439,12 +1524,23 @@ procedure TMainForm.Advance;
 begin
   if not MustAdvance then Exit;
 
-  if Edit2.Text = '' then Edit2.Text := '599';
-  if Edit3.Text = '' then Edit3.Text := '14';
+  if Ini.ContestName = 'arrlfd' then
+  begin // mikeb - todo - work this logic
+    if Edit2.Text = '' then
+      ActiveControl := Edit2;
+    if ActiveControl = Edit1 then
+      Edit1Enter(nil)
+    else
+      ActiveControl := Edit2;
+  end
+  else begin
+    if Edit2.Text = '' then Edit2.Text := '599';
+    if Edit3.Text = '' then Edit3.Text := '14';
 
-  if Pos('?', Edit1.Text) = 0 then ActiveControl := Edit3
-  else if ActiveControl = Edit1 then Edit1Enter(nil)
-  else ActiveControl := Edit1;
+    if Pos('?', Edit1.Text) = 0 then ActiveControl := Edit3
+    else if ActiveControl = Edit1 then Edit1Enter(nil)
+    else ActiveControl := Edit1;
+  end;
 
   MustAdvance := false;
 end;
