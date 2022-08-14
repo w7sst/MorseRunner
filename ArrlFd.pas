@@ -7,7 +7,7 @@ interface
 uses
   Generics.Defaults, Generics.Collections, {ARRL,}
   Dialogs,
-  SysUtils, Classes, Contnrs{, PerlRegEx, pcre}, LazLoggerBase;
+  SysUtils, Classes, {Contnrs,} {PerlRegEx, pcre,} LazLoggerBase;
 
 type
   TFdCallRec = class
