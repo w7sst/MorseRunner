@@ -308,7 +308,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="VCL;$(ProjOutDir);..\lazurus\synapse40\source\lib;..\lazarus\synapse40\source\lib"/>
-      <OtherUnitFiles Value="..\lazurus\synapse40\source\lib;..\lazarus\synapse40\source\lib"/>
+      <OtherUnitFiles Value="VCL;..\lazurus\synapse40\source\lib;..\lazarus\synapse40\source\lib"/>
       <UnitOutputDirectory Value="units"/>
     </SearchPaths>
     <Parsing>
