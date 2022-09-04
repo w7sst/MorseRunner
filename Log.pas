@@ -44,8 +44,8 @@ type
 var
   QsoList: array of TQso;
   PfxList: TStringList;
-  CallSent, NrSent: boolean;
-
+  CallSent: boolean; // msgHisCall has been sent; cleared upon edit.
+  NrSent: boolean;   // msgNR has been sent. Seems to imply exchange sent.
 
 
 implementation
@@ -233,51 +233,99 @@ procedure SaveQso;
 var
   i: integer;
   Qso: PQso;
+
+  //validate Exchange 1 (Edit2) field lengths
+  function ValidateExchField1(const text: string): Boolean;
+  begin
+    Result := false;
+    case ActiveContestExchType1 of
+      etRST:     Result := Length(text) = 3;
+      etOpName:  Result := Length(text) > 1;
+      etFdClass: Result := Length(text) > 1;
+      else
+        assert(false, 'missing case');
+    end;
+  end;
+
+  //validate Exchange 2 (Edit3) field lengths
+  function ValidateExchField2(const text: string): Boolean;
+  begin
+    Result := false;
+    case ActiveContestExchType2 of
+      etSerialNr:    Result := Length(text) > 0;
+      etCwopsNumber: Result := Length(text) > 0;
+      etArrlSection: Result := Length(text) > 1;
+      etStateProv:   Result := Length(text) > 1;
+      etCqZone:      Result := Length(text) > 0;
+      //etItuZone:
+      //etAge:
+      //etPower:
+      //etJarlOblastCode:
+      else
+        assert(false, 'missing case');
+    end;
+  end;
+
 begin
   DebugLnEnter('SaveQso: ', MainForm.Edit1.Text);
 try
   with MainForm do
     begin
-    if Ini.ContestName = 'arrlfd' then begin
-       if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) < 2) or (Length(Edit3.Text) < 2) then begin
-           Beep;
-           Exit;
-       end;
-    end
-    else begin
-      if Edit3.Text = '' then
-        Edit3.Text := '14';  //kludge for corrected call
-      if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) <> 3) or (Edit3.Text = '') then begin
-        // Beep;
+    if Edit3.Text = '' then
+      Edit3.Text := '14';  //kludge for corrected call
+
+    if (Length(Edit1.Text) < 3) or
+      not ValidateExchField1(Edit2.Text) or
+      not ValidateExchField2(Edit3.Text) then
+      begin
+        Beep;
         Exit;
       end;
-    end;
 
     //add new entry to log
     DebugLn('Adding %s to QsoList[%d]', [Edit1.Text, Length(QsoList)+1]);
     SetLength(QsoList, Length(QsoList)+1);
     Qso := @QsoList[High(QsoList)];
+
     //save data
     Qso.T := BlocksToSeconds(Tst.BlockNumber) /  86400;
     Qso.Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
-    if Ini.ContestName = 'arrlfd' then begin
-      Qso.StnClass := Edit2.Text;
-      Qso.Section  := Edit3.Text;
-    end
-    else begin
-      Qso.Rst := StrToInt(Edit2.Text);
-      Qso.Nr := StrToInt(Edit3.Text);
+
+    //save Exchange 1 (Edit2)
+    case ActiveContestExchType1 of
+      etRST:     Qso.Rst := StrToInt(Edit2.Text);
+      //etOpName:  Qso.Exch1 := Edit2.Text;
+      etFdClass: Qso.StnClass := Edit2.Text;
+      else
+        assert(false, 'missing case');
     end;
+
+    //save Exchange2 (Edit3)
+    case ActiveContestExchType2 of
+      etSerialNr:    Qso.Nr := StrToInt(Edit3.Text);
+      etCwopsNumber: Qso.Nr := StrToInt(Edit3.Text);
+      etArrlSection: Qso.Section := Edit3.Text;
+      //etStateProv:   Qso.Exch2 := Edit3.Text;
+      etCqZone:      Qso.Nr := StrToInt(Edit3.Text);
+      //etItuZone:
+      //etAge:
+      //etPower:
+      //etJarlOblastCode:
+      else
+        assert(false, 'missing case');
+    end;
+
     Qso.Pfx := ExtractPrefix(Qso.Call);
     {if PfxList.Find(Qso.Pfx, Idx) then Qso.Pfx := '' else }PfxList.Add(Qso.Pfx);
-    if Ini.RunMode = rmHst then Qso.Pfx := IntToStr(CallToScore(Qso.Call));
+    if Ini.RunMode = rmHst then
+      Qso.Pfx := IntToStr(CallToScore(Qso.Call));
 
     //mark if dupe
     Qso.Dupe := false;
     for i:=0 to High(QsoList)-1 do
       with QsoList[i] do
-        if (Call = Qso.Call) and (Err = '   ')
-          then Qso.Dupe := true;
+        if (Call = Qso.Call) and (Err = '   ') then
+          Qso.Dupe := true;
  
     // find Wpm from DX's log
     for i:=Tst.Stations.Count-1 downto 0 do
@@ -293,30 +341,26 @@ try
     for i:=Tst.Stations.Count-1 downto 0 do
       if Tst.Stations[i] is TDxStation then
         with Tst.Stations[i] as TDxStation do
-          if (Oper.State = osDone) and (MyCall = Qso.Call)
-            then begin DataToLastQso; Break; end; //deletes this dx station!
+          if (Oper.State = osDone) and (MyCall = Qso.Call) then
+            begin
+              DataToLastQso; //deletes this dx station!
+              Break;
+            end;
     CheckErr;
     end;
 
   LastQsoToScreen;
-  if Ini.RunMode = rmHst
-    then UpdateStatsHst
-    else UpdateStats;
+  if Ini.RunMode = rmHst then
+    UpdateStatsHst
+  else
+    UpdateStats;
 
   //wipe
   MainForm.WipeBoxes;
 
   //inc NR
-  //if (not (Ini.RunMode in [rmCwt, rmFieldDay])) then
-  //  Inc(Tst.Me.NR);
-  if ((Ini.ContestName = 'cqwpx') or (Ini.ContestName = 'arrlfd')) then
-  begin
-     //Inc(Tst.Me.NR);
-  end
-  else
-  begin
-       Tst.Me.NR := StrToInt(Ini.NR);
-  end;
+  if ActiveContestExchType2 = etSerialNr then
+    Inc(Tst.Me.NR);
 finally
   DebugLnExit([]);
 end;
@@ -419,10 +463,8 @@ begin
   for i:=High(QsoList) downto 0 do
     if QsoList[i].T > (T-D) then Inc(Cnt) else Break;
 
-
   MainForm.Panel7.Caption := Format('%d  qso/hr.', [Round(Cnt / D / 24)]);
 end;
-
 
 
 initialization

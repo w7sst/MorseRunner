@@ -5,7 +5,9 @@
 //------------------------------------------------------------------------------
 unit Main;
 
+{$ifdef FPC}
 {$MODE Delphi}
+{$endif}
 
 {$define DEBUG_LOGGING}  // enables LazLogging to Documents\N1MM Logger+\debug.txt
 
@@ -61,6 +63,11 @@ const
     WM_SETFREQUENCY = 32768 + 31;
     WM_PITCHSET = 32768 + 34;
     WM_ARRLFD = 32768 + 35;
+    WM_SETMYEXCH = 32768 + 36;
+    WM_ISCONTESTSUPPORTED = 32768 + 37;
+    WM_SETCONTEST = 32768 + 38;
+    WM_RUNPILEUP = 32768 + 39;
+    WM_RUNSINGLE = 32768 + 40;
     KeysF1 = 112;
     KeysF2 = 113;
     KeysF3 = 114;
@@ -75,6 +82,49 @@ const
     KeysF12 = 123;
     KeysInsert = 45;
     KeysAdd = 107;
+
+type
+
+  {
+    Defines the characteristics and behaviors of an exchange field.
+    Used to declare various exchange field behaviors. Field Definitions
+    are indexed by a contest definition (e.g. ARRL FD uses etFdClass and
+    etStateProc). As new contests are added, new field definition
+    may be required. When adding a new exchange field definition,
+    search for existing code usages to find areas that will require changes.
+  }
+  TFieldDefinition = record
+    C: PChar;     // Caption
+    R: PChar;     // Regular Expression
+    L: smallint;  // MaxLength
+    T: smallint;  // Type
+  end;
+
+  PFieldDefinition = ^TFieldDefinition;
+
+const
+  // Exchange Field 1 settings/rules
+  Exchange1Settings: array[TExchange1Type] of TFieldDefinition = (
+    (C: 'RST';   R: '5[9N][9N]';        L: 3;  T:Ord(etRST)),
+    (C: 'Name';  R: '[A-Z][A-Z]*';      L: 10; T:Ord(etOpName)),
+    (C: 'Class'; R: '[1-9][0-9]*[A-F]'; L: 3;  T:Ord(etFdClass))
+  );
+
+  // Exchange Field 2 settings/rules
+  Exchange2Settings: array[TExchange2Type] of TFieldDefinition = (
+    (C: 'Nr.';        R: '([0-9][0-9]*)|(#)';              L: 4;  T:Ord(etSerialNr)),
+    (C: 'Number';     R: '[1-9][0-9]*';                    L: 10; T:Ord(etCwopsNumber)),
+    (C: 'Section';    R: '([A-Z][A-Z])|([A-Z][A-Z][A-Z])'; L: 3;  T:Ord(etArrlSection)),
+    (C: 'State/Prov'; R: '[A-Z]*';                         L: 6;  T:Ord(etStateProv)),
+    (C: 'Zone';       R: '[0-9]*';                         L: 2;  T:Ord(etCqZone)),
+    (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
+    (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
+    (C: 'Power';      R: '([0-9]*)|(KW)|([0-9][OT]*)';     L: 4;  T:Ord(etPower)),
+    (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode))
+  );
+
+  { display parsed Exchange field settings }
+  BDebugExchSettings: boolean = false;
 
 type
 
@@ -280,6 +330,7 @@ type
     procedure SendClick(Sender: TObject);
     procedure Edit4Change(Sender: TObject);
     procedure Edit5Change(Sender: TObject);
+    procedure ExchangeEditExit(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -327,6 +378,14 @@ type
   private
     MustAdvance: boolean;
     Hide_form: boolean;
+    procedure ConfigureExchangeFields(
+      AExchType1: TExchange1Type;
+      AExchType2: TExchange2Type;
+      AExchange:  String = '');
+    procedure SetMyExch1(const AExchType: TExchange1Type; const Avalue: string);
+    procedure SetMyExch2(const AExchType: TExchange2Type; const Avalue: string);
+    function ValidateExchField(const FieldDef: PFieldDefinition;
+      const Avalue: string) : Boolean;
     procedure ProcessSpace;
     // procedure ProcessEnter;
     procedure EnableCtl(Ctl: TWinControl; AEnable: boolean);
@@ -348,7 +407,9 @@ type
     procedure PopupScoreWpx;
     procedure PopupScoreHst;
     procedure Advance;
-
+    procedure SetContest(AContestNum: TSimContest; AExchange : String = '');
+    procedure SetContestByKey(constref AContestKey: String; AExchange : String = '');
+    procedure SetMyExchange(constref AExchange: string);
     procedure SetQsk(Value: boolean);
     procedure SetMyCall(ACall: string);
     procedure SetMyZone(AZone: string);
@@ -363,6 +424,8 @@ type
 var
   MainForm: TMainForm;
   PrevWndProc: WNDPROC;
+  ContestKey: String;      // N1MM+'s contest key from Select Contest dialog
+  SentExchange: String;    // N1MM+'s 'sent exchange' field from Contest setup
   recvdata: PCopyDataStruct;
   msgtype: Integer;
   msglen: Integer;
@@ -371,9 +434,27 @@ var
 
 implementation
 
-uses ScoreDlg;
+uses ScoreDlg, TypInfo;
 
 {$R *.lfm}
+
+function ToStr(const val : TExchange1Type) : string; overload;
+begin
+  Result := GetEnumName(typeInfo(TExchange1Type ), Ord(val));
+end;
+
+function ToStr(const val : TExchange2Type) : string; overload;
+begin
+  Result := GetEnumName(typeInfo(TExchange2Type ), Ord(val));
+end;
+
+{ return whether the Edit2 control is the RST exchange field. }
+function Edit2IsRST: Boolean;
+begin
+  assert((not (SimContest in [scWpx, scHst])) or
+    (ActiveContestExchType1 = etRST));
+  Result := ActiveContestExchType1 = etRST;
+end;
 
 function WndCallback(Ahwnd: HWND; uMsg: UINT; wParam: WParam; lParam: LParam):LRESULT; stdcall;
 var
@@ -386,8 +467,9 @@ begin
           case wParam of
                KeysF1:
                begin
-                    DebugLn('WM_KEYDOWN.KeysF1: received msgCQ');
+                    DebugLnEnter('WM_KEYDOWN.KeysF1: received msgCQ');
                     MainForm.SendMsg(TStationMessage.msgCQ);
+                    DebugLnExit([]);
                     exit;
                end;
 
@@ -395,16 +477,17 @@ begin
                  begin
                       if CallSent = True then // correct call TU message
                       begin
-                           DebugLn('WM_KEYDOWN.KeysInsert: CallSent is true, sending msgHisCall, msgNr');
+                           DebugLnEnter('WM_KEYDOWN.KeysInsert: CallSent is true, sending msgHisCall, msgNr');
                            MainForm.SendMsg(TStationMessage.msgHisCall);
                            MainForm.SendMsg(TStationMessage.msgNr);
                       end
                       else
                       begin
-                           DebugLn('WM_KEYDOWN.KeysInsert: CallSent is false, calling MainForm.ProcessEnter');
+                           DebugLnEnter('WM_KEYDOWN.KeysInsert: CallSent is false, calling MainForm.ProcessEnter');
                            MainForm.ProcessEnter;
                       end;
                       //MainForm.Advance;
+                      DebugLnExit([]);
                       exit;
                  end;
                //KeysAdd:  // let it be handled by standalone code
@@ -418,29 +501,82 @@ begin
           end;
      WM_CQWW:
        begin
-            Ini.ContestName := 'cqww';
-            MainForm.Run(rmPileUp);
-            exit;
+          DebugLnEnter('WM_CQWW: starting cqww');
+          if false then // arrl Field Day forced testing...
+            // remove this section after adding WM_ARRLFD
+            begin
+              DebugLn('Forcing ARRL Field Day...');
+              Ini.ContestName := '';
+              SentExchange := '7A OR';
+              assert(not SentExchange.IsEmpty(), 'WM_SETMYEXCH must occur before WM_CQWW');
+              MainForm.SetContestByKey('FD', SentExchange);
+              assert(Ini.ContestName = 'arrlfd');
+              MainForm.Run(rmPileUp);
+              DebugLnExit([]);
+              exit;
+            end;
+          Ini.ContestName := '';
+          assert(not SentExchange.IsEmpty(),
+            'WM_SETMYZONE or WM_SETMYEXCH must be sent before WM_CQWW');
+          MainForm.SetContestByKey('CQWWCW', SentExchange);
+          assert(Ini.ContestName = 'cqww');
+          MainForm.Run(rmPileUp);
+          DebugLnExit([]);
+          exit;
        end;
      WM_CQWPX:
        begin
-            Ini.ContestName := 'cqwpx';
+            DebugLnEnter('WM_CQWPX: starting cqwpx');
+            Ini.ContestName := '';
+            assert(not SentExchange.IsEmpty(),
+              'WM_SETMYZONE or WM_SETMYEXCH must be sent before WM_CQWPX');
+            MainForm.SetContestByKey('CQWPXCW', SentExchange);
+            assert(Ini.ContestName = 'cqwpx');
             MainForm.Run(rmPileUp);
+            DebugLnExit([]);
             exit;
        end;
      WM_ARRLFD:
        begin
-            Ini.ContestName := 'arrlfd';
+            DebugLnEnter('WM_ARRLFD: starting Arrl FD');
+            assert(not SentExchange.IsEmpty(), 'WM_SETMYEXCH must be sent before WM_ARRLFD');
+            MainForm.SetContestByKey('FD', SentExchange);
+            assert(Ini.ContestName = 'arrlfd');
             MainForm.Run(rmPileUp);
+            DebugLnExit([]);
+            exit;
+       end;
+     WM_RUNPILEUP:
+       begin
+            // Note - must be sent after WM_SETMYEXCH & WM_SETCONTEST.
+            DebugLnEnter('WM_RUNPILEUP:');
+            assert(not ContestKey.IsEmpty(), 'WM_SETCONTEST must occur before WM_RUNPILEUP');
+            assert(not SentExchange.IsEmpty(), 'WM_SETMYEXCH must occur before WM_RUNPILEUP');
+            MainForm.SetContestByKey(ContestKey, SentExchange);
+            MainForm.Run(rmPileUp);
+            DebugLnExit([]);
+            exit;
+       end;
+     WM_RUNSINGLE:
+       begin
+            // Note - must be sent after WM_SETMYEXCH & WM_SETCONTEST.
+            DebugLnEnter('WM_RUNSINGLE:');
+            assert(not ContestKey.IsEmpty(), 'WM_SETCONTEST must occur before WM_RUNSINGLE');
+            assert(not SentExchange.IsEmpty(), 'WM_SETMYEXCH must occur before WM_RUNSINGLE');
+            MainForm.SetContestByKey(ContestKey, SentExchange);
+            MainForm.Run(rmSingle);
+            DebugLnExit([]);
             exit;
        end;
      WM_STOP:
        begin
+            DebugLn('WM_STOP:');
             MainForm.Run(rmStop);
             exit;
        end;
      WM_END:
        begin
+            DebugLn('WM_END:');
             MainForm.Close;
             exit;
        end;
@@ -448,7 +584,7 @@ begin
        begin
             Ini.RadioAudio := lParam;
             MainForm.AlSoundOut1.ChangeSoundLevel;
-            DebugLn('setaudio = ', intToStr(lParam));
+            DebugLn('WM_SETAUDIO: setaudio = ', intToStr(lParam));
             exit;
 
        end;
@@ -457,14 +593,11 @@ begin
            if Tst.Me.State = stSending then
              begin
              result := 1;
-             exit;
              end
            else
            begin
              result := 0;
-             exit;
            end;
-           DebugLn('WM_GETTXSTATUS: result=', intToStr(result));
            exit;
       end;
      WM_RITUP:
@@ -548,16 +681,82 @@ begin
                 end;
               WM_SETMYCALL:
                 begin
-                    DebugLn('WM_SETMYCALL: str=', str);
+                    DebugLnEnter('WM_SETMYCALL: str=', str);
                     MainForm.SetMyCall(str);
                     Call := str;
+                    DebugLnExit([]);
                     exit;
                 end;
               WM_SETMYZONE:
                 begin
-                    DebugLn('WM_SETMYZONE: str=', str);
+                    DebugLnEnter('WM_SETMYZONE: str=', str);
                     MainForm.SetMyZone(str);
                     NR := str;
+                    SentExchange := Format('5nn %s', [str]); // long term, I'll drop the 5nn from exchange like N1MM contest setup.
+                    DebugLnExit([]);
+                    exit;
+                end;
+              WM_SETMYEXCH:
+                begin
+                  {
+                    WM_COPYDATA WM_SETMYEXCH <sent-exchange>
+                    where:
+                      sent-exchange = Exchange value entered in the Morse Runner
+                      Setup dialog (currently called "Zone"). Ideally this field
+                      is populated with the "Sent Exchange" field entered on the
+                      "Contest" tab of N1MM's Contest Selection dialog(s).
+                      Like N1MM, the RST is omitted from this string.
+                      Examples: '3', '#', '3A OR', 'Mike OR', etc.
+
+                    This message replaces WM_SETMYZONE using a contest-specific
+                    exchange string. This message sets the contest exchange
+                    value. It is called before the WM_CQWW, WM_CQWPX OR
+                    WM_ARRLFD messages.
+
+                    Question: How do we return an error string for syntax error
+                              in exchange string?
+                  }
+                    DebugLn('WM_SETMYEXCH: str=', str);
+                    SentExchange := Trim(str);
+                    exit;
+                end;
+              WM_ISCONTESTSUPPORTED:
+                begin
+                    // Return whether a Contest Key (e.g. 'CQWWCW') is supported?
+                    Result := IfThen(Ini.IsContestSupported(str), 1, 0);
+                    DebugLn('WM_ISCONTESTSUPPORTED(''%s''): %d', [str, Result]);
+                    exit;
+                end;
+              WM_SETCONTEST:
+                begin
+                  {
+                    WM_COPYDATA WM_SETCONTEST <contest-key>
+                    where
+                      contest-key = unique contest identifier from column 1
+                                    of N1MM+'s Select Contest dialog
+                                    (e.g. CQWWCW, CQWPXCW, FD, NAQPCW).
+
+                    This message will select the current contest using
+                    <contest-key> and set a default exchange value.
+                    WM_SETMYEXCH must be called to set the contest-specific
+                    exchange.
+
+                    Question: How do we return an error string for an invalid
+                              contest key?
+                  }
+                    DebugLnEnter('WM_SETCONTEST: str=', str);
+                    assert(not SentExchange.IsEmpty,
+                      'SETMYEXCH must be called before WM_SETCONTEST');
+                    if Ini.IsContestSupported(str) then begin
+                      ContestKey := str;
+                      Mainform.SetContestByKey(ContestKey, SentExchange);
+                      Result := 1
+                    end
+                    else begin
+                      ContestKey := '';
+                      Result := 0;
+                    end;
+                    DebugLnExit([]);
                     exit;
                 end;
               WM_SETACTIVITY:
@@ -615,9 +814,10 @@ begin
                 end;
               WM_PITCHSET:
                 begin
-                    DebugLn('WM_PITCHSET: str=', str);
+                    DebugLnEnter('WM_PITCHSET: str=', str);
                     Pitch := (StrToInt(str) div 50) - 6;
                     MainForm.SetPitch(Pitch);
+                    DebugLnExit([]);
                     exit;
                 end;
            end;
@@ -641,7 +841,7 @@ begin
   DebugLogger.LogName:= Format('%sDocuments\N1MM Logger+\debug.txt', [userdir]);
 {$endif}
   DebugLn('----------------------------------------');
-  DebugLn('TMainForm.FormCreate: GetCurrentThreadID %d', [GetCurrentThreadID()]);
+  DebugLnEnter('TMainForm.FormCreate: GetCurrentThreadID %d', [GetCurrentThreadID()]);
   //DebugLnThreadLog('TMainForm.FormCreate...');
 
   PrevWndProc:=Windows.WNDPROC(SetWindowLongPtr(Self.Handle,GWL_WNDPROC,PtrInt(@WndCallback)));
@@ -699,11 +899,18 @@ begin
 
   Panel2.DoubleBuffered := true;
   RichEdit1.Align := alClient;
+
+  if Ini.Standalone then
+    SetContest(SimContest, Ini.UserExchangeTbl[SimContest])
+  else  // running embedded within N1MM
+    SetContest(SimContest, '');
+  DebugLnExit([]);
 end;
 
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  DebugLnEnter('TMainForm.FormDestroy');
   If Ini.Standalone = true then
   begin
        ToIni;
@@ -711,6 +918,7 @@ begin
   gARRLFD.Free;
   Tst.Free;
   DestroyKeyer;
+  DebugLnExit([]);
 end;
 
 
@@ -768,43 +976,67 @@ end;
 
 procedure TMainForm.Edit2KeyPress(Sender: TObject; var Key: Char);
 begin
-  if Ini.ContestName = 'arrlfd' then
-  begin
-    // validate Station Classification, [0-9]*[A-F]|DX
-    if not CharInSet(Key, ['0'..'9','A'..'F','a'..'f','X','x',#8]) then
-       Key := #0;
-  end
-  else if RunMode = rmHst then
-  begin
-    if not (Key in ['0'..'9', #8]) then
-      Key := #0;
-  end
-  else
-  begin
-    // for RST field, map (A,N) to (1,9)
-    if not (Key in ['0'..'9', #8]) then
-      Key := #0;
+  case ActiveContestExchType1 of
+    etRST:
+      begin
+        // valid RST characters...
+        if not CharInSet(Key, ['0'..'9', #8]) then
+          Key := #0;
+      end;
+    etOpName:
+      begin
+        // valid operator name characters
+        if not CharInSet(Key, ['A'..'Z','a'..'z', #8]) then
+          Key := #0;
+      end;
+    etFdClass:
+      begin
+        // valid Station Classification characters, [1-9][0-9]+[A-F]|DX
+        if not CharInSet(Key, ['0'..'9','A'..'F','a'..'f','X','x',#8]) then
+          Key := #0;
+      end;
+    else
+      assert(false, Format('invalid exchange field 1 type: %s',
+        [ToStr(ActiveContestExchType1)]));
   end;
 end;
 
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
-  if Ini.ContestName = 'arrlfd' then
-  begin
-    // validate Section (e.g. OR or STX)
-    if not (Key in ['A'..'Z', 'a'..'z', #8]) then
-      Key := #0;
-  end
-  else if RunMode = rmHst then
-  begin
-    if not (Key in ['0'..'9', #8]) then
-      Key := #0;
-  end
-  else begin
-    // treat as a NR or Zone field
-    if not (Key in ['0'..'9', #8]) then
-      Key := #0;
-    end
+  case ActiveContestExchType2 of
+    etSerialNr, etCwopsNumber, etCqZone, etItuZone, etAge:
+      begin
+        // valid Zone or NR field characters...
+        if not CharInSet(Key, ['0'..'9', #8]) then
+          Key := #0;
+      end;
+    etPower:
+      begin
+        case Key of
+          'a', 'A': Key := '1';
+          'n', 'N': Key := '9';
+          't', 'T': Key := '0';
+        end;
+        // valid Power characters, including KW...
+        if not CharInSet(Key, ['0'..'9', 'K', 'k', 'W', 'w', #8]) then
+          Key := #0;
+      end;
+    etArrlSection:
+      begin
+        // valid Section characters (e.g. OR or STX)
+        if not CharInSet(Key, ['A'..'Z', 'a'..'z', #8]) then
+          Key := #0;
+      end;
+    etStateProv:
+      begin
+        // valid State/Prov characters (e.g. OR or BC)
+        if not CharInSet(Key, ['A'..'Z', 'a'..'z', #8]) then
+          Key := #0;
+      end;
+    else
+      assert(false, Format('invalid exchange field 2 type: %s',
+        [ToStr(ActiveContestExchType2)]));
+  end;
 end;
 
 
@@ -841,8 +1073,14 @@ begin
       Log.SaveQso;
       end;
 
-    ' ': //next field
-      ProcessSpace;
+    ' ': // advance to next exchange field; necessary to allow space (' ')
+         // to be added to Edit5 (exchange field).
+      if (ActiveControl = Edit1) or
+         (ActiveControl = Edit2) or
+         (ActiveControl = Edit3) then
+        ProcessSpace
+      else
+        Exit;
 
     '\': // = F1
       begin
@@ -898,7 +1136,6 @@ begin
     VK_NEXT: //PgDn
       DecSpeed;
 
-
      VK_F9:
        if (ssAlt in Shift) or  (ssCtrl in Shift) then DecSpeed;
 
@@ -924,34 +1161,36 @@ end;
 procedure TMainForm.ProcessSpace;
 begin
   MustAdvance := false;
-  if Ini.ContestName = 'arrlfd' then
-  begin
-    if ActiveControl = Edit1 then
+  if Edit2IsRST then
     begin
-      UpdateSbar(Edit1.Text);
-      ActiveControl := Edit2;
+      if ActiveControl = Edit1 then
+        begin
+          if Edit2.Text = '' then
+            Edit2.Text := '599';
+          ActiveControl := Edit3;
+        end
+      else if ActiveControl = Edit2 then
+        begin
+          if Edit2.Text = '' then
+            Edit2.Text := '599';
+          ActiveControl := Edit3;
+        end
+      else
+        ActiveControl := Edit1;
     end
-    else if ActiveControl = Edit2 then
-      ActiveControl := Edit3
-    else
-      ActiveControl := Edit1;
-  end
-  else begin
-    if ActiveControl = Edit1 then
+  else {otherwise, space bar moves cursor to next field}
     begin
-      if Edit2.Text = '' then Edit2.Text := '599';
-      if Edit3.Text = '' then Edit3.Text := '14';
-      ActiveControl := Edit3;
-    end
-    else if ActiveControl = Edit2 then
-    begin
-      if Edit2.Text = '' then Edit2.Text := '599';
-      if Edit3.Text = '' then Edit3.Text := '14';
-      ActiveControl := Edit3;
-    end
-    else
-      ActiveControl := Edit1;
-  end;
+      if ActiveControl = Edit1 then
+        begin
+          if SimContest = scFieldDay then
+            UpdateSbar(Edit1.Text);
+          ActiveControl := Edit2;
+        end
+      else if ActiveControl = Edit2 then
+        ActiveControl := Edit3
+      else
+        ActiveControl := Edit1;
+    end;
 end;
 
 
@@ -960,19 +1199,28 @@ var
   C, N, R: boolean;
 begin
   DebugLnEnter('ProcessEnter...');
+  if ActiveControl = Edit5 then
+    begin
+      ExchangeEditExit(ActiveControl);
+      DebugLnExit([]);
+      Exit;
+    end;
   MustAdvance := false;
 
-  if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0
-    then begin Log.SaveQso; DebugLnExit([]); Exit; end;
+  if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0 then
+  begin
+    Log.SaveQso;
+    DebugLnExit([]);
+    Exit;
+  end;
 
   // for certain contests (e.g. ARRL Field Day), update update status bar
-  if Ini.ContestName = 'arrlfd' then
+  if SimContest in [scFieldDay] then
     UpdateSbar(Edit1.Text);
 
   //no QSO in progress, send CQ
   if Edit1.Text = '' then
   begin
-     //  DebugLn('in ProcessEnter sendCQ');
        SendMsg(msgCq);
        DebugLnExit([]);
        Exit;
@@ -1051,13 +1299,119 @@ end;
 
 procedure TMainForm.Edit4Change(Sender: TObject);
 begin
+  DebugLnEnter('TMainForm.Edit4Change');
   SetMyCall(Trim(Edit4.Text));
+  DebugLnExit([]);
 end;
 
 procedure TMainForm.Edit5Change(Sender: TObject);
 begin
-  SetMyZone(Trim(Edit5.Text));
+  DebugLnEnter('TMainForm.Edit5Change');
+  SetMyExchange(Trim(Edit5.Text));
+  DebugLnExit([]);
 end;
+
+procedure TMainForm.ExchangeEditExit(Sender: TObject);
+begin
+  DebugLnEnter('TMainForm.ExchangeEditExit');
+  SetMyExchange(Trim(Edit5.Text));
+  DebugLnExit([]);
+end;
+
+procedure TMainForm.SetContest(AContestNum: TSimContest;
+  AExchange : String = '');
+begin
+  DebugLnEnter('SetContest(%s, ''%s'')', [DbgS(AContestNum), AExchange]);
+  // validate selected contest
+  if not (AContestNum in [scWpx, scCQWW, scFieldDay, scHst]) then
+  begin
+    ShowMessage('The selected contest is not yet supported.');
+    //SimContestCombo.ItemIndex:= Ord(Ini.SimContest);
+    DebugLnExit('error: The selected contest is not yet supported.');
+    Exit;
+  end;
+
+{  assert(ContestDefinitions[AContestNum].T = AContestNum,
+    'Contest definitions are out of order');
+}
+  Ini.SimContest := AContestNum;
+{
+Ini.ActiveContest := @ContestDefinitions[AContestNum];
+  SimContestCombo.ItemIndex := Ord(AContestNum);
+}
+  WipeBoxes;
+
+  // update Exchange field labels and length settings (e.g. RST, Nr.)
+  // note: this case statement will be replaced by table-driven lookup.
+  case SimContest of
+  scWpx:
+    ConfigureExchangeFields(etRST, etSerialNr, AExchange);
+  scCQWW:
+    ConfigureExchangeFields(etRST, etCqZone, AExchange);
+  scFieldDay:
+    ConfigureExchangeFields(etFdClass, etArrlSection, AExchange);
+  else
+    assert(false, 'missing case');
+  end;
+  DebugLnExit([]);
+end;
+
+
+procedure TMainForm.SetContestByKey(constref AContestKey: String;
+  AExchange : String = '');
+const
+  ContestNames: array[TSimContest] of string =
+    ('cqwpx', 'cqww', 'arrlfd', 'hst');
+var
+  ContestNum : TSimContest;
+begin
+  DebugLnEnter('TMainForm.SetContestByKey(''%s'', ''%s'')', [AContestKey, AExchange]);
+  if not Ini.FindContestByKey(AContestKey, ContestNum) then
+    assert(false, Format('the requested contest is not supported: ''%s''', [AContestKey]));
+
+  ContestName := ContestNames[ContestNum];
+  SetContest(ContestNum, AExchange);
+  DebugLnExit([]);
+end;
+
+
+{
+  Set my exchange fields using the exchange string containing two values,
+  separated by a space. Error/warning messages are displayed in the status bar.
+}
+procedure TMainForm.SetMyExchange(constref AExchange: string);
+var
+  sl: TStringList;
+  Field1Def: PFieldDefinition;
+  Field2Def: PFieldDefinition;
+begin
+  DebugLnEnter('TMainForm.SetMyExchange(''%s'')', [AExchange]);
+  sl:= TStringList.Create;
+  try
+    Field1Def := @Exchange1Settings[ActiveContestExchType1];
+    Field2Def := @Exchange2Settings[ActiveContestExchType2];
+
+    // parse into two strings [Exch1, Exch2]
+    ExtractStrings([' '], [], PChar(AExchange), sl);
+    if sl.Count = 0 then
+      sl.AddStrings(['', '']);
+    if sl.Count = 1 then
+      sl.AddStrings(['']);
+
+    // set contest-specific exchange values
+    SetMyExch1(ActiveContestExchType1, sl[0]);
+    SetMyExch2(ActiveContestExchType2, sl[1]);
+
+    // update the Exchange field value
+    Edit5.Text := AExchange;
+    Ini.UserExchangeTbl[SimContest]:= AExchange;
+
+  finally
+    sl.Free;
+  end;
+  DebugLnExit([]);
+end;
+
 
 procedure TMainForm.SetMyCall(ACall: string);
 begin
@@ -1066,12 +1420,168 @@ begin
   Tst.Me.MyCall := ACall;
 end;
 
+{
+  Exchange Field types are determined by each contest.
+  Exchange field labels and exchange field maximum length are set.
+  Prior field values from .INI file are applied.
+  This procedure is called by SetContest() whenever the contest changes.
+}
+procedure TMainForm.ConfigureExchangeFields(
+  AExchType1: TExchange1Type;
+  AExchType2: TExchange2Type;
+  AExchange:  String = '');
+
+var
+  AExchangeLabel: PChar = '';
+  Visible: Boolean;
+
+begin
+  DebugLnEnter('ConfigureExchangeFields(%s, %s, ''%s'')',
+               [DbgS(AExchType1), DbgS(AExchType2), AExchange]);
+
+  // Optional Contest Exchange label and field
+  case SimContest of
+    scCQWW: AExchangeLabel := 'Zone';
+    scWpx: AExchangeLabel := 'Zone';
+    scFieldDay: AExchangeLabel := 'Exchange';
+    else
+      assert(false, 'missing case');
+  end;
+  Visible := AExchangeLabel <> '';
+  Label20.Visible:= Visible;
+  Edit5.Visible:= Visible;
+  Edit5.Width := 80;
+  Label20.Caption:= AExchangeLabel;
+
+  // The Exchange field is editable in some contests
+  //ExchangeEdit.Enabled := ActiveContest.ExchFieldEditable;
+  Edit5.Enabled := SimContest in [scCQWW, scFieldDay];
+
+  // setup Exchange Field 1 (e.g. RST)
+  assert(AExchType1 = TExchange1Type(Exchange1Settings[AExchType1].T),
+    Format('Exchange1Settings[%d] ordering error: found %s, expecting %s.',
+      [Ord(AExchType1), ToStr(AExchType1),
+      ToStr(TExchange1Type(Exchange1Settings[AExchType1].T))]));
+  Label2.Caption:= Exchange1Settings[AExchType1].C;
+  Edit2.MaxLength:= Exchange1Settings[AExchType1].L;
+  Ini.ActiveContestExchType1 := AExchType1;
+
+  // setup Exchange Field 2 (e.g. Serial #)
+  assert(AExchType2 = TExchange2Type(Exchange2Settings[AExchType2].T),
+    Format('Exchange2Settings[%d] ordering error: found %s, expecting %s.',
+      [Ord(AExchType2), ToStr(AExchType2),
+      ToStr(TExchange2Type(Exchange2Settings[AExchType2].T))]));
+  Label3.Caption := Exchange2Settings[AExchType2].C;
+  Edit3.MaxLength := Exchange2Settings[AExchType2].L;
+  Ini.ActiveContestExchType2 := AExchType2;
+
+  // Set my exchange value (from N1MM or .INI file)
+  if AExchange.Length > 0 then
+    SetMyExchange(AExchange);
+
+  DebugLnExit([]);
+end;
+
+procedure TMainForm.SetMyExch1(const AExchType: TExchange1Type;
+  const Avalue: string);
+begin
+  DebugLnEnter('SetMyExch1(%s, %s)', [DbgS(AExchType), Avalue]);
+  case AExchType of
+    etRST:
+      begin
+        // Format('invalid RST (%s)', [AValue]));
+        //Ini.UserExchange1[SimContest] := Avalue;
+        if BDebugExchSettings then Edit2.Text := Avalue; // testing only
+      end;
+    etFdClass:  // e.g. scFieldDay (3A)
+      begin
+        // 'expecting FD class (3A)'
+        Ini.ArrlClass := Avalue;
+        //Ini.UserExchange1[SimContest] := Avalue;
+        Tst.Me.Exch1 := Avalue;
+        if BDebugExchSettings then Edit2.Text := Avalue; // testing only
+      end;
+    else
+      assert(false, Format('Unsupported exchange 1 type: %s.', [ToStr(AExchType)]));
+  end;
+  DebugLnExit([]);
+end;
+
+procedure TMainForm.SetMyExch2(const AExchType: TExchange2Type;
+  const Avalue: string);
+var
+  i: integer;
+begin
+  DebugLnEnter('SetMyExch2(%s, %s)', [DbgS(AExchType), Avalue]);
+  case AExchType of
+    etSerialNr:
+      begin
+        //Ini.UserExchange2[SimContest] := Avalue;
+        if not IsNum(Avalue) or (RunMode = rmHst) then
+          Tst.Me.Nr := 1
+        else
+          Tst.Me.Nr := StrToInt(Avalue);
+        if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
+      end;
+    etArrlSection:  // e.g. Field Day (OR)
+      begin
+        // 'expecting FD section (e.g. OR)'
+        Ini.ArrlSection := Avalue;
+        //Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
+    etStateProv:  // e.g. NAQP (OR)
+      begin
+        // 'expecting State or Providence (e.g. OR)'
+        //Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
+    etCqZone:
+      begin
+        //Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Nr := StrToInt(Avalue);
+        if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
+      end;
+    //etItuZone:
+    //etAge:
+    //etPower:
+    //etJarlOblastCode:
+    else
+      assert(false, Format('Unsupported exchange 2 type: %s.', [ToStr(AExchType)]));
+  end;
+  DebugLnExit([]);
+end;
+
+
+function TMainForm.ValidateExchField(const FieldDef: PFieldDefinition;
+  const Avalue: string) : Boolean;
+//var
+  //reg: TPerlRegEx;
+  //s: string;
+begin
+  {reg := TPerlRegEx.Create();
+  try
+    reg.Subject := UTF8Encode(Avalue);
+    s:= '^(' + FieldDef.R + ')$';
+    reg.RegEx:= UTF8Encode(s);
+    Result:= Reg.Match;
+  finally
+    reg.Free;
+  end;
+  }
+  Result := true;
+end;
+
 procedure TMainForm.SetMyZone(AZone: string);
 begin
+  DebugLnEnter('TMainForm.SetMyZone(''%s'')', [AZone]);
   Ini.NR := AZone;
   Edit5.Text := AZone;
   if (AZone = '') then AZone := '0';
   Tst.Me.NR := StrToInt(AZone);
+  DebugLnExit([]);
 end;
 
 procedure TMainForm.PitchUp;
@@ -1090,8 +1600,13 @@ begin
    SetPitch(currpitch - 1);
 end;
 
+{
+  Set pitch based on menu item number.
+  Must be within range [0, ComboBox1.Items.Count).
+}
 procedure TMainForm.SetPitch(PitchNo: integer);
 begin
+  PitchNo := Max(0, Min(PitchNo, ComboBox1.Items.Count-1));
   Ini.Pitch := 300 + PitchNo * 50;
   ComboBox1.ItemIndex := PitchNo;
   Tst.Modul.CarrierFreq := Ini.Pitch;
@@ -1100,9 +1615,13 @@ begin
 end;
 
 
+{
+  Set bandwidth based on menu item number.
+  Must be within range [0, ComboBox2.Items.Count).
+}
 procedure TMainForm.SetBw(BwNo: integer);
 begin
-  if (BwNo < 0) or (BwNo >= ComboBox2.Items.Count) then Exit;
+  BwNo := Max(0, Min(BwNo, ComboBox2.Items.Count-1));
 
   Ini.Bandwidth := 100 + BwNo * 50;
   ComboBox2.ItemIndex := BwNo;
@@ -1217,6 +1736,11 @@ begin
 end;
 
 
+{
+  called whenever callsign field (Edit1) changes. Any callsign edit will
+  invalidate the callsign and NR (Exchange) field(s) already sent, so clear
+  the CallSent and NrSent values.
+}
 procedure TMainForm.Edit1Change(Sender: TObject);
 begin
   if Edit1.Text = '' then NrSent := false;
@@ -1236,8 +1760,7 @@ end;
 
 procedure TMainForm.Edit2Enter(Sender: TObject);
 begin
-  // if Tst.Exch2IsRST() then
-  if Ini.ContestName <> 'arrlfd' then
+  if Edit2IsRST then
   begin
     // for RST field, select middle digit
     if Length(Edit2.Text) = 3 then
@@ -1255,7 +1778,7 @@ end;
 
 procedure TMainForm.Edit3Enter(Sender: TObject);
 begin
-  if ContestName = 'arrlfd' then
+  if Ini.SimContest = scFieldDay then
   begin
     // select entire field
     Edit3.SelStart := 0;
@@ -1318,17 +1841,6 @@ begin
     SpinEdit2.Value := CompDuration;
     end;
 
-  Label2.Caption := 'RST';
-  Edit2.MaxLength := 3;
-  Label3.Caption := 'Nr.';
-  Edit3.MaxLength := 4;
-  if Ini.ContestName = 'arrlfd' then
-  begin // field day changes
-    Label2.Caption := 'Class';
-    Edit2.MaxLength := 3;
-    Label3.Caption := 'Section';
-    Edit3.MaxLength := 3;
-  end;
   //button menu
   PileupMNU.Enabled := BStop;
   SingleCallsMNU.Enabled := BStop;
@@ -1350,7 +1862,6 @@ begin
   QSB1.Enabled := not BCompet;
   Flutter1.Enabled := not BCompet;
   Lids1.Enabled := not BCompet;
-
 
 
   //hst specific
@@ -1376,14 +1887,9 @@ begin
     begin
     Tst.Me.AbortSend;
     Tst.BlockNumber := 0;
-    if Ini.ContestName = 'cqwpx' then
-    begin
-         Tst.Me.Nr := 1;
-    end
-    else
-    begin
-         Tst.Me.Nr := StrToInt(Ini.NR);
-    end;
+    if ActiveContestExchType2 = etSerialNr then
+      Tst.Me.Nr := 1; // reset starting serial number to 1
+
     Log.Clear;
     WipeBoxes;
     RichEdit1.Visible := true;
@@ -1414,6 +1920,7 @@ begin
   AlSoundOut1.Enabled := not BStop;
   DebugLnExit([]);
 end;
+
 
 procedure TMainForm.RunBtnClick(Sender: TObject);
 begin
@@ -1566,7 +2073,27 @@ begin
   if not MustAdvance then Exit;
   DebugLn('TMainForm.Advance');
 
-  if Ini.ContestName = 'arrlfd' then
+  if Edit2IsRST and (Edit2.Text = '') then
+    Edit2.Text := '599';
+
+  if Pos('?', Edit1.Text) > 0 then
+    begin
+      { stay in callsign field if callsign has a '?' }
+      if ActiveControl = Edit1 then
+        Edit1Enter(nil)
+      else
+        ActiveControl := Edit1;
+    end
+  else
+    begin
+      { otherwise advance to next field, skipping RST }
+      if Edit2IsRST then
+        ActiveControl := Edit3
+      else
+        ActiveControl := Edit2;
+    end;
+{
+  if Ini.SimContest = scFieldDay then
   begin // mikeb - todo - work this logic
     if Edit2.Text = '' then
       ActiveControl := Edit2;
@@ -1583,6 +2110,7 @@ begin
     else if ActiveControl = Edit1 then Edit1Enter(nil)
     else ActiveControl := Edit1;
   end;
+}
 
   MustAdvance := false;
 end;
@@ -1660,11 +2188,9 @@ begin
 end;
 
 
-
 procedure TMainForm.Pitch1Click(Sender: TObject);
 begin
   SetPitch((Sender as TMenuItem).Tag);
-
 end;
 
 procedure TMainForm.Bw1Click(Sender: TObject);
@@ -1697,7 +2223,6 @@ procedure TMainForm.AudioRecordingEnabled1Click(Sender: TObject);
 begin
   Ini.SaveWav := not Ini.SaveWav;
 end;
-
 
 
 procedure TMainForm.SelfMonClick(Sender: TObject);
@@ -1765,5 +2290,4 @@ begin
 end;
 
 end.
-
 

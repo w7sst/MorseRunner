@@ -47,8 +47,8 @@ type
     NR, RST: integer;
     MyCall, HisCall: string;
 
-    Exch1: string;  // field day classification (e.g. 3A)
-    Exch2: string;  // field day section (e.g. OR)
+    Exch1: string;  // Exchange field 1 (e.g. class, name, etc.)
+    Exch2: string;  // Exchange field 2 (e.g. zone, state/prov, section, grid, etc.)
     UserText: string; // club name or description (from fdHistory file)
     Msg: TStationMessages;
     MsgText: string;
@@ -121,7 +121,7 @@ begin
   case AMsg of
     msgCQ:
       begin
-        if Ini.ContestName = 'arrlfd' then
+        if SimContest = scFieldDay then
           SendText('CQ FD <my>')
         else
           SendText('CQ <my>');
@@ -156,7 +156,7 @@ begin
       begin
         if Ini.Messagecq = 'CQ' then
         begin
-          if Ini.ContestName = 'arrlfd' then
+          if SimContest = scFieldDay then
             Ini.Messagecq := 'CQ FD '+ Ini.Call
           else
             Ini.Messagecq := 'CQ '+ Ini.Call;
@@ -165,7 +165,7 @@ begin
       end;
     msgNR:
       begin
-        if Ini.ContestName = 'arrlfd' then
+        if SimContest = scFieldDay then
           SendText('R <#>')
         else
           SendText('<#>');
@@ -186,11 +186,11 @@ begin
     msgNrQm: SendText('NR?');
     msgLongCQ:
       begin
-        if Ini.ContestName = 'arrlfd' then
+        if SimContest = scFieldDay then
           SendText('CQ CQ FD <my> <my>')
         else
           SendText('CQ CQ TEST <my> <my>');
-        end;
+      end;
     msgQrl: SendText('QRL?');
     msgQrl2: SendText('QRL?   QRL?');
     msqQsy: SendText('<his>  QSY QSY');
@@ -289,7 +289,7 @@ function TStation.NrAsText: string;
 var
   Idx: integer;
 begin
-  if Ini.ContestName = 'arrlfd' then
+  if SimContest = scFieldDay then
       Result := Format('%s %s', [Exch1, Exch2])
   else
       // Result := Format('%d%.2d', [RST, NR]);
@@ -308,11 +308,11 @@ begin
     NrWithError := false;
     end;
 
-  // if Contest.ExchangeHasRST...
-  if Ini.ContestName <> 'arrlfd' then
+  if Ini.ActiveContestExchType1 = etRST then
     Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
 
-  if (Ini.RunMode <> rmHst) and (Ini.ContestName <> 'arrlfd') then
+  if (Ini.RunMode <> rmHst) and (ActiveContestExchType2 in
+    [etSerialNr, etCqZone, etItuZone, etAge, etPower]) then
     begin
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);

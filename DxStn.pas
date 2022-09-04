@@ -130,8 +130,6 @@ begin
 end;
 
 
-
-
 procedure TDxStation.ProcessEvent(AEvent: TStationEvent);
 var
   i: integer;

@@ -6,6 +6,7 @@ interface
 
 uses
   Generics.Defaults, Generics.Collections, {ARRL,}
+  Dialogs,
   SysUtils, Classes, Contnrs{, PerlRegEx, pcre}, LazLoggerBase;
 
 type
@@ -56,7 +57,9 @@ var
   slst, tl: TStringList;
   i: integer;
   rec: TFdCallRec;
+  FileName: String;
 begin
+  DebugLnEnter('LoadFdHistoryFile');
   slst:= TStringList.Create;
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
@@ -65,8 +68,9 @@ begin
   try
     FdCallList:= TObjectList<TFdCallRec>.Create;
 
-    DebugLn('Calling slst.LoadFromFile(''%s'')', [ParamStr(1) + 'FD_2021-008.txt']);
-    slst.LoadFromFile(ParamStr(1) + 'FD_2021-008.txt');
+    FileName := ExtractFilePath(ParamStr(0)) + 'FD_2021-008.txt';
+    DebugLn('Calling slst.LoadFromFile(''%s'')', [FileName]);
+    slst.LoadFromFile(FileName);
 
     for i:= 0 to slst.Count-1 do begin
       tl.DelimitedText := slst.Strings[i];
@@ -94,20 +98,26 @@ begin
     slst.Free;
     tl.Free;
   end;
+  DebugLnExit([]);
 end;
+
 
 constructor TArrlFieldDay.Create;
 begin
+    DebugLnEnter('TArrlFieldDay.Create');
     inherited Create;
     Comparer := TComparer<TFdCallRec>.Construct(TFdCallRec.compareCall);
     LoadFdHistoryFile;
+    DebugLnExit([]);
 end;
+
 
 destructor TArrlFieldDay.Destroy;
 begin
   FreeAndNil(FdCallList);
   inherited;
 end;
+
 
 function TArrlFieldDay.pickStation(): integer;
 begin
@@ -118,7 +128,11 @@ end;
 function TArrlFieldDay.FindCallRec(out fdrec: TFdCallRec; const ACall: string): Boolean;
 var
   rec: TFdCallRec;
+{$ifdef FPC}
   index: int64;
+{$else}
+  index: integer;
+{$endif}
 begin
   rec := TFdCallRec.Create();
   rec.Call := ACall;
@@ -131,6 +145,7 @@ begin
   end;
   Result:= fdrec <> nil;
 end;
+
 
 // return status bar information string from field day call history file.
 // for DX stations, their Entity and Continent is also included.
@@ -169,45 +184,54 @@ begin
     end;
 end;
 
+
 function TArrlFieldDay.getCall(id:integer): string;     // returns station callsign
 begin
   result := FdCallList.Items[id].Call;
 end;
+
 
 function TArrlFieldDay.getExch1(id:integer): string;    // returns station info (e.g. 3A)
 begin
   result := FdCallList.Items[id].StnClass;
 end;
 
+
 function TArrlFieldDay.getExch2(id:integer): string;    // returns section info (e.g. OR)
 begin
   result := FdCallList.Items[id].Section;
 end;
+
 
 function TArrlFieldDay.getClass(id:integer): string;  // returns section (e.g. OR)
 begin
   result := FdCallList.Items[id].StnClass;
 end;
 
+
 function TArrlFieldDay.getSection(id:integer): string;  // returns section (e.g. OR)
 begin
   result := FdCallList.Items[id].Section;
 end;
+
 
 function TArrlFieldDay.getUserText(id:integer): string; // returns optional club name
 begin
   result := FdCallList.Items[id].UserText;
 end;
 
+
 class function TFdCallRec.compareCall(constref left, right: TFdCallRec) : integer;
 begin
   Result := CompareStr(left.Call, right.Call);
 end;
 
+
 function TFdCallRec.GetString: string; // returns 3A OR [club name]
 begin
   Result := Format(' - %s %s %s', [StnClass, Section, UserText]);
 end;
+
 
 end.
 

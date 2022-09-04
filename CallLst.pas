@@ -42,6 +42,7 @@ var
   zone: string;
   FileName: string;
 begin
+  DebugLnEnter('LoadCallList');
   stringlist := TStringList.Create;
   try
     stringlist.Delimiter := ';';
@@ -50,6 +51,8 @@ begin
     Calls.Capacity := 20000;
     Zones.Capacity := 20000;
     FileName := ExtractFilePath(ParamStr(0)) + 'mr_db.txt';
+    DebugLn('reading Calls & Zones from %s', [FileName]);
+
     // Set the name of the file that will be read
     AssignFile(tfIn, FileName);
 
@@ -82,6 +85,7 @@ begin
   finally
     stringlist.Free;
   end;
+  DebugLnExit([]);
 end;
 
 procedure OldLoadCallList;
@@ -167,8 +171,7 @@ begin
   Idx := Random(Calls.Count);
   Result := Calls[Idx] + ';' + Zones[Idx];
 
-  if (Ini.RunMode = rmHst) or
-    (Ini.ContestName = 'arrlfd') then
+  if (Ini.RunMode = rmHst) then
   begin
     Calls.Delete(Idx);
     Zones.Delete(Idx);

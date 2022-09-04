@@ -7,7 +7,7 @@ unit Contest;
 
 {$MODE Delphi}
 
-{$define DEBUG_AUDIO_DETAIL enables additional logging}
+//{$define DEBUG_AUDIO_DETAIL enables additional logging}
 
 interface
 
