@@ -1358,6 +1358,11 @@ Ini.ActiveContest := @ContestDefinitions[AContestNum];
 }
   WipeBoxes;
 
+  // clear any status messages
+  sbar.Caption := '';
+  sbar.Font.Color := clDefault;
+  //sbar.Visible := mnuShowCallsignInfo.Checked;
+
   // update Exchange field labels and length settings (e.g. RST, Nr.)
   // note: this case statement will be replaced by table-driven lookup.
   case SimContest of
@@ -1414,6 +1419,23 @@ begin
       sl.AddStrings(['', '']);
     if sl.Count = 1 then
       sl.AddStrings(['']);
+
+    // validate exchange string
+    if not ValidateExchField(Field1Def, sl[0]) or
+       not ValidateExchField(Field2Def, sl[1]) then
+      begin
+        sbar.Caption := Format('Invalid exchange: ''%s''', [AExchange]);
+
+        sbar.Align:= alBottom;
+        sbar.Visible:= true;
+        sbar.Font.Color := clRed;
+      end
+    else
+      begin
+        //sbar.Visible := mnuShowCallsignInfo.Checked;
+        sbar.Font.Color := clDefault;
+        sbar.Caption := '';
+      end;
 
     // set contest-specific exchange values
     SetMyExch1(ActiveContestExchType1, sl[0]);
