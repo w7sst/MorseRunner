@@ -61,11 +61,11 @@ This prototype was shared with a few individuals in early June.
 
 ***Now - Summer 2022 (July-Sept)***
 Projects we are currently working on...
-- [ ] **Develop Community Guidelines** - Discuss and adopt community guidelines
+- [x] **Develop Community Guidelines** - Discuss and adopt community guidelines
 for contributing to this project, including roles, code of conduct, best practices, guidelines,
 expectations, adherence to standards, etc.
 
-- [ ] **Launch Community Repository** - Create a single repository containing
+- [x] **Launch Community Repository** - Create a single repository containing
 most major development projects/branches by various MR authors.
 Over time portions these projects, including individual features and bug fixes,
 can be independently extracted and merged into a common development branch.
@@ -79,16 +79,18 @@ personal knowledge they may have with this project.
 setups on individual computers and git setups. Document recommended setup for future work.
 Document this issue so other developers can understand avoid this issue.
 
+- [ ] **N1MM Integration Design Discussions** - Work with Steve, N2IC, to discuss extensions to N1MM-to-MorseRunner protocol to support additional contests (e.g. Arrl Field Day). This is a feasibility study only and will not be released until early spring 2023.
+
 - [ ] **Release FD prototype (v1.80)** - Release the FD prototype to allow others to see the
-general direction of the project and solicit early feedback. Release expected mid-Sept 2022.
+general direction of the project and solicit early feedback. Release expected late September 2022.
+
+***Next - Fall 2022 (Oct-Dec)***
+Projects we will work on next...
 
 - [ ] **Solicit early feedback** - Invite users to try the FD prototype and provide
 early feedback. Discussions can occur within github regarding this prototype and
 future directions.
 Ask users to suggest which contests should be added next.
-
-***Next - Fall 2022 (Oct-Dec)***
-Projects we will work on next...
 
 - [ ] **Foster Community Growth** - We are looking for ways to grow this community.
 To achieve this, we want to adequately document this project by improving
@@ -106,12 +108,12 @@ Implement one or two more popular contests.
 Consider adding ARRL Sweepstakes; however this one might be a little harder since
 it has a complex exchange.
 
-- [ ] **Merge selected features and bug fixes** - Identify and integrate features from
-[other MR branches](#morse-runner-release-history) into the main release branch.
-
 ***Later - 1st Half 2023 (Jan-June)***
 
 Projects that we'll work on later...
+- [ ] **Merge selected features and bug fixes** - Identify and integrate features from
+[other MR branches](#morse-runner-release-history) into the main release branch.
+
 - [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
 This team will develop and test an individual contest before it is released for general use.
 Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in either an advocate or developer role for this contest. As a point of reference, adding the NAQP contest to the FD prototype codebase was completed in one afternoon.
