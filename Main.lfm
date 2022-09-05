@@ -789,8 +789,10 @@ object MainForm: TMainForm
     Left = 656
     Height = 21
     Top = 135
-    Width = 24
-    OnChange = Edit5Change
+    Width = 100
+    CharCase = ecUppercase
+    OnExit = ExchangeEditExit
+    TabStop = False
     TabOrder = 4
     Text = '8'
   end
