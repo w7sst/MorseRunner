@@ -239,7 +239,6 @@ object MainForm: TMainForm
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       MaxLength = 4
-      OnEnter = Edit3Enter
       OnKeyPress = Edit3KeyPress
       ParentFont = False
       TabOrder = 2
