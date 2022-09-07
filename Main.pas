@@ -1,4 +1,4 @@
-                                                                                                         //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //This Source Code Form is subject to the terms of the Mozilla Public
 //License, v. 2.0. If a copy of the MPL was not distributed with this
 //file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -588,8 +588,8 @@ begin
                 end;
               WM_PITCHSET:
                 begin
-                    Sidetone := (StrToInt(str) div 50) - 6;
-                    MainForm.SetPitch(Sidetone);
+                    Pitch := (StrToInt(str) div 50) - 6;
+                    MainForm.SetPitch(Pitch);
                     exit;
                 end;
            end;
