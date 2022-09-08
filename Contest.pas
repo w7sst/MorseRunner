@@ -209,6 +209,7 @@ begin
               //Log.LastQsoToScreen;
               Log.CheckErr;
               Log.ScoreTableUpdateCheck;
+              { TODO -omikeb -cfeature : Clean up status bar code. }
               if Ini.RunMode = RmHst then
                 Log.UpdateStatsHst
               else
@@ -286,7 +287,7 @@ var
   z: integer;
 begin
   //the stations heard my CQ and want to call
-  if (not (RunMode in [rmSingle, RmHst])) then
+  if (not (RunMode in [rmSingle, {rmFieldDay,???} RmHst])) then
     if (msgCQ in Me.Msg) or
        ((QsoList <> nil) and (msgTU in Me.Msg) and (msgMyCall in Me.Msg))then
        begin

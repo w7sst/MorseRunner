@@ -16,7 +16,7 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles, Idhttp, ARRL, CWOPS, System.ImageList;
+  WavFile, IniFiles, Idhttp, ARRL, ARRLFD, CWOPS, System.ImageList;
 
 const
   WM_TBDOWN = WM_USER+1;
@@ -438,6 +438,7 @@ begin
 
   // Adding a contest: load call history file (be sure to delete it below).
   ARRLDX:= TARRL.Create;
+  gARRLFD := TArrlFieldDay.Create;
   CWOPSCWT := TCWOPS.Create;
 
   Histo:= THisto.Create(PaintBox1);
@@ -457,7 +458,9 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   ToIni;
   ARRLDX.Free;
+  gARRLFD.Free;
   CWOPSCWT.Free;
+  Histo.Free;
   Tst.Free;
   DestroyKeyer;
 end;
@@ -530,6 +533,12 @@ begin
         if not CharInSet(Key, ['A'..'Z','a'..'z', #8]) then
           Key := #0;
       end;
+    etFdClass:
+      begin
+        // valid Station Classification characters, [1-9][0-9]+[A-F]|DX
+        if not CharInSet(Key, ['0'..'9','A'..'F','a'..'f','X','x',#8]) then
+          Key := #0;
+      end;
     else
       assert(false, Format('invalid exchange field 1 type: %s',
         [ToStr(ExchangeField1Type)]));
@@ -560,6 +569,12 @@ begin
         end;
         // valid Power characters, including KW...
         if not CharInSet(Key, ['0'..'9', 'K', 'k', 'W', 'w', #8]) then
+          Key := #0;
+      end;
+    etArrlSection:
+      begin
+        // valid Section characters (e.g. OR or STX)
+        if not CharInSet(Key, ['A'..'Z', 'a'..'z', #8]) then
           Key := #0;
       end;
     else
@@ -724,7 +739,11 @@ begin
   else {otherwise, space bar moves cursor to next field}
     begin
       if ActiveControl = Edit1 then
-        ActiveControl := Edit2
+        begin
+          if SimContest = scFieldDay then
+            UpdateSbar(Edit1.Text);
+          ActiveControl := Edit2;
+        end
       else if ActiveControl = Edit2 then
         ActiveControl := Edit3
       else
@@ -749,6 +768,10 @@ begin
     Log.SaveQso;
     Exit;
   end;
+
+  // for certain contests (e.g. ARRL Field Day), update update status bar
+  if SimContest in [scFieldDay] then
+    UpdateSbar(Edit1.Text);
 
   //no QSO in progress, send CQ
   if Edit1.Text = '' then
@@ -825,7 +848,7 @@ end;
 procedure TMainForm.SetContest(AContestNum: TSimContest);
 begin
   // validate selected contest
-  if not (AContestNum in [scWpx, scCwt, scHst]) then
+  if not (AContestNum in [scWpx, scCwt, scFieldDay, scHst]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex:= Ord(Ini.SimContest);
@@ -998,6 +1021,14 @@ begin
         Tst.Me.OpName := Avalue;
         if BDebugExchSettings then Edit2.Text := Avalue; // testing only
       end;
+    etFdClass:  // e.g. scFieldDay (3A)
+      begin
+        // 'expecting FD class (3A)'
+        Ini.ArrlClass := Avalue;
+        Ini.UserExchange1[SimContest] := Avalue;
+        Tst.Me.Exch1 := Avalue;
+        if BDebugExchSettings then Edit2.Text := Avalue; // testing only
+      end;
     else
       assert(false, Format('Unsupported exchange 1 type: %s.', [ToStr(AExchType)]));
   end;
@@ -1035,7 +1066,14 @@ begin
           Tst.Me.CWOPSNR := 0;
         if BDebugExchSettings then Edit3.Text := Avalue; // testing only
       end;
-    //etArrlSection:  // e.g. Field Day (OR)
+    etArrlSection:  // e.g. Field Day (OR)
+      begin
+        // 'expecting FD section (e.g. OR)'
+        Ini.ArrlSection := Avalue;
+        Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
     //etStateProv:
     //etCqZone:
     //etItuZone:
@@ -1250,7 +1288,6 @@ procedure TMainForm.Run(Value: TRunMode);
 const
   Mode: array[TRunMode] of string =
     ('', 'Pile-Up', 'Single Calls', 'COMPETITION', 'H S T');
-
 var
   BCompet, BStop: boolean;
   //S: string;

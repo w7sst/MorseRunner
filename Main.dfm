@@ -896,6 +896,7 @@ object MainForm: TMainForm
         Items.Strings = (
           'CQ WPX'
           'CWOPS CWT'
+          'ARRL Field Day'
           'HST (High Speed Test)')
       end
       object ExchangeEdit: TEdit

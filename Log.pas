@@ -9,7 +9,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Graphics, RndFunc, Math, Controls,
-  StdCtrls, ExtCtrls, ARRL, PerlRegEx, pcre;
+  StdCtrls, ExtCtrls, ARRL, ARRLFD, PerlRegEx, pcre;
 
 
 procedure SaveQso;
@@ -144,9 +144,12 @@ var
   s: string;
 begin
   // Adding a contest: UpdateSbar - update status bar with station info (e.g. FD shows UserText)
-  s:= ARRLDX.Search(ACallsign);
-  if (length(s) = 0) then
-    MainForm.sbar.Caption:= 'Unknown';
+  case Ini.SimContest of
+  scFieldDay:
+    s := gArrlFd.GetStationInfo(ACallsign);
+  else
+    s := ARRLDX.Search(ACallsign);
+  end;
 
   // '&' are suppressed in this control; replace with '&&'
   s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
@@ -178,6 +181,8 @@ begin
     case Ini.SimContest of
       scCwt:
         ScoreTableSetTitle('UTC', 'Call', 'Name', 'NR', 'Pref', 'Chk', 'Wpm');
+      scFieldDay:
+        ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
       else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
     end;
@@ -399,6 +404,7 @@ var
     case ActiveContest.ExchType1 of
       etRST:     Result := Length(text) = 3;
       etOpName:  Result := Length(text) > 1;
+      etFdClass: Result := Length(text) > 1;
       else
         assert(false, 'missing case');
     end;
@@ -411,6 +417,7 @@ var
     case ActiveContest.ExchType2 of
       etSerialNr:    Result := Length(text) > 0;
       etCwopsNumber: Result := Length(text) > 0;
+      etArrlSection: Result := Length(text) > 1;
       //etStateProv:
       //etCqZone:
       //etItuZone:
@@ -445,6 +452,7 @@ begin
     case ActiveContest.ExchType1 of
       etRST:     Qso.Rst := StrToInt(Edit2.Text);
       etOpName:  Qso.Exch1 := Edit2.Text;
+      etFdClass: Qso.Exch1 := Edit2.Text;
       else
         assert(false, 'missing case');
     end;
@@ -453,6 +461,7 @@ begin
     case ActiveContest.ExchType2 of
       etSerialNr:    Qso.Nr := StrToInt(Edit3.Text);
       etCwopsNumber: Qso.Nr := StrToInt(Edit3.Text);
+      etArrlSection: Qso.Exch2 := Edit3.Text;
       //etStateProv:
       //etCqZone:
       //etItuZone:
@@ -526,6 +535,11 @@ begin
         , Exch1
         , format('%.d', [Nr])
         , Pfx, Err, format('%.2d', [TrueWpm]));
+    scFieldDay:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , Exch1
+        , Exch2
+        , Pfx, Err, format('%.2d', [TrueWpm]));
     scWpx, scHst:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d %.4d', [Rst, Nr])
@@ -550,6 +564,7 @@ begin
       case ActiveContest.ExchType1 of
         etRST:     if TrueRst <> Rst then Err := 'RST';
         etOpName:  if TrueExch1 <> Exch1 then Err := 'NAME';
+        etFdClass: if TrueExch1 <> Exch1 then Err := 'CL ';
         else
           assert(false, 'missing exchange 1 case');
       end;
@@ -557,6 +572,7 @@ begin
       case ActiveContest.ExchType2 of
         etSerialNr:    if TrueNr <> NR then Err := 'NR ';
         etCwopsNumber: if TrueNr <> NR then Err := 'NR ';
+        etArrlSection: if TrueExch2 <> Exch2 then Err := 'SEC';
         //etStateProv:
         //etCqZone:
         //etItuZone:

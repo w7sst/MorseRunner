@@ -153,6 +153,7 @@
         <DCCReference Include="PerlRegEx\pcre.pas"/>
         <DCCReference Include="PerlRegEx\PerlRegEx.pas"/>
         <DCCReference Include="ARRL.pas"/>
+        <DCCReference Include="ArrlFd.pas"/>
         <DCCReference Include="CWOPS.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

@@ -63,6 +63,8 @@ begin
   // (try to use the generalized Exch1 and Exch2 fields for new contests.)
   OpName := HamName;
   CWOPSNR := strtoint(CWOPSNum);
+  Exch1 := '3A';
+  Exch2 := 'OR';
 end;
 
 

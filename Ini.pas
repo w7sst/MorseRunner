@@ -22,7 +22,7 @@ const
 
   DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
-  TSimContest = (scWpx, scCwt, scHst);
+  TSimContest = (scWpx, scCwt, scFieldDay, scHst);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
   // Exchange Field #1 types
@@ -79,6 +79,16 @@ const
      // expecting two strings [Name,Number] (e.g. David 123)
      // Contest Exchange: <Name> <CW Ops Num>
 
+    (Name: 'ARRL Field Day';
+     Key: 'ArrlFd';
+     ExchType1: etFdClass;
+     ExchType2: etArrlSection;
+     ExchFieldEditable: True;
+     ExchDefault: '3A OR';
+     Msg: '''<class> <section>'' (e.g. 3A OR)';
+     T:scFieldDay),
+     // expecting two strings [Class,Section] (e.g. 3A OR)
+
     (Name: 'HST (High Speed Test)';
      Key: 'HST';
      ExchType1: etRST;
@@ -94,6 +104,8 @@ var
   Call: string = 'VE3NEA';
   HamName: string = 'Alex';
   CWOPSNum: string = '1';
+  ArrlClass: string = '3A';
+  ArrlSection: string = 'OR';
   Wpm: integer = 30;
   MaxRxWpm: integer = 0;
   MinRxWpm: integer = 0;
@@ -143,7 +155,6 @@ uses
 procedure FromIni;
 var
   V: integer;
-  x1: string;
 begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
@@ -158,7 +169,11 @@ begin
       UserExchangeTbl[scWpx] := ReadString(SEC_STN, 'CqWpxExchange', '5NN #');
       UserExchangeTbl[scCwt] := ReadString(SEC_STN, 'CwtExchange',
         Format('%s 1234', [HamName]));
+      UserExchangeTbl[scFieldDay] := ReadString(SEC_STN, 'ArrlFdExchange', '3A OR');
       UserExchangeTbl[scHst] := ReadString(SEC_STN, 'HSTExchange', '5NN #');
+
+      ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
+      ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'OR');
 
       MainForm.SetMyCall(ReadString(SEC_STN, 'Call', Call));
       MainForm.SetPitch(ReadInteger(SEC_STN, 'Pitch', 3));
@@ -230,7 +245,11 @@ begin
       WriteInteger(SEC_TST, 'SimContest', Ord(SimContest));
       WriteString(SEC_STN, 'CqWpxExchange', UserExchangeTbl[scWpx]);
       WriteString(SEC_STN, 'CwtExchange', UserExchangeTbl[scCwt]);
+      WriteString(SEC_STN, 'ArrlFdExchange', UserExchangeTbl[scFieldDay]);
       WriteString(SEC_STN, 'HSTExchange', UserExchangeTbl[scHst]);
+
+      WriteString(SEC_STN, 'ArrlClass', ArrlClass);
+      WriteString(SEC_STN, 'ArrlSection', ArrlSection);
 
       WriteString(SEC_STN, 'Call', Call);
       WriteInteger(SEC_STN, 'Pitch', MainForm.ComboBox1.ItemIndex);

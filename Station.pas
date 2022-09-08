@@ -49,6 +49,9 @@ type
     MyCall, HisCall: string;
     OpName: string;
     CWOPSNR: integer;
+    Exch1: string;  // Exchange field 1 (e.g. class, name, etc.)
+    Exch2: string;  // Exchange field 2 (e.g. zone, state/prov, section, grid, etc.)
+    UserText: string; // club name or description (from fdHistory file)
 
     Msg: TStationMessages;
     MsgText: string;
@@ -59,7 +62,7 @@ type
     function GetBlock: TSingleArray; virtual;
     procedure ProcessEvent(AEvent: TStationEvent); virtual; abstract;
 
-    procedure SendMsg(AMsg: TStationMessage);
+    procedure SendMsg(AMsg: TStationMessage); virtual;
     procedure SendText(AMsg: string); virtual;
     procedure SendMorse(AMorse: string);
 
@@ -105,6 +108,7 @@ begin
       // Adding a contest: TStation.SendMsg(msgCQ): send CQ message (e.g. CQ FD <my>)
       case SimContest of
         scCwt: SendText('CQ CWT <my>');
+        scFieldDay: SendText('CQ FD <my>');
         else SendText('CQ <my> TEST');
       end;
     end;
@@ -137,7 +141,14 @@ begin
     msgDeMyCallNr2: SendText('DE <my> <my> <#>');
     msgMyCallNr2: SendText('<my> <my> <#>');
     msgNrQm: SendText('NR?');
-    msgLongCQ: SendText('CQ CQ TEST <my> <my> TEST');
+    msgLongCQ:
+      begin
+        case SimContest of
+          scFieldDay: SendText('CQ CQ FD <my> <my>')
+        else
+          SendText('CQ CQ TEST <my> <my> TEST');
+        end;
+      end;
     msgQrl: SendText('QRL?');
     msgQrl2: SendText('QRL?   QRL?');
     msqQsy: SendText('<his>  QSY QSY');
@@ -223,10 +234,12 @@ function TStation.NrAsText: string;
 var
   Idx: integer;
 begin
-  // Adding a contest: TStation.NrAsText(), usually returns '<exch1> <exch2>'. Inject LID errors.
+  // Adding a contest: TStation.NrAsText(), converts <#> to exchange (usually '<exch1> <exch2>'). Inject LID errors.
   case SimContest of
     scCwt:
       Result := Format('%s  %.d', [OpName, NR]);
+    scFieldDay:
+      Result := Format('%s %s', [Exch1, Exch2]);
     else
       Result := Format('%d%.3d', [RST, NR]);
   end;
