@@ -188,6 +188,8 @@ begin
         ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
       scNaQp:
         ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Chk', 'Wpm');
+      scCQWW:
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
       else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
     end;
@@ -425,7 +427,7 @@ var
       etCwopsNumber: Result := Length(text) > 0;
       etArrlSection: Result := Length(text) > 1;
       etStateProv:   Result := Length(text) > 1;
-      //etCqZone:
+      etCqZone:      Result := Length(text) > 0;
       //etItuZone:
       //etAge:
       //etPower:
@@ -470,7 +472,7 @@ begin
       etCwopsNumber: Qso.Nr := StrToInt(Edit3.Text);
       etArrlSection: Qso.Exch2 := Edit3.Text;
       etStateProv:   Qso.Exch2 := Edit3.Text;
-      //etCqZone:
+      etCqZone:      Qso.NR := StrToInt(Edit3.Text);
       //etItuZone:
       //etAge:
       //etPower:
@@ -557,6 +559,11 @@ begin
         , format('%.3d %.4d', [Rst, Nr])
         , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
         , Pfx, Err, format('%.3d', [TrueWpm]));
+    scCQWW:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d %4d', [Rst, NR])
+        , format('%.3d %4d', [Tst.Me.Rst, Tst.Me.NR])
+        , Pfx, Err, format('%.3d', [TrueWpm]));
     else
       assert(false, 'missing case');
     end;
@@ -586,9 +593,9 @@ begin
       case ActiveContest.ExchType2 of
         etSerialNr:    if TrueNr <> NR then Err := 'NR ';
         etCwopsNumber: if TrueNr <> NR then Err := 'NR ';
+        etCqZone:      if TrueNr <> NR then Err := 'ZN ';
         etArrlSection: if TrueExch2 <> Exch2 then Err := 'SEC';
         etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';
-        //etCqZone:
         //etItuZone:
         //etAge:
         //etPower:

@@ -9,6 +9,7 @@ interface
 
 uses
   SysUtils, Classes, Station, RndFunc, Dialogs, Ini, ARRLFD, NAQP, CWOPS,
+  CQWW,
   CallLst, Qsb, DxOper, Log, SndTypes;
 
 type
@@ -54,6 +55,10 @@ begin
        Operid := gNAQP.pickStation();
        MyCall := gNAQP.getCall(Operid);
     end;
+    scCQWW: begin
+       Operid := gCQWW.pickStation();
+       MyCall := gCQWW.getCall(Operid);
+    end
     else
        MyCall := PickCall;     // Pick one Callsign from Calllist
   end;
@@ -83,6 +88,10 @@ begin
       Exch2 := gNAQP.getExch2(Operid);
       UserText := gNAQP.getUserText(Operid);
     end;
+    scCQWW: begin
+      Exch2 := gCQWW.getExch2(Operid);
+      NR := StrToInt(gCQWW.getExch2(Operid));
+    end
     else
       NR := Oper.GetNR;
   end;
@@ -207,7 +216,7 @@ begin
     TrueNR := Self.NR;
     // Adding a contest: copy DxStation's Exch1 qso information into log
     case ActiveContest.ExchType1 of
-      etRST: TrueExch1 := IntToStr(Self.NR);
+      etRST: TrueExch1 := IntToStr(Self.RST);
       etOpName: TrueExch1 := Self.OpName;
       etFdClass: TrueExch1 := Self.Exch1;
       else
@@ -217,6 +226,7 @@ begin
     case ActiveContest.ExchType2 of
       etSerialNr: TrueExch2 := IntToStr(Self.NR);
       etCwopsNumber: TrueExch2 := IntToStr(Self.NR);
+      etCqZone: TrueExch2 := IntToStr(Self.NR);
       etArrlSection: TrueExch2 := Self.Exch2;
       etStateProv: TrueExch2 := Self.Exch2;
       else
