@@ -45,6 +45,8 @@ var
   Qsb: boolean = true;
   Flutter: boolean = true;
   Lids: boolean = true;
+  NoActivityCnt: integer=0;
+  NoStopActivity: integer=0;
 
   Duration: integer = 30;
   RunMode: TRunMode = rmStop;

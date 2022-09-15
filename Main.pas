@@ -424,7 +424,20 @@ begin
 }
     #23: //^W  = Wipe
       WipeBoxes;
+    #21: //^U  pileup continuo se 1
+      begin
+        if NoStopActivity = 0 then
+          begin
+            Label8.Caption := 'min';
+            NoStopActivity := 1
+          end
+        else
+        begin
+            NoStopActivity := 0;
+            Label8.Caption := 'min.';
+        end;
 
+      end;
     #25: //^Y  = Edit
       ;
 
