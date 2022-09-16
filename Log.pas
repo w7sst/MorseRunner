@@ -20,8 +20,8 @@ procedure UpdateStatsHst;
 procedure CheckErr;
 //procedure PaintHisto;
 procedure ShowRate;
-procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6 :string);
-procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6 :string);
+procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
+procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
 procedure ScoreTableUpdateCheck;
 function FormatScore(const AScore: integer):string;
 procedure UpdateSbar(const ACallsign: string);
@@ -35,6 +35,8 @@ type
     Call, TrueCall, RawCallsign: string;
     Rst, TrueRst: integer;
     Nr, TrueNr: integer;
+    OpName, TrueOpName: string;
+    TrueWpm: integer;
     Pfx: string;
     Dupe: boolean;
     Err: string;
@@ -108,7 +110,7 @@ begin
   FormatScore:= format('%6d', [AScore]);
 end;
 
-procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6 :string);
+procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
 begin
   MainForm.ListView2.Column[0].Caption:= ACol1;
   MainForm.ListView2.Column[1].Caption:= ACol2;
@@ -116,9 +118,10 @@ begin
   MainForm.ListView2.Column[3].Caption:= ACol4;
   MainForm.ListView2.Column[4].Caption:= ACol5;
   MainForm.ListView2.Column[5].Caption:= ACol6;
+  MainForm.ListView2.Column[6].Caption:= ACol7;
 end;
 
-procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6 :string);
+procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
 begin
   with MainForm.ListView2.Items.Add do begin
     Caption:= ACol1;
@@ -127,6 +130,7 @@ begin
     SubItems.Add(ACol4);
     SubItems.Add(ACol5);
     SubItems.Add(ACol6);
+    SubItems.Add(ACol7);
     Selected:= True;
   end;
   //UpdateSbar(MainForm.ListView2.Items.Count);
@@ -162,9 +166,12 @@ begin
   MainForm.RichEdit1.Lines.Clear;
   MainForm.RichEdit1.DefAttributes.Name:= 'Consolas';
   if Ini.RunMode = rmHst then
-    ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk')
+    ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
   else
-    ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk');
+    if Ini.RunMode = rmCwt then
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'NR', 'Pref', 'Chk', 'Wpm')
+    else
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
 
   if Ini.RunMode = rmHst then
     Empty := ''
@@ -376,9 +383,17 @@ var
   Qso: PQso;
 begin
   with MainForm do begin
-    if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) <> 3) or (Edit3.Text = '') then begin
-      Beep;
-      Exit;
+    if RunMode = rmCwt  then begin
+       if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) < 2) or (Edit3.Text = '') then begin
+           Beep;
+           Exit;
+       end;
+    end
+    else begin
+       if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) <> 3) or (Edit3.Text = '') then begin
+           Beep;
+           Exit;
+       end;
     end;
 
     //add new entry to log
@@ -388,7 +403,14 @@ begin
     //save data
     Qso.T := BlocksToSeconds(Tst.BlockNumber) /  86400;
     Qso.Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
-    Qso.Rst := StrToInt(Edit2.Text);
+    if RunMode = rmCwt  then begin
+       Qso.OpName := Edit2.Text;
+       Qso.Rst := 599;
+    end
+    else  begin
+       Qso.Rst := StrToInt(Edit2.Text);
+    end;
+
     Qso.Nr := StrToInt(Edit3.Text);
     Qso.RawCallsign:= ExtractCallsign(Qso.Call);
     Qso.Pfx := ExtractPrefix(Qso.RawCallsign);
@@ -403,6 +425,14 @@ begin
       with QsoList[i] do
         if (Call = Qso.Call) and (Err = '   ') then
           Qso.Dupe := true;
+    //what's in the DX's log?
+    for i:=Tst.Stations.Count-1 downto 0 do
+      if Tst.Stations[i] is TDxStation then
+        with Tst.Stations[i] as TDxStation do
+          if (MyCall = Qso.Call) then begin
+            Qso.TrueWpm := Wpm;
+            Break;
+          end; //deletes the dx station!
 
     //what's in the DX's log?
     for i:=Tst.Stations.Count-1 downto 0 do
@@ -424,18 +454,26 @@ begin
 
   //wipe
   MainForm.WipeBoxes;
+
   //inc NR
-  Inc(Tst.Me.NR);
+   if Ini.RunMode <> rmCwt then
+      Inc(Tst.Me.NR);
 end;
 
 
 procedure LastQsoToScreen;
 begin
   with QsoList[High(QsoList)] do begin
+  if Ini.RunMode = rmCwt then
+    ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+      , OpName
+      , format('%.d', [Nr])
+      , Pfx, Err,format('%.2d', [TrueWpm]))
+  else
     ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
       , format('%.3d %.4d', [Rst, Nr])
       , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
-      , Pfx, Err);
+      , Pfx, Err, format('%.3d', [TrueWpm]));
   end;
 end;
 
@@ -443,20 +481,36 @@ end;
 procedure CheckErr;
 begin
   with QsoList[High(QsoList)] do begin
-    if TrueCall = '' then
-      Err := 'NIL'
-    else
-      if Dupe then
-        Err := 'DUP'
+    if RunMode <> rmCwt then begin
+      if TrueCall = '' then
+        Err := 'NIL'
       else
-        if TrueRst <> Rst then
-          Err := 'RST'
+        if Dupe then
+          Err := 'DUP'
         else
-          if TrueNr <> NR then
-            Err := 'NR '
+          if TrueRst <> Rst then
+            Err := 'RST'
           else
-            Err := '   ';
+            if TrueNr <> NR then
+              Err := 'NR '
+            else
+              Err := '   ';
+    end else begin
+      if TrueCall = '' then
+        Err := 'NIL'
+      else
+        if Dupe then
+          Err := 'DUP'
+        else
+          if TrueOpName <> OpName then
+            Err := 'NAME'
+          else
+            if TrueNr <> NR then
+              Err := 'NR '
+            else
+              Err := '   ';
     end;
+  end;
 end;
 
 {

@@ -12,11 +12,11 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles, Idhttp, ARRL;
+  WavFile, IniFiles, Idhttp, ARRL, CWOPS , System.ImageList;
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.71';
+  sVersion: String = '1.71a';
 
 type
   TMainForm = class(TForm)
@@ -70,14 +70,14 @@ type
     PileupMNU: TMenuItem;
     SingleCallsMNU: TMenuItem;
     CompetitionMNU: TMenuItem;
-    N3: TMenuItem;
+    CWTCompetition1: TMenuItem;
     StopMNU: TMenuItem;
     ImageList1: TImageList;
     Run1: TMenuItem;
     PileUp1: TMenuItem;
     SingleCalls1: TMenuItem;
     Competition1: TMenuItem;
-    N4: TMenuItem;
+    CWTCompetition3: TMenuItem;
     Stop1MNU: TMenuItem;
     ViewScoreBoardMNU: TMenuItem;
     ViewScoreTable1: TMenuItem;
@@ -200,6 +200,28 @@ type
     sbar: TPanel;
     N5: TMenuItem;
     mnuShowCallsignInfo: TMenuItem;
+    NRDigits1: TMenuItem;
+    NRDigitsSet1: TMenuItem;
+    NRDigitsSet2: TMenuItem;
+    NRDigitsSet3: TMenuItem;
+    NRDigitsSet4: TMenuItem;
+    CWMaxRxSpeed1: TMenuItem;
+    CWMinRxSpeed1: TMenuItem;
+    CWMinRxSpeedSet1: TMenuItem;
+    CWMinRxSpeedSet2: TMenuItem;
+    CWMinRxSpeedSet4: TMenuItem;
+    CWMinRxSpeedSet6: TMenuItem;
+    CWMinRxSpeedSet8: TMenuItem;
+    CWMinRxSpeedSet10: TMenuItem;
+    CWMinRxSpeedSet0: TMenuItem;
+    CWMaxRxSpeedSet0: TMenuItem;
+    CWMaxRxSpeedSet1: TMenuItem;
+    CWMaxRxSpeedSet2: TMenuItem;
+    CWMaxRxSpeedSet4: TMenuItem;
+    CWMaxRxSpeedSet6: TMenuItem;
+    CWMaxRxSpeedSet8: TMenuItem;
+    CWMaxRxSpeedSet10: TMenuItem;
+    NRQM: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -209,6 +231,8 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure Edit1Enter(Sender: TObject);
     procedure SendClick(Sender: TObject);
     procedure Edit4Change(Sender: TObject);
@@ -250,9 +274,13 @@ type
     procedure SelfMonClick(Sender: TObject);
     procedure Settings1Click(Sender: TObject);
     procedure LIDS1Click(Sender: TObject);
+    procedure CWMaxRxSpeedClick(Sender: TObject);
+    procedure CWMinRxSpeedClick(Sender: TObject);
+    procedure NRDigitsClick(Sender: TObject);
     procedure Activity1Click(Sender: TObject);
     procedure Duration1Click(Sender: TObject);
     procedure Operator1Click(Sender: TObject);
+    procedure CWOPSNumberClick(Sender: TObject);
     procedure StopMNUClick(Sender: TObject);
     procedure ListView2CustomDrawSubItem(Sender: TCustomListView;
       Item: TListItem; SubItem: Integer; State: TCustomDrawState;
@@ -286,6 +314,9 @@ type
     procedure SetBw(BwNo: integer);
     procedure ReadCheckboxes;
     procedure PostHiScore(const sScore: string);
+    procedure UpdNRDigits(nrd: integer);
+    procedure UpdCWMinRxSpeed(minspd: integer);
+    procedure UpdCWMaxRxSpeed(Maxspd: integer);
     procedure ClientHTTP1Redirect(Sender: TObject; var dest: string;
       var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
 
@@ -319,6 +350,7 @@ begin
   LoadCallList;
 
   ARRLDX:= TARRL.Create;
+  CWOPSCWT := TCWOPS.Create;
 
   Histo:= THisto.Create(PaintBox1);
 
@@ -328,13 +360,14 @@ begin
   MakeKeyer;
   Keyer.Rate := DEFAULTRATE;
   Keyer.BufSize := Ini.BufSize;
+
+
 end;
-
-
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   ToIni;
   ARRLDX.Free;
+  CWOPSCWT.Free;
   Tst.Free;
   DestroyKeyer;
 end;
@@ -387,8 +420,14 @@ end;
 
 procedure TMainForm.Edit2KeyPress(Sender: TObject; var Key: Char);
 begin
-  if not CharInSet(Key, ['0'..'9', #8]) then
-    Key := #0;
+   if RunMode <> rmCwt then begin
+      if not CharInSet(Key, ['0'..'9', #8]) then
+         Key := #0;
+   end
+   else begin
+      if not CharInSet(Key, ['A'..'Z','a'..'z', #8]) then
+       Key := #0;
+   end;
 end;
 
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
@@ -407,7 +446,20 @@ begin
 }
     #23: //^W  = Wipe
       WipeBoxes;
+    #21: //^U  pileup continuo se 1
+      begin
+        if NoStopActivity = 0 then
+          begin
+            Label8.Caption := 'min';
+            NoStopActivity := 1
+          end
+        else
+        begin
+            NoStopActivity := 0;
+            Label8.Caption := 'min.';
+        end;
 
+      end;
     #25: //^Y  = Edit
       ;
 
@@ -514,28 +566,46 @@ end;
 procedure TMainForm.ProcessSpace;
 begin
   MustAdvance := false;
-
-  if ActiveControl = Edit1 then
-  begin
-    if Edit2.Text = '' then
-      Edit2.Text := '599';
-    ActiveControl := Edit3;
-  end
-  else
-    if ActiveControl = Edit2 then
+  if RunMode <> rmCwt then begin
+    if ActiveControl = Edit1 then
     begin
       if Edit2.Text = '' then
         Edit2.Text := '599';
       ActiveControl := Edit3;
     end
     else
-      ActiveControl := Edit1;
+      if ActiveControl = Edit2 then
+      begin
+        if Edit2.Text = '' then
+          Edit2.Text := '599';
+        ActiveControl := Edit3;
+      end
+      else
+        ActiveControl := Edit1;
+  end else begin
+   if ActiveControl = Edit1 then
+    begin
+      if Edit2.Text = '' then
+      ActiveControl := Edit2;
+    end
+    else
+      if ActiveControl = Edit2 then
+      begin
+        if Edit2.Text = '' then
+          ActiveControl := Edit2
+        else
+          ActiveControl := Edit3;
+      end
+  //    else
+  //      ActiveControl := Edit3;
+
+  end;
 end;
 
 
 procedure TMainForm.ProcessEnter;
 var
-  C, N, R: boolean;
+  C, N, R, Q: boolean;
 begin
   MustAdvance := false;
 
@@ -555,6 +625,7 @@ begin
   //current state
   C := CallSent;
   N := NrSent;
+  Q := Edit2.Text <> '';
   R := Edit3.Text <> '';
 
   //send his call if did not send before, or if call changed
@@ -562,10 +633,10 @@ begin
     SendMsg(msgHisCall);
   if not N then
     SendMsg(msgNR);
-  if N and not R then
+  if N and (not R or not Q) then
     SendMsg(msgQm);
 
-  if R and (C or N) then
+  if R and Q and (C or N) then
   begin
     SendMsg(msgTU);
     Log.SaveQso;
@@ -759,8 +830,10 @@ end;
 
 procedure TMainForm.Edit2Enter(Sender: TObject);
 begin
+if RunMode <> rmCwt then  begin
   if Length(Edit2.Text) = 3 then
     begin Edit2.SelStart := 1; Edit2.SelLength := 1; end;
+  end
 end;
 
 
@@ -777,7 +850,7 @@ end;
 procedure TMainForm.Run(Value: TRunMode);
 const
   Title: array[TRunMode] of string =
-    ('', 'Pile-Up', 'Single Calls', 'COMPETITION', 'H S T');
+    ('', 'Pile-Up', 'Single Calls', 'COMPETITION', 'H S T','CWOPS CWT');
 var
   BCompet, BStop: boolean;
 begin
@@ -818,6 +891,14 @@ begin
     SpinEdit2.Value := CompDuration;
     end;
 
+  Label2.Caption := 'RST';
+  Edit2.MaxLength := 3;
+  // Cwt changes
+  if RunMode = rmCwt then
+    begin
+       Label2.Caption := 'Name';
+       Edit2.MaxLength := 10;
+    end;
   //button menu
   PileupMNU.Enabled := BStop;
   SingleCallsMNU.Enabled := BStop;
@@ -1039,6 +1120,16 @@ begin
 end;
 
 
+procedure TMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+    if WheelDelta>0 then
+        IncRit(2)
+      else
+        IncRit(-2)
+end;
+
+
 procedure TMainForm.Shape2MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -1066,9 +1157,11 @@ end;
 procedure TMainForm.IncRit(dF: integer);
 begin
   case dF of
+   -2: Inc(Ini.Rit, -5);
    -1: Inc(Ini.Rit, -50);
     0: Ini.Rit := 0;
     1: Inc(Ini.Rit, 50);
+    2: Inc(Ini.Rit, 5);
   end;
 
   Ini.Rit := Min(500, Max(-500, Ini.Rit));
@@ -1087,18 +1180,24 @@ procedure TMainForm.Advance;
 begin
   if not MustAdvance then
     Exit;
-
-  if Edit2.Text = '' then
-    Edit2.Text := '599';
-
-  if Pos('?', Edit1.Text) = 0 then
-    ActiveControl := Edit3
-  else
-    if ActiveControl = Edit1 then
-      Edit1Enter(nil)
+  if RunMode <> rmCwt then begin
+    if Edit2.Text = '' then
+      Edit2.Text := '599';
+    if Pos('?', Edit1.Text) = 0 then
+      ActiveControl := Edit3
     else
-      ActiveControl := Edit1;
-
+      if ActiveControl = Edit1 then
+        Edit1Enter(nil)
+      else
+        ActiveControl := Edit1;
+  end else begin
+     if Edit2.Text = '' then
+        ActiveControl := Edit2;
+      if ActiveControl = Edit1 then
+        Edit1Enter(nil)
+      else
+        ActiveControl := Edit1;
+  end;
   MustAdvance := false;
 end;
 
@@ -1263,6 +1362,183 @@ begin
   LIDS1.Checked := Ini.Lids;
 end;
 
+
+procedure TMainForm.CWMaxRxSpeedClick(Sender: TObject);
+Var
+  maxspd:integer;
+begin
+
+  maxspd := (Sender as TMenuItem).Tag;
+
+  UpdCWMaxRxSpeed(maxspd);
+
+  MaxRxWpm := maxspd;
+
+end;
+
+
+procedure TMainForm.UpdCWMaxRxSpeed(Maxspd: integer);
+Var
+  xmax0:Boolean;
+  xmax1:Boolean;
+  xmax2:Boolean;
+  xmax4:Boolean;
+  xmax6:Boolean;
+  xmax8:Boolean;
+  xmax10:Boolean;
+begin
+
+  xmax0 := False;
+  xmax1 := False;
+  xmax2 := False;
+  xmax4 := False;
+  xmax6 := False;
+  xmax8 := False;
+  xmax10 := False;
+
+  if maxspd = 0 then
+       xmax0 := True;
+  if maxspd = 1 then
+       xmax1 := True;
+  if maxspd = 2 then
+       xmax2 := True;
+  if maxspd = 4 then
+       xmax4 := True;
+   if maxspd = 6 then
+       xmax6 := True;
+  if maxspd = 8 then
+       xmax8 := True;
+  if maxspd = 10 then
+       xmax10 := True;
+  CWMaxRxSpeedSet0.checked := xmax0;
+  CWMaxRxSpeedSet1.checked := xmax1;
+  CWMaxRxSpeedSet2.checked := xmax2;
+  CWMaxRxSpeedSet4.checked := xmax4;
+  CWMaxRxSpeedSet6.checked := xmax6;
+  CWMaxRxSpeedSet8.checked := xmax8;
+  CWMaxRxSpeedSet10.checked := xmax10;
+
+  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
+    try
+      WriteString(SEC_STN, 'CWMaxRxSpeed', inttostr(maxspd));
+    finally
+      Free;
+  end;
+end;
+
+
+procedure TMainForm.CWMinRxSpeedClick(Sender: TObject);
+Var
+  minspd:integer;
+begin
+  minspd := (Sender as TMenuItem).Tag;
+
+  UpdCWMinRxSpeed(minspd);
+
+  MinRxWpm := minspd;
+end;
+
+
+procedure TMainForm.UpdCWMinRxSpeed(minspd: integer);
+Var
+  xmin0:Boolean;
+  xmin1:Boolean;
+  xmin2:Boolean;
+  xmin4:Boolean;
+  xmin6:Boolean;
+  xmin8:Boolean;
+  xmin10:Boolean;
+
+begin
+
+   if (Wpm < 15) and  (minspd > 4) then
+            minspd := 4;
+
+  xmin0 := False;
+  xmin1 := False;
+  xmin2 := False;
+  xmin4 := False;
+  xmin6 := False;
+  xmin8 := False;
+  xmin10 := False;
+
+  if minspd = 0 then
+       xmin0 := True;
+  if minspd = 1 then
+       xmin1 := True;
+  if minspd = 2 then
+       xmin2 := True;
+  if minspd = 4 then
+       xmin4 := True;
+   if minspd = 6 then
+       xmin6 := True;
+  if minspd = 8 then
+       xmin8 := True;
+  if minspd = 10 then
+       xmin10 := True;
+
+  CWMinRxSpeedSet0.checked := xmin0;
+  CWMinRxSpeedSet1.checked := xmin1;
+  CWMinRxSpeedSet2.checked := xmin2;
+  CWMinRxSpeedSet4.checked := xmin4;
+  CWMinRxSpeedSet6.checked := xmin6;
+  CWMinRxSpeedSet8.checked := xmin8;
+  CWMinRxSpeedSet10.checked := xmin10;
+  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
+    try
+      WriteString(SEC_STN, 'CWMinRxSpeed', inttostr(minspd));
+    finally
+      Free;
+  end;
+
+end;
+
+
+procedure TMainForm.NRDigitsClick(Sender: TObject);
+Var
+  nrd:integer;
+begin
+  nrd := (Sender as TMenuItem).Tag;
+
+  UpdNRDigits(nrd);
+
+  NRDigits := nrd;
+end;
+
+
+procedure TMainForm.UpdNRDigits(nrd: integer);
+Var
+  xdig1:Boolean;
+  xdig2:Boolean;
+  xdig3:Boolean;
+  xdig4:Boolean;
+begin
+  xdig1 := False;
+  xdig2 := False;
+  xdig3 := False;
+  xdig4 := False;
+  if nrd = 1 then
+       xdig1 := True;
+  if nrd = 2 then
+       xdig2 := True;
+  if nrd = 3 then
+       xdig3 := True;
+  if nrd = 4 then
+       xdig4 := True;
+  NRDigitsSet1.Checked := xdig1;
+  NRDigitsSet2.Checked := xdig2;
+  NRDigitsSet3.Checked := xdig3;
+  NRDigitsSet4.Checked := xdig4;
+
+  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
+    try
+      WriteString(SEC_STN, 'NRDigits', inttostr(nrd));
+    finally
+      Free;
+  end;
+end;
+
+
 //ALL checkboxes
 procedure TMainForm.LIDS1Click(Sender: TObject);
 begin
@@ -1313,10 +1589,12 @@ end;
 procedure TMainForm.Operator1Click(Sender: TObject);
 begin
   HamName := InputBox('HST Operator', 'Enter operator''s name', HamName);
-
-  if HamName <> '' then
-    Caption := 'Morse Runner:  ' + HamName
-  else
+  HamName := UpperCase(HamName);
+  if HamName <> '' then begin
+    Caption := 'Morse Runner:  ' + HamName;
+    if CWOPSNum <> ''  then
+        Caption := 'Morse Runner:  ' + HamName + ' ' + CWOPSNum;
+  end else
     Caption := 'Morse Runner';
 
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
@@ -1326,6 +1604,36 @@ begin
       Free;
     end;
 end;
+
+
+procedure TMainForm.CWOPSNumberClick(Sender: TObject);
+Var
+buf: string;
+begin
+  buf := InputBox('CWOps Number', 'Enter CWOPS Number', CWOPSNum);
+  if buf = '' then begin
+       exit;
+  end;
+  if CWOPSCWT.isnum(buf)=False then  begin
+       exit;
+  end;
+    CWOPSNum := buf;
+
+  if HamName <> '' then begin
+    Caption := 'Morse Runner:  ' + HamName;
+    if CWOPSNum <> ''  then
+        Caption := 'Morse Runner:  ' + HamName + ' ' + CWOPSNum;
+  end else
+    Caption := 'Morse Runner';
+
+  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
+    try
+      WriteString(SEC_STN, 'cwopsnum', CWOPSNum);
+    finally
+      Free;
+    end;
+end;
+
 
 procedure TMainForm.StopMNUClick(Sender: TObject);
 begin

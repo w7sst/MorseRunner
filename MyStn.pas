@@ -58,6 +58,8 @@ begin
   Pitch := Ini.Pitch;
   Wpm := Ini.Wpm;
   Amplitude := 300000;
+  OpName := HamName;
+  CWOPSNR := strtoint(CWOPSNum);
 end;
 
 
@@ -80,6 +82,9 @@ end;
 
 procedure TMyStation.SendText(AMsg: string);
 begin
+  OpName := HamName;
+  if RunMode = rmCwt then
+        NR := strtoint(CWOPSNum);
   AddToPieces(AMsg);
   if State <> stSending then
     begin
