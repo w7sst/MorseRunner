@@ -36,7 +36,7 @@ type
     Rst, TrueRst: integer;
     Nr, TrueNr: integer;
     OpName, TrueOpName: string;
-    TrueWpm: integer;
+    TrueWpm: integer;           // WPM of sending DxStn (reported in log)
     Pfx: string;
     Dupe: boolean;
     Err: string;
@@ -425,23 +425,27 @@ begin
       with QsoList[i] do
         if (Call = Qso.Call) and (Err = '   ') then
           Qso.Dupe := true;
-    //what's in the DX's log?
+
+    // find Wpm from DX's log
     for i:=Tst.Stations.Count-1 downto 0 do
       if Tst.Stations[i] is TDxStation then
         with Tst.Stations[i] as TDxStation do
-          if (MyCall = Qso.Call) then begin
+          if (MyCall = Qso.Call) then
+          begin
             Qso.TrueWpm := Wpm;
             Break;
-          end; //deletes the dx station!
+          end;
 
     //what's in the DX's log?
     for i:=Tst.Stations.Count-1 downto 0 do
       if Tst.Stations[i] is TDxStation then
         with Tst.Stations[i] as TDxStation do
-          if (Oper.State = osDone) and (MyCall = Qso.Call) then begin
-            DataToLastQso;
-            Break;
-          end; //deletes the dx station!
+          if (Oper.State = osDone) and (MyCall = Qso.Call) then
+            begin
+              DataToLastQso; //deletes this dx station!
+              Break;
+            end;
+
     //QsoList[High(QsoList)].Err:= '...';
     CheckErr;
   end;
