@@ -127,21 +127,11 @@ end;
 procedure TCWOPS.Delimit(var AStringList: TStringList; const AText: string);
 const
     DelimitChar: char= ',';
-var
-    i, l: integer;
-    s: string;
 begin
     AStringList.Clear;
-    l:= Length(AText);
-    s:= '';
-    for i := 1 to l do begin
-        if(AText[i] = DelimitChar) or (i=l) then begin
-            AStringList.Add(s);
-            s:= '';
-        end
-        else
-            s:= s + AText[i];
-    end;
+    AStringList.Delimiter := DelimitChar;
+    AStringList.StrictDelimiter := True;
+    AStringList.DelimitedText := AText;
 end;
 
 end.
