@@ -57,20 +57,20 @@ begin
 //  Result := Max(1, SecondsToBlocks(1 / Sqr(4*Skills)));
 //  Result := Round(RndGaussLim(Result, 0.7 * Result));
 
-  if State = osNeedPrevEnd
-    then Result := NEVER
-  else if RunMode = rmHst
-    then Result := SecondsToBlocks(0.05 + 0.5*Random * 10/Wpm)
+  if State = osNeedPrevEnd then
+    Result := NEVER
+  else if RunMode = rmHst then
+    Result := SecondsToBlocks(0.05 + 0.5*Random * 10/Wpm)
   else
     Result := SecondsToBlocks(0.1 + 0.5*Random);
 end;
 
 function TDxOperator.GetWpm: integer;
 begin
-  if RunMode = rmHst
-    then Result := Ini.Wpm
-  else if (MaxRxWpm = -1) or (MinRxWpm = -1) { use original algorithm }
-    then Result := Round(Ini.Wpm * 0.5 * (1 + Random))
+  if RunMode = rmHst then
+    Result := Ini.Wpm
+  else if (MaxRxWpm = -1) or (MinRxWpm = -1) then { use original algorithm }
+    Result := Round(Ini.Wpm * 0.5 * (1 + Random))
   else
     Result := Round(Ini.Wpm - MinRxWpm + (MinRxWpm + MaxRxWpm) * Random);
 end;
