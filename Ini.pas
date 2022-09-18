@@ -88,25 +88,9 @@ begin
              MainForm.Caption := MainForm.Caption + ' ' + CWOPSNum;
        end;
 
-      x1:= ReadString(SEC_STN, 'CWMaxRxSpeed', '');
-      if x1 = '' then
-           x1 := '0';
-      MaxRxWpm := strtoint(x1);
-      MainForm.UpdCWMaxRxSpeed(MaxRxWpm);
-
-
-      x1:= ReadString(SEC_STN, 'CWMinRxSpeed', '');
-      if x1 = '' then
-           x1 := '0';
-      MinRxWpm := strtoint(x1);
-      MainForm.UpdCWMinRxSpeed(MinRxWpm);
-
-      x1:= ReadString(SEC_STN, 'NRDigits', '');
-      if x1 = '' then
-           x1 := '1';
-      NRDigits := strtoint(x1);
-
-      MainForm.UpdNRDigits(NRDigits);
+      MainForm.UpdCWMaxRxSpeed(ReadInteger(SEC_STN, 'CWMaxRxSpeed', MaxRxWpm));
+      MainForm.UpdCWMinRxSpeed(ReadInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm));
+      MainForm.UpdNRDigits(ReadInteger(SEC_STN, 'NRDigits', NRDigits));
 
       Wpm := ReadInteger(SEC_STN, 'Wpm', Wpm);
       Wpm := Max(10, Min(120, Wpm));
@@ -167,6 +151,19 @@ begin
       WriteInteger(SEC_STN, 'BandWidth', MainForm.ComboBox2.ItemIndex);
       WriteInteger(SEC_STN, 'Wpm', Wpm);
       WriteBool(SEC_STN, 'Qsk', Qsk);
+
+      {
+        Note - HamName and CWOPSNum are written to .ini file by
+        TMainForm.Operator1Click and TMainForm.CWOPSNumberClick.
+        Once specified, HamName and CWOPSNum are added to the application's
+        title bar. Thus, HamName and cwopsnum are not written here.
+
+        WriteString(SEC_STN, 'Name', HamName);
+        WriteString(SEC_STN, 'cwopsnum', CWOPSNum);
+      }
+      WriteInteger(SEC_STN, 'CWMaxRxSpeed', MaxRxWpm);
+      WriteInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm);
+      WriteInteger(SEC_STN, 'NRDigits', NRDigits);
 
       WriteInteger(SEC_BND, 'Activity', Activity);
       WriteBool(SEC_BND, 'Qrn', Qrn);
