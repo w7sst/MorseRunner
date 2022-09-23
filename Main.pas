@@ -363,6 +363,8 @@ begin
 
 
 end;
+
+
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   ToIni;

@@ -91,7 +91,6 @@ end;
 
 function TDxOperator.GetName: string;
 begin
-//  Result := 1 + Round(Random * Tst.Minute * Skills);
   Result := 'ALEX';
 end;
 

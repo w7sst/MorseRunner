@@ -249,7 +249,6 @@ begin
     if Random < 0.97
       then Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
     end;
-
 end;
 
 
