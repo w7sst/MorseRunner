@@ -26,7 +26,6 @@ type
   end;
 
 
-
 implementation
 
 uses
@@ -37,9 +36,6 @@ uses
 constructor TDxStation.CreateStation;
 begin
   inherited Create(nil);
-
-
-
 
   HisCall := Ini.Call;
   if RunMode <> rmCwt then
@@ -65,12 +61,10 @@ begin
   end;
   //showmessage(MyCall);
 
-
   if Ini.Lids and (Random < 0.03) then
     RST := 559 + 10 * Random(4)
   else
     RST := 599;
-
 
   Qsb := TQsb.Create;
 
@@ -181,6 +175,4 @@ begin
 end;
 
 end.
-
-
 
