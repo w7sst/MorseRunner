@@ -166,11 +166,6 @@ begin
 
       HamName := ReadString(SEC_STN, 'Name', '');
       CWOPSNum :=  ReadString(SEC_STN, 'cwopsnum', '');
-      if HamName <> '' then begin
-        MainForm.Caption := MainForm.Caption + ':  ' + HamName;
-        if CWOPSNum <> ''  then
-             MainForm.Caption := MainForm.Caption + ' ' + CWOPSNum;
-       end;
 
       MainForm.UpdCWMaxRxSpeed(ReadInteger(SEC_STN, 'CWMaxRxSpeed', MaxRxWpm));
       MainForm.UpdCWMinRxSpeed(ReadInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm));

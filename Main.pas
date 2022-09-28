@@ -379,6 +379,7 @@ type
     procedure SetPitch(PitchNo: integer);
     procedure SetBw(BwNo: integer);
     procedure ReadCheckboxes;
+    procedure UpdateTitleBar;
     procedure PostHiScore(const sScore: string);
     procedure UpdNRDigits(nrd: integer);
     procedure UpdCWMinRxSpeed(minspd: integer);
@@ -902,9 +903,24 @@ begin
     ExchangeEdit.Text := AExchange;
     Ini.UserExchangeTbl[SimContest]:= AExchange;
 
+    // update application's title bar
+    UpdateTitleBar;
+
   finally
     sl.Free;
   end;
+end;
+
+
+procedure TMainForm.UpdateTitleBar;
+begin
+  // Adding a contest: consider application's title bar.
+  if Ini.ActiveContest = nil then
+    Caption := 'Morse Runner'
+  else if (SimContest = scHst) and not HamName.IsEmpty then  // for HST, add operator name
+    Caption := Format('Morse Runner - %s:  %s', [Ini.ActiveContest.Name, HamName])
+  else // Default is: Morse Runner - <contest name>
+    Caption := Format('Morse Runner - %s', [Ini.ActiveContest.Name]);
 end;
 
 
@@ -981,16 +997,6 @@ begin
         Ini.UserExchange1[SimContest] := Avalue;
         Tst.Me.OpName := Avalue;
         if BDebugExchSettings then Edit2.Text := Avalue; // testing only
-
-        //UpdateAppTitle; or move to Edit2Change().
-        if HamName <> '' then
-          begin
-            Caption := 'Morse Runner:  ' + HamName;
-            if CWOPSNum <> ''  then
-                Caption := 'Morse Runner:  ' + HamName + ' ' + CWOPSNum;
-          end
-        else
-          Caption := 'Morse Runner';
       end;
     else
       assert(false, Format('Unsupported exchange 1 type: %s.', [ToStr(AExchType)]));
@@ -1028,13 +1034,6 @@ begin
         else
           Tst.Me.CWOPSNR := 0;
         if BDebugExchSettings then Edit3.Text := Avalue; // testing only
-
-        if HamName <> '' then begin
-          Caption := 'Morse Runner:  ' + HamName;
-          if CWOPSNum <> ''  then
-              Caption := 'Morse Runner:  ' + HamName + ' ' + CWOPSNum;
-        end else
-          Caption := 'Morse Runner';
       end;
     //etArrlSection:  // e.g. Field Day (OR)
     //etStateProv:
@@ -1901,16 +1900,12 @@ procedure TMainForm.Operator1Click(Sender: TObject);
 begin
   HamName := InputBox('HST/CWOps Operator', 'Enter operator''s name', HamName);
   HamName := UpperCase(HamName);
-  if HamName <> '' then begin
-    Caption := 'Morse Runner:  ' + HamName;
-    if CWOPSNum <> ''  then
-        Caption := 'Morse Runner:  ' + HamName + ' ' + CWOPSNum;
-  end else
-    Caption := 'Morse Runner';
 
   Ini.UserExchangeTbl[scCwt] := Format('%s %s', [HamName, CWOPSNum]);
   if SimContest = scCwt then
     SetMyExchange(Ini.UserExchangeTbl[SimContest]);
+
+  UpdateTitleBar;
 
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
@@ -1937,13 +1932,6 @@ begin
   Ini.UserExchangeTbl[scCwt] := Format('%s %s', [HamName, CWOPSNum]);
   if SimContest = scCwt then
     SetMyExchange(Ini.UserExchangeTbl[SimContest]);
-
-  if HamName <> '' then begin
-    Caption := 'Morse Runner:  ' + HamName;
-    if CWOPSNum <> ''  then
-        Caption := 'Morse Runner:  ' + HamName + ' ' + CWOPSNum;
-  end else
-    Caption := 'Morse Runner';
 
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
