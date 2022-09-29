@@ -311,7 +311,6 @@ begin
 end;
 
 
-
 procedure TMainForm.AlSoundOut1BufAvailable(Sender: TObject);
 begin
   if AlSoundOut1.Enabled then

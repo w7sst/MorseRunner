@@ -8,7 +8,7 @@ unit Contest;
 interface
 
 uses
-  SysUtils, SndTypes, Station, StnColl, MyStn, Math,  Ini,
+  SysUtils, SndTypes, Station, StnColl, MyStn, Math,  Ini, System.Classes,
   MovAvg, Mixers, VolumCtl, RndFunc, TypInfo, DxStn, DxOper, Log;
 
 type
@@ -80,9 +80,11 @@ end;
 destructor TContest.Destroy;
 begin
   Me.Free;
+  FreeAndNil(Stations);
   Filt.Free;
   Filt2.Free;
   Modul.Free;
+  FreeAndNil(Agc);
   inherited;
 end;
 
