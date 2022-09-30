@@ -36,7 +36,7 @@ begin
   inherited Create(nil);
 
   HisCall := Ini.Call;
-  MyCall := PickCall;
+  MyCall := PickCall;     // Pick one Callsign from Calllist
 
   Oper := TDxOperator.Create;
   Oper.Call := MyCall;
@@ -46,14 +46,16 @@ begin
 
   Wpm := Oper.GetWpm;
   NR := Oper.GetNR;
-  if Ini.Lids and (Random < 0.03)
-    then RST := 559 + 10*Random(4)
-    else RST := 599;
+  if Ini.Lids and (Random < 0.03) then
+    RST := 559 + 10 * Random(4)
+  else
+    RST := 599;
 
   Qsb := TQsb.Create;
 
   Qsb.Bandwidth := 0.1 + Random / 2;
-  if Ini.Flutter and (Random < 0.3) then Qsb.Bandwidth := 3 + Random * 30;
+  if Ini.Flutter and (Random < 0.3) then
+    Qsb.Bandwidth := 3 + Random * 30;
 
   Amplitude := 9000 + 18000 * (1 + RndUShaped);
   Pitch := Round(RndGaussLim(0, 300));
@@ -128,8 +130,9 @@ begin
       //If we are not sending, we can start copying
       //Cancel timeout, he is replying
       begin
-      if State <> stSending then State := stCopying;
-      TimeOut := NEVER;
+        if State <> stSending then
+          State := stCopying;
+        TimeOut := NEVER;
       end;
     end;
 end;
@@ -138,13 +141,11 @@ end;
 
 procedure TDxStation.DataToLastQso;
 begin
-  with QsoList[High(QsoList)] do
-    begin
+  with QsoList[High(QsoList)] do begin
     TrueCall := Self.MyCall;
     TrueRst := Self.Rst;
     TrueNR := Self.NR;
-    end;
-
+  end;
   Free;
 end;
 

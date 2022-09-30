@@ -78,9 +78,10 @@ end;
 
 function TDxOperator.GetReplyTimeout: integer;
 begin
-  if RunMode = rmHst
-    then  Result := SecondsToBlocks(60/Wpm)
-    else Result := SecondsToBlocks(6-Skills);
+  if RunMode = rmHst then
+    Result := SecondsToBlocks(60/Wpm)
+  else
+    Result := SecondsToBlocks(6-Skills);
   Result := Round(RndGaussLim(Result, Result/2));
 end;
 
@@ -124,16 +125,18 @@ begin
 
   //dynamic programming algorithm
 
-  for y:=0 to High(M[0]) do M[0,y] := 0;
-  for x:=1 to High(M) do M[x,0] := M[x-1,0] + W_X;
+  for y:=0 to High(M[0]) do
+    M[0,y] := 0;
+  for x:=1 to High(M) do
+    M[x,0] := M[x-1,0] + W_X;
 
   for x:=1 to High(M) do
-    for y:=1 to High(M[0]) do
-      begin
+    for y:=1 to High(M[0]) do begin
       T := M[x,y-1];
       //'?' can match more than one char
       //end may be missing
-      if (x < High(M)) and (C[x] <> '?') then Inc(T, W_Y);
+      if (x < High(M)) and (C[x] <> '?') then
+        Inc(T, W_Y);
 
       L := M[x-1,y];
       //'?' can match no chars
@@ -141,10 +144,11 @@ begin
 
       D := M[x-1,y-1];
       //'?' matches any char
-      if not (C[x] in [C0[y], '?']) then Inc(D, W_D);
+      //if not (C[x] in [C0[y], '?']) then Inc(D, W_D);
+      if not (CharInSet(C[x], [C0[y], '?'])) then Inc(D, W_D);
 
       M[x,y] := MinIntValue([T,D,L]);
-      end;
+    end;
 
   //classify by penalty
   case M[High(M), High(M[0])] of

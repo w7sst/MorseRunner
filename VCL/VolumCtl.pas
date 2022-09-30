@@ -8,6 +8,7 @@ unit VolumCtl;
 interface
 
 //{$DEFINE DEBUG}
+{$UNDEF DEBUG}
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,

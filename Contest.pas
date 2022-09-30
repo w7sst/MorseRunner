@@ -201,37 +201,34 @@ begin
     for i:=Stations.Count-1 downto 0 do
       if Stations[i] is TDxStation then
         with Stations[i] as TDxStation do
-          if (Oper.State = osDone) and (QsoList <> nil) and (MyCall = QsoList[High(QsoList)].Call)
-            then
-              begin
+          if (Oper.State = osDone) and (QsoList <> nil) and (MyCall = QsoList[High(QsoList)].Call) then begin
               DataToLastQso;
-              with MainForm.RichEdit1.Lines do Delete(Count-1);
+              //with MainForm.RichEdit1.Lines do Delete(Count-1);
+              //  Delete(Count-1);
+              //Log.LastQsoToScreen;
               Log.CheckErr;
-              Log.LastQsoToScreen;
-              if Ini.RunMode = RmHst
-                then Log.UpdateStatsHst
-                else Log.UpdateStats;
-              end;
-
-
+              Log.ScoreTableUpdateCheck;
+              if Ini.RunMode = RmHst then
+                Log.UpdateStatsHst
+              else
+                Log.UpdateStats;
+          end;
   //show info
   ShowRate;
   MainForm.Panel2.Caption := FormatDateTime('hh:nn:ss', BlocksToSeconds(BlockNumber) /  86400);
   if Ini.RunMode = rmPileUp then
     MainForm.Panel4.Caption := Format('Pile-Up:  %d', [DxCount]);
 
-
-  if (RunMode = rmSingle) and (DxCount = 0) then
-     begin
+  if (RunMode = rmSingle) and (DxCount = 0) then begin
      Me.Msg := [msgCq]; //no need to send cq in this mode
      Stations.AddCaller.ProcessEvent(evMeFinished);
-     end
-  else if (RunMode = rmHst) and (DxCount < Activity) then
-     begin
-     Me.Msg := [msgCq];
-     for i:=DxCount+1 to Activity do
-       Stations.AddCaller.ProcessEvent(evMeFinished);
-     end;
+  end
+  else
+    if (RunMode = rmHst) and (DxCount < Activity) then begin
+      Me.Msg := [msgCq];
+      for i:=DxCount+1 to Activity do
+        Stations.AddCaller.ProcessEvent(evMeFinished);
+    end;
 
 
   if (BlocksToSeconds(BlockNumber) >= (Duration * 60)) or FStopPressed then
