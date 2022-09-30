@@ -35,6 +35,7 @@ uses
   PerlRegEx in 'PerlRegEx\PerlRegEx.pas',
   ARRL in 'ARRL.pas',
   ArrlFd in 'ArrlFd.pas',
+  NaQp in 'NaQp.pas',
   CWOPS in 'CWOPS.pas';
 
 {$R *.RES}
