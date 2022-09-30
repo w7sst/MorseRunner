@@ -137,6 +137,7 @@ var
   Lids: boolean = true;
   NoActivityCnt: integer=0;
   NoStopActivity: integer=0;
+  GetWpmUsesGaussian: boolean = false;
 
   Duration: integer = 30;
   RunMode: TRunMode = rmStop;
@@ -204,6 +205,7 @@ begin
 
       MainForm.SetQsk(ReadBool(SEC_STN, 'Qsk', Qsk));
       CallsFromKeyer := ReadBool(SEC_STN, 'CallsFromKeyer', CallsFromKeyer);
+      GetWpmUsesGaussian := ReadBool(SEC_STN, 'GetWpmUsesGaussian', GetWpmUsesGaussian);
 
       Activity := ReadInteger(SEC_BND, 'Activity', Activity);
       MainForm.SpinEdit3.Value := Activity;

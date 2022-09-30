@@ -66,8 +66,6 @@ begin
 end;
 
 function TDxOperator.GetWpm: integer;
-const
-  useGaussLim: Boolean = True;  { use gaussian distribution instead of random }
 var
   mean, limit: Single;
 begin
@@ -75,7 +73,7 @@ begin
     Result := Ini.Wpm
   else if (MaxRxWpm = -1) or (MinRxWpm = -1) then { use original algorithm }
     Result := Round(Ini.Wpm * 0.5 * (1 + Random))
-  else if useGaussLim then  { use Gaussian w/ limit, [Wpm-Min, Wpm+Max] }
+  else if Ini.GetWpmUsesGaussian then  { use Gaussian w/ limit, [Wpm-Min, Wpm+Max] }
     begin                           // assume Wpm=30,  MinRxWpm=6, MaxRxWpm=2
     mean := Ini.Wpm + (-MinRxWpm + MaxRxWpm)/2; // 30+(-6+2)/2 = 30-4/2 = 28
     limit := (MinRxWpm + MaxRxWpm)/2;           // (6+2)/2 = 4 wpm
