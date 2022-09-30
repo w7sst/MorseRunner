@@ -692,16 +692,20 @@ end;
 
 procedure TMainForm.SetPitch(PitchNo: integer);
 begin
+  PitchNo := Max(0, Min(PitchNo, ComboBox1.Items.Count-1));
   Ini.Pitch := 300 + PitchNo * 50;
   ComboBox1.ItemIndex := PitchNo;
   Tst.Modul.CarrierFreq := Ini.Pitch;
 end;
 
 
+{
+  Set bandwidth based on menu item number.
+  Must be within range [0, ComboBox2.Items.Count).
+}
 procedure TMainForm.SetBw(BwNo: integer);
 begin
-  if (BwNo < 0) or (BwNo >= ComboBox2.Items.Count) then Exit;
-
+  BwNo := Max(0, Min(BwNo, ComboBox2.Items.Count-1));
   Ini.Bandwidth := 100 + BwNo * 50;
   ComboBox2.ItemIndex := BwNo;
 

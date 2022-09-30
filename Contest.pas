@@ -203,7 +203,7 @@ begin
       if Stations[i] is TDxStation then
         with Stations[i] as TDxStation do
           if (Oper.State = osDone) and (QsoList <> nil) and (MyCall = QsoList[High(QsoList)].Call) then begin
-              DataToLastQso;
+              DataToLastQso; // deletes this TDxStation from Stations[]
               //with MainForm.RichEdit1.Lines do Delete(Count-1);
               //  Delete(Count-1);
               //Log.LastQsoToScreen;

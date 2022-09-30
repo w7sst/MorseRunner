@@ -188,8 +188,9 @@ begin
         FThread:= TWaitThread.Create(true);
         FThread.FreeOnTerminate:= true;
         FThread.Owner := Self;
-        //FThread.Priority := tpTimeCritical;
-        //start
+        FThread.Priority := tpTimeCritical; // don't starve the WaveOut device
+        FThread.NameThreadForDebugging('TWaitThread'); // without this, IDE will hang
+        //start audio output device
         FEnabled:= true;
         try
             Start;
