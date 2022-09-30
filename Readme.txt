@@ -221,6 +221,20 @@ command.
 
 
 VERSION HISTORY
+
+1.80 (W7SST)
+  - Beta release of multi-contest support
+  - Add ARRL Field Day
+  - Add NCL NAQP
+
+
+1.71a (CT7AUP)
+  - CWOPS CWT Contest
+  - CW RX Min Speed.
+  - CW RX Max Speed.
+  - NR number of digits.
+
+
 1.70 (BG4FQD)
   - Adjust UI, support windows scheme.
   - Support showing callsign infomation, You can modify it in the "ARRL.LIST"

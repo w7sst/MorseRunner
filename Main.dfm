@@ -401,7 +401,7 @@ object MainForm: TMainForm
       Top = 60
       Width = 310
       Height = 40
-      Caption = 'Morse Runner 1.71'
+      Caption = 'Morse Runner 1.xx'
       Font.Charset = ANSI_CHARSET
       Font.Color = 12369084
       Font.Height = -35
@@ -415,7 +415,7 @@ object MainForm: TMainForm
       Top = 56
       Width = 310
       Height = 40
-      Caption = 'Morse Runner 1.71'
+      Caption = 'Morse Runner 1.xx'
       Font.Charset = ANSI_CHARSET
       Font.Color = clAqua
       Font.Height = -35
@@ -427,9 +427,9 @@ object MainForm: TMainForm
     object Label13: TLabel
       Left = 70
       Top = 55
-      Width = 329
+      Width = 310
       Height = 40
-      Caption = 'Morse Runner 1.71a'
+      Caption = 'Morse Runner 1.xx'
       Font.Charset = ANSI_CHARSET
       Font.Color = clGreen
       Font.Height = -35

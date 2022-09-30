@@ -20,7 +20,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.71a';
+  sVersion: String = '1.80';  { Sets version strings in UI panel. }
 
 type
 
@@ -482,26 +482,20 @@ begin
   Msg := TStationMessage((Sender as TComponent).Tag);
 
   SendMsg(Msg);
-
-  case Msg of
-    msgHisCall:
-      CallSent:= true;
-    msgNR:
-      NrSent:= true;
-  end;
 end;
 
 
 procedure TMainForm.SendMsg(Msg: TStationMessage);
 begin
   if Msg = msgHisCall then begin
-    if Edit1.Text <> '' then
-      Tst.Me.HisCall := Edit1.Text;
-    CallSent := true;
+    // retain current callsign, including ''. if empty, return.
+    Tst.Me.HisCall := Edit1.Text;
+    CallSent := Edit1.Text <> '';
+    if not CallSent then
+      Exit;
   end;
-
-  if Msg = msgNR then  NrSent := true;
-
+  if Msg = msgNR then
+    NrSent := true;
   Tst.Me.SendMsg(Msg);
 end;
 
@@ -1253,12 +1247,19 @@ begin
 end;
 
 
+{
+  called whenever callsign field (Edit1) changes. Any callsign edit will
+  invalidate the callsign and NR (Exchange) field(s) already sent, so clear
+  the CallSent and NrSent values.
+}
 procedure TMainForm.Edit1Change(Sender: TObject);
 begin
     if Edit1.Text = '' then
         NrSent := false;
-    if not Tst.Me.UpdateCallInMessage(Edit1.Text) then
+    if not Tst.Me.UpdateCallInMessage(Edit1.Text) then begin
         CallSent := false;
+        NrSent := false;
+    end;
 end;
 
 
