@@ -34,6 +34,7 @@ type
     function GetReplyTimeout: integer;
     function GetWpm: integer;
     function GetNR: integer;
+    function GetName: string;
     procedure MsgReceived(AMsg: TStationMessages);
     procedure SetState(AState: TOperatorState);
     function GetReply: TStationMessage;
@@ -56,25 +57,43 @@ begin
 //  Result := Max(1, SecondsToBlocks(1 / Sqr(4*Skills)));
 //  Result := Round(RndGaussLim(Result, 0.7 * Result));
 
-  if State = osNeedPrevEnd
-    then Result := NEVER
-  else if RunMode = rmHst
-    then Result := SecondsToBlocks(0.05 + 0.5*Random * 10/Wpm)
+  if State = osNeedPrevEnd then
+    Result := NEVER
+  else if RunMode = rmHst then
+    Result := SecondsToBlocks(0.05 + 0.5*Random * 10/Wpm)
   else
     Result := SecondsToBlocks(0.1 + 0.5*Random);
 end;
 
 function TDxOperator.GetWpm: integer;
 begin
-  if RunMode = rmHst
-    then Result := Ini.Wpm
-    else Result := Round(Ini.Wpm * 0.5 * (1 + Random));
+  if RunMode = rmHst then
+    Result := Ini.Wpm
+  else if (MaxRxWpm = -1) or (MinRxWpm = -1) then { use original algorithm }
+    Result := Round(Ini.Wpm * 0.5 * (1 + Random))
+  else
+    Result := Round(Ini.Wpm - MinRxWpm + (MinRxWpm + MaxRxWpm) * Random);
 end;
 
 function TDxOperator.GetNR: integer;
+Var
+ n1: integer;
 begin
-  Result := 1 + Round(Random * Tst.Minute * Skills);
+  if NRDigits = 1 then
+      Result := 1 + Round(Random * Tst.Minute * Skills)
+  else begin
+       n1 := trunc(power(10,NRDigits));
+       n1 := n1-1;
+       Result := Random(n1);
+  end;
 end;
+
+
+function TDxOperator.GetName: string;
+begin
+  Result := 'ALEX';
+end;
+
 
 function TDxOperator.GetReplyTimeout: integer;
 begin

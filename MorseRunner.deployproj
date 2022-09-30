@@ -1,0 +1,102 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Condition="Exists('$(BDS)\bin\CodeGear.Deployment.targets')" Project="$(BDS)\bin\CodeGear.Deployment.targets"/>
+    <ProjectExtensions>
+        <ProjectFileVersion>12</ProjectFileVersion>
+    </ProjectExtensions>
+    <PropertyGroup/>
+    <ItemGroup Condition="'$(Platform)'=='Win32'">
+        <DeployFile Include="CWOPS.LIST" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>MorseRunner\</RemoteDir>
+            <RemoteName>CWOPS.LIST</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="MASTER.DTA" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>MorseRunner\</RemoteDir>
+            <RemoteName>MASTER.DTA</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="HstResults.txt" Condition="'$(Config)'=='Release'">
+            <RemoteDir>MorseRunner\</RemoteDir>
+            <RemoteName>HstResults.txt</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="HstResults.txt" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>MorseRunner\</RemoteDir>
+            <RemoteName>HstResults.txt</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="ARRL.LIST" Condition="'$(Config)'=='Release'">
+            <RemoteDir>MorseRunner\</RemoteDir>
+            <RemoteName>ARRL.LIST</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="MorseRunner.exe" Condition="'$(Config)'=='Release'">
+            <RemoteDir>MorseRunner\</RemoteDir>
+            <RemoteName>MorseRunner.exe</RemoteName>
+            <DeployClass>ProjectOutput</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+            <Required>True</Required>
+        </DeployFile>
+        <DeployFile Include="MASTER.DTA" Condition="'$(Config)'=='Release'">
+            <RemoteDir>MorseRunner\</RemoteDir>
+            <RemoteName>MASTER.DTA</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="MorseRunner.exe" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>MorseRunner\</RemoteDir>
+            <RemoteName>MorseRunner.exe</RemoteName>
+            <DeployClass>ProjectOutput</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+            <Required>True</Required>
+        </DeployFile>
+        <DeployFile Include="CWOPS.LIST" Condition="'$(Config)'=='Release'">
+            <RemoteDir>MorseRunner\</RemoteDir>
+            <RemoteName>CWOPS.LIST</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="ARRL.LIST" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>MorseRunner\</RemoteDir>
+            <RemoteName>ARRL.LIST</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+    </ItemGroup>
+    <ItemGroup Condition="'$(Platform)'=='Win64'"/>
+</Project>

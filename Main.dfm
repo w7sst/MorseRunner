@@ -57,6 +57,7 @@ object MainForm: TMainForm
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
+  OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 15
   object Bevel1: TBevel
@@ -76,7 +77,6 @@ object MainForm: TMainForm
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 0
-    ExplicitTop = 314
     object Label1: TLabel
       Left = 16
       Top = 12
@@ -157,9 +157,9 @@ object MainForm: TMainForm
       OnClick = SendClick
     end
     object Label2: TLabel
-      Left = 172
+      Left = 140
       Top = 12
-      Width = 20
+      Width = 19
       Height = 15
       Caption = 'RST'
     end
@@ -178,8 +178,8 @@ object MainForm: TMainForm
     end
     object Edit1: TEdit
       Left = 12
-      Top = 28
-      Width = 149
+      Top = 33
+      Width = 118
       Height = 27
       AutoSelect = False
       CharCase = ecUpperCase
@@ -196,25 +196,26 @@ object MainForm: TMainForm
       OnKeyPress = Edit1KeyPress
     end
     object Edit2: TEdit
-      Left = 168
-      Top = 28
-      Width = 45
+      Left = 136
+      Top = 33
+      Width = 77
       Height = 27
       AutoSelect = False
+      CharCase = ecUpperCase
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
       Font.Name = 'Consolas'
       Font.Style = [fsBold]
-      MaxLength = 3
+      MaxLength = 10
       ParentFont = False
       TabOrder = 1
       OnEnter = Edit2Enter
       OnKeyPress = Edit2KeyPress
     end
     object Edit3: TEdit
-      Left = 220
-      Top = 28
+      Left = 219
+      Top = 33
       Width = 45
       Height = 27
       AutoSelect = False
@@ -351,10 +352,11 @@ object MainForm: TMainForm
         Font.Name = 'Consolas'
         Font.Style = []
         Items.ItemData = {
-          03780000000300000000000000FFFFFFFFFFFFFFFF02000000FFFFFFFF000000
-          0003500074007300000000000000FFFFFFFFFFFFFFFF02000000FFFFFFFF0000
-          0000044D0075006C007400000000000000FFFFFFFFFFFFFFFF02000000FFFFFF
-          FF0000000005530063006F00720065000000FFFFFFFFFFFFFFFFFFFFFFFF}
+          05900000000300000000000000FFFFFFFFFFFFFFFF02000000FFFFFFFF000000
+          00035000740073000000000000000000000000000000FFFFFFFFFFFFFFFF0200
+          0000FFFFFFFF00000000044D0075006C00740000000000000000000000000000
+          00FFFFFFFFFFFFFFFF02000000FFFFFFFF0000000005530063006F0072006500
+          00000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF}
         ReadOnly = True
         RowSelect = True
         ParentFont = False
@@ -372,7 +374,6 @@ object MainForm: TMainForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 304
   end
   object Panel6: TPanel
     Left = 0
@@ -383,7 +384,6 @@ object MainForm: TMainForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     TabOrder = 2
-    ExplicitHeight = 302
     object Shape1: TShape
       Left = 0
       Top = 54
@@ -427,9 +427,9 @@ object MainForm: TMainForm
     object Label13: TLabel
       Left = 70
       Top = 55
-      Width = 310
+      Width = 329
       Height = 40
-      Caption = 'Morse Runner 1.71'
+      Caption = 'Morse Runner 1.71a'
       Font.Charset = ANSI_CHARSET
       Font.Color = clGreen
       Font.Height = -35
@@ -474,7 +474,7 @@ object MainForm: TMainForm
       TabStop = False
       Align = alBottom
       BorderStyle = bsNone
-      Font.Charset = GB2312_CHARSET
+      Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
       Font.Name = 'Consolas'
@@ -484,7 +484,7 @@ object MainForm: TMainForm
       ScrollBars = ssVertical
       TabOrder = 0
       Visible = False
-      ExplicitTop = 257
+      Zoom = 100
     end
     object ListView2: TListView
       Left = 0
@@ -513,10 +513,14 @@ object MainForm: TMainForm
         end
         item
           Caption = 'Pref'
-          Width = 64
         end
         item
           Caption = 'Chk'
+          Width = 40
+        end
+        item
+          Caption = 'Wpm'
+          Width = 40
         end>
       ColumnClick = False
       DoubleBuffered = True
@@ -548,7 +552,6 @@ object MainForm: TMainForm
       ParentBackground = False
       TabOrder = 2
       Visible = False
-      ExplicitTop = 235
     end
   end
   object Panel9: TPanel
@@ -559,7 +562,6 @@ object MainForm: TMainForm
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 3
-    ExplicitHeight = 302
     object GroupBox3: TGroupBox
       Left = 9
       Top = 171
@@ -695,7 +697,7 @@ object MainForm: TMainForm
         Top = 138
         Width = 60
         Height = 20
-        Hint = '-15.0 dB'
+        Hint = '-15,0 dB'
         ShowHint = True
         Margin = 5
         Value = 0.750000000000000000
@@ -811,7 +813,6 @@ object MainForm: TMainForm
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 2
-      ExplicitTop = 265
       object Label8: TLabel
         Left = 179
         Top = 11
@@ -937,8 +938,10 @@ object MainForm: TMainForm
         ShortCut = 16504
         OnClick = RunMNUClick
       end
-      object N4: TMenuItem
-        Caption = '-'
+      object CWTCompetition3: TMenuItem
+        Tag = 5
+        Caption = 'CWT Competition'
+        OnClick = RunMNUClick
       end
       object Stop1MNU: TMenuItem
         Caption = 'Stop'
@@ -995,6 +998,12 @@ object MainForm: TMainForm
         Tag = 8
         Caption = 'NIL'
         ShortCut = 119
+        OnClick = SendClick
+      end
+      object NRQM: TMenuItem
+        Tag = 16
+        Caption = 'NR?'
+        ShortCut = 123
         OnClick = SendClick
       end
     end
@@ -1065,6 +1074,80 @@ object MainForm: TMainForm
           Tag = 60
           Caption = '60 WPM'
           OnClick = NWPMClick
+        end
+      end
+      object CWMinRxSpeed1: TMenuItem
+        Caption = 'CW Min Rx Speed'
+        object CWMinRxSpeedSet0: TMenuItem
+          Caption = '0'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet1: TMenuItem
+          Tag = 1
+          Caption = '-1'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet2: TMenuItem
+          Tag = 2
+          Caption = '-2'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet4: TMenuItem
+          Tag = 4
+          Caption = '-4'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet6: TMenuItem
+          Tag = 6
+          Caption = '-6'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet8: TMenuItem
+          Tag = 8
+          Caption = '-8'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet10: TMenuItem
+          Tag = 10
+          Caption = '-10'
+          OnClick = CWMinRxSpeedClick
+        end
+      end
+      object CWMaxRxSpeed1: TMenuItem
+        Caption = 'CW Max Rx Speed'
+        object CWMaxRxSpeedSet0: TMenuItem
+          Caption = '0'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet1: TMenuItem
+          Tag = 1
+          Caption = '+1'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet2: TMenuItem
+          Tag = 2
+          Caption = '+2'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet4: TMenuItem
+          Tag = 4
+          Caption = '+4'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet6: TMenuItem
+          Tag = 6
+          Caption = '+6'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet8: TMenuItem
+          Tag = 8
+          Caption = '+8'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet10: TMenuItem
+          Tag = 10
+          Caption = '+10'
+          OnClick = CWMaxRxSpeedClick
         end
       end
       object CWBandwidth1: TMenuItem
@@ -1219,6 +1302,30 @@ object MainForm: TMainForm
           OnClick = SelfMonClick
         end
       end
+      object NRDigits1: TMenuItem
+        Tag = 3
+        Caption = 'NR Digits'
+        object NRDigitsSet1: TMenuItem
+          Tag = 1
+          Caption = '1'
+          OnClick = NRDigitsClick
+        end
+        object NRDigitsSet2: TMenuItem
+          Tag = 2
+          Caption = '2'
+          OnClick = NRDigitsClick
+        end
+        object NRDigitsSet3: TMenuItem
+          Tag = 3
+          Caption = '3'
+          OnClick = NRDigitsClick
+        end
+        object NRDigitsSet4: TMenuItem
+          Tag = 4
+          Caption = '4'
+          OnClick = NRDigitsClick
+        end
+      end
       object N6: TMenuItem
         Caption = '-'
       end
@@ -1332,11 +1439,12 @@ object MainForm: TMainForm
         end
       end
       object Operator1: TMenuItem
-        Caption = 'HST Operator...'
+        Caption = 'HST/CWOps Operator'
         OnClick = Operator1Click
       end
       object N5: TMenuItem
-        Caption = '-'
+        Caption = 'CWOps Number'
+        OnClick = CWOPSNumberClick
       end
       object mnuShowCallsignInfo: TMenuItem
         Caption = 'Show Callsign Info'
@@ -1386,8 +1494,10 @@ object MainForm: TMainForm
       Caption = 'HST Competition'
       OnClick = RunMNUClick
     end
-    object N3: TMenuItem
-      Caption = '-'
+    object CWTCompetition1: TMenuItem
+      Tag = 5
+      Caption = 'CWT Competition'
+      OnClick = RunMNUClick
     end
     object StopMNU: TMenuItem
       Caption = 'Stop'
@@ -1399,7 +1509,7 @@ object MainForm: TMainForm
     Left = 384
     Top = 176
     Bitmap = {
-      494C01010A00D8000C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A00D800040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

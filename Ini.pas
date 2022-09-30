@@ -22,12 +22,16 @@ const
 
   DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
-  TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
+  TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst, rmCwt);
   
 var
   Call: string = 'VE3NEA';
-  HamName: string;
+  HamName: string = 'Alex';
+  CWOPSNum: string = '1';
   Wpm: integer = 30;
+  MaxRxWpm: integer = 0;
+  MinRxWpm: integer = 0;
+  NRDigits: integer = 1;
   BandWidth: integer = 500;
   Pitch: integer = 600;
   Qsk: boolean = true;
@@ -43,6 +47,8 @@ var
   Qsb: boolean = true;
   Flutter: boolean = true;
   Lids: boolean = true;
+  NoActivityCnt: integer=0;
+  NoStopActivity: integer=0;
 
   Duration: integer = 30;
   RunMode: TRunMode = rmStop;
@@ -66,6 +72,7 @@ uses
 procedure FromIni;
 var
   V: integer;
+  x1: string;
 begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
@@ -74,8 +81,16 @@ begin
       MainForm.SetBw(ReadInteger(SEC_STN, 'BandWidth', 9));
 
       HamName := ReadString(SEC_STN, 'Name', '');
-      if HamName <> '' then
+      CWOPSNum :=  ReadString(SEC_STN, 'cwopsnum', '');
+      if HamName <> '' then begin
         MainForm.Caption := MainForm.Caption + ':  ' + HamName;
+        if CWOPSNum <> ''  then
+             MainForm.Caption := MainForm.Caption + ' ' + CWOPSNum;
+       end;
+
+      MainForm.UpdCWMaxRxSpeed(ReadInteger(SEC_STN, 'CWMaxRxSpeed', MaxRxWpm));
+      MainForm.UpdCWMinRxSpeed(ReadInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm));
+      MainForm.UpdNRDigits(ReadInteger(SEC_STN, 'NRDigits', NRDigits));
 
       Wpm := ReadInteger(SEC_STN, 'Wpm', Wpm);
       Wpm := Max(10, Min(120, Wpm));
@@ -136,6 +151,19 @@ begin
       WriteInteger(SEC_STN, 'BandWidth', MainForm.ComboBox2.ItemIndex);
       WriteInteger(SEC_STN, 'Wpm', Wpm);
       WriteBool(SEC_STN, 'Qsk', Qsk);
+
+      {
+        Note - HamName and CWOPSNum are written to .ini file by
+        TMainForm.Operator1Click and TMainForm.CWOPSNumberClick.
+        Once specified, HamName and CWOPSNum are added to the application's
+        title bar. Thus, HamName and cwopsnum are not written here.
+
+        WriteString(SEC_STN, 'Name', HamName);
+        WriteString(SEC_STN, 'cwopsnum', CWOPSNum);
+      }
+      WriteInteger(SEC_STN, 'CWMaxRxSpeed', MaxRxWpm);
+      WriteInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm);
+      WriteInteger(SEC_STN, 'NRDigits', NRDigits);
 
       WriteInteger(SEC_BND, 'Activity', Activity);
       WriteBool(SEC_BND, 'Qrn', Qrn);

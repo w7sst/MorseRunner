@@ -8,7 +8,7 @@ unit DxStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Ini, CallLst, Qsb, DxOper, Log, SndTypes;
+  SysUtils, Classes, Station, RndFunc, Dialogs, Ini, CWOPS, CallLst, Qsb, DxOper, Log, SndTypes;
 
 type
   TDxStation = class(TStation)
@@ -21,6 +21,8 @@ type
     procedure ProcessEvent(AEvent: TStationEvent); override;
     procedure DataToLastQso;
     function GetBlock: TSingleArray; override;
+  var
+     Operid: integer;
   end;
 
 
@@ -36,7 +38,12 @@ begin
   inherited Create(nil);
 
   HisCall := Ini.Call;
-  MyCall := PickCall;     // Pick one Callsign from Calllist
+  if RunMode <> rmCwt then
+       MyCall := PickCall     // Pick one Callsign from Calllist
+   else begin
+       Operid := CWOPSCWT.getcwopsid();
+       MyCall :=  CWOPSCWT.getcwopscall(Operid);
+   end;
 
   Oper := TDxOperator.Create;
   Oper.Call := MyCall;
@@ -45,7 +52,15 @@ begin
   NrWithError := Ini.Lids and (Random < 0.1);
 
   Wpm := Oper.GetWpm;
-  NR := Oper.GetNR;
+  OpName := 'ALEX';
+  if RunMode <> rmCwt then
+       NR := Oper.GetNR
+  else begin
+       OpName := CWOPSCWT.getcwopsname(Operid);
+       NR :=  CWOPSCWT.getcwopsnum(Operid);
+  end;
+  //showmessage(MyCall);
+
   if Ini.Lids and (Random < 0.03) then
     RST := 559 + 10 * Random(4)
   else
@@ -145,6 +160,7 @@ begin
     TrueCall := Self.MyCall;
     TrueRst := Self.Rst;
     TrueNR := Self.NR;
+    TrueOpName := Self.OpName;
   end;
   Free;
 end;
