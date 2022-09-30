@@ -8,7 +8,8 @@ unit DxStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Dialogs, Ini, CWOPS, CallLst, Qsb, DxOper, Log, SndTypes;
+  SysUtils, Classes, Station, RndFunc, Dialogs, Ini, ARRLFD, CWOPS,
+  CallLst, Qsb, DxOper, Log, SndTypes;
 
 type
   TDxStation = class(TStation)
@@ -19,6 +20,7 @@ type
     constructor CreateStation;
     destructor Destroy; override;
     procedure ProcessEvent(AEvent: TStationEvent); override;
+    procedure SendMsg(AMsg: TStationMessage); override;
     procedure DataToLastQso;
     function GetBlock: TSingleArray; override;
   var
@@ -38,12 +40,19 @@ begin
   inherited Create(nil);
 
   HisCall := Ini.Call;
-  if RunMode <> rmCwt then
-       MyCall := PickCall     // Pick one Callsign from Calllist
-   else begin
+  // Adding a contest: DxStation.CreateStation - load a random callsign
+  case SimContest of
+    scCwt: begin
        Operid := CWOPSCWT.getcwopsid();
        MyCall :=  CWOPSCWT.getcwopscall(Operid);
-   end;
+    end;
+    scFieldDay: begin
+       Operid := gARRLFD.pickStation();
+       MyCall := gARRLFD.getCall(Operid);
+    end;
+    else
+       MyCall := PickCall;     // Pick one Callsign from Calllist
+  end;
 
   Oper := TDxOperator.Create;
   Oper.Call := MyCall;
@@ -52,12 +61,20 @@ begin
   NrWithError := Ini.Lids and (Random < 0.1);
 
   Wpm := Oper.GetWpm;
-  OpName := 'ALEX';
-  if RunMode <> rmCwt then
-       NR := Oper.GetNR
-  else begin
-       OpName := CWOPSCWT.getcwopsname(Operid);
-       NR :=  CWOPSCWT.getcwopsnum(Operid);
+
+  // Adding a contest: DxStation.CreateStation - get Exch1 (e.g. Name), Exch2 (e.g. NR), and optional UserText
+  case SimContest of
+    scCwt: begin
+      OpName := CWOPSCWT.getcwopsname(Operid);
+      NR :=  CWOPSCWT.getcwopsnum(Operid);
+    end;
+    scFieldDay: begin
+      Exch1 := gARRLFD.getExch1(Operid);
+      Exch2 := gARRLFD.getExch2(Operid);
+      UserText := gARRLFD.getUserText(Operid);
+    end;
+    else
+      NR := Oper.GetNR;
   end;
   //showmessage(MyCall);
 
@@ -87,8 +104,6 @@ begin
   Qsb.Free;
   inherited;
 end;
-
-
 
 
 procedure TDxStation.ProcessEvent(AEvent: TStationEvent);
@@ -153,14 +168,47 @@ begin
 end;
 
 
+// override SendMsg to allow Dx Stations to send alternate field day messages
+// (SECT?, CLASS?, CL?) whenever a 'NR?' message (msgNrQm) is sent.
+procedure TDxStation.SendMsg(AMsg: TStationMessage);
+begin
+  if (SimContest = scFieldDay) and
+    (AMsg = msgNrQm) then
+    begin
+      case Random(5) of
+        0,1: SendText('NR?');
+        2: SendText('SECT?');
+        3: SendText('CLASS?');
+        4: SendText('CL?');
+      end;
+    end
+  else
+    inherited SendMsg(AMsg);
+end;
 
+
+// copies data from this DxStation to top of QsoList[].
+// removes Self from Stations[] container array.
 procedure TDxStation.DataToLastQso;
 begin
   with QsoList[High(QsoList)] do begin
     TrueCall := Self.MyCall;
     TrueRst := Self.Rst;
     TrueNR := Self.NR;
-    TrueOpName := Self.OpName;
+    case ActiveContest.ExchType1 of
+      etRST: TrueExch1 := IntToStr(Self.NR);
+      etOpName: TrueExch1 := Self.OpName;
+      etFdClass: TrueExch1 := Self.Exch1;
+      else
+        assert(false);
+    end;
+    case ActiveContest.ExchType2 of
+      etSerialNr: TrueExch2 := IntToStr(Self.NR);
+      etCwopsNumber: TrueExch2 := IntToStr(Self.NR);
+      etArrlSection: TrueExch2 := Self.Exch2;
+      else
+        assert(false);
+    end;
   end;
 
   Free; // removes Self from Stations[] container

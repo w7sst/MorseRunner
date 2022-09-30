@@ -119,7 +119,7 @@ procedure TDxOperator.SetState(AState: TOperatorState);
 begin
   State := AState;
   if AState = osNeedQso
-    then Patience := Round(RndRayleigh(4))
+    then Patience := Round(RndRayleigh(4)) + 99 // mikeb debug
     else Patience := FULL_PATIENCE;
 
   if (AState = osNeedQso) and (not (RunMode in [rmSingle, RmHst])) and (Random < 0.1)

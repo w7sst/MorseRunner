@@ -34,6 +34,7 @@ uses
   pcre in 'PerlRegEx\pcre.pas',
   PerlRegEx in 'PerlRegEx\PerlRegEx.pas',
   ARRL in 'ARRL.pas',
+  ArrlFd in 'ArrlFd.pas',
   CWOPS in 'CWOPS.pas';
 
 {$R *.RES}

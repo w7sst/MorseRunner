@@ -9,7 +9,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Graphics, RndFunc, Math, Controls,
-  StdCtrls, ExtCtrls, ARRL, PerlRegEx, pcre;
+  StdCtrls, ExtCtrls, ARRL, ARRLFD, PerlRegEx, pcre;
 
 
 procedure SaveQso;
@@ -35,7 +35,8 @@ type
     Call, TrueCall, RawCallsign: string;
     Rst, TrueRst: integer;
     Nr, TrueNr: integer;
-    OpName, TrueOpName: string;
+    Exch1, TrueExch1: string;   // exchange 1 (e.g. 3A, OpName)
+    Exch2, TrueExch2: string;   // exchange 2 (e.g. OR, CWOPSNum)
     TrueWpm: integer;           // WPM of sending DxStn (reported in log)
     Pfx: string;
     Dupe: boolean;
@@ -140,13 +141,20 @@ end;
 //Update Callsign info
 procedure UpdateSbar(const ACallsign: string);
 var
-    s: string;
+  s: string;
 begin
-    s:= ARRLDX.Search(ACallsign);
-    if (length(s) > 0) then
-        MainForm.sbar.Caption:= '  ' + s
-    else
-        MainForm.sbar.Caption:= '  Unknow';
+  // Adding a contest: UpdateSbar - update status bar with station info (e.g. FD shows UserText)
+  case Ini.SimContest of
+  scFieldDay:
+    s := gArrlFd.GetStationInfo(ACallsign);
+  else
+    s := ARRLDX.Search(ACallsign);
+  end;
+
+  // '&' are suppressed in this control; replace with '&&'
+  s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
+
+  MainForm.sbar.Caption:= '  ' + s;
 end;
 
 
@@ -165,13 +173,20 @@ begin
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
   MainForm.RichEdit1.DefAttributes.Name:= 'Consolas';
+
   if Ini.RunMode = rmHst then
     ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
-  else
-    if Ini.RunMode = rmCwt then
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'NR', 'Pref', 'Chk', 'Wpm')
-    else
+  else begin
+    // Adding a contest: set Score Table titles
+    case Ini.SimContest of
+      scCwt:
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'NR', 'Pref', 'Chk', 'Wpm');
+      scFieldDay:
+        ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
+      else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
+    end;
+  end;
 
   if Ini.RunMode = rmHst then
     Empty := ''
@@ -381,20 +396,49 @@ procedure SaveQso;
 var
   i: integer;
   Qso: PQso;
-begin
-  with MainForm do begin
-    if RunMode = rmCwt  then begin
-       if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) < 2) or (Edit3.Text = '') then begin
-           Beep;
-           Exit;
-       end;
-    end
-    else begin
-       if (Length(Edit1.Text) < 3) or (Length(Edit2.Text) <> 3) or (Edit3.Text = '') then begin
-           Beep;
-           Exit;
-       end;
+
+  //validate Exchange 1 (Edit2) field lengths
+  function ValidateExchField1(const text: string): Boolean;
+  begin
+    Result := false;
+    case ActiveContest.ExchType1 of
+      etRST:     Result := Length(text) = 3;
+      etOpName:  Result := Length(text) > 1;
+      etFdClass: Result := Length(text) > 1;
+      else
+        assert(false, 'missing case');
     end;
+  end;
+
+  //validate Exchange 2 (Edit3) field lengths
+  function ValidateExchField2(const text: string): Boolean;
+  begin
+    Result := false;
+    case ActiveContest.ExchType2 of
+      etSerialNr:    Result := Length(text) > 0;
+      etCwopsNumber: Result := Length(text) > 0;
+      etArrlSection: Result := Length(text) > 1;
+      //etStateProv:
+      //etCqZone:
+      //etItuZone:
+      //etAge:
+      //etPower:
+      //etJarlOblastCode:
+      else
+        assert(false, 'missing case');
+    end;
+  end;
+
+begin
+  with MainForm do
+    begin
+    if (Length(Edit1.Text) < 3) or
+      not ValidateExchField1(Edit2.Text) or
+      not ValidateExchField2(Edit3.Text) then
+      begin
+        Beep;
+        Exit;
+      end;
 
     //add new entry to log
     SetLength(QsoList, Length(QsoList)+1);
@@ -403,15 +447,31 @@ begin
     //save data
     Qso.T := BlocksToSeconds(Tst.BlockNumber) /  86400;
     Qso.Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
-    if RunMode = rmCwt  then begin
-       Qso.OpName := Edit2.Text;
-       Qso.Rst := 599;
-    end
-    else  begin
-       Qso.Rst := StrToInt(Edit2.Text);
+
+    //save Exchange 1 (Edit2)
+    case ActiveContest.ExchType1 of
+      etRST:     Qso.Rst := StrToInt(Edit2.Text);
+      etOpName:  Qso.Exch1 := Edit2.Text;
+      etFdClass: Qso.Exch1 := Edit2.Text;
+      else
+        assert(false, 'missing case');
     end;
 
-    Qso.Nr := StrToInt(Edit3.Text);
+    //save Exchange2 (Edit3)
+    case ActiveContest.ExchType2 of
+      etSerialNr:    Qso.Nr := StrToInt(Edit3.Text);
+      etCwopsNumber: Qso.Nr := StrToInt(Edit3.Text);
+      etArrlSection: Qso.Exch2 := Edit3.Text;
+      //etStateProv:
+      //etCqZone:
+      //etItuZone:
+      //etAge:
+      //etPower:
+      //etJarlOblastCode:
+      else
+        assert(false, 'missing case');
+    end;
+
     Qso.RawCallsign:= ExtractCallsign(Qso.Call);
     Qso.Pfx := ExtractPrefix(Qso.RawCallsign);
     {if PfxList.Find(Qso.Pfx, Idx) then Qso.Pfx := '' else }
@@ -460,24 +520,34 @@ begin
   MainForm.WipeBoxes;
 
   //inc NR
-   if Ini.RunMode <> rmCwt then
-      Inc(Tst.Me.NR);
+  if ActiveContest.ExchType2 = etSerialNr then
+    Inc(Tst.Me.NR);
 end;
 
 
 procedure LastQsoToScreen;
 begin
   with QsoList[High(QsoList)] do begin
-  if Ini.RunMode = rmCwt then
-    ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-      , OpName
-      , format('%.d', [Nr])
-      , Pfx, Err,format('%.2d', [TrueWpm]))
-  else
-    ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-      , format('%.3d %.4d', [Rst, Nr])
-      , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
-      , Pfx, Err, format('%.3d', [TrueWpm]));
+    // Adding a contest: LastQsoToScreen, add last qso to Score Table
+    case Ini.SimContest of
+    scCwt:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , Exch1
+        , format('%.d', [Nr])
+        , Pfx, Err, format('%.2d', [TrueWpm]));
+    scFieldDay:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , Exch1
+        , Exch2
+        , Pfx, Err, format('%.2d', [TrueWpm]));
+    scWpx, scHst:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d %.4d', [Rst, Nr])
+        , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
+        , Pfx, Err, format('%.3d', [TrueWpm]));
+    else
+      assert(false, 'missing case');
+    end;
   end;
 end;
 
@@ -485,35 +555,35 @@ end;
 procedure CheckErr;
 begin
   with QsoList[High(QsoList)] do begin
-    if RunMode <> rmCwt then begin
-      if TrueCall = '' then
-        Err := 'NIL'
-      else
-        if Dupe then
-          Err := 'DUP'
+    Err := '';
+    if TrueCall = '' then
+      Err := 'NIL';
+    if Err.IsEmpty and Dupe then
+      Err := 'DUP';
+    if Err.IsEmpty then
+      case ActiveContest.ExchType1 of
+        etRST:     if TrueRst <> Rst then Err := 'RST';
+        etOpName:  if TrueExch1 <> Exch1 then Err := 'NAME';
+        etFdClass: if TrueExch1 <> Exch1 then Err := 'CL ';
         else
-          if TrueRst <> Rst then
-            Err := 'RST'
-          else
-            if TrueNr <> NR then
-              Err := 'NR '
-            else
-              Err := '   ';
-    end else begin
-      if TrueCall = '' then
-        Err := 'NIL'
-      else
-        if Dupe then
-          Err := 'DUP'
+          assert(false, 'missing exchange 1 case');
+      end;
+    if Err.IsEmpty then
+      case ActiveContest.ExchType2 of
+        etSerialNr:    if TrueNr <> NR then Err := 'NR ';
+        etCwopsNumber: if TrueNr <> NR then Err := 'NR ';
+        etArrlSection: if TrueExch2 <> Exch2 then Err := 'SEC';
+        //etStateProv:
+        //etCqZone:
+        //etItuZone:
+        //etAge:
+        //etPower:
+        //etJarlOblastCode:
         else
-          if TrueOpName <> OpName then
-            Err := 'NAME'
-          else
-            if TrueNr <> NR then
-              Err := 'NR '
-            else
-              Err := '   ';
-    end;
+          assert(false, 'missing exchange 2 case');
+      end;
+    if Err.IsEmpty then
+      Err := '   ';
   end;
 end;
 

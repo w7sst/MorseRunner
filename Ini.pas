@@ -22,12 +22,90 @@ const
 
   DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
-  TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst, rmCwt);
-  
+  TSimContest = (scWpx, scCwt, scFieldDay, scHst);
+  TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
+
+  // Exchange Field #1 types
+  TExchange1Type = (etRST, etOpName, etFdClass);
+
+  // Exchange Field #2 Types
+  TExchange2Type = (etSerialNr, etCwopsNumber, etArrlSection, etStateProv,
+                    etCqZone, etItuZone, etAge, etPower, etJarlOblastCode);
+
+  // Contest definition.
+  TContestDefinition = record
+    Name: PChar;    // Contest Name.
+    Key: PChar;     // Identifying key (used in Ini files)
+    ExchType1: TExchange1Type;
+    ExchType2: TExchange2Type;
+    ExchFieldEditable: Boolean; // whether the Exchange field is editable
+    ExchDefault: PChar; // contest-specific Exchange default message
+    Msg: PChar;     // Exchange error message
+    T: TSimContest; // used to verify array ordering
+  end;
+
+  PContestDefinition = ^TContestDefinition;
+
+const
+  {
+    Each contest is declared here. Long-term, this will be a generalized
+    table-driven implementation allowing new contests to be configured
+    by updating an external configuration file, perhaps a .yaml file.
+
+    Note: The order of this table must match the declared order of
+    TSimContest above.
+
+    Adding a contest: Add to TSimContest enum (above) and update ContestDefinitions[] array.
+  }
+  ContestDefinitions: array[TSimContest] of TContestDefinition = (
+    (Name: 'CQ Wpx';
+     Key: 'CqWpx';
+     ExchType1: etRST;
+     ExchType2: etSerialNr;
+     ExchFieldEditable: False;
+     ExchDefault: '5NN <#>';
+     Msg: '''RST <serial>'' (e.g. 5NN #|123)';
+     T:scWpx),
+     // 'expecting RST (e.g. 5NN)'
+
+    (Name: 'CWOPS Cwt';
+     Key: 'Cwt';
+     ExchType1: etOpName;
+     ExchType2: etCwopsNumber;
+     ExchFieldEditable: True;
+     ExchDefault: 'David 1';
+     Msg: '''<op name> <CWOPS number>'' (e.g. DAVID 123)';
+     T:scCwt),
+     // expecting two strings [Name,Number] (e.g. David 123)
+     // Contest Exchange: <Name> <CW Ops Num>
+
+    (Name: 'ARRL Field Day';
+     Key: 'ArrlFd';
+     ExchType1: etFdClass;
+     ExchType2: etArrlSection;
+     ExchFieldEditable: True;
+     ExchDefault: '3A OR';
+     Msg: '''<class> <section>'' (e.g. 3A OR)';
+     T:scFieldDay),
+     // expecting two strings [Class,Section] (e.g. 3A OR)
+
+    (Name: 'HST (High Speed Test)';
+     Key: 'HST';
+     ExchType1: etRST;
+     ExchType2: etSerialNr;
+     ExchFieldEditable: False;
+     ExchDefault: '';
+     Msg: '''RST <serial>'' (e.g. 5NN #)';
+     T:scHst)
+     // expecting RST (e.g. 5NN)
+  );
+
 var
   Call: string = 'VE3NEA';
   HamName: string = 'Alex';
   CWOPSNum: string = '1';
+  ArrlClass: string = '3A';
+  ArrlSection: string = 'OR';
   Wpm: integer = 30;
   MaxRxWpm: integer = 0;
   MinRxWpm: integer = 0;
@@ -58,10 +136,15 @@ var
   SaveWav: boolean = false;
   CallsFromKeyer: boolean = false;
 
+  SimContest: TSimContest = scWpx;
+  ActiveContest: PContestDefinition = @ContestDefinitions[scWpx];
+  UserExchangeTbl: array[TSimContest] of string;
+  UserExchange1: array[TSimContest] of string;
+  UserExchange2: array[TSimContest] of string;
 
 procedure FromIni;
 procedure ToIni;
-
+function IsNum(Num: String): Boolean;
 
 
 implementation
@@ -72,21 +155,32 @@ uses
 procedure FromIni;
 var
   V: integer;
-  x1: string;
 begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
+      // Load SimContest, but do not call SetContest() until UI is initialized.
+      V:= ReadInteger(SEC_TST, 'SimContest', Ord(scWpx));
+      SimContest := TSimContest(V);
+      ActiveContest := @ContestDefinitions[SimContest];
+      MainForm.SimContestCombo.ItemIndex := V;
+
+      // Adding a contest: read contest-specfic Exchange Strings from .INI file.
+      // load contest-specific Exchange Strings
+      UserExchangeTbl[scWpx] := ReadString(SEC_STN, 'CqWpxExchange', '5NN #');
+      UserExchangeTbl[scCwt] := ReadString(SEC_STN, 'CwtExchange',
+        Format('%s 1234', [HamName]));
+      UserExchangeTbl[scFieldDay] := ReadString(SEC_STN, 'ArrlFdExchange', '3A OR');
+      UserExchangeTbl[scHst] := ReadString(SEC_STN, 'HSTExchange', '5NN #');
+
+      ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
+      ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'OR');
+
       MainForm.SetMyCall(ReadString(SEC_STN, 'Call', Call));
       MainForm.SetPitch(ReadInteger(SEC_STN, 'Pitch', 3));
       MainForm.SetBw(ReadInteger(SEC_STN, 'BandWidth', 9));
 
       HamName := ReadString(SEC_STN, 'Name', '');
       CWOPSNum :=  ReadString(SEC_STN, 'cwopsnum', '');
-      if HamName <> '' then begin
-        MainForm.Caption := MainForm.Caption + ':  ' + HamName;
-        if CWOPSNum <> ''  then
-             MainForm.Caption := MainForm.Caption + ' ' + CWOPSNum;
-       end;
 
       MainForm.UpdCWMaxRxSpeed(ReadInteger(SEC_STN, 'CWMaxRxSpeed', MaxRxWpm));
       MainForm.UpdCWMinRxSpeed(ReadInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm));
@@ -146,6 +240,17 @@ begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
       WriteBool(SEC_SYS, 'ShowCallsignInfo', MainForm.mnuShowCallsignInfo.Checked);
+
+      // Adding a contest: write contest-specfic Exchange Strings to .INI file.
+      WriteInteger(SEC_TST, 'SimContest', Ord(SimContest));
+      WriteString(SEC_STN, 'CqWpxExchange', UserExchangeTbl[scWpx]);
+      WriteString(SEC_STN, 'CwtExchange', UserExchangeTbl[scCwt]);
+      WriteString(SEC_STN, 'ArrlFdExchange', UserExchangeTbl[scFieldDay]);
+      WriteString(SEC_STN, 'HSTExchange', UserExchangeTbl[scHst]);
+
+      WriteString(SEC_STN, 'ArrlClass', ArrlClass);
+      WriteString(SEC_STN, 'ArrlSection', ArrlSection);
+
       WriteString(SEC_STN, 'Call', Call);
       WriteInteger(SEC_STN, 'Pitch', MainForm.ComboBox1.ItemIndex);
       WriteInteger(SEC_STN, 'BandWidth', MainForm.ComboBox2.ItemIndex);
@@ -185,6 +290,19 @@ begin
     end;
 end;
 
+
+function IsNum(Num: String): Boolean;
+var
+   X : Integer;
+begin
+   Result := Length(Num) > 0;
+   for X := 1 to Length(Num) do begin
+       if Pos(copy(Num,X,1),'0123456789') = 0 then begin
+           Result := False;
+           Exit;
+       end;
+   end;
+end;
 
 
 

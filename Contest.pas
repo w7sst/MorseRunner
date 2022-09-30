@@ -209,6 +209,7 @@ begin
               //Log.LastQsoToScreen;
               Log.CheckErr;
               Log.ScoreTableUpdateCheck;
+              { TODO -omikeb -cfeature : Clean up status bar code. }
               if Ini.RunMode = RmHst then
                 Log.UpdateStatsHst
               else
@@ -240,7 +241,9 @@ begin
       FStopPressed := false;
       MainForm.PopupScoreHst;
       end        
-    else if (RunMode = rmWpx) and not FStopPressed then
+    else if (SimContest = scWpx) and
+      (RunMode in [rmHst, rmWpx]) and
+      not FStopPressed then
       begin
       MainForm.Run(rmStop);
       FStopPressed := false;
@@ -284,7 +287,7 @@ var
   z: integer;
 begin
   //the stations heard my CQ and want to call
-  if (not (RunMode in [rmSingle, RmHst])) then
+  if (not (RunMode in [rmSingle, {rmFieldDay,???} RmHst])) then
     if (msgCQ in Me.Msg) or
        ((QsoList <> nil) and (msgTU in Me.Msg) and (msgMyCall in Me.Msg))then
        begin

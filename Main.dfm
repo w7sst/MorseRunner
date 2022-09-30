@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Morse Runner'
-  ClientHeight = 469
+  ClientHeight = 506
   ClientWidth = 729
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -70,7 +70,7 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Top = 334
+    Top = 371
     Width = 729
     Height = 135
     Align = alBottom
@@ -86,7 +86,7 @@ object MainForm: TMainForm
     end
     object SpeedButton4: TSpeedButton
       Tag = 1
-      Left = 12
+      Left = 9
       Top = 66
       Width = 61
       Height = 26
@@ -219,6 +219,7 @@ object MainForm: TMainForm
       Width = 45
       Height = 27
       AutoSelect = False
+      CharCase = ecUpperCase
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
@@ -230,8 +231,8 @@ object MainForm: TMainForm
       OnKeyPress = Edit3KeyPress
     end
     object Panel2: TPanel
-      Left = 529
-      Top = 6
+      Left = 522
+      Top = 5
       Width = 191
       Height = 33
       BevelOuter = bvLowered
@@ -368,7 +369,7 @@ object MainForm: TMainForm
   end
   object Panel5: TPanel
     Left = 0
-    Top = 324
+    Top = 361
     Width = 729
     Height = 10
     Align = alBottom
@@ -379,7 +380,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 2
     Width = 517
-    Height = 322
+    Height = 359
     Align = alClient
     BevelOuter = bvNone
     BorderStyle = bsSingle
@@ -388,13 +389,12 @@ object MainForm: TMainForm
       Left = 0
       Top = 54
       Width = 513
-      Height = 201
+      Height = 238
       Align = alClient
       Brush.Color = 16711401
       Pen.Style = psClear
-      ExplicitTop = 0
-      ExplicitWidth = 484
-      ExplicitHeight = 239
+      ExplicitLeft = 2
+      ExplicitTop = 60
     end
     object Label14: TLabel
       Left = 76
@@ -468,7 +468,7 @@ object MainForm: TMainForm
     end
     object RichEdit1: TRichEdit
       Left = 0
-      Top = 277
+      Top = 314
       Width = 513
       Height = 41
       TabStop = False
@@ -482,7 +482,7 @@ object MainForm: TMainForm
       ParentFont = False
       ReadOnly = True
       ScrollBars = ssVertical
-      TabOrder = 0
+      TabOrder = 1
       Visible = False
       Zoom = 100
     end
@@ -536,14 +536,15 @@ object MainForm: TMainForm
       ParentShowHint = False
       ShowWorkAreas = True
       ShowHint = True
-      TabOrder = 1
+      TabOrder = 0
+      TabStop = False
       ViewStyle = vsReport
       OnCustomDrawSubItem = ListView2CustomDrawSubItem
       OnSelectItem = ListView2SelectItem
     end
     object sbar: TPanel
       Left = 0
-      Top = 255
+      Top = 292
       Width = 513
       Height = 22
       Align = alBottom
@@ -558,15 +559,15 @@ object MainForm: TMainForm
     Left = 517
     Top = 2
     Width = 212
-    Height = 322
+    Height = 359
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 3
     object GroupBox3: TGroupBox
-      Left = 9
-      Top = 171
+      Left = 6
+      Top = 238
       Width = 194
-      Height = 87
+      Height = 84
       Caption = ' Band Conditions '
       TabOrder = 0
       object Label11: TLabel
@@ -651,53 +652,53 @@ object MainForm: TMainForm
       end
     end
     object GroupBox1: TGroupBox
-      Left = 9
-      Top = 6
+      Left = 6
+      Top = 81
       Width = 194
-      Height = 163
+      Height = 155
       Caption = ' Station '
       TabOrder = 1
       object Label4: TLabel
         Left = 12
-        Top = 26
+        Top = 21
         Width = 20
         Height = 15
         Caption = 'Call'
       end
       object Label5: TLabel
-        Left = 156
-        Top = 54
+        Left = 162
+        Top = 46
         Width = 29
         Height = 15
         Caption = 'WPM'
       end
       object Label6: TLabel
         Left = 12
-        Top = 54
+        Top = 46
         Width = 54
         Height = 15
         Caption = 'CW Speed'
       end
       object Label7: TLabel
-        Left = 12
-        Top = 82
+        Left = 13
+        Top = 76
         Width = 49
         Height = 15
         Caption = 'CW Pitch'
       end
       object Label9: TLabel
         Left = 12
-        Top = 110
+        Top = 106
         Width = 74
         Height = 15
         Caption = 'RX Bandwidth'
       end
       object VolumeSlider1: TVolumeSlider
-        Left = 89
-        Top = 138
+        Left = 92
+        Top = 129
         Width = 60
         Height = 20
-        Hint = '-15,0 dB'
+        Hint = '-15.0 dB'
         ShowHint = True
         Margin = 5
         Value = 0.750000000000000000
@@ -709,17 +710,16 @@ object MainForm: TMainForm
       end
       object Label18: TLabel
         Left = 12
-        Top = 140
+        Top = 134
         Width = 58
         Height = 15
         Caption = 'Mon. Level'
       end
       object Edit4: TEdit
-        Left = 43
-        Top = 22
+        Left = 45
+        Top = 15
         Width = 89
         Height = 23
-        TabStop = False
         CharCase = ecUpperCase
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
@@ -732,33 +732,33 @@ object MainForm: TMainForm
         OnChange = Edit4Change
       end
       object SpinEdit1: TSpinEdit
-        Left = 88
-        Top = 50
+        Left = 91
+        Top = 43
         Width = 65
         Height = 24
         TabStop = False
         MaxLength = 3
         MaxValue = 120
         MinValue = 10
-        TabOrder = 1
+        TabOrder = 2
         Value = 30
         OnChange = SpinEdit1Change
       end
       object CheckBox1: TCheckBox
         Left = 140
-        Top = 24
+        Top = 17
         Width = 45
         Height = 17
         TabStop = False
         Caption = 'QSK'
         Checked = True
         State = cbChecked
-        TabOrder = 2
+        TabOrder = 1
         OnClick = CheckBox1Click
       end
       object ComboBox1: TComboBox
-        Left = 88
-        Top = 78
+        Left = 92
+        Top = 73
         Width = 65
         Height = 23
         Style = csDropDownList
@@ -782,8 +782,8 @@ object MainForm: TMainForm
           '900 Hz')
       end
       object ComboBox2: TComboBox
-        Left = 88
-        Top = 106
+        Left = 92
+        Top = 102
         Width = 65
         Height = 23
         Style = csDropDownList
@@ -807,7 +807,7 @@ object MainForm: TMainForm
     end
     object Panel10: TPanel
       Left = 0
-      Top = 285
+      Top = 322
       Width = 212
       Height = 37
       Align = alBottom
@@ -815,21 +815,21 @@ object MainForm: TMainForm
       TabOrder = 2
       object Label8: TLabel
         Left = 179
-        Top = 11
+        Top = 13
         Width = 24
         Height = 15
         Caption = 'min.'
       end
       object Label10: TLabel
-        Left = 109
-        Top = 11
+        Left = 107
+        Top = 13
         Width = 15
         Height = 15
         Caption = 'for'
       end
       object SpinEdit2: TSpinEdit
         Left = 128
-        Top = 8
+        Top = 10
         Width = 45
         Height = 24
         TabStop = False
@@ -868,6 +868,46 @@ object MainForm: TMainForm
           Style = tbsDropDown
           OnClick = RunBtnClick
         end
+      end
+    end
+    object ContestGroup: TGroupBox
+      Left = 6
+      Top = 6
+      Width = 195
+      Height = 74
+      Caption = 'Contest'
+      TabOrder = 3
+      object Label17: TLabel
+        Left = 12
+        Top = 47
+        Width = 51
+        Height = 15
+        Caption = 'Exchange'
+      end
+      object SimContestCombo: TComboBox
+        Left = 23
+        Top = 18
+        Width = 169
+        Height = 23
+        Style = csDropDownList
+        TabOrder = 0
+        TabStop = False
+        OnChange = SimContestComboChange
+        Items.Strings = (
+          'CQ WPX'
+          'CWOPS CWT'
+          'ARRL Field Day'
+          'HST (High Speed Test)')
+      end
+      object ExchangeEdit: TEdit
+        Left = 76
+        Top = 44
+        Width = 116
+        Height = 23
+        CharCase = ecUpperCase
+        TabOrder = 1
+        Text = '3A OR'
+        OnExit = ExchangeEditExit
       end
     end
   end
@@ -936,11 +976,6 @@ object MainForm: TMainForm
         Tag = 4
         Caption = 'HST Competition'
         ShortCut = 16504
-        OnClick = RunMNUClick
-      end
-      object CWTCompetition3: TMenuItem
-        Tag = 5
-        Caption = 'CWT Competition'
         OnClick = RunMNUClick
       end
       object Stop1MNU: TMenuItem
@@ -1492,11 +1527,6 @@ object MainForm: TMainForm
     object HSTCompetition1: TMenuItem
       Tag = 4
       Caption = 'HST Competition'
-      OnClick = RunMNUClick
-    end
-    object CWTCompetition1: TMenuItem
-      Tag = 5
-      Caption = 'CWT Competition'
       OnClick = RunMNUClick
     end
     object StopMNU: TMenuItem

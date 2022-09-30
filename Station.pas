@@ -42,10 +42,16 @@ type
     Envelope: TSingleArray;
     State: TStationState;
 
+    // Exchange fields...
+    // Adding a contest: try to use the generalized Exch1 and Exch2 instead of new fields.
+    // TODO - continue to generalize the notion of Exch1 and Exch2 for all contests.
     NR, RST: integer;
     MyCall, HisCall: string;
     OpName: string;
     CWOPSNR: integer;
+    Exch1: string;  // Exchange field 1 (e.g. class, name, etc.)
+    Exch2: string;  // Exchange field 2 (e.g. zone, state/prov, section, grid, etc.)
+    UserText: string; // club name or description (from fdHistory file)
 
     Msg: TStationMessages;
     MsgText: string;
@@ -56,7 +62,7 @@ type
     function GetBlock: TSingleArray; virtual;
     procedure ProcessEvent(AEvent: TStationEvent); virtual; abstract;
 
-    procedure SendMsg(AMsg: TStationMessage);
+    procedure SendMsg(AMsg: TStationMessage); virtual;
     procedure SendText(AMsg: string); virtual;
     procedure SendMorse(AMorse: string);
 
@@ -99,10 +105,12 @@ begin
 
   case AMsg of
     msgCQ: begin
-       if RunMode = rmCwt then
-           SendText('CQ CWT <my>')
-       else
-           SendText('CQ <my> TEST');
+      // Adding a contest: TStation.SendMsg(msgCQ): send CQ message (e.g. CQ FD <my>)
+      case SimContest of
+        scCwt: SendText('CQ CWT <my>');
+        scFieldDay: SendText('CQ FD <my>');
+        else SendText('CQ <my> TEST');
+      end;
     end;
     msgNR: SendText('<#>');
     msgTU: SendText('TU');
@@ -112,16 +120,20 @@ begin
     msgQm: SendText('?');
     msgNil: SendText('NIL');
     msgR_NR: begin
-        if RunMode = rmCwt then
-            SendText('<#>')
-        else
-            SendText('R <#>');
+      // Adding a contest: TStation.SendMsg(msgR_NR): send 'R <#>' message, where # is exch (e.g. 3A OR)
+      case SimContest of
+        scCwt: SendText('<#>')
+      else
+        SendText('R <#>');
+      end;
     end;
     msgR_NR2: begin
-         if RunMode = rmCwt then
-            SendText('<#>')
-         else
-            SendText('R <#> <#>');
+      // Adding a contest: TStation.SendMsg(msgR_NR2): send 'R <#> <#>' message, where # is exch (e.g. 3A OR)
+      case SimContest of
+        scCwt: SendText('<#>')
+      else
+        SendText('R <#> <#>');
+      end;
     end;
     msgDeMyCall1: SendText('DE <my>');
     msgDeMyCall2: SendText('DE <my> <my>');
@@ -129,7 +141,14 @@ begin
     msgDeMyCallNr2: SendText('DE <my> <my> <#>');
     msgMyCallNr2: SendText('<my> <my> <#>');
     msgNrQm: SendText('NR?');
-    msgLongCQ: SendText('CQ CQ TEST <my> <my> TEST');
+    msgLongCQ:
+      begin
+        case SimContest of
+          scFieldDay: SendText('CQ CQ FD <my> <my>')
+        else
+          SendText('CQ CQ TEST <my> <my> TEST');
+        end;
+      end;
     msgQrl: SendText('QRL?');
     msgQrl2: SendText('QRL?   QRL?');
     msqQsy: SendText('<his>  QSY QSY');
@@ -215,11 +234,17 @@ function TStation.NrAsText: string;
 var
   Idx: integer;
 begin
-  if RunMode <> rmCwt then
-      Result := Format('%d%.3d', [RST, NR])
-  else
+  // Adding a contest: TStation.NrAsText(), converts <#> to exchange (usually '<exch1> <exch2>'). Inject LID errors.
+  case SimContest of
+    scCwt:
       Result := Format('%s  %.d', [OpName, NR]);
-  if NrWithError then
+    scFieldDay:
+      Result := Format('%s %s', [Exch1, Exch2]);
+    else
+      Result := Format('%d%.3d', [RST, NR]);
+  end;
+
+  if NrWithError and (ActiveContest.ExchType2 = etSerialNr) then
     begin
     Idx := Length(Result);
     if not CharInSet(Result[Idx], ['2'..'7']) then
@@ -234,9 +259,10 @@ begin
     NrWithError := false;
     end;
 
-  Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
-
-  if Ini.RunMode <> rmHst then
+  if Ini.ActiveContest.ExchType1 = etRST then
+     Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
+  if (Ini.RunMode <> rmHst) and (ActiveContest.ExchType2 in
+    [etSerialNr, etCqZone, etItuZone, etAge, etPower]) then
     begin
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
@@ -250,7 +276,6 @@ begin
       then Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
     end;
 end;
-
 
 end.
 

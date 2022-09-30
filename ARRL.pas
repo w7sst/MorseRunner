@@ -21,8 +21,11 @@ type
     ARRLList: TList;
     procedure LoadARRL;
     procedure Delimit(var AStringList: TStringList; const AText: string);
+    function SearchPrefix(out index : integer; const ACallPrefix : string) : Boolean;
   public
     constructor Create;
+    function FindRec(out dxrec : TARRLRec; const ACallsign : string) : Boolean;
+    function GetStationInfo(const ACallsign: string): string;
     function Search(ACallsign: string): string;
   end;
 
@@ -70,6 +73,57 @@ begin
     LoadARRL;
 end;
 
+// search ARRL prefix records for given callsign prefix.
+function TARRL.SearchPrefix(out index : integer; const ACallPrefix : string) : Boolean;
+var
+    reg: TPerlRegEx;
+    s: string;
+    i: integer;
+begin
+    reg := TPerlRegEx.Create();
+    try
+        Result:= False;
+        reg.Subject := UTF8Encode(ACallPrefix);
+        for i:= ARRLList.Count - 1 downto 0 do begin
+            s:= '^(' + TARRLRec(ARRLList.Items[i]).prefixReg + ')';
+            reg.RegEx:= UTF8Encode(s);
+            if Reg.Match then begin
+                index:= i;
+                Result:= True;
+                Break;
+            end;
+        end;
+    finally
+        reg.Free;
+    end;
+end;
+
+function TARRL.FindRec(out dxrec : TARRLRec; const ACallsign : string) : Boolean;
+var
+  sC, sP: string;
+  index : integer;
+begin
+  dxrec:= nil;
+  sC:= ExtractCallsign(ACallsign);
+  sP:= ExtractPrefix(sC);
+  Result:= SearchPrefix(index, sP);
+  if Result then
+    dxrec:= TARRLRec(ARRLList.Items[index]);
+end;
+
+// return status bar information string.
+function TARRL.GetStationInfo(const ACallsign: string): string;
+var
+  i : integer;
+  sC, sP: string;
+begin
+  Result:= 'Unknown';
+  sC:= ExtractCallsign(ACallsign);
+  sP:= ExtractPrefix(sC);
+  if SearchPrefix(i, sP) then
+    Result:= sC + '  ' + TARRLRec(ARRLList[i]).GetString;
+end;
+
 function TARRL.Search(ACallsign: string): string;
 var
     reg: TPerlRegEx;
@@ -94,7 +148,6 @@ begin
         reg.Free;
     end;
 end;
-
 
 procedure TARRL.Delimit(var AStringList: TStringList; const AText: string);
 const
