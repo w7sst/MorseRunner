@@ -72,6 +72,7 @@ begin
   Agc.AttackSamples := 155;   //AGC attack 5 ms
   Agc.HoldSamples := 155;
   Agc.AgcEnabled := true;
+  NoActivityCnt :=0;
 
   Init;
 end;
@@ -201,37 +202,35 @@ begin
     for i:=Stations.Count-1 downto 0 do
       if Stations[i] is TDxStation then
         with Stations[i] as TDxStation do
-          if (Oper.State = osDone) and (QsoList <> nil) and (MyCall = QsoList[High(QsoList)].Call)
-            then
-              begin
-              DataToLastQso;
-              with MainForm.RichEdit1.Lines do Delete(Count-1);
+          if (Oper.State = osDone) and (QsoList <> nil) and (MyCall = QsoList[High(QsoList)].Call) then begin
+              DataToLastQso; // deletes this TDxStation from Stations[]
+              //with MainForm.RichEdit1.Lines do Delete(Count-1);
+              //  Delete(Count-1);
+              //Log.LastQsoToScreen;
               Log.CheckErr;
-              Log.LastQsoToScreen;
-              if Ini.RunMode = RmHst
-                then Log.UpdateStatsHst
-                else Log.UpdateStats;
-              end;
-
-
+              Log.ScoreTableUpdateCheck;
+              { TODO -omikeb -cfeature : Clean up status bar code. }
+              if Ini.RunMode = RmHst then
+                Log.UpdateStatsHst
+              else
+                Log.UpdateStats;
+          end;
   //show info
   ShowRate;
   MainForm.Panel2.Caption := FormatDateTime('hh:nn:ss', BlocksToSeconds(BlockNumber) /  86400);
   if Ini.RunMode = rmPileUp then
     MainForm.Panel4.Caption := Format('Pile-Up:  %d', [DxCount]);
 
-
-  if (RunMode = rmSingle) and (DxCount = 0) then
-     begin
+  if (RunMode = rmSingle) and (DxCount = 0) then begin
      Me.Msg := [msgCq]; //no need to send cq in this mode
      Stations.AddCaller.ProcessEvent(evMeFinished);
-     end
-  else if (RunMode = rmHst) and (DxCount < Activity) then
-     begin
-     Me.Msg := [msgCq];
-     for i:=DxCount+1 to Activity do
-       Stations.AddCaller.ProcessEvent(evMeFinished);
-     end;
+  end
+  else
+    if (RunMode = rmHst) and (DxCount < Activity) then begin
+      Me.Msg := [msgCq];
+      for i:=DxCount+1 to Activity do
+        Stations.AddCaller.ProcessEvent(evMeFinished);
+    end;
 
 
   if (BlocksToSeconds(BlockNumber) >= (Duration * 60)) or FStopPressed then
@@ -242,7 +241,9 @@ begin
       FStopPressed := false;
       MainForm.PopupScoreHst;
       end        
-    else if (RunMode = rmWpx) and not FStopPressed then
+    else if (SimContest = scWpx) and
+      (RunMode in [rmHst, rmWpx]) and
+      not FStopPressed then
       begin
       MainForm.Run(rmStop);
       FStopPressed := false;
@@ -283,13 +284,29 @@ end;
 procedure TContest.OnMeFinishedSending;
 var
   i: integer;
+  z: integer;
 begin
   //the stations heard my CQ and want to call
-  if (not (RunMode in [rmSingle, RmHst])) then
+  if (not (RunMode in [rmSingle, {rmFieldDay,???} RmHst])) then
     if (msgCQ in Me.Msg) or
        ((QsoList <> nil) and (msgTU in Me.Msg) and (msgMyCall in Me.Msg))then
-    for i:=1 to RndPoisson(Activity / 2) do Stations.AddCaller;
+       begin
+          z := 0;
+          for i:=1 to RndPoisson(Activity / 2) do
+             begin
+                 Stations.AddCaller;
+                 z := 1;
+             end;
+             if z=0 then begin
+                // No maximo fica 3 cq sem contesters
+                inc(NoActivityCnt);
+                if ((NoActivityCnt > 2) or (NoStopActivity > 0) )  then begin
+                    Stations.AddCaller;
+                    NoActivityCnt := 0;
+                end;
 
+             end;
+       end;
   //tell callers that I finished sending
   for i:=Stations.Count-1 downto 0 do
     Stations[i].ProcessEvent(evMeFinished);

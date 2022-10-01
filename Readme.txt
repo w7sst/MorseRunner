@@ -1,10 +1,9 @@
-                              MORSE RUNNER  1.68
-
+                              MORSE RUNNER  1.71
                               Contest Simulator
 
                                   freeware
 
-               Copyright (C) 2004-2006 Alex Shovkoplyas, VE3NEA
+               Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
 
                       http://www.dxatlas.com/MorseRunner/
 
@@ -13,25 +12,30 @@
 
 PLATFORMS
 
-  - Windows 95/98/ME/NT4/2000/XP;
+  - Windows XP/7/8/10;
   - works on Linux systems under WINE (info TNX F8BQQ).
 
 
 
 INSTALLATION
 
-  - run Setup.exe and follow the on-screen instructions.
-
+  - Uncompress the file to any folder and run "MorseRunner.exe"
 
 
 UNINSTALLATION
 
-  - click on Add/Remove Programs in the Windows Control Panel;
-  - select Morse Runner in the list of installed programs and click on Remove.
+  - Delete MorseRunner directory.
 
 
 
 CONFIGURATION
+
+  Web Server
+
+    [system]
+    WebServer=http://www.bh1scw.com/mr/score
+    SubmitHiScoreURL=http://www.bh1scw.com/mr/score/insert.php?name=%s
+    PostMethod=POST
 
   Station
 
@@ -147,7 +151,7 @@ KEY ASSIGNMENTS
     fields have the same functions as these keys, and the captions
     of the buttons show what each key sends.
 
-  "\" - equivalent to F1.
+  "\" - equivalent to F1.(*Above 1.70 disable this key)
 
   Esc - stop sending.
 
@@ -217,6 +221,33 @@ command.
 
 
 VERSION HISTORY
+
+1.80 (W7SST)
+  - Beta release of multi-contest support
+  - Add ARRL Field Day
+  - Add NCL NAQP
+
+
+1.71a (CT7AUP)
+  - CWOPS CWT Contest
+  - CW RX Min Speed.
+  - CW RX Max Speed.
+  - NR number of digits.
+
+
+1.70 (BG4FQD)
+  - Adjust UI, support windows scheme.
+  - Support showing callsign infomation, You can modify it in the "ARRL.LIST"
+  - Disable hot key: "\" to prevent pressing by carelessness.
+  - Some other bugs fixing.
+
+
+
+1.69 (BG4FQD)
+  - Add "Hi-Score web page" server in MorseRunner.ini.
+  - Change default Font to Cleartype 'segoe ui', 'Consolar';
+  - Change string to Unicode, Building with Delphi 2010 sp3.
+
 
 
 1.68

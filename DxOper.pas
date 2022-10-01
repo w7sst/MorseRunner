@@ -34,6 +34,7 @@ type
     function GetReplyTimeout: integer;
     function GetWpm: integer;
     function GetNR: integer;
+    function GetName: string;
     procedure MsgReceived(AMsg: TStationMessages);
     procedure SetState(AState: TOperatorState);
     function GetReply: TStationMessage;
@@ -56,31 +57,58 @@ begin
 //  Result := Max(1, SecondsToBlocks(1 / Sqr(4*Skills)));
 //  Result := Round(RndGaussLim(Result, 0.7 * Result));
 
-  if State = osNeedPrevEnd
-    then Result := NEVER
-  else if RunMode = rmHst
-    then Result := SecondsToBlocks(0.05 + 0.5*Random * 10/Wpm)
+  if State = osNeedPrevEnd then
+    Result := NEVER
+  else if RunMode = rmHst then
+    Result := SecondsToBlocks(0.05 + 0.5*Random * 10/Wpm)
   else
     Result := SecondsToBlocks(0.1 + 0.5*Random);
 end;
 
 function TDxOperator.GetWpm: integer;
+var
+  mean, limit: Single;
 begin
-  if RunMode = rmHst
-    then Result := Ini.Wpm
-    else Result := Round(Ini.Wpm * 0.5 * (1 + Random));
+  if RunMode = rmHst then
+    Result := Ini.Wpm
+  else if (MaxRxWpm = -1) or (MinRxWpm = -1) then { use original algorithm }
+    Result := Round(Ini.Wpm * 0.5 * (1 + Random))
+  else if Ini.GetWpmUsesGaussian then  { use Gaussian w/ limit, [Wpm-Min, Wpm+Max] }
+    begin                           // assume Wpm=30,  MinRxWpm=6, MaxRxWpm=2
+    mean := Ini.Wpm + (-MinRxWpm + MaxRxWpm)/2; // 30+(-6+2)/2 = 30-4/2 = 28
+    limit := (MinRxWpm + MaxRxWpm)/2;           // (6+2)/2 = 4 wpm
+    Result := Round(RndGaussLim(mean, limit));  // [28-4, 28+4] -> wpm [24,32]
+    end
+  else                      { use Random value, [Wpm-Min,Wpm+Max] }
+    Result := Round(Ini.Wpm - MinRxWpm + (MinRxWpm + MaxRxWpm) * Random);
 end;
 
 function TDxOperator.GetNR: integer;
+Var
+ n1: integer;
 begin
-  Result := 1 + Round(Random * Tst.Minute * Skills);
+  if NRDigits = 1 then
+      Result := 1 + Round(Random * Tst.Minute * Skills)
+  else begin
+       n1 := trunc(power(10,NRDigits));
+       n1 := n1-1;
+       Result := Random(n1);
+  end;
 end;
+
+
+function TDxOperator.GetName: string;
+begin
+  Result := 'ALEX';
+end;
+
 
 function TDxOperator.GetReplyTimeout: integer;
 begin
-  if RunMode = rmHst
-    then  Result := SecondsToBlocks(60/Wpm)
-    else Result := SecondsToBlocks(6-Skills);
+  if RunMode = rmHst then
+    Result := SecondsToBlocks(60/Wpm)
+  else
+    Result := SecondsToBlocks(6-Skills);
   Result := Round(RndGaussLim(Result, Result/2));
 end;
 
@@ -99,7 +127,7 @@ procedure TDxOperator.SetState(AState: TOperatorState);
 begin
   State := AState;
   if AState = osNeedQso
-    then Patience := Round(RndRayleigh(4))
+    then Patience := Round(RndRayleigh(4)) + 99 // mikeb debug
     else Patience := FULL_PATIENCE;
 
   if (AState = osNeedQso) and (not (RunMode in [rmSingle, RmHst])) and (Random < 0.1)
@@ -124,16 +152,18 @@ begin
 
   //dynamic programming algorithm
 
-  for y:=0 to High(M[0]) do M[0,y] := 0;
-  for x:=1 to High(M) do M[x,0] := M[x-1,0] + W_X;
+  for y:=0 to High(M[0]) do
+    M[0,y] := 0;
+  for x:=1 to High(M) do
+    M[x,0] := M[x-1,0] + W_X;
 
   for x:=1 to High(M) do
-    for y:=1 to High(M[0]) do
-      begin
+    for y:=1 to High(M[0]) do begin
       T := M[x,y-1];
       //'?' can match more than one char
       //end may be missing
-      if (x < High(M)) and (C[x] <> '?') then Inc(T, W_Y);
+      if (x < High(M)) and (C[x] <> '?') then
+        Inc(T, W_Y);
 
       L := M[x-1,y];
       //'?' can match no chars
@@ -141,10 +171,11 @@ begin
 
       D := M[x-1,y-1];
       //'?' matches any char
-      if not (C[x] in [C0[y], '?']) then Inc(D, W_D);
+      //if not (C[x] in [C0[y], '?']) then Inc(D, W_D);
+      if not (CharInSet(C[x], [C0[y], '?'])) then Inc(D, W_D);
 
       M[x,y] := MinIntValue([T,D,L]);
-      end;
+    end;
 
   //classify by penalty
   case M[High(M), High(M[0])] of
@@ -231,9 +262,11 @@ begin
     case State of
       osNeedPrevEnd: ;
       osNeedQso: State := osNeedPrevEnd;
-      osNeedNr: if (Random < 0.9) or (RunMode = rmHst) then SetState(osNeedEnd);
+      osNeedNr: if (Random < 0.9) or (RunMode in [rmHst, rmSingle]) then
+        SetState(osNeedEnd);
       osNeedCall: ;
-      osNeedCallNr: if (Random < 0.9) or (RunMode = rmHst) then SetState(osNeedCall);
+      osNeedCallNr: if (Random < 0.9) or (RunMode in [rmHst, rmSingle]) then
+        SetState(osNeedCall);
       osNeedEnd: ;
       end;
 

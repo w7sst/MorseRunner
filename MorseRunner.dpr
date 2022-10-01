@@ -30,7 +30,13 @@ uses
   Mixers in 'VCL\Mixers.pas',
   VolumCtl in 'VCL\VolumCtl.pas',
   VolmSldr in 'VCL\VolmSldr.pas',
-  WavFile in 'VCL\WavFile.pas';
+  WavFile in 'VCL\WavFile.pas',
+  pcre in 'PerlRegEx\pcre.pas',
+  PerlRegEx in 'PerlRegEx\PerlRegEx.pas',
+  ARRL in 'ARRL.pas',
+  ArrlFd in 'ArrlFd.pas',
+  NaQp in 'NaQp.pas',
+  CWOPS in 'CWOPS.pas';
 
 {$R *.RES}
 
@@ -38,7 +44,6 @@ begin
   Application.Initialize;
   Application.Title := 'Morse Runner';
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TScoreDialog, ScoreDialog);
   Application.Run;
 end.
 

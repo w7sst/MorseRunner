@@ -8,7 +8,8 @@ unit DxStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Ini, CallLst, Qsb, DxOper, Log, SndTypes;
+  SysUtils, Classes, Station, RndFunc, Dialogs, Ini, ARRLFD, NAQP, CWOPS,
+  CallLst, Qsb, DxOper, Log, SndTypes;
 
 type
   TDxStation = class(TStation)
@@ -19,8 +20,11 @@ type
     constructor CreateStation;
     destructor Destroy; override;
     procedure ProcessEvent(AEvent: TStationEvent); override;
+    procedure SendMsg(AMsg: TStationMessage); override;
     procedure DataToLastQso;
     function GetBlock: TSingleArray; override;
+  var
+     Operid: integer;
   end;
 
 
@@ -36,7 +40,23 @@ begin
   inherited Create(nil);
 
   HisCall := Ini.Call;
-  MyCall := PickCall;
+  // Adding a contest: DxStation.CreateStation - load a random callsign
+  case SimContest of
+    scCwt: begin
+       Operid := CWOPSCWT.getcwopsid();
+       MyCall :=  CWOPSCWT.getcwopscall(Operid);
+    end;
+    scFieldDay: begin
+       Operid := gARRLFD.pickStation();
+       MyCall := gARRLFD.getCall(Operid);
+    end;
+    scNaQp: begin
+       Operid := gNAQP.pickStation();
+       MyCall := gNAQP.getCall(Operid);
+    end;
+    else
+       MyCall := PickCall;     // Pick one Callsign from Calllist
+  end;
 
   Oper := TDxOperator.Create;
   Oper.Call := MyCall;
@@ -45,15 +65,39 @@ begin
   NrWithError := Ini.Lids and (Random < 0.1);
 
   Wpm := Oper.GetWpm;
-  NR := Oper.GetNR;
-  if Ini.Lids and (Random < 0.03)
-    then RST := 559 + 10*Random(4)
-    else RST := 599;
+
+  // Adding a contest: DxStation.CreateStation - get Exch1 (e.g. Name), Exch2 (e.g. NR), and optional UserText
+  case SimContest of
+    scCwt: begin
+      OpName := CWOPSCWT.getcwopsname(Operid);
+      NR :=  CWOPSCWT.getcwopsnum(Operid);
+    end;
+    scFieldDay: begin
+      Exch1 := gARRLFD.getExch1(Operid);
+      Exch2 := gARRLFD.getExch2(Operid);
+      UserText := gARRLFD.getUserText(Operid);
+    end;
+    scNaQp: begin
+      Exch1 := gNAQP.getExch1(Operid);
+      OpName := Exch1; // TODO - refactor etOpName to use Exch1
+      Exch2 := gNAQP.getExch2(Operid);
+      UserText := gNAQP.getUserText(Operid);
+    end;
+    else
+      NR := Oper.GetNR;
+  end;
+  //showmessage(MyCall);
+
+  if Ini.Lids and (Random < 0.03) then
+    RST := 559 + 10 * Random(4)
+  else
+    RST := 599;
 
   Qsb := TQsb.Create;
 
   Qsb.Bandwidth := 0.1 + Random / 2;
-  if Ini.Flutter and (Random < 0.3) then Qsb.Bandwidth := 3 + Random * 30;
+  if Ini.Flutter and (Random < 0.3) then
+    Qsb.Bandwidth := 3 + Random * 30;
 
   Amplitude := 9000 + 18000 * (1 + RndUShaped);
   Pitch := Round(RndGaussLim(0, 300));
@@ -70,8 +114,6 @@ begin
   Qsb.Free;
   inherited;
 end;
-
-
 
 
 procedure TDxStation.ProcessEvent(AEvent: TStationEvent);
@@ -128,24 +170,59 @@ begin
       //If we are not sending, we can start copying
       //Cancel timeout, he is replying
       begin
-      if State <> stSending then State := stCopying;
-      TimeOut := NEVER;
+        if State <> stSending then
+          State := stCopying;
+        TimeOut := NEVER;
       end;
     end;
 end;
 
 
+// override SendMsg to allow Dx Stations to send alternate field day messages
+// (SECT?, CLASS?, CL?) whenever a 'NR?' message (msgNrQm) is sent.
+procedure TDxStation.SendMsg(AMsg: TStationMessage);
+begin
+  if (SimContest = scFieldDay) and
+    (AMsg = msgNrQm) then
+    begin
+      case Random(5) of
+        0,1: SendText('NR?');
+        2: SendText('SECT?');
+        3: SendText('CLASS?');
+        4: SendText('CL?');
+      end;
+    end
+  else
+    inherited SendMsg(AMsg);
+end;
 
+
+// copies data from this DxStation to top of QsoList[].
+// removes Self from Stations[] container array.
 procedure TDxStation.DataToLastQso;
 begin
-  with QsoList[High(QsoList)] do
-    begin
+  with QsoList[High(QsoList)] do begin
     TrueCall := Self.MyCall;
     TrueRst := Self.Rst;
     TrueNR := Self.NR;
+    case ActiveContest.ExchType1 of
+      etRST: TrueExch1 := IntToStr(Self.NR);
+      etOpName: TrueExch1 := Self.OpName;
+      etFdClass: TrueExch1 := Self.Exch1;
+      else
+        assert(false);
     end;
+    case ActiveContest.ExchType2 of
+      etSerialNr: TrueExch2 := IntToStr(Self.NR);
+      etCwopsNumber: TrueExch2 := IntToStr(Self.NR);
+      etArrlSection: TrueExch2 := Self.Exch2;
+      etStateProv: TrueExch2 := Self.Exch2;
+      else
+        assert(false);
+    end;
+  end;
 
-  Free;
+  Free; // removes Self from Stations[] container
 end;
 
 

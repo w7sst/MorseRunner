@@ -58,6 +58,13 @@ begin
   Pitch := Ini.Pitch;
   Wpm := Ini.Wpm;
   Amplitude := 300000;
+
+  // Adding a contest: Initialize Exch1 and Exch2
+  // (try to use the generalized Exch1 and Exch2 fields for new contests.)
+  OpName := HamName;
+  CWOPSNR := strtoint(CWOPSNum);
+  Exch1 := '3A';
+  Exch2 := 'OR';
 end;
 
 
@@ -80,6 +87,16 @@ end;
 
 procedure TMyStation.SendText(AMsg: string);
 begin
+  if ActiveContest.ExchType1 = etOpName then
+    begin
+    assert(OpName = HamName, 'HamName doesn''t change; should already be set');
+    OpName := HamName;
+    end;
+  if ActiveContest.ExchType2 = etCwopsNumber then
+    begin
+    //assert(NR = strtoint(CWOPSNUM), 'CWOPS Num doesn''t change, should be set');
+    NR := strtoint(CWOPSNum);
+    end;
   AddToPieces(AMsg);
   if State <> stSending then
     begin
@@ -114,9 +131,13 @@ procedure TMyStation.SendNextPiece;
 begin
   MsgText := '';
 
-  if Pieces[0] <> '@' then inherited SendText(Pieces[0])
-  else if CallsFromKeyer and (not (RunMode in [rmHst, rmWpx])) then inherited SendText(' ')
-  else inherited SendText(HisCall);
+  if Pieces[0] <> '@' then
+    inherited SendText(Pieces[0])
+  else
+    if CallsFromKeyer and (not (RunMode in [rmHst, rmWpx])) then
+      inherited SendText(' ')
+    else
+      inherited SendText(HisCall);
 end;
 
 

@@ -75,7 +75,10 @@ end;
 
 procedure TBaseComponent.WMQueryEndSession(var Message: TMessage);
 begin
-  try Enabled := false; except; end;
+  try
+    Enabled := false;
+  except;
+  end;
   inherited;
   Message.Result := integer(true);
 end;

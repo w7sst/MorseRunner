@@ -8,8 +8,7 @@ unit SndCustm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, MMSystem, SndTypes,
-  Ini;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, MMSystem, SndTypes;
 
 type
   TCustomSoundInOut = class;
@@ -119,7 +118,7 @@ constructor TCustomSoundInOut.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
-  SetBufCount(DEFAULTBUFCOUNT);
+  //SetBufCount(DEFAULTBUFCOUNT);
 
   FDeviceID := WAVE_MAPPER;
 
@@ -159,10 +158,9 @@ end;
 //do not enable component at design or load time
 procedure TCustomSoundInOut.SetEnabled(AEnabled: boolean);
 begin
-  if (not (csDesigning in ComponentState)) and
-     (not (csLoading in ComponentState)) and
-     (AEnabled <> FEnabled)
-    then DoSetEnabled(AEnabled);
+  if (not (csDesigning in ComponentState)) and (not (csLoading in ComponentState)) and
+     (AEnabled <> FEnabled) then
+     DoSetEnabled(AEnabled);
   FEnabled := AEnabled;
 end;
 
@@ -182,38 +180,37 @@ end;
 
 procedure TCustomSoundInOut.DoSetEnabled(AEnabled: boolean);
 begin
-  if AEnabled
-    then
-      begin
-      //reset counts
-      FBufsAdded := 0;
-      FBufsDone := 0;
-      //create waiting thread
-      FThread := TWaitThread.Create(true);
-      FThread.FreeOnTerminate := true;
-      FThread.Owner := Self;
-      //FThread.Priority := tpTimeCritical;
-      //start
-      FEnabled := true;
-      try Start; except FreeAndNil(FThread); raise; end;
-      //device started ok, wait for events
-      FThread.Resume;
-      end
-    else
-      begin
-      FThread.Terminate;
-      Stop;
-      end;
+    if AEnabled then begin
+        //reset counts
+        FBufsAdded:= 0;
+        FBufsDone:= 0;
+        //create waiting thread
+        FThread:= TWaitThread.Create(true);
+        FThread.FreeOnTerminate:= true;
+        FThread.Owner := Self;
+        FThread.Priority := tpTimeCritical; // don't starve the WaveOut device
+        FThread.NameThreadForDebugging('TWaitThread'); // without this, IDE will hang
+        //start audio output device
+        FEnabled:= true;
+        try
+            Start;
+        except
+            FreeAndNil(FThread);
+            raise;
+        end;
+        //device started ok, wait for events
+        FThread.Resume;
+    end
+    else begin
+        FThread.Terminate;
+        Stop;
+    end;
 end;
-
-
-
 
 
 //------------------------------------------------------------------------------
 //                              get/set
 //------------------------------------------------------------------------------
-
 procedure TCustomSoundInOut.SetSamplesPerSec(const Value: LongWord);
 begin
   Enabled := false;
