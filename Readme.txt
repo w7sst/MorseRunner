@@ -30,6 +30,11 @@ UNINSTALLATION
 
 CONFIGURATION
 
+  Contest Selection
+    1) Select the desired contest using the Contest drop-down list.
+    2) Enter the Contest Exchange in the Exchange field; error
+       messages will be displayed in the status area.
+
   Web Server
 
     [system]
@@ -120,7 +125,7 @@ CONFIGURATION
 
 STARTING A CONTEST
 
-The contest can be started in one of four modes.
+The selected contest can be started in one of four modes.
 
  Pile-Up mode: a random number of stations calls you after you send a CQ. Good
    for improving copying skills.
@@ -128,9 +133,9 @@ The contest can be started in one of four modes.
  Single Calls mode: a single station calls you as soon as you finish the
    previous QSO. Good for improving typing skills.
 
- WPX Compteition mode: similar to the Pile-Up mode, but band conditions and contest
+ WPX Competition mode: similar to the Pile-Up mode, but band conditions and contest
    duration are fixed and cannot be changed. The keying speed and band activity
-   are still under your control;
+   are still under your control.
 
  HST Competition mode: all settings conform to the IARU High Speed Telegraphy
    competition rules.
@@ -201,7 +206,9 @@ The log window marks incorrect entries in your log as follows:
 
   NR - incorrect exchange number in your log.
 
+  CL - incorrect Arrl Class in your log.
 
+  NAM - incorrect Name in your log.
 
 
 
