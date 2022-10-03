@@ -176,9 +176,13 @@ The log window marks incorrect entries in your log as follows:
 
   NR - incorrect exchange number in your log.
 
-  CL - incorrect Arrl Class in your log.
+  CL - incorrect Arrl Field Day Classification in your log.
 
-  NAM - incorrect Name in your log.
+  NAME - incorrect Name in your log.
+
+  SEC - incorrect ARRL Section in your log.
+
+  ST - incorrect State in your log.
 
 SUBMITTING YOUR SCORE
 
