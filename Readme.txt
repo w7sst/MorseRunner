@@ -228,10 +228,10 @@ File -> View Score menu command.
 
 VERSION HISTORY
 
-1.80 (W7SST) Oct 2022
-  - Beta release of multi-contest support
-  - Add ARRL Field Day
-  - Add NCL NAQP
+Version 1.80 (Oct 2022)
+  - Added multi-contest support (Coded by W7SST)
+  - Added ARRL Field Day contest (Coded by W7SST)
+  - Added NCL NAQP contest (Coded by W7SST)
 
 1.71a (CT7AUP) Nov 2021
   - CWOPS CWT Contest
