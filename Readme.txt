@@ -1,7 +1,7 @@
                                 MORSE RUNNER
                               Contest Simulator
                                   freeware
-                                  
+
                           Field Day Contest Prototype
 
                           Ver 1.80 Copyright (C) 2022  Mike Brashler, W7SST https://github.com/w7sst/MorseRunner
@@ -27,8 +27,8 @@ CONFIGURATION
 
   Contest Selection
     1) Select the desired contest using the Contest drop-down list.
-    2) Enter the Contest Exchange in the Exchange field; error
-       messages will be displayed in the status area.
+    2) Enter the Contest Exchange in the Exchange field;
+       error messages will be displayed in the status area.
 
   Station
 
@@ -48,7 +48,7 @@ CONFIGURATION
     Audio Recording Enabled - when this menu option is checked, MR saves
       the audio in the MorseRunner.wav file. If this file already
       exists, MR overwrites it.
-      
+
   Band Conditions
 
      I tried to make the sound as realistic as possible, and included a few
@@ -100,6 +100,13 @@ CONFIGURATION
     With this option enabled, the callsign entered into the CALL field is not
     transmitted by the computer when the corresponding key is pressed. This option
     has no effect in the WPX and HST competition modes.
+
+  Additional simulator settings
+
+    Setup/CW Min Rx Speed - Set a speed below the CW Speed. If 0 it behaves like the original MorseRunner
+    Setup/CW Max Rx Speed - Set a speed above the CW Speed. If 0 it behaves like the original MorseRunner
+    Setup/NR Digits       - The number of digits of the DX Station NR
+    Setup/CWOps Number    - CWOps ID number used on the CWT Contest
 
 STARTING A CONTEST
 
@@ -187,36 +194,36 @@ The log window marks incorrect entries in your log as follows:
 SUBMITTING YOUR SCORE
 
 If you complete a full 60-minute session in the WPX Competition mode, Morse Runner
-will generate a score string that you can post. 
+will generate a score string that you can post.
 
-  The original scoring website by Alex Shovkoplyas, VE3NEA, was 
+  The original scoring website by Alex Shovkoplyas, VE3NEA, was
   http://www.dxatlas.com/MorseRunner/MrScore.asp
-  but it is no longer active. 
-  
+  but it is no longer active.
+
   Lin Quan, BG4FQD, created the scoring website, https://www.bh1scw.com/mr/score
   but to submit scores you must now email him at bh1scw[at]gmail.com
-  
+
   "Open 2019 UZ2M Morse Runner contest" Facebook Group
   (Still active)
-      Open contest between friends in Morse Runner in two modes, 
-      Single Call and Pile-Up mode. Try 10 min training and fix 
-      screenshot with date and time. Please send a screenshot to 
+      Open contest between friends in Morse Runner in two modes,
+      Single Call and Pile-Up mode. Try 10 min training and fix
+      screenshot with date and time. Please send a screenshot to
       this group and after we check it we will publish it!
-  
+
   "ZS-CW Morse Runner" Facebook Group
-      In Morse Runner, Here you will screen shot your 10 min stint, 
-      (ONLY 10 min not more) paste it into this Facebook Group, 
-      the idea is to try beat the previous score of the last person 
-      who posted their screen shot. I'm aware we are all on different 
-      levels of copy speed, but that's irrelevant because you might 
+      In Morse Runner, Here you will screen shot your 10 min stint,
+      (ONLY 10 min not more) paste it into this Facebook Group,
+      the idea is to try beat the previous score of the last person
+      who posted their screen shot. I'm aware we are all on different
+      levels of copy speed, but that's irrelevant because you might
       want to match their speed, and try beat their score
 
   "CW Freak - Morse Runner" Facebook Group
-      This is a group for Morse Games fans. I thank in advance anyone 
-      who wants to share their results, their advice and their 
+      This is a group for Morse Games fans. I thank in advance anyone
+      who wants to share their results, their advice and their
       impressions with fun.
 
-You can view your previous score strings using the 
+You can view your previous score strings using the
 File -> View Score menu command.
 
 VERSION HISTORY
@@ -232,13 +239,13 @@ VERSION HISTORY
   - CW RX Max Speed.
   - NR number of digits.
 
-1.70 (BG4FQD) Aug 25, 2016 
+1.70 (BG4FQD) Aug 25, 2016
   - Adjust UI, support windows scheme.
   - Support showing callsign infomation, You can modify it in the "ARRL.LIST"
   - Disable hot key: "\" to prevent pressing by carelessness.
   - Some other bugs fixing.
 
-1.69 (BG4FQD) Jul 16, 2016 
+1.69 (BG4FQD) Jul 16, 2016
   - Add "Hi-Score web page" server in MorseRunner.ini.
   - Change default Font to Cleartype 'segoe ui', 'Consolar';
   - Change string to Unicode, Building with Delphi 2010 sp3.
