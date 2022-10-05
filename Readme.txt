@@ -10,6 +10,19 @@ Previous works:
               Ver 1.69 to Ver 1.71  Copyright (C) 2016 Lin Quan, BG4FQD https://github.com/BH1SCW/MorseRunner
                           Ver 1.71a Copyright (C) 2021 David Palma, CT7AUP
 
+
+               Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
+                      http://www.dxatlas.com/MorseRunner/
+
+          Copyright (C) Morse Runner Community Edition Contributors
+                      https://www.github.com/w7sst/MorseRunner/
+
+
+JOIN OUR COMMUNITY
+  You are invited to join our community effort.
+  For more information on the Morse Runner Community Edition project,
+  please visit https://github.com/w7sst/MorseRunner#readme.
+
 PLATFORMS
 
   - Windows XP/7/8/10/11
