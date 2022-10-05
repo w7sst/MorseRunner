@@ -2,19 +2,12 @@
                               Contest Simulator
                                   freeware
 
-                          Field Day Contest Prototype
-
-                          Ver 1.80 Copyright (C) 2022  Mike Brashler, W7SST https://github.com/w7sst/MorseRunner
-Previous works:
-              original to Ver 1.68  Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA http://www.dxatlas.com/MorseRunner
-              Ver 1.69 to Ver 1.71  Copyright (C) 2016 Lin Quan, BG4FQD https://github.com/BH1SCW/MorseRunner
-                          Ver 1.71a Copyright (C) 2021 David Palma, CT7AUP
-
+                   Version 1.80 Field Day Contest Prototype
 
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
                       http://www.dxatlas.com/MorseRunner/
 
-          Copyright (C) Morse Runner Community Edition Contributors
+          Copyright (C) 2022 Morse Runner Community Edition Contributors
                       https://www.github.com/w7sst/MorseRunner/
 
 
@@ -64,11 +57,12 @@ CONFIGURATION
 
   Band Conditions
 
-     I tried to make the sound as realistic as possible, and included a few
-     effects based on the mathematical model of the ionospheric propagation.
-     Also, some of the calling stations exhibit less then perfect operating
-     skills, again to make the simulation more realistic. These effects can
-     be turned on and off using the checkboxes described below.
+     Alex Shovkoplyas, VE3NEA, made the sound as realistic as possible, 
+     and included a few effects based on the mathematical model of the 
+     ionospheric propagation. Also, some of the calling stations exhibit 
+     less than perfect operating skills, again to make the simulation more 
+     realistic. These effects can be turned on and off using the checkboxes 
+     described below.
 
      QRM - interference form other running stations occurs from time to time.
 
