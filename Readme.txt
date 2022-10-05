@@ -1,41 +1,40 @@
-                              MORSE RUNNER  1.71
+                                MORSE RUNNER
                               Contest Simulator
-
                                   freeware
 
-               Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
+                   Version 1.80 Field Day Contest Prototype
 
+               Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
                       http://www.dxatlas.com/MorseRunner/
 
+        Copyright (C) 2022 Morse Runner Community Edition Contributors
+                   https://www.github.com/w7sst/MorseRunner/
 
 
+JOIN OUR COMMUNITY
+  You are invited to join our community effort.
+  For more information on the Morse Runner Community Edition project,
+  please visit https://github.com/w7sst/MorseRunner#readme.
 
 PLATFORMS
 
-  - Windows XP/7/8/10;
+  - Windows XP/7/8/10/11
   - works on Linux systems under WINE (info TNX F8BQQ).
-
-
 
 INSTALLATION
 
   - Uncompress the file to any folder and run "MorseRunner.exe"
 
-
 UNINSTALLATION
 
   - Delete MorseRunner directory.
 
-
-
 CONFIGURATION
 
-  Web Server
-
-    [system]
-    WebServer=http://www.bh1scw.com/mr/score
-    SubmitHiScoreURL=http://www.bh1scw.com/mr/score/insert.php?name=%s
-    PostMethod=POST
+  Contest Selection
+    1) Select the desired contest using the Contest drop-down list.
+    2) Enter the Contest Exchange in the Exchange field;
+       error messages will be displayed in the status area.
 
   Station
 
@@ -56,16 +55,14 @@ CONFIGURATION
       the audio in the MorseRunner.wav file. If this file already
       exists, MR overwrites it.
 
-
-
   Band Conditions
 
-     I tried to make the sound as realistic as possible, and included a few
-     effects based on the mathematical model of the ionospheric propagation.
-     Also, some of the calling stations exhibit less then perfect operating
-     skills, again to make the simulation more realistic. These effects can
-     be turned on and off using the checkboxes described below.
-
+     Alex Shovkoplyas, VE3NEA, made the sound as realistic as possible, 
+     and included a few effects based on the mathematical model of the 
+     ionospheric propagation. Also, some of the calling stations exhibit 
+     less than perfect operating skills, again to make the simulation more 
+     realistic. These effects can be turned on and off using the checkboxes 
+     described below.
 
      QRM - interference form other running stations occurs from time to time.
 
@@ -82,15 +79,12 @@ CONFIGURATION
      Activity - band activity, determines how many stations on average
        reply to your CQ.
 
-
-
   Audio buffer size
 
     You can adjust the audio buffer size by changing the BufSize value in the
     MorseRunner.ini file. Acceptable values are 1 through 5, the default is 3.
     Increase the buffer size for smooth audio without clicks and interruptions;
     decrease the size for faster response to keyboard commands.
-
 
   Competition duration
 
@@ -100,7 +94,6 @@ CONFIGURATION
 
     [Contest]
     CompetitionDuration=15
-
 
   Calls From Keyer
 
@@ -115,12 +108,16 @@ CONFIGURATION
     transmitted by the computer when the corresponding key is pressed. This option
     has no effect in the WPX and HST competition modes.
 
+  Additional simulator settings
 
-
+    Setup/CW Min Rx Speed - Set a speed below the CW Speed. If 0 it behaves like the original MorseRunner
+    Setup/CW Max Rx Speed - Set a speed above the CW Speed. If 0 it behaves like the original MorseRunner
+    Setup/NR Digits       - The number of digits of the DX Station NR
+    Setup/CWOps Number    - CWOps ID number used on the CWT Contest
 
 STARTING A CONTEST
 
-The contest can be started in one of four modes.
+The selected contest can be started in one of four modes.
 
  Pile-Up mode: a random number of stations calls you after you send a CQ. Good
    for improving copying skills.
@@ -128,22 +125,17 @@ The contest can be started in one of four modes.
  Single Calls mode: a single station calls you as soon as you finish the
    previous QSO. Good for improving typing skills.
 
- WPX Compteition mode: similar to the Pile-Up mode, but band conditions and contest
+ WPX Competition mode: similar to the Pile-Up mode, but band conditions and contest
    duration are fixed and cannot be changed. The keying speed and band activity
-   are still under your control;
+   are still under your control.
 
  HST Competition mode: all settings conform to the IARU High Speed Telegraphy
    competition rules.
-
-
 
 To start a contest, set the duration of the exercise in the Run for NN Minutes
 box (only for Pile-Up and Single Calls modes), and click on the desired mode
 in the Run button's menu. In the Pile-Up and Competition mode, hit F1 or Enter
 to send a CQ.
-
-
-
 
 KEY ASSIGNMENTS
 
@@ -158,7 +150,6 @@ KEY ASSIGNMENTS
   Alt-W, Ctrl-W, F11 - wipe the input fields.
 
   Alt-Enter, Shift-Enter, Ctrl-Enter - save QSO.
-
 
   <Space> - auto-complete input, jump between the input fields.
 
@@ -177,8 +168,6 @@ KEY ASSIGNMENTS
   PgUp/PgDn, Ctrl-F10/Ctrl-F9, Alt-F10/Alt-F9 - keying speed,
     in 5 WPM increments.
 
-
-
 WPX COMPETITION RULES
 
 The exchange consists of the RST and the serial number of the QSO.
@@ -195,98 +184,102 @@ The log window marks incorrect entries in your log as follows:
   DUP - duplicate QSO.
 
   NIL - not in other station's log: you made a mistake in the callsign, or forgot
-    to send the corrected call to the station.
+        to send the corrected call to the station.
 
   RST - incorrect RST in your log.
 
   NR - incorrect exchange number in your log.
 
+  CL - incorrect Arrl Field Day Classification in your log.
 
+  NAME - incorrect Name in your log.
 
+  SEC - incorrect ARRL Section in your log.
 
+  ST - incorrect State in your log.
 
 SUBMITTING YOUR SCORE
 
 If you complete a full 60-minute session in the WPX Competition mode, Morse Runner
-will generate a score string that you can post to the Score Board on the web:
-<http://www.dxatlas.com/MorseRunner/MrScore.asp>. Copy and paste your score
-string into the box on the web page and click on the Submit button.
+will generate a score string that you can post.
 
-You can view your previous score strings using the File -> View Score menu
-command.
+  The original scoring website by Alex Shovkoplyas, VE3NEA, was
+  http://www.dxatlas.com/MorseRunner/MrScore.asp
+  but it is no longer active.
 
+  Lin Quan, BG4FQD, created the scoring website, https://www.bh1scw.com/mr/score
+  but to submit scores you must now email him at bh1scw[at]gmail.com
 
+  "Open 2019 UZ2M Morse Runner contest" Facebook Group
+  (Still active)
+      Open contest between friends in Morse Runner in two modes,
+      Single Call and Pile-Up mode. Try 10 min training and fix
+      screenshot with date and time. Please send a screenshot to
+      this group and after we check it we will publish it!
 
+  "ZS-CW Morse Runner" Facebook Group
+      In Morse Runner, Here you will screen shot your 10 min stint,
+      (ONLY 10 min not more) paste it into this Facebook Group,
+      the idea is to try beat the previous score of the last person
+      who posted their screen shot. I'm aware we are all on different
+      levels of copy speed, but that's irrelevant because you might
+      want to match their speed, and try beat their score
 
+  "CW Freak - Morse Runner" Facebook Group
+      This is a group for Morse Games fans. I thank in advance anyone
+      who wants to share their results, their advice and their
+      impressions with fun.
 
+You can view your previous score strings using the
+File -> View Score menu command.
 
 VERSION HISTORY
 
-1.80 (W7SST)
-  - Beta release of multi-contest support
-  - Add ARRL Field Day
-  - Add NCL NAQP
+Version 1.80 (Oct 2022)
+  - Added multi-contest support (Coded by W7SST)
+  - Added ARRL Field Day contest (Coded by W7SST)
+  - Added NCL NAQP contest (Coded by W7SST)
 
-
-1.71a (CT7AUP)
+1.71a (CT7AUP) Nov 2021
   - CWOPS CWT Contest
   - CW RX Min Speed.
   - CW RX Max Speed.
   - NR number of digits.
 
-
-1.70 (BG4FQD)
+1.70 (BG4FQD) Aug 25, 2016
   - Adjust UI, support windows scheme.
   - Support showing callsign infomation, You can modify it in the "ARRL.LIST"
   - Disable hot key: "\" to prevent pressing by carelessness.
   - Some other bugs fixing.
 
-
-
-1.69 (BG4FQD)
+1.69 (BG4FQD) Jul 16, 2016
   - Add "Hi-Score web page" server in MorseRunner.ini.
   - Change default Font to Cleartype 'segoe ui', 'Consolar';
   - Change string to Unicode, Building with Delphi 2010 sp3.
 
-
-
-1.68
+1.68 (VE3NEA) 2016
   - TU + MyCall after the QSO is now equivalent to CQ
 
-
-
-1.67
+1.67 (VE3NEA)
   - small changes in the HST competition mode.
 
-
-
-1.65, 1.66
+1.65, 1.66 (VE3NEA)
   - a few small bugs fixed.
 
-
-
-1.61 - 1.64
+1.61 - 1.64 (VE3NEA)
   - small changes in the HST competition mode.
 
-
-
-1.6
+1.6 (VE3NEA)
   - HST competition mode added;
   - CallsFromKeyer option added.
 
-
-
-1.52
+1.52 (VE3NEA)
   - the CompetitionDuration setting added.
 
-
-
-1.51
+1.51 (VE3NEA)
   - minor bugs fixed.
 
-
-
-1.5
+1.5 (VE3NEA)
   - more realistic behavior of calling stations;
   - self-monitoring volume control;
   - more creative LIDS;
@@ -294,9 +287,7 @@ VERSION HISTORY
   - WAV recording;
   - menu commands for all settings (for blind hams).
 
-
-
-1.4
+1.4 (VE3NEA)
   - RIT function;
   - callsign completion/correction when sending;
   - faster response to keyboard commands;
@@ -305,29 +296,21 @@ VERSION HISTORY
   - the QSO rate is now expressed in Q/hr;
   - the problem with the Finnish character set fixed.
 
-
-1.3
-
+1.3 (VE3NEA)
   - some key assignments corrected for compatibility with popular contesting
     programs;
   - statistical models refined for more realistic simulation;
   - rate display added;
   - a few bugs fixed.
 
-
-1.2 (first public release)
-
+1.2 (VE3NEA)
+    (first public release)
   - Competetion mode added;
   - some bugs fixed.
 
-
-1.1
+1.1 (VE3NEA)
   - ESM (Enter Sends Messages) mode added;
   - a lot of bugs fixed.
-
-
-
-
 
 DISCLAIMER OF WARRANTY
 
@@ -344,9 +327,5 @@ BUSINESS INTERRUPTION, LOSS OF INFORMATION, OR OTHER PECUNIARY LOSS) ARISING
 OUT OF THIS AGREEMENT OR THE USE OF OR INABILITY TO USE THE SOFTWARE PRODUCT,
 EVEN IF THE AUTHOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGES.
-
-
-
-
 
 END OF DOCUMENT
