@@ -912,6 +912,8 @@ begin
         sbar.Align:= alBottom;
         sbar.Visible:= true;
         sbar.Font.Color := clRed;
+        ExchangeEdit.Text := AExchange;
+        exit;
       end
     else
       begin
@@ -1002,7 +1004,8 @@ begin
   ExchangeField2Type := AExchType2;
 
   // Set my exchange value (from INI file)
-  SetMyExchange(Ini.UserExchangeTbl[SimContest]);
+  // UI assumes uppercase only, so convert .ini files to uppercase.
+  SetMyExchange(UpperCase(Ini.UserExchangeTbl[SimContest]));
 end;
 
 procedure TMainForm.SetMyExch1(const AExchType: TExchange1Type;
