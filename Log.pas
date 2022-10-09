@@ -402,6 +402,7 @@ var
   i: integer;
   Qso: PQso;
 
+  // Adding a contest: validate contest-specific exchange fields
   //validate Exchange 1 (Edit2) field lengths
   function ValidateExchField1(const text: string): Boolean;
   begin
@@ -453,6 +454,7 @@ begin
     Qso.T := BlocksToSeconds(Tst.BlockNumber) /  86400;
     Qso.Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
 
+    // Adding a contest: save contest-specific exchange values into QsoList
     //save Exchange 1 (Edit2)
     case ActiveContest.ExchType1 of
       etRST:     Qso.Rst := StrToInt(Edit2.Text);
@@ -571,6 +573,7 @@ begin
     if Err.IsEmpty and Dupe then
       Err := 'DUP';
     if Err.IsEmpty then
+      // Adding a contest: check for contest-specific exchange field 1 errors
       case ActiveContest.ExchType1 of
         etRST:     if TrueRst <> Rst then Err := 'RST';
         etOpName:  if TrueExch1 <> Exch1 then Err := 'NAME';
@@ -579,6 +582,7 @@ begin
           assert(false, 'missing exchange 1 case');
       end;
     if Err.IsEmpty then
+      // Adding a contest: check for contest-specific exchange field 2 errors
       case ActiveContest.ExchType2 of
         etSerialNr:    if TrueNr <> NR then Err := 'NR ';
         etCwopsNumber: if TrueNr <> NR then Err := 'NR ';

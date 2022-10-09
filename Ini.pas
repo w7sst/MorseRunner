@@ -22,6 +22,8 @@ const
 
   DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
+  // Adding a contest: Append new TSimContest enum value for each contest.
+  // Adding a contest: update menu in Main.dfm.
   TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
@@ -55,7 +57,7 @@ const
     Note: The order of this table must match the declared order of
     TSimContest above.
 
-    Adding a contest: Add to TSimContest enum (above) and update ContestDefinitions[] array.
+    Adding a contest: update ContestDefinitions[] array. (append at end until sorting is added)
   }
   ContestDefinitions: array[TSimContest] of TContestDefinition = (
     (Name: 'CQ Wpx';

@@ -205,6 +205,7 @@ begin
     TrueCall := Self.MyCall;
     TrueRst := Self.Rst;
     TrueNR := Self.NR;
+    // Adding a contest: copy DxStation's Exch1 qso information into log
     case ActiveContest.ExchType1 of
       etRST: TrueExch1 := IntToStr(Self.NR);
       etOpName: TrueExch1 := Self.OpName;
@@ -212,6 +213,7 @@ begin
       else
         assert(false);
     end;
+    // Adding a contest: copy DxStation's Exch2 qso information into log
     case ActiveContest.ExchType2 of
       etSerialNr: TrueExch2 := IntToStr(Self.NR);
       etCwopsNumber: TrueExch2 := IntToStr(Self.NR);
