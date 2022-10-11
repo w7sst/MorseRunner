@@ -42,6 +42,7 @@ type
   PFieldDefinition = ^TFieldDefinition;
 
 const
+  // Adding a contest: define contest-specific field types
   // Exchange Field 1 settings/rules
   Exchange1Settings: array[TExchange1Type] of TFieldDefinition = (
     (C: 'RST';   R: '5[9N][9N]';        L: 3;  T:Ord(etRST)),
@@ -436,6 +437,7 @@ begin
   Tst := TContest.Create;
   LoadCallList;
 
+  // Adding a contest: implement a new contest-specific call history .pas file.
   // Adding a contest: load call history file (be sure to delete it below).
   ARRLDX:= TARRL.Create;
   gARRLFD := TArrlFieldDay.Create;
@@ -849,6 +851,7 @@ end;
 
 procedure TMainForm.SetContest(AContestNum: TSimContest);
 begin
+  // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
   if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst]) then
   begin
@@ -1011,6 +1014,7 @@ end;
 procedure TMainForm.SetMyExch1(const AExchType: TExchange1Type;
   const Avalue: string);
 begin
+  // Adding a contest: setup contest-specific exchange field 1
   case AExchType of
     etRST:
       begin
@@ -1044,6 +1048,7 @@ procedure TMainForm.SetMyExch2(const AExchType: TExchange2Type;
 var
   i: integer;
 begin
+  // Adding a contest: setup contest-specific exchange field 2
   case AExchType of
     etSerialNr:
       begin
