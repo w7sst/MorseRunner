@@ -39,43 +39,9 @@ Please refer to [CONTRIBUTING.md](.github/CONTRIBUTING.md) for more information.
 ## Roadmap
 Below is a high-level overview of project activities over the next year.
 
-### Roadmap - Completed
-
-***Complete - Spring 2022 (Apr-June)***
-- [x] **Develop FD prototype** - Build a FD prototype building upon work from
-[prior authors](#morse-runner-release-history).
-The approach taken introduces a table-driven
-design along with the notion of generalized exchange fields (e.g Exch1=3A, Exch2=OR).
-Contests include CQ WPX, CWOPS CWT, ARRL FD, NCJ NAQP, and HST.
-Contest is selected using a drop-down list.
-This prototype was shared with a few individuals in early June.
-
-***Complete - Summer 2022 (July-Sept)***
-Projects we are currently working on...
-- [x] **Develop Community Guidelines** - Discuss and adopt community guidelines
-for contributing to this project, including roles, code of conduct, best practices, guidelines,
-expectations, adherence to standards, etc.
-
-- [x] **Launch Community Repository** - Create a single repository containing
-most major development projects/branches by various MR authors.
-Over time portions these projects, including individual features and bug fixes,
-can be independently extracted and merged into a common development branch.
-
-- [x] **Invite prior authors** - Invite all known MR authors to join and contribute
-to this effort.
-Encourage them to at least connect as a "Watcher" of this project and share any
-personal knowledge they may have with this project.
-
-- [x] **Standardize git setup** - Resolve git setup issues with CRLF caused by different git
-setups on individual computers and git setups. Perform git database normalization so all files across all projects are handled in a consistent manner.
-Document this issue so other developers can understand avoid this issue.
-
-- [x] **Release FD prototype (v1.80)** - Release the FD prototype to allow others to see the
-general direction of the project and solicit early feedback. Release expected late September 2022.
-
 ### Roadmap - Now, Next, and Future
 
-***Now - Fall 2022 (Oct-Dec)***
+#### Now - Fall 2022 (Oct-Dec)
 Projects we will work on next...
 
 - [ ] **Solicit early feedback** - Invite users to try the FD prototype and provide
@@ -105,7 +71,7 @@ to generalize an individual contest.
 - [ ] **Add ARRL Sweepstakes** - Consider adding ARRL Sweepstakes; however this one might be a little harder since
 it has a complex exchange.
 
-***Next - Winter 2023 (Jan-Mar)***
+#### Next - Winter 2023 (Jan-Mar)
 - [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
 This team will develop and test an individual contest before it is released for general use.
 Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in either an advocate or developer role for this contest. As a point of reference, adding the NAQP contest to the FD prototype codebase was completed in one afternoon.
@@ -115,7 +81,7 @@ Please review Issues pages for contest recommendations and add a comment to your
 - [ ] **Merge selected features and bug fixes** - Identify and integrate features from
 [other MR branches](#morse-runner-release-history) into the main release branch.
 
-***Later - 1st Half 2023 (Apr-June)***
+#### Later - 1st Half 2023 (Apr-June)
 
 Projects that we'll work on later...
 - [ ] **Multi-contest implementation** - finish the initial implementation of the
@@ -131,7 +97,7 @@ popular logging programs.
 Perhaps adding a contest will need two people, a contest developer and a contest advocate.
 This team can develop and test a contest before releasing to general use.
 
-***Future***
+#### Future
 - [ ] **Project Wiki** - Explore idea of developing a project wiki containing additional
 project details, including recommended setups (both developer and user),
 design discussions, compile instructions, coding standards, release criteria, etc.
@@ -139,6 +105,40 @@ This will also include details on adding a new contest to Morse Runner.
 Is this implemented within github or elsewhere?
 
 - [ ] **User-defined contests** - Explore notion of user-defined contests using a contest configuration file. Perhaps a yaml file? Can this be similar to N1MM contest definition file?
+
+### Roadmap - Completed
+
+#### Complete - Spring 2022 (Apr-June)
+- [x] **Develop FD prototype** - Build a FD prototype building upon work from
+[prior authors](#morse-runner-release-history).
+The approach taken introduces a table-driven
+design along with the notion of generalized exchange fields (e.g Exch1=3A, Exch2=OR).
+Contests include CQ WPX, CWOPS CWT, ARRL FD, NCJ NAQP, and HST.
+Contest is selected using a drop-down list.
+This prototype was shared with a few individuals in early June.
+
+#### Complete - Summer 2022 (July-Sept)
+Projects we are currently working on...
+- [x] **Develop Community Guidelines** - Discuss and adopt community guidelines
+for contributing to this project, including roles, code of conduct, best practices, guidelines,
+expectations, adherence to standards, etc.
+
+- [x] **Launch Community Repository** - Create a single repository containing
+most major development projects/branches by various MR authors.
+Over time portions these projects, including individual features and bug fixes,
+can be independently extracted and merged into a common development branch.
+
+- [x] **Invite prior authors** - Invite all known MR authors to join and contribute
+to this effort.
+Encourage them to at least connect as a "Watcher" of this project and share any
+personal knowledge they may have with this project.
+
+- [x] **Standardize git setup** - Resolve git setup issues with CRLF caused by different git
+setups on individual computers and git setups. Perform git database normalization so all files across all projects are handled in a consistent manner.
+Document this issue so other developers can understand avoid this issue.
+
+- [x] **Release FD prototype (v1.80)** - Release the FD prototype to allow others to see the
+general direction of the project and solicit early feedback. Release expected late September 2022.
 
 # History
 TODO - add a paragraph or two regarding the history of MR.
