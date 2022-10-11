@@ -42,7 +42,7 @@ Below is a high-level overview of project activities over the next year.
 ### Roadmap - Now, Next, and Future
 
 #### Now - Fall 2022 (Oct-Dec)
-Projects we will work on next...
+Projects we are currently working on...
 
 - [ ] **Solicit early feedback** - Invite users to try the FD prototype and provide
 early feedback. Discussions can occur within github regarding this prototype and
@@ -72,6 +72,8 @@ to generalize an individual contest.
 it has a complex exchange.
 
 #### Next - Winter 2023 (Jan-Mar)
+Projects we will work on next...
+
 - [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
 This team will develop and test an individual contest before it is released for general use.
 Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in either an advocate or developer role for this contest. As a point of reference, adding the NAQP contest to the FD prototype codebase was completed in one afternoon.
@@ -118,7 +120,6 @@ Contest is selected using a drop-down list.
 This prototype was shared with a few individuals in early June.
 
 #### Complete - Summer 2022 (July-Sept)
-Projects we are currently working on...
 - [x] **Develop Community Guidelines** - Discuss and adopt community guidelines
 for contributing to this project, including roles, code of conduct, best practices, guidelines,
 expectations, adherence to standards, etc.
