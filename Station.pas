@@ -236,6 +236,8 @@ var
 begin
   // Adding a contest: TStation.NrAsText(), converts <#> to exchange (usually '<exch1> <exch2>'). Inject LID errors.
   case SimContest of
+    scCQWW:
+      Result := Format('%d %d', [RST, NR]);
     scCwt:
       Result := Format('%s  %.d', [OpName, NR]);
     scFieldDay:

@@ -898,7 +898,8 @@ object MainForm: TMainForm
           'CWOPS CWT'
           'ARRL Field Day'
           'NCJ NAQP'
-          'HST (High Speed Test)')
+          'HST (High Speed Test)'
+          'CQ WW')
       end
       object ExchangeEdit: TEdit
         Left = 76

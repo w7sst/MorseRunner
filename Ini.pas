@@ -24,7 +24,7 @@ const
 type
   // Adding a contest: Append new TSimContest enum value for each contest.
   // Adding a contest: update menu in Main.dfm.
-  TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst);
+  TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
   // Exchange Field #1 types
@@ -108,8 +108,17 @@ const
      ExchFieldEditable: False;
      ExchDefault: '';
      Msg: '''RST <serial>'' (e.g. 5NN #)';
-     T:scHst)
+     T:scHst),
      // expecting RST (e.g. 5NN)
+
+    (Name: 'CQ WW';
+     Key: 'CQWW';
+     ExchType1: etRST;
+     ExchType2: etCQZone;
+     ExchFieldEditable: True;
+     ExchDefault: '5NN 3';
+     Msg: '''RST <cq-zone>'' (e.g. 5NN 3)';
+     T:scCQWW)
   );
 
 var
@@ -185,6 +194,7 @@ begin
       UserExchangeTbl[scFieldDay] := ReadString(SEC_STN, 'ArrlFdExchange', '3A OR');
       UserExchangeTbl[scNaQp] := ReadString(SEC_STN, 'NAQPExchange', 'MIKE OR');
       UserExchangeTbl[scHst] := ReadString(SEC_STN, 'HSTExchange', '5NN #');
+      UserExchangeTbl[scCQWW] := ReadString(SEC_STN, 'CQWWExchange', '5NN 3');
 
       ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
       ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'OR');
@@ -263,6 +273,7 @@ begin
       WriteString(SEC_STN, 'ArrlFdExchange', UserExchangeTbl[scFieldDay]);
       WriteString(SEC_STN, 'NAQPExchange', UserExchangeTbl[scNaQp]);
       WriteString(SEC_STN, 'HSTExchange', UserExchangeTbl[scHst]);
+      WriteString(SEC_STN, 'CqWWExchange', UserExchangeTbl[scCQWW]);
 
       WriteString(SEC_STN, 'ArrlClass', ArrlClass);
       WriteString(SEC_STN, 'ArrlSection', ArrlSection);

@@ -235,6 +235,9 @@ File -> View Score menu command.
 
 VERSION HISTORY
 
+Version 1.81 (Nov 2022)
+  - Add CQ WW contest (Coded by W7SST)
+
 Version 1.80 (Oct 2022)
   - Added multi-contest support (Coded by W7SST)
   - Added ARRL Field Day contest (Coded by W7SST)

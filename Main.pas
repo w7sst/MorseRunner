@@ -16,7 +16,8 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles, Idhttp, ARRL, ARRLFD, NAQP, CWOPS, System.ImageList;
+  WavFile, IniFiles, Idhttp, ARRL, ARRLFD, NAQP, CWOPS, CQWW,
+  System.ImageList;
 
 const
   WM_TBDOWN = WM_USER+1;
@@ -56,7 +57,7 @@ const
     (C: 'Number';     R: '[1-9][0-9]*';                    L: 10; T:Ord(etCwopsNumber)),
     (C: 'Section';    R: '([A-Z][A-Z])|([A-Z][A-Z][A-Z])'; L: 3;  T:Ord(etArrlSection)),
     (C: 'State/Prov'; R: '[A-Z]*';                         L: 6;  T:Ord(etStateProv)),
-    (C: 'Zone';       R: '[0-9]*';                         L: 2;  T:Ord(etCqZone)),
+    (C: 'CQ-Zone';    R: '[0-9]*';                         L: 2;  T:Ord(etCqZone)),
     (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
     (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
     (C: 'Power';      R: '([0-9]*)|(KW)|([0-9][OT]*)';     L: 4;  T:Ord(etPower)),
@@ -442,6 +443,7 @@ begin
   ARRLDX:= TARRL.Create;
   gARRLFD := TArrlFieldDay.Create;
   gNAQP := TNcjNaQp.Create;
+  gCQWW := TCqWW.Create;
   CWOPSCWT := TCWOPS.Create;
 
   Histo:= THisto.Create(PaintBox1);
@@ -463,6 +465,7 @@ begin
   ARRLDX.Free;
   gARRLFD.Free;
   gNAQP.Free;
+  gCQWW.Free;
   CWOPSCWT.Free;
   Histo.Free;
   Tst.Free;
@@ -853,7 +856,8 @@ procedure TMainForm.SetContest(AContestNum: TSimContest);
 begin
   // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
-  if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst]) then
+  if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst,
+    scCQWW]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex:= Ord(Ini.SimContest);
@@ -1091,7 +1095,12 @@ begin
         Tst.Me.Exch2 := Avalue;
         if BDebugExchSettings then Edit3.Text := Avalue; // testing only
       end;
-    //etCqZone:
+    etCqZone:
+      begin
+        Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Nr := StrToInt(Avalue);
+        if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
+      end;
     //etItuZone:
     //etAge:
     //etPower:
