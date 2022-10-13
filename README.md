@@ -61,18 +61,17 @@ Document this issue so other developers can understand avoid this issue.
 
 - [ ] **N1MM Integration Design Discussions** - Work with Steve, N2IC, to discuss extensions to N1MM-to-MorseRunner protocol to support additional contests (e.g. Arrl Field Day). This is a feasibility study only and will not be released until early spring 2023.
 
+- [x] **Add CQ WW Contest** - simple contest with RST and CQ-Zone.
+
+- [ ] **Add ARRL DX Contest** - international contest with RST and State/Providence (US & Canada) or RST and Power (DX Stations).
+
+#### Next - Winter 2023 (Jan-Mar)
+Projects we will work on next...
+
 - [ ] **Multi-contest design** - Discuss the design approach for supporting multiple
 contests within Morse Runner based on FD prototype.
 Look for patterns across multiple contests and propose interface(s) to be used
 to generalize an individual contest.
-
-- [ ] **Add CQ WW Contest** - simple contest with RST and CQ-Zone.
-
-- [ ] **Add ARRL Sweepstakes** - Consider adding ARRL Sweepstakes; however this one might be a little harder since
-it has a complex exchange.
-
-#### Next - Winter 2023 (Jan-Mar)
-Projects we will work on next...
 
 - [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
 This team will develop and test an individual contest before it is released for general use.
@@ -107,6 +106,10 @@ This will also include details on adding a new contest to Morse Runner.
 Is this implemented within github or elsewhere?
 
 - [ ] **User-defined contests** - Explore notion of user-defined contests using a contest configuration file. Perhaps a yaml file? Can this be similar to N1MM contest definition file?
+
+- [ ] **Add ARRL Sweepstakes** - Consider adding ARRL Sweepstakes; however this one might be a little harder since
+it has a complex exchange.
+(This is on hold for now due to resources and complexity of exchange. w7sst, Oct 12, 2022)
 
 ### Roadmap - Completed
 
