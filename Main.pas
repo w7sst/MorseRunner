@@ -1713,7 +1713,7 @@ end;
 
 procedure TMainForm.WebPage1Click(Sender: TObject);
 begin
-  OpenWebPage('http://www.dxatlas.com/MorseRunner');
+  OpenWebPage('https://www.github.com/w7sst/MorseRunner#readme');
 end;
 
 
