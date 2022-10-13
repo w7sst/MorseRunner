@@ -428,7 +428,7 @@ begin
   RichEdit1.Align := alClient;
   RichEdit1.Font.Name:= 'Consolas';
   RichEdit1.Font.Size:= 11;
-  Self.Caption:= format('Morse Runner %s', [sVersion]);
+  Self.Caption:= 'Morse Runner - Community Edition';
   Label12.Caption:= format('Morse Runner %s ', [sVersion]);
   Label13.Caption:= Label12.Caption;
   Label14.Caption:= Label12.Caption;
@@ -949,12 +949,10 @@ end;
 procedure TMainForm.UpdateTitleBar;
 begin
   // Adding a contest: consider application's title bar.
-  if Ini.ActiveContest = nil then
-    Caption := 'Morse Runner'
-  else if (SimContest = scHst) and not HamName.IsEmpty then  // for HST, add operator name
-    Caption := Format('Morse Runner - %s:  %s', [Ini.ActiveContest.Name, HamName])
-  else // Default is: Morse Runner - <contest name>
-    Caption := Format('Morse Runner - %s', [Ini.ActiveContest.Name]);
+  if (SimContest = scHst) and not HamName.IsEmpty then  // for HST, add operator name
+    Caption := Format('Morse Runner - Community Edition:  %s', [HamName])
+  else // Default is: Morse Runner - Community Edition
+    Caption := 'Morse Runner - Community Edition';
 end;
 
 
