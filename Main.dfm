@@ -1491,7 +1491,7 @@ object MainForm: TMainForm
     object Help1: TMenuItem
       Caption = 'Help'
       object WebPage1: TMenuItem
-        Caption = 'Web Page...'
+        Caption = 'Community Edition Home Page'
         OnClick = WebPage1Click
       end
       object Readme1: TMenuItem
