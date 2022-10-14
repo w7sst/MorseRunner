@@ -63,7 +63,7 @@ Document this issue so other developers can understand avoid this issue.
 
 - [x] **Add CQ WW Contest** - simple contest with RST and CQ-Zone.
 
-- [ ] **Add ARRL DX Contest** - international contest with RST and State/Providence (US & Canada) or RST and Power (DX Stations).
+- [ ] **Add ARRL DX Contest** - international contest with RST and State/Province (US & Canada) or RST and Power (DX Stations).
 
 #### Next - Winter 2023 (Jan-Mar)
 Projects we will work on next...
@@ -184,7 +184,7 @@ Winter 2022    | W7SST    | 1.81      | First general release, adds CQ WW, and p
 
 # To Do
 - [x] Update MR History section
-- [ ] what other sections or topics should be included here?
+- [ ] What other sections or topics should be included here?
 - [ ] Reach out to VE3NEA to see if he has any documentation, materials, or old emails
   that can be added to the wiki.
 - [ ] Explore using Mermaid or PlantUML languages for adding diagrams to this documentation. Perhaps the Roadmap itself can be generated using PlantUML Ghant chart syntax. Or, we look into using GitHub's project boards.
