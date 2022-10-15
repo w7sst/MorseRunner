@@ -1495,14 +1495,14 @@ object MainForm: TMainForm
         OnClick = WebPage1Click
       end
       object Readme1: TMenuItem
-        Caption = 'Readme...'
+        Caption = 'Readme'
         OnClick = Readme1Click
       end
       object N2: TMenuItem
         Caption = '-'
       end
       object About1: TMenuItem
-        Caption = 'About...'
+        Caption = 'About Morse Runner'
         OnClick = About1Click
       end
     end
