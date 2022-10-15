@@ -1247,13 +1247,16 @@ end;
 
 procedure TMainForm.About1Click(Sender: TObject);
 const
-    Msg= 'CW CONTEST SIMULATOR'#13#13 +
-        'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13#13 +
-        've3nea@dxatlas.com'#13#13 +
-        'Rebuild by BG4FQD. bg4fqd@gmail.com 20160712';
+    Msg= //'Morse Runner - Community Edition'#13 +
+        'CW CONTEST SIMULATOR'#13#13 +
+        'Version %s'#13#13 +
+        'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13 +
+        'Copyright ©2022 Morse Runner Community Edition Contributors'#13#13 +
+        'https://www.github.com/w7sst/MorseRunner';
 begin
-    //Application.MessageBox(Msg, 'Morse Runner', MB_OK or MB_ICONINFORMATION);
-    PopupScoreWpx;
+    Application.MessageBox(PChar(Format(Msg, [sVersion])),
+      'About Morse Runner - Community Edition',
+      MB_OK or MB_ICONINFORMATION);
 end;          
 
 
