@@ -394,11 +394,11 @@ object MainForm: TMainForm
       Brush.Color = 16711401
       Pen.Style = psClear
       ExplicitLeft = 2
-      ExplicitTop = 60
+      ExplicitTop = 48
     end
     object Label14: TLabel
-      Left = 76
-      Top = 60
+      Left = 100
+      Top = 61
       Width = 310
       Height = 40
       Caption = 'Morse Runner 1.xx'
@@ -411,8 +411,8 @@ object MainForm: TMainForm
       Transparent = True
     end
     object Label12: TLabel
-      Left = 71
-      Top = 56
+      Left = 95
+      Top = 57
       Width = 310
       Height = 40
       Caption = 'Morse Runner 1.xx'
@@ -425,8 +425,8 @@ object MainForm: TMainForm
       Transparent = True
     end
     object Label13: TLabel
-      Left = 70
-      Top = 55
+      Left = 94
+      Top = 56
       Width = 310
       Height = 40
       Caption = 'Morse Runner 1.xx'
@@ -440,7 +440,7 @@ object MainForm: TMainForm
     end
     object Label15: TLabel
       Left = 106
-      Top = 108
+      Top = 170
       Width = 315
       Height = 15
       Caption = 'Copyright '#169'2004-2016 Alex Shovkoplyas, VE3NEA'
@@ -453,11 +453,67 @@ object MainForm: TMainForm
       Transparent = True
     end
     object Label16: TLabel
-      Left = 198
-      Top = 128
+      Left = 221
+      Top = 127
       Width = 56
       Height = 15
       Caption = 'FREEWARE'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Consolas'
+      Font.Style = []
+      ParentFont = False
+      Transparent = True
+    end
+    object Label19: TLabel
+      Left = 44
+      Top = 234
+      Width = 413
+      Height = 15
+      Caption = 'Copyright '#169'2022 Morse Runner Community Edition Contributors'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Consolas'
+      Font.Style = []
+      ParentFont = False
+      Transparent = True
+    end
+    object Label20: TLabel
+      Left = 178
+      Top = 106
+      Width = 140
+      Height = 15
+      Caption = 'CW CONTEST SIMULATOR'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Consolas'
+      Font.Style = []
+      ParentFont = False
+      Transparent = True
+    end
+    object Label21: TLabel
+      Left = 142
+      Top = 191
+      Width = 238
+      Height = 15
+      Caption = 'http://www.dxatlas.com/MorseRunner'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Consolas'
+      Font.Style = []
+      ParentFont = False
+      Transparent = True
+    end
+    object Label22: TLabel
+      Left = 126
+      Top = 255
+      Width = 280
+      Height = 15
+      Caption = 'https://www.github.com/w7sst/MorseRunner'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -13

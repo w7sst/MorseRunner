@@ -276,6 +276,10 @@ type
     SimContestCombo: TComboBox;
     Label17: TLabel;
     ExchangeEdit: TEdit;
+    Label19: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
