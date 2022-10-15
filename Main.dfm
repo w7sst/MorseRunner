@@ -935,6 +935,14 @@ object MainForm: TMainForm
         Caption = 'View Hi-Score web page...'
         OnClick = ViewScoreBoardMNUClick
       end
+      object PopupScoreHSTMenu: TMenuItem
+        Caption = 'Popup Score HST (temp)'
+        OnClick = PopupScoreHSTMenuClick
+      end
+      object PopupScoreWpxMenu: TMenuItem
+        Caption = 'Popup Score Wpx... (temp)'
+        OnClick = PopupScoreWpxMenuClick
+      end
       object N9: TMenuItem
         Caption = '-'
       end

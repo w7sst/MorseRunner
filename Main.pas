@@ -133,6 +133,8 @@ type
     Stop1MNU: TMenuItem;
     ViewScoreBoardMNU: TMenuItem;
     ViewScoreTable1: TMenuItem;
+    PopupScoreHSTMenu: TMenuItem;
+    PopupScoreWpxMenu: TMenuItem;
     Panel7: TPanel;
     Label16: TLabel;
     Panel8: TPanel;
@@ -307,6 +309,8 @@ type
     procedure RunBtnClick(Sender: TObject);
     procedure ViewScoreBoardMNUClick(Sender: TObject);
     procedure ViewScoreTable1Click(Sender: TObject);
+    procedure PopupScoreHSTMenuClick(Sender: TObject);
+    procedure PopupScoreWpxMenuClick(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure Panel8MouseDown(Sender: TObject; Button: TMouseButton;
@@ -1470,6 +1474,19 @@ begin
 end;
 
 
+{
+  We need to decide what to do with this Menu item and its
+  associated function PopupScoreWpx. This function was previously
+  called from the "Help | About" dialog. The Help About dialog
+  has now been restored to normal. This function call is temporarily
+  moved into this new temporary menu pick.
+}
+procedure TMainForm.PopupScoreWpxMenuClick(Sender: TObject);
+begin
+     PopupScoreWpx;
+end;
+
+
 procedure TMainForm.PopupScoreWpx;
 var
     S, FName: string;
@@ -1519,6 +1536,12 @@ begin
     finally
         DlgScore.Free;
     end;
+end;
+
+
+procedure TMainForm.PopupScoreHSTMenuClick(Sender: TObject);
+begin
+  PopupScoreHST;
 end;
 
 
