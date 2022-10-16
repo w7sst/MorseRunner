@@ -141,7 +141,7 @@ end;
 function TCqWw.GetStationInfo(const ACallsign: string) : string;
 var
   fdrec : TCqWwCallRec;
-  dxrec : TARRLRec;
+  dxrec : TDXCCRec;
   userText : string;
   dxEntity : string;
 begin
@@ -156,7 +156,7 @@ begin
     userText:= fdrec.UserText;
 
     // find caller's Continent/Entity
-    if ARRLDX.FindRec(dxrec, ACallsign) then
+    if gDXCCList.FindRec(dxrec, ACallsign) then
       dxEntity:= dxRec.Continent + '/' + dxRec.Entity;
     end;
 

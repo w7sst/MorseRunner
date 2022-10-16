@@ -444,7 +444,7 @@ begin
 
   // Adding a contest: implement a new contest-specific call history .pas file.
   // Adding a contest: load call history file (be sure to delete it below).
-  ARRLDX:= TARRL.Create;
+  gDXCCList := TDXCC.Create;
   gARRLFD := TArrlFieldDay.Create;
   gNAQP := TNcjNaQp.Create;
   gCQWW := TCqWW.Create;
@@ -466,7 +466,7 @@ end;
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   ToIni;
-  ARRLDX.Free;
+  gDXCCList.Free;
   gARRLFD.Free;
   gNAQP.Free;
   gCQWW.Free;
@@ -952,7 +952,6 @@ end;
 
 procedure TMainForm.UpdateTitleBar;
 begin
-  // Adding a contest: consider application's title bar.
   if (SimContest = scHst) and not HamName.IsEmpty then  // for HST, add operator name
     Caption := Format('Morse Runner - Community Edition:  %s', [HamName])
   else // Default is: Morse Runner - Community Edition

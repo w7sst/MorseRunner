@@ -151,7 +151,7 @@ begin
   scNaQp:
     s := gNAQP.GetStationInfo(ACallsign);
   else
-    s := ARRLDX.Search(ACallsign);
+    s := gDXCCList.Search(ACallsign);
   end;
 
   // '&' are suppressed in this control; replace with '&&'

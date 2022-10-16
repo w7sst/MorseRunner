@@ -132,7 +132,7 @@ end;
 function TNcjNaQp.GetStationInfo(const ACallsign: string) : string;
 var
   rec : TNaQpCallRec;
-  dxrec : TARRLRec;
+  dxrec : TDXCCRec;
   userText : string;
   dxEntity : string;
 begin
@@ -148,7 +148,7 @@ begin
 
     // if caller is DX station, include its Continent/Entity
     if (rec.State = 'DX') and
-        ARRLDX.FindRec(dxrec, ACallsign) then
+        gDXCCList.FindRec(dxrec, ACallsign) then
       dxEntity:= dxRec.Continent + '/' + dxRec.Entity;
     end;
 
