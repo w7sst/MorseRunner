@@ -235,8 +235,11 @@ File -> View Score menu command.
 
 VERSION HISTORY
 
-Version 1.81 (Nov 2022)
-  - Add CQ WW contest (Coded by W7SST)
+Version 1.81 (Oct 2022)
+  - Fix bad CWOPS CWT Exchange message (Coded by W7SST)
+  - Added CQ WW Contest (Coded by W7SST)
+  - Update README.md (by F6FVY, KD4SIR)
+  - Updated GUI and menu items (Coded by W7SST)
 
 Version 1.80 (Oct 2022)
   - Added multi-contest support (Coded by W7SST)
