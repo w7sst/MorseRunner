@@ -239,6 +239,19 @@ This may be an iterative process if others have found issues or have recommendat
 additional changes.
    - [ ] TODO - verify that this is how the process actually works.
 
+#### Step by Step Pull Request Process
+This process presumes you have created a branch with your changes.
+Your branch should be rooted of our `main` branch.
+1. To create a pull request start at the root of our repository.
+2. click `branches` (next to the `# branches`).
+3. Find your active branch and click `New pull request` (on the right).
+4. Now modify the comparison and repository settings. This is tricky, so get this right...
+Change the base repository from `VE3NEA/MorseRunner` to `w7sst/MorseRunner`.
+5. Change the other fields to your branch name. If successful you should see `Able to Merge`.
+6. You can update your comment.
+7. Click `Create pull request`.
+8. On the left, add a reviewer.
+
 ## Developer Guidelines
 As contributors, we should adopt reasonable open source
 development processes and conventions.
