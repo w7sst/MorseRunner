@@ -12,6 +12,9 @@ features and bug fixes from various independent development efforts.
 Initial contests will include ARRL Field Day, CQ WPX, CWOPS CWT, NCJ NAQP, etc.
 Any contest with a corresponding call history file could be implemented.
 
+A short video introducing this project can be found [here](https://www.youtube.com/watch?v=Y1kHqJRytMM). 
+It covers why we started the community edition and our goals. 
+
 ## Goals
 Our goal is to create a community of users and developers who share
 a common vision of improving and supporting the Morse Runner Contest Simulator.
