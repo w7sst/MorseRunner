@@ -22,7 +22,7 @@ in a pull request.
 > This file will help people contribute to the project. It explains what types of contributions are needed and describes how the process works.
 
 #### Table of Contents
-<!-- [Code of Conduct](#code-of-conduct) -->
+[Code of Conduct](#code-of-conduct)
 
 [I have a Question or Feedback](#i-have-a-question-or-feedback)
 
@@ -55,13 +55,11 @@ in a pull request.
 
 [Credits & Attribution](#credits-and-attribution)
 
-<!-- TODO
 ## Code of Conduct
 This project and everyone participating in it is governed by the
-[Morse Runner Code of Conduct](https://github.com/w7sst/MorseRunner/CODE_OF_CONDUCT.md).
+[Morse Runner Community Code of Conduct](CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code.
-Please report unacceptable behavior to (TODO) or GitHub.
--->
+Please report unacceptable behavior to MorseRunnerCommunity+Coc@gmail.com or GitHub.
 
 ## I have a Question or Feedback
 At this point, we do not yet have a general forum establish for Morse Runner. This will be added in the future. In the meantime:
@@ -460,7 +458,3 @@ includes nine presentations and handouts.
 
 ### Miscellaneous Notes
 Other good sources to pull ideas from:
-
-#### Sources - Code of Conduct
-- https://opensource.guide/code-of-conduct/
-- https://opensourceconduct.com/corecoc
