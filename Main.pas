@@ -1026,6 +1026,8 @@ begin
       begin
         // Format('invalid RST (%s)', [AValue]));
         Ini.UserExchange1[SimContest] := Avalue;
+        Tst.Me.RST := StrToInt(Avalue.Replace('N', '9', [rfReplaceAll]));
+        Tst.Me.Exch1 := Avalue;
         if BDebugExchSettings then Edit2.Text := Avalue; // testing only
       end;
     etOpName: // e.g. scCwt (David)
@@ -1034,6 +1036,7 @@ begin
         Ini.HamName:= Avalue;
         Ini.UserExchange1[SimContest] := Avalue;
         Tst.Me.OpName := Avalue;
+        Tst.Me.Exch1 := Avalue;
         if BDebugExchSettings then Edit2.Text := Avalue; // testing only
       end;
     etFdClass:  // e.g. scFieldDay (3A)
