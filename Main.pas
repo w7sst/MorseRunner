@@ -381,6 +381,7 @@ type
     procedure SetContest(AContestNum: TSimContest);
     procedure SetMyExchange(const AExchange: string);
     procedure SetQsk(Value: boolean);
+    procedure SetWpm(AWpm : integer);
     procedure SetMyCall(ACall: string);
     procedure SetPitch(PitchNo: integer);
     procedure SetBw(BwNo: integer);
@@ -830,19 +831,13 @@ end;
 
 procedure TMainForm.IncSpeed;
 begin
-  Wpm := Trunc(Wpm / 5) * 5 + 5;
-  Wpm := Max(10, Min(120, Wpm));
-  SpinEdit1.Value := Wpm;
-  Tst.Me.Wpm := Wpm;
+  SetWpm(Trunc(Wpm / 5) * 5 + 5);
 end;
 
 
 procedure TMainForm.DecSpeed;
 begin
-  Wpm := Ceil(Wpm / 5) * 5 - 5;
-  Wpm := Max(10, Min(120, Wpm));
-  SpinEdit1.Value := Wpm;
-  Tst.Me.Wpm := Wpm;
+  SetWpm(Ceil(Wpm / 5) * 5 - 5);
 end;
 
 
@@ -1187,8 +1182,7 @@ end;
 
 procedure TMainForm.SpinEdit1Change(Sender: TObject);
 begin
-  Ini.Wpm := SpinEdit1.Value;
-  Tst.Me.Wpm := Ini.Wpm;
+  SetWpm(SpinEdit1.Value);
 end;
 
 procedure TMainForm.CheckBox1Click(Sender: TObject);
@@ -1797,8 +1791,13 @@ end;
 
 procedure TMainForm.NWPMClick(Sender: TObject);
 begin
-  Wpm := (Sender as TMenuItem).Tag;
-  Wpm := Max(10, Min(120, Wpm));
+  SetWpm((Sender as TMenuItem).Tag);
+end;
+
+
+procedure TMainForm.SetWpm(AWpm : integer);
+begin
+  Wpm := Max(10, Min(120, AWpm));
   SpinEdit1.Value := Wpm;
   Tst.Me.Wpm := Wpm;
 end;

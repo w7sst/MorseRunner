@@ -210,11 +210,7 @@ begin
       MainForm.UpdCWMinRxSpeed(ReadInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm));
       MainForm.UpdNRDigits(ReadInteger(SEC_STN, 'NRDigits', NRDigits));
 
-      Wpm := ReadInteger(SEC_STN, 'Wpm', Wpm);
-      Wpm := Max(10, Min(120, Wpm));
-      MainForm.SpinEdit1.Value := Wpm;
-      Tst.Me.Wpm := Wpm;
-
+      MainForm.SetWpm(ReadInteger(SEC_STN, 'Wpm', Wpm));
       MainForm.SetQsk(ReadBool(SEC_STN, 'Qsk', Qsk));
       CallsFromKeyer := ReadBool(SEC_STN, 'CallsFromKeyer', CallsFromKeyer);
       GetWpmUsesGaussian := ReadBool(SEC_STN, 'GetWpmUsesGaussian', GetWpmUsesGaussian);
