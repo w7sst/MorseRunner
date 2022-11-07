@@ -352,8 +352,6 @@ type
 
   private
     MustAdvance: boolean;
-    ExchangeField1Type: TExchange1Type;
-    ExchangeField2Type: TExchange2Type;
     procedure ConfigureExchangeFields(
       AExchType1: TExchange1Type;
       AExchType2: TExchange2Type);
@@ -373,6 +371,14 @@ type
     procedure IncSpeed;
   public
     CompetitionMode: boolean;
+
+    // Received Exchange information is contest-specific and depends on contest,
+    // user's QTH/location, DX station's QTH/location, and whether the user's
+    // station is local/DX relative to the contest.
+    // This value is set by calling the virtual TContest.GetSentExchTypes()
+    // function.
+    RecvExchTypes: TExchTypes;
+
     procedure Run(Value: TRunMode);
     procedure WipeBoxes;
     procedure PopupScoreWpx;
@@ -420,8 +426,8 @@ end;
 function Edit2IsRST: Boolean;
 begin
   assert((not (SimContest in [scWpx, scHst])) or
-    (MainForm.ExchangeField1Type = etRST));
-  Result := MainForm.ExchangeField1Type = etRST;
+    (MainForm.RecvExchTypes.Exch1 = etRST));
+  Result := MainForm.RecvExchTypes.Exch1 = etRST;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -517,7 +523,7 @@ end;
 
 procedure TMainForm.Edit2KeyPress(Sender: TObject; var Key: Char);
 begin
-  case ExchangeField1Type of
+  case RecvExchTypes.Exch1 of
     etRST:
       begin
         if RunMode <> rmHst then
@@ -546,13 +552,13 @@ begin
       end;
     else
       assert(false, Format('invalid exchange field 1 type: %s',
-        [ToStr(ExchangeField1Type)]));
+        [ToStr(RecvExchTypes.Exch1)]));
   end;
 end;
 
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
-  case ExchangeField2Type of
+  case RecvExchTypes.Exch2 of
     etSerialNr, etCwopsNumber, etCqZone, etItuZone, etAge:
       begin
         if RunMode <> rmHst then
@@ -590,7 +596,7 @@ begin
       end;
     else
       assert(false, Format('invalid exchange field 2 type: %s',
-        [ToStr(ExchangeField2Type)]));
+        [ToStr(RecvExchTypes.Exch2)]));
   end;
 end;
 
@@ -880,6 +886,9 @@ begin
   sbar.Font.Color := clDefault;
   sbar.Visible := mnuShowCallsignInfo.Checked;
 
+  // update my sent exchange types
+  Tst.Me.SentExchTypes := Tst.GetSentExchTypes(skMyStation, Ini.Call);
+
   // update Exchange field labels and length settings (e.g. RST, Nr.)
   ConfigureExchangeFields(ActiveContest.ExchType1, ActiveContest.ExchType2);
 end;
@@ -892,19 +901,22 @@ begin
 end;}
 
 {
-  Set my exchange fields using the exchange string containing two values,
+  Set my "sent" exchange fields using the exchange string containing two values,
   separated by a space. Error/warning messages are displayed in the status bar.
 }
 procedure TMainForm.SetMyExchange(const AExchange: string);
 var
   sl: TStringList;
+  SentExchTypes : TExchTypes;
   Field1Def: PFieldDefinition;
   Field2Def: PFieldDefinition;
 begin
   sl:= TStringList.Create;
   try
-    Field1Def := @Exchange1Settings[ActiveContest.ExchType1];
-    Field2Def := @Exchange2Settings[ActiveContest.ExchType2];
+    SentExchTypes:= Tst.GetSentExchTypes(skMyStation, Ini.Call);
+    assert(Tst.Me.SentExchTypes = SentExchTypes, 'this is already set; above call not necessary');
+    Field1Def := @Exchange1Settings[SentExchTypes.Exch1];
+    Field2Def := @Exchange2Settings[SentExchTypes.Exch2];
 
     // parse into two strings [Exch1, Exch2]
     ExtractStrings([' '], [], PChar(AExchange), sl);
@@ -934,8 +946,9 @@ begin
       end;
 
     // set contest-specific exchange values
-    SetMyExch1(ActiveContest.ExchType1, sl[0]);
-    SetMyExch2(ActiveContest.ExchType2, sl[1]);
+    SetMyExch1(SentExchTypes.Exch1, sl[0]);
+    SetMyExch2(SentExchTypes.Exch2, sl[1]);
+    assert(Tst.Me.SentExchTypes = SentExchTypes);
 
     // update the Exchange field value
     ExchangeEdit.Text := AExchange;
@@ -1001,7 +1014,7 @@ begin
       ToStr(TExchange1Type(Exchange1Settings[AExchType1].T))]));
   Label2.Caption:= Exchange1Settings[AExchType1].C;
   Edit2.MaxLength:= Exchange1Settings[AExchType1].L;
-  ExchangeField1Type := AExchType1;
+  RecvExchTypes.Exch1 := AExchType1;
 
   // setup Exchange Field 2 (e.g. Serial #)
   assert(AExchType2 = TExchange2Type(Exchange2Settings[AExchType2].T),
@@ -1010,7 +1023,7 @@ begin
       ToStr(TExchange2Type(Exchange2Settings[AExchType2].T))]));
   Label3.Caption := Exchange2Settings[AExchType2].C;
   Edit3.MaxLength := Exchange2Settings[AExchType2].L;
-  ExchangeField2Type := AExchType2;
+  RecvExchTypes.Exch2 := AExchType2;
 
   // Set my exchange value (from INI file)
   // UI assumes uppercase only, so convert .ini files to uppercase.
@@ -1050,6 +1063,7 @@ begin
     else
       assert(false, Format('Unsupported exchange 1 type: %s.', [ToStr(AExchType)]));
   end;
+  Tst.Me.SentExchTypes.Exch1 := AExchType;
 end;
 
 procedure TMainForm.SetMyExch2(const AExchType: TExchange2Type;
@@ -1113,6 +1127,7 @@ begin
     else
       assert(false, Format('Unsupported exchange 2 type: %s.', [ToStr(AExchType)]));
   end;
+  Tst.Me.SentExchTypes.Exch2 := AExchType;
 end;
 
 

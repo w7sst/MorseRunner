@@ -23,6 +23,21 @@ type
   TStationState = (stListening, stCopying, stPreparingToSend, stSending);
   TStationEvent = (evTimeout, evMsgSent, evMeStarted, evMeFinished);
 
+  // TStationKind identifies whether the station is the simulated home
+  // station or a remote DX station within the context of the simulation.
+  TStationKind = (skMyStation, skDxStation);
+
+  // Requested message type used to query sent or received dynamic message types.
+  // Used in TContest.GetSentExchTypes() and TContest.GetRecvExchTypes().
+  TRequestedMsgType = (mtSendMsg, mtRecvMsg);
+
+  // Exchange Field types
+  TExchTypes = record
+    Exch1: TExchange1Type;  // Exchange field 1 type
+    Exch2: TExchange2Type;  // Exchange field 2 type
+
+    class operator Equal(const a,b: TExchTypes) : Boolean;
+  end;
 
   TStation = class (TCollectionItem)
   private
@@ -42,7 +57,15 @@ type
     Envelope: TSingleArray;
     State: TStationState;
 
-    // Exchange fields...
+    // Sent Exchange field types...
+    // Sent Exchange information is contest-specific and depends on contest,
+    // user's QTH/location (based on callsign & prefix), and whether the user's
+    // station is local/DX relative to the contest.
+    // This value is set by calling the virtual TContest.GetSentExchTypes()
+    // function.
+    SentExchTypes : TExchTypes;
+
+    // Sent Exchange fields...
     // Adding a contest: try to use the generalized Exch1 and Exch2 instead of new fields.
     // TODO - continue to generalize the notion of Exch1 and Exch2 for all contests.
     NR, RST: integer;
@@ -58,7 +81,7 @@ type
 
     constructor CreateStation;
 
-    procedure Tick; 
+    procedure Tick;
     function GetBlock: TSingleArray; virtual;
     procedure ProcessEvent(AEvent: TStationEvent); virtual; abstract;
 
@@ -72,12 +95,28 @@ type
 
 implementation
 
+uses
+  Contest;
+
+
+{ TExchTypes }
+
+class operator TExchTypes.Equal(const a,b: TExchTypes) : Boolean;
+begin
+  Result:= (a.Exch1 = b.Exch1) and (a.Exch2 = b.Exch2);
+end;
+
+
 { TStation }
 
 constructor TStation.CreateStation;
 begin
   inherited Create(nil);
+
+  SentExchTypes.Exch1:= TExchange1Type(-1);
+  SentExchTypes.Exch2:= TExchange2Type(-1);
 end;
+
 
 function TStation.GetBfo: Single;
 begin
@@ -248,7 +287,7 @@ begin
       Result := Format('%d%.3d', [RST, NR]);
   end;
 
-  if NrWithError and (ActiveContest.ExchType2 = etSerialNr) then
+  if NrWithError and (SentExchTypes.Exch2 = etSerialNr) then
     begin
     Idx := Length(Result);
     if not CharInSet(Result[Idx], ['2'..'7']) then
@@ -263,9 +302,9 @@ begin
     NrWithError := false;
     end;
 
-  if Ini.ActiveContest.ExchType1 = etRST then
+  if SentExchTypes.Exch1 = etRST then
      Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
-  if (Ini.RunMode <> rmHst) and (ActiveContest.ExchType2 in
+  if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
     [etSerialNr, etCqZone, etItuZone, etAge, etPower]) then
     begin
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);

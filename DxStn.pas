@@ -71,6 +71,9 @@ begin
 
   Wpm := Oper.GetWpm;
 
+  // DX's sent exchange types depends on kind-of-station and their callsign
+  SentExchTypes := Tst.GetSentExchTypes(skDxStation, MyCall);
+
   // Adding a contest: DxStation.CreateStation - get Exch1 (e.g. Name), Exch2 (e.g. NR), and optional UserText
   case SimContest of
     scCwt: begin
@@ -215,7 +218,7 @@ begin
     TrueRst := Self.Rst;
     TrueNR := Self.NR;
     // Adding a contest: copy DxStation's Exch1 qso information into log
-    case ActiveContest.ExchType1 of
+    case SentExchTypes.Exch1 of
       etRST: TrueExch1 := IntToStr(Self.RST);
       etOpName: TrueExch1 := Self.OpName;
       etFdClass: TrueExch1 := Self.Exch1;
@@ -223,7 +226,7 @@ begin
         assert(false);
     end;
     // Adding a contest: copy DxStation's Exch2 qso information into log
-    case ActiveContest.ExchType2 of
+    case SentExchTypes.Exch2 of
       etSerialNr: TrueExch2 := IntToStr(Self.NR);
       etCwopsNumber: TrueExch2 := IntToStr(Self.NR);
       etCqZone: TrueExch2 := IntToStr(Self.NR);
