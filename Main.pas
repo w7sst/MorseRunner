@@ -1778,7 +1778,8 @@ end;
 //------------------------------------------------------------------------------
 procedure TMainForm.Call1Click(Sender: TObject);
 begin
-  SetMyCall(Trim(InputBox('Callsign', 'Callsign', Edit4.Text)));
+  // UI assumes uppercase only, so convert user's callsign to uppercase.
+  SetMyCall(UpperCase(Trim(InputBox('Callsign', 'Callsign', Edit4.Text))));
 end;
 
 
