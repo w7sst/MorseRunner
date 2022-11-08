@@ -204,7 +204,7 @@ begin
       MainForm.SetBw(ReadInteger(SEC_STN, 'BandWidth', 9));
 
       HamName := ReadString(SEC_STN, 'Name', '');
-      CWOPSNum :=  ReadString(SEC_STN, 'cwopsnum', '');
+      CWOPSNum :=  ReadString(SEC_STN, 'cwopsnum', CWOPSNum);
 
       MainForm.UpdCWMaxRxSpeed(ReadInteger(SEC_STN, 'CWMaxRxSpeed', MaxRxWpm));
       MainForm.UpdCWMinRxSpeed(ReadInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm));
