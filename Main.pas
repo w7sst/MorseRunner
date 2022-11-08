@@ -446,8 +446,8 @@ begin
   ListView2.Visible:= False;
   ListView2.Clear;
 
-  Tst := TContest.Create;
-  LoadCallList;
+  //Tst := TContest.Create;
+  //LoadCallList;
 
   // Adding a contest: implement a new contest-specific call history .pas file.
   // Adding a contest: load call history file (be sure to delete it below).
@@ -871,6 +871,11 @@ begin
 
   assert(ContestDefinitions[AContestNum].T = AContestNum,
     'Contest definitions are out of order');
+
+  // drop prior contest
+  if Assigned(Tst) then
+    FreeAndNil(Tst);
+
   Ini.SimContest := AContestNum;
   Ini.ActiveContest := @ContestDefinitions[AContestNum];
   SimContestCombo.ItemIndex := Ord(AContestNum);
@@ -881,8 +886,29 @@ begin
   sbar.Font.Color := clDefault;
   sbar.Visible := mnuShowCallsignInfo.Checked;
 
-  // update my sent exchange types
-  Tst.Me.SentExchTypes := Tst.GetSentExchTypes(skMyStation, Ini.Call);
+  // create new contest
+  // how to turn this into a factory
+  //Tst := CreateContest(AContestNum, Ini.Call);
+  Tst := TContest.Create;
+  CallLst.LoadCallList;   // loads Master.dta
+  // Tst.LoadCallHistory; // virtual function
+
+  // the following will initialize simulation-specific data owned by contest.
+  // (this used to reside in Ini.FromIni and called while reading .INI file)
+  begin
+    SetMyCall(Ini.Call);
+    SetPitch(ComboBox1.ItemIndex);
+    SetBw(ComboBox2.ItemIndex);
+    SetWpm(Ini.Wpm);
+    SetQsk(Ini.Qsk);
+
+    // buffer size
+    Tst.Filt.SamplesInInput := Ini.BufSize;
+    Tst.Filt2.SamplesInInput := Ini.BufSize;
+
+    // update my sent exchange types (must be called after loading call lists?)
+    Tst.Me.SentExchTypes:= Tst.GetSentExchTypes(skMyStation, Ini.Call);
+  end;
 
   // update Exchange field labels and length settings (e.g. RST, Nr.)
   ConfigureExchangeFields(ActiveContest.ExchType1, ActiveContest.ExchType2);
