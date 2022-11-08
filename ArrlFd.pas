@@ -153,7 +153,7 @@ end;
 function TArrlFieldDay.GetStationInfo(const ACallsign: string) : string;
 var
   fdrec : TFdCallRec;
-  dxrec : TARRLRec;
+  dxrec : TDXCCRec;
   userText : string;
   dxEntity : string;
 begin
@@ -169,7 +169,7 @@ begin
 
     // if caller is DX station, include its Continent/Entity
     if (fdrec.Section = 'DX') and
-        ARRLDX.FindRec(dxrec, ACallsign) then
+        gDXCCList.FindRec(dxrec, ACallsign) then
       dxEntity:= dxRec.Continent + '/' + dxRec.Entity;
     end;
 
