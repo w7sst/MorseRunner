@@ -8,7 +8,7 @@ unit QrmStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Ini, CallLst;
+  Station;
 
 type
   TQrmStation = class(TStation)
@@ -22,6 +22,7 @@ type
 implementation
 
 uses
+  SysUtils, Classes, RndFunc, Ini, CallLst,
   Contest;
 
 constructor TQrmStation.CreateStation;

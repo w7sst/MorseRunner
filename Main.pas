@@ -352,6 +352,7 @@ type
 
   private
     MustAdvance: boolean;
+    function CreateContest(AContestId : TSimContest) : TContest;
     procedure ConfigureExchangeFields(
       AExchType1: TExchange1Type;
       AExchType2: TExchange2Type);
@@ -446,16 +447,8 @@ begin
   ListView2.Visible:= False;
   ListView2.Clear;
 
-  //Tst := TContest.Create;
-  //LoadCallList;
-
-  // Adding a contest: implement a new contest-specific call history .pas file.
-  // Adding a contest: load call history file (be sure to delete it below).
+  // load DXCC support
   gDXCCList := TDXCC.Create;
-  gARRLFD := TArrlFieldDay.Create;
-  gNAQP := TNcjNaQp.Create;
-  gCQWW := TCqWW.Create;
-  CWOPSCWT := TCWOPS.Create;
 
   Histo:= THisto.Create(PaintBox1);
 
@@ -466,6 +459,7 @@ begin
   Keyer.Rate := DEFAULTRATE;
   Keyer.BufSize := Ini.BufSize;
 
+  // create a derived TContest of the appropriate type
   SetContest(Ini.SimContest);
 end;
 
@@ -474,13 +468,26 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   ToIni;
   gDXCCList.Free;
-  gARRLFD.Free;
-  gNAQP.Free;
-  gCQWW.Free;
-  CWOPSCWT.Free;
   Histo.Free;
   Tst.Free;
   DestroyKeyer;
+end;
+
+
+// Contest Factory - allocate a derived TContest of the appropriate type
+function TMainForm.CreateContest(AContestId : TSimContest) : TContest;
+begin
+  // Adding a contest: implement a new contest-specific call history .pas file.
+  Result := nil;
+  case AContestId of
+  scWpx, scHst: Result := TContest.Create;
+  scCwt:        Result := TCWOPS.Create;
+  scFieldDay:   Result := TArrlFieldDay.Create;
+  scNaQp:       Result := TNcjNaQp.Create;
+  scCQWW:       Result := TCqWW.Create;
+  else
+    assert(false);
+  end;
 end;
 
 
@@ -887,14 +894,10 @@ begin
   sbar.Visible := mnuShowCallsignInfo.Checked;
 
   // create new contest
-  // how to turn this into a factory
-  //Tst := CreateContest(AContestNum, Ini.Call);
-  Tst := TContest.Create;
-  CallLst.LoadCallList;   // loads Master.dta
-  // Tst.LoadCallHistory; // virtual function
+  Tst := CreateContest(AContestNum);
 
   // the following will initialize simulation-specific data owned by contest.
-  // (this used to reside in Ini.FromIni and called while reading .INI file)
+  // (moved here from Ini.FromIni)
   begin
     SetMyCall(Ini.Call);
     SetPitch(ComboBox1.ItemIndex);
@@ -902,9 +905,12 @@ begin
     SetWpm(Ini.Wpm);
     SetQsk(Ini.Qsk);
 
-    // buffer size
-    Tst.Filt.SamplesInInput := Ini.BufSize;
-    Tst.Filt2.SamplesInInput := Ini.BufSize;
+    // buffer size - set in TContest.Create()
+    assert(Tst.Filt.SamplesInInput = Ini.BufSize);
+    assert(Tst.Filt2.SamplesInInput = Ini.BufSize);
+
+    // load contest-specific call history file
+    Tst.LoadCallHistory(Ini.Call);
 
     // update my sent exchange types (must be called after loading call lists?)
     Tst.Me.SentExchTypes:= Tst.GetSentExchTypes(skMyStation, Ini.Call);
@@ -2041,7 +2047,7 @@ begin
   if buf = '' then begin
        exit;
   end;
-  if CWOPSCWT.isnum(buf)=False then  begin
+  if not CWOPS.isnum(buf) then begin
        exit;
   end;
     CWOPSNum := buf;

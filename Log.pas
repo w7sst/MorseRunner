@@ -8,9 +8,7 @@ unit Log;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, RndFunc, Math, Controls,
-  StdCtrls, ExtCtrls, ARRL, ARRLFD, NAQP, PerlRegEx, pcre;
-
+  Classes, Controls, ExtCtrls;
 
 procedure SaveQso;
 procedure LastQsoToScreen;
@@ -68,6 +66,8 @@ var
 implementation
 
 uses
+  Windows, SysUtils, Graphics, RndFunc, Math,
+  StdCtrls, PerlRegEx, pcre,
   Contest, Main, DxStn, DxOper, Ini, MorseKey;
 
 
@@ -145,14 +145,7 @@ var
   s: string;
 begin
   // Adding a contest: UpdateSbar - update status bar with station info (e.g. FD shows UserText)
-  case Ini.SimContest of
-  scFieldDay:
-    s := gArrlFd.GetStationInfo(ACallsign);
-  scNaQp:
-    s := gNAQP.GetStationInfo(ACallsign);
-  else
-    s := gDXCCList.Search(ACallsign);
-  end;
+  s := Tst.GetStationInfo(ACallsign);
 
   // '&' are suppressed in this control; replace with '&&'
   s:= StringReplace(s, '&', '&&', [rfReplaceAll]);

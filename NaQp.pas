@@ -3,9 +3,7 @@ unit NAQP;
 interface
 
 uses
-  Generics.Defaults, Generics.Collections, ARRL,
-  StrUtils,
-  SysUtils, Classes, Contnrs, PerlRegEx, pcre;
+  Generics.Defaults, Generics.Collections, Contest, DxStn;
 
 type
   TNaQpCallRec = class
@@ -18,36 +16,37 @@ type
     class function compareCall(const left, right: TNaQpCallRec) : integer; static;
   end;
 
-TNcjNaQp = class
+TNcjNaQp = class(TContest)
 private
   NaQpCallList: TList<TNaQpCallRec>;
   Comparer: IComparer<TNaQpCallRec>;
 
-  procedure LoadHistoryFile;
-
 public
   constructor Create;
-  function pickStation(): integer;
-  function getCall(id:integer): string;     // returns station callsign
+  destructor Destroy; override;
+  procedure LoadCallHistory(const AUserCallsign : string); override;
+
+  function PickStation(): integer; override;
+  function GetCall(id : integer): string; override; // returns station callsign
+  procedure GetExchange(id : integer; out station : TDxStation); override;
+
   function getExch1(id:integer): string;    // returns station info (e.g. MIKE)
   function getExch2(id:integer): string;    // returns section info (e.g. OR)
   function getName(id:integer): string;     // returns station op name (e.g. MIKE)
   function getState(id:integer): string;    // returns state (e.g. OR)
   function getUserText(id:integer): string; // returns optional UserText
   function FindCallRec(out recOut: TNaQpCallRec; const ACall: string): Boolean;
-  function GetStationInfo(const ACallsign: string) : string;
+  function GetStationInfo(const ACallsign: string) : string; override;
 end;
-
-var
-  gNAQP: TNcjNaQp;
 
 
 implementation
 
 uses
-  log;
+  StrUtils, SysUtils, Classes, Contnrs, PerlRegEx, pcre,
+  log, ARRL;
 
-procedure TNcjNaQp.LoadHistoryFile;
+procedure TNcjNaQp.LoadCallHistory(const AUserCallsign : string);
 const
   DelimitChar: char = ',';
 var
@@ -61,7 +60,7 @@ begin
   tl.StrictDelimiter := True;
 
   try
-    NaQpCallList:= TList<TNaQpCallRec>.Create;
+    NaQpCallList.Clear;
 
     slst.LoadFromFile(ParamStr(1) + 'NAQPCW.TXT');
 
@@ -96,12 +95,19 @@ end;
 constructor TNcjNaQp.Create;
 begin
     inherited Create;
+    NaQpCallList := TList<TNaQpCallRec>.Create;
     Comparer := TComparer<TNaQpCallRec>.Construct(TNaQpCallRec.compareCall);
-    LoadHistoryFile;
 end;
 
 
-function TNcjNaQp.pickStation(): integer;
+destructor TNcjNaQp.Destroy;
+begin
+  FreeAndNil(NaQpCallList);
+  inherited;
+end;
+
+
+function TNcjNaQp.PickStation(): integer;
 begin
      result := random(NaQpCallList.Count);
 end;
@@ -142,7 +148,7 @@ begin
   dxEntity := '';
   result:= '';
 
-  if gNAQP.FindCallRec(rec, ACallsign) then
+  if FindCallRec(rec, ACallsign) then
     begin
     userText:= rec.UserText;
 
@@ -163,11 +169,19 @@ begin
 end;
 
 
-function TNcjNaQp.getCall(id:integer): string;     // returns station callsign
+function TNcjNaQp.GetCall(id : integer): string;     // returns station callsign
 begin
   result := NaQpCallList.Items[id].Call;
 end;
 
+
+procedure TNcjNaQp.GetExchange(id : integer; out station : TDxStation);
+begin
+  station.Exch1 := getExch1(station.Operid);
+  station.OpName := station.Exch1; // TODO - refactor etOpName to use Exch1
+  station.Exch2 := getExch2(station.Operid);
+  station.UserText := getUserText(station.Operid);
+end;
 
 function TNcjNaQp.getExch1(id:integer): string;    // returns station info (e.g. MIKE)
 begin

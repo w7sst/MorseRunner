@@ -243,7 +243,6 @@ begin
         begin V := 3; WriteInteger(SEC_SYS, 'BufSize', V); end;
       V := Max(1, Min(5, V));
       BufSize := 64 shl V;
-      // Tst.Filt{,2}.SamplesInInput: set in TContest.Create & TMainForm.SetContest
 
       V := ReadInteger(SEC_STN, 'SelfMonVolume', 0);
       MainForm.VolumeSlider1.Value := V / 80 + 0.75;

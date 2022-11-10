@@ -3,7 +3,7 @@ unit CWOPS;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, PerlRegEx, pcre;
+  Classes, Contest, Contnrs, DxStn;
 
 type
     TCWOPSRec= class
@@ -13,31 +13,33 @@ type
         Number: string;
     end;
 
-  TCWOPS= class
+  TCWOPS= class(TContest)
   private
     CWOPSList: TList;
-    procedure LoadCWOPS;
     procedure Delimit(var AStringList: TStringList; const AText: string);
 
   public
     constructor Create;
-    function getcwopsid(): integer;
-    function getcwopscall(id:integer): string;
+    destructor Destroy; override;
+    procedure LoadCallHistory(const AUserCallsign : string); override;
+
+    function PickStation(): integer; override;
+    function GetCall(id : integer): string; override;
+    procedure GetExchange(id : integer; out station : TDxStation); override;
+
     function getcwopsname(id:integer): string;
     function getcwopsnum(id:integer): integer;
-    function IsNum(Num: String): Boolean;
   end;
 
-var
-    CWOPSCWT: TCWOPS;
+  function IsNum(Num: String): Boolean;
 
 
 implementation
 
 uses
-    log;
+    SysUtils, Log;
 
-procedure TCWOPS.LoadCWOPS;
+procedure TCWOPS.LoadCallHistory(const AUserCallsign : string);
 var
     slst, tl: TStringList;
     i: integer;
@@ -46,7 +48,7 @@ begin
     slst:= TStringList.Create;
     tl:= TStringList.Create;
     try
-        CWOPSList:= TList.Create;
+        CWOPSList.Clear;
         slst.LoadFromFile(ParamStr(1) + 'CWOPS.LIST');
         slst.Sort;
 
@@ -81,20 +83,34 @@ end;
 constructor TCWOPS.Create;
 begin
     inherited Create;
-    LoadCWOPS;
+    CWOPSList:= TList.Create;
 end;
 
-function TCWOPS.getcwopsid(): integer;
+destructor TCWOPS.Destroy;
+begin
+  FreeAndNil(CWOPSList);
+  inherited;
+end;
+
+
+function TCWOPS.PickStation(): integer;
 begin
      result := random(CWOPSList.Count);
 end;
 
 
-function TCWOPS.getcwopscall(id:integer): string;
-
+function TCWOPS.GetCall(id : integer): string;
 begin
      result := TCWOPSRec(CWOPSList.Items[id]).Call;
 end;
+
+
+procedure TCWOPS.GetExchange(id : integer; out station : TDxStation);
+begin
+  station.OpName := getcwopsname(id);
+  station.NR :=  getcwopsnum(id);
+end;
+
 
 function TCWOPS.getcwopsname(id:integer): string;
 
@@ -108,7 +124,7 @@ begin
      result := strtoint(TCWOPSRec(CWOPSList.Items[id]).Number);
 end;
 
-function TCWOPS.IsNum(Num: String): Boolean;
+function IsNum(Num: String): Boolean;
 var
    X : Integer;
 begin
