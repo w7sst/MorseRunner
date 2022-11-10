@@ -99,7 +99,7 @@ object MainForm: TMainForm
       Top = 66
       Width = 61
       Height = 26
-      Caption = 'F2  <#>'
+      Caption = 'F2  <EXCH>'
       OnClick = SendClick
     end
     object SpeedButton6: TSpeedButton
@@ -1051,9 +1051,9 @@ object MainForm: TMainForm
         ShortCut = 112
         OnClick = SendClick
       end
-      object Number1: TMenuItem
+      object Exchange1: TMenuItem
         Tag = 2
-        Caption = 'Number'
+        Caption = 'Exchange'
         ShortCut = 113
         OnClick = SendClick
       end

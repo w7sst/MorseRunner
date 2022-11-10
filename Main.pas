@@ -77,7 +77,7 @@ type
     File1: TMenuItem;
     Send1: TMenuItem;
     CQ1: TMenuItem;
-    Number1: TMenuItem;
+    Exchange1: TMenuItem;
     TU1: TMenuItem;
     MyCall1: TMenuItem;
     HisCall1: TMenuItem;
