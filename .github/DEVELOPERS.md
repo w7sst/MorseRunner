@@ -43,7 +43,5 @@ There aren't any unit tests. This may be added to the roadmap. Code refactoring 
 
 1 - Production builds are currently created for each release by W7SST
 
-perform builds via github actions? if not then maybe GitLab, Travis or Jenkins?
-
 In conclusion, thank you for volunteering to help improve this project. We all look forward to your contributions!
 
