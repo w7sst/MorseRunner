@@ -86,54 +86,54 @@ object MainForm: TMainForm
     end
     object SpeedButton4: TSpeedButton
       Tag = 1
-      Left = 6
+      Left = 9
       Top = 66
-      Width = 65
+      Width = 61
       Height = 26
       Caption = 'F1  CQ'
       OnClick = SendClick
     end
     object SpeedButton5: TSpeedButton
       Tag = 2
-      Left = 73
+      Left = 76
       Top = 66
-      Width = 65
+      Width = 61
       Height = 26
-      Caption = 'F2  <exch>'
+      Caption = 'F2  <#>'
       OnClick = SendClick
     end
     object SpeedButton6: TSpeedButton
       Tag = 3
       Left = 140
       Top = 66
-      Width = 65
+      Width = 61
       Height = 26
       Caption = 'F3  TU'
       OnClick = SendClick
     end
     object SpeedButton7: TSpeedButton
       Tag = 4
-      Left = 207
+      Left = 204
       Top = 66
-      Width = 65
+      Width = 61
       Height = 26
       Caption = 'F4  <my>'
       OnClick = SendClick
     end
     object SpeedButton8: TSpeedButton
       Tag = 5
-      Left = 6
+      Left = 12
       Top = 94
-      Width = 65
+      Width = 61
       Height = 26
       Caption = 'F5  <his>'
       OnClick = SendClick
     end
     object SpeedButton9: TSpeedButton
       Tag = 6
-      Left = 73
+      Left = 76
       Top = 94
-      Width = 65
+      Width = 61
       Height = 26
       Caption = 'F6  B4'
       OnClick = SendClick
@@ -142,16 +142,16 @@ object MainForm: TMainForm
       Tag = 7
       Left = 140
       Top = 94
-      Width = 65
+      Width = 61
       Height = 26
       Caption = 'F7  ?'
       OnClick = SendClick
     end
     object SpeedButton11: TSpeedButton
       Tag = 8
-      Left = 207
+      Left = 204
       Top = 94
-      Width = 65
+      Width = 61
       Height = 26
       Caption = 'F8  NIL'
       OnClick = SendClick
@@ -1051,9 +1051,9 @@ object MainForm: TMainForm
         ShortCut = 112
         OnClick = SendClick
       end
-      object Exchange1: TMenuItem
+      object Number1: TMenuItem
         Tag = 2
-        Caption = 'Exchange'
+        Caption = 'Number'
         ShortCut = 113
         OnClick = SendClick
       end
