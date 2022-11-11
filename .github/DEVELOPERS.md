@@ -14,11 +14,15 @@ Lazarus was the original IDE used for MorseRunner by VE3NEA
 - Delphi Community Edition (aka RX RAD Studio 10.4)
 Delphi CE is free for use by open source projects and Delphi is the perferred IDE at this time
 - Install and start Delphi CE 
-### TBD how do you configure each IDE?
 - To open the project in the IDE Click File then click Open Project
 then navigate to where you cloned your MorseRunner repo and
-select the 51KB MorseRunner Delphi Project File then click Open.
+select the VCL/MorseRunnerVcl.dproj (~44KB) which is a Delphi Project File then click Open.
+- Build the project via clicking Project then click Build MorseRunnerVcl
+- Install packages via clkicking Component on menu then click Install Packages. Click Add (lower right),
+navigate to and select VCL/Win32/Debug/MorseRunnerVcl.bpl, click open and click save.
+- Reopen the project
 - To run the source code - Click Run and Run again or click the play icon
+### TBD run fails
 
 1 - Clone your git repo into the IDE
 
