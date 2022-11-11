@@ -27,6 +27,10 @@ var
 begin
   inherited Create(nil);
 
+  // QrnStation doesn't send messages, so no call nor exchange types
+  SentExchTypes.Exch1:= TExchange1Type(-1);
+  SentExchTypes.Exch2:= TExchange2Type(-1);
+
   Dur := SecondsToBlocks(Random) * Ini.BufSize;
   SetLength(Envelope, Dur);
   Amplitude := 1E5*Power(10, 2*Random);
