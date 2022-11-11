@@ -59,6 +59,9 @@ begin
   Wpm := Ini.Wpm;
   Amplitude := 300000;
 
+  // My sent exchange types depends on my callsign
+  SentExchTypes:= Tst.GetSentExchTypes(skMyStation, MyCall);
+
   // Adding a contest: Initialize Exch1 and Exch2
   // (try to use the generalized Exch1 and Exch2 fields for new contests.)
   OpName := HamName;
@@ -87,12 +90,13 @@ end;
 
 procedure TMyStation.SendText(AMsg: string);
 begin
-  if ActiveContest.ExchType1 = etOpName then
+  // Adding a contest: some field types have specific behaviors
+  if SentExchTypes.Exch1 = etOpName then
     begin
     assert(OpName = HamName, 'HamName doesn''t change; should already be set');
     OpName := HamName;
     end;
-  if ActiveContest.ExchType2 = etCwopsNumber then
+  if SentExchTypes.Exch2 = etCwopsNumber then
     begin
     //assert(NR = strtoint(CWOPSNUM), 'CWOPS Num doesn''t change, should be set');
     NR := strtoint(CWOPSNum);

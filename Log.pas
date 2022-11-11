@@ -409,7 +409,7 @@ var
   function ValidateExchField1(const text: string): Boolean;
   begin
     Result := false;
-    case ActiveContest.ExchType1 of
+    case Mainform.RecvExchTypes.Exch1 of
       etRST:     Result := Length(text) = 3;
       etOpName:  Result := Length(text) > 1;
       etFdClass: Result := Length(text) > 1;
@@ -422,7 +422,7 @@ var
   function ValidateExchField2(const text: string): Boolean;
   begin
     Result := false;
-    case ActiveContest.ExchType2 of
+    case Mainform.RecvExchTypes.Exch2 of
       etSerialNr:    Result := Length(text) > 0;
       etCwopsNumber: Result := Length(text) > 0;
       etArrlSection: Result := Length(text) > 1;
@@ -458,7 +458,7 @@ begin
 
     // Adding a contest: save contest-specific exchange values into QsoList
     //save Exchange 1 (Edit2)
-    case ActiveContest.ExchType1 of
+    case Mainform.RecvExchTypes.Exch1 of
       etRST:     Qso.Rst := StrToInt(Edit2.Text);
       etOpName:  Qso.Exch1 := Edit2.Text;
       etFdClass: Qso.Exch1 := Edit2.Text;
@@ -467,7 +467,7 @@ begin
     end;
 
     //save Exchange2 (Edit3)
-    case ActiveContest.ExchType2 of
+    case Mainform.RecvExchTypes.Exch2 of
       etSerialNr:    Qso.Nr := StrToInt(Edit3.Text);
       etCwopsNumber: Qso.Nr := StrToInt(Edit3.Text);
       etArrlSection: Qso.Exch2 := Edit3.Text;
@@ -529,7 +529,7 @@ begin
   MainForm.WipeBoxes;
 
   //inc NR
-  if ActiveContest.ExchType2 = etSerialNr then
+  if Tst.Me.SentExchTypes.Exch2 = etSerialNr then
     Inc(Tst.Me.NR);
 end;
 
@@ -581,7 +581,7 @@ begin
       Err := 'DUP';
     if Err.IsEmpty then
       // Adding a contest: check for contest-specific exchange field 1 errors
-      case ActiveContest.ExchType1 of
+      case Mainform.RecvExchTypes.Exch1 of
         etRST:     if TrueRst <> Rst then Err := 'RST';
         etOpName:  if TrueExch1 <> Exch1 then Err := 'NAME';
         etFdClass: if TrueExch1 <> Exch1 then Err := 'CL ';
@@ -590,7 +590,7 @@ begin
       end;
     if Err.IsEmpty then
       // Adding a contest: check for contest-specific exchange field 2 errors
-      case ActiveContest.ExchType2 of
+      case Mainform.RecvExchTypes.Exch2 of
         etSerialNr:    if TrueNr <> NR then Err := 'NR ';
         etCwopsNumber: if TrueNr <> NR then Err := 'NR ';
         etCqZone:      if TrueNr <> NR then Err := 'ZN ';
