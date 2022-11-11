@@ -29,6 +29,13 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure Init;
+    function GetSentExchTypes(
+      const AStationKind : TStationKind;
+      const AMyCallsign : string) : TExchTypes;
+    function GetRecvExchTypes(
+      const AStationKind : TStationKind;
+      const AMyCallsign : string;
+      const ADxCallsign : string) : TExchTypes;
     function Minute: Single;
     function GetAudio: TSingleArray;
     procedure OnMeFinishedSending;
@@ -95,6 +102,33 @@ begin
   Me.Init;
   Stations.Clear;
   BlockNumber := 0;
+end;
+
+
+{
+  Return sent dynamic exchange types for the given kind-of-station and callsign.
+}
+function TContest.GetSentExchTypes(
+  const AStationKind : TStationKind;
+  const AMyCallsign : string) : TExchTypes;
+begin
+  Result.Exch1 := ActiveContest.ExchType1;
+  Result.Exch2 := ActiveContest.ExchType2;
+end;
+
+
+{
+  Return received dynamic exchange types for the given kind-of-station,
+  user's (simulation callsign) and the dx station's callsign.
+  Different contests will use either user's callsign or dx station's callsign.
+}
+function TContest.GetRecvExchTypes(
+  const AStationKind : TStationKind;
+  const AMyCallsign : string;
+  const ADxCallsign : string) : TExchTypes;
+begin
+  Result.Exch1 := ActiveContest.ExchType1;
+  Result.Exch2 := ActiveContest.ExchType2;
 end;
 
 

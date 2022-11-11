@@ -27,7 +27,7 @@ in a pull request.
 [I have a Question or Feedback](#i-have-a-question-or-feedback)
 
 [What should I know before I get started?](#what-should-i-know-before-i-get-started)
-- [I'm new to open source software?](Im-new-to-open-source-software)
+- [I'm new to open source software?](#im-new-to-open-source-software)
 
 [How can I contribute?](#how-can-i-contribute)
 - [Reporting Bugs](#reporting-bugs)
@@ -449,7 +449,7 @@ The following articles will help you better understand this role.
 ## Credits & Attribution
 We'd like to "tip our hats" and say "Thank you!" and acknowledge the following projects
 for providing insight into starting and supporting our community-maintained open source project.
-- https://opensoure.guide
+- https://opensource.guide
 - https://github.com/atom/atom, https://github.com/atom/atom/blob/master/CONTRIBUTING.md
 - https://mozillascience.github.io/working-open-workshop/contributing/ -
 How to build a contributing.md, including training for open source projects;

@@ -21,6 +21,9 @@ type
 
 implementation
 
+uses
+  Contest;
+
 constructor TQrmStation.CreateStation;
 begin
   inherited Create(nil);
@@ -31,6 +34,9 @@ begin
   Amplitude := 5000 + 25000 * Random;
   Pitch := Round(RndGaussLim(0, 300));
   Wpm := 30 + Random(20);
+
+  // DX's sent exchange types depends on kind-of-station and their callsign
+  SentExchTypes:= Tst.GetSentExchTypes(skDxStation, MyCall);
 
   case Random(7) of
     0: SendMsg(MsgQrl);
