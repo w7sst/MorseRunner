@@ -33,15 +33,27 @@ tools - contains verify-normalization.sh script who's purpose is TBD
 
 1 - How to write and contribute unit tests
 There aren't any unit tests. This may be added to the roadmap. Code refactoring will be needed to be able to support unit testing.
-### TBD add unit testing framework and refactor to support it to the long term roadmap
+### TBD add unit testing framework and refactor to support it to the long term roadmap, add unit test to nightly builds
+### 1 - determine which test tool to use Dunit, Dunit2 for FPCunit
+### 2 - choose a Pascal file with procedures that can be unit tested
+### 3 - determine what code refactoring will be needed to achieve more unit testing code coverage
+### 4 - write new epic issue for what refactoring and unit testing needs to be added
 
 1 - How to build, run, test the source code
 
 1 - How to build an executable
 
 1 - Production builds are currently created for each release by W7SST
-### TBD add automated nightly test builds and versioned release builds to the long term roadmap
-### TBD perform builds via github actions? if not then maybe GitLab, Travis or Jenkins?
+### TBD Setup automated nightly builds via github actions which invokes MSBuild
+### 1 - determine how MorseRunner.exe can be built via the command line with MSBuild
+### 2 - determine how to get GitHub actions to invoke MSBuild to build MorseRunner.exe
+### 3 - for our repo setup a nightly job, even without unit tests this can aid in finding build issues at least
+### TBD Setup mechanism to perform release build via github actions which invokes MSBuild
+### 1 - determine how MorseRunner.exe can be built via the command line with MSBuild
+### 2 - determine how to get GitHub actions to invoke MSBuild to build MorseRunner.exe based on a release tag
+### 3 - test that release is available in a consistant place and can be properly installed by users
+
+perform builds via github actions? if not then maybe GitLab, Travis or Jenkins?
 
 In conclusion, thank you for volunteering to help improve this project. We all look forward to your contributions!
 
