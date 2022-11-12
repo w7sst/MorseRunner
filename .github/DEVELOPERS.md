@@ -20,11 +20,8 @@ select the VCL/MorseRunnerVcl.dproj (~44KB) which is a Delphi Project File then 
 - Build the project via clicking Project then click Build MorseRunnerVcl
 - Install packages via clkicking Component on menu then click Install Packages. Click Add (lower right),
 navigate to and select VCL/Win32/Debug/MorseRunnerVcl.bpl, click open and click save.
-- Reopen the project
+- Reopen the MorseRunner project with the MorseRunner.dproj in the parent directory of the repo
 - To run the source code - Click Run and Run again or click the play icon
-### TBD run fails
-
-1 - Clone your git repo into the IDE
 
 1 - Directory hierarcy
 .git - DO NOT TOUCH the contents here is how git does all it's magic
@@ -37,9 +34,12 @@ tools - contains verify-normalization.sh script who's purpose is TBD
 1 - How to write and contribute unit tests
 There aren't any unit tests. This may be added to the roadmap. Code refactoring will be needed to be able to support unit testing.
 
-1 - How to build, run, test the source code
+1 - How to build the source code into an executable via Delphi IDE
+On the menu click Project then click Build MorseRunner. That will create MorseRunner.exe in the parent directory of your cloned repo.
 
-1 - How to build an executable
+1 - How to run and test the source code via Delphi IDE
+Click Run and Run again or press F9 which will run it in debug mode. 
+If you wish to not run it in debug mode click Run and Run Without Debugging or press Shift+Ctrl+F9
 
 1 - Production builds are currently created for each release by W7SST
 
