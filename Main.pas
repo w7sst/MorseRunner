@@ -16,7 +16,7 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles, Idhttp, ARRL, ARRLFD, NAQP, CWOPS, CQWW,
+  WavFile, IniFiles, Idhttp,
   System.ImageList;
 
 const
@@ -410,7 +410,10 @@ var
   MainForm: TMainForm;
 
 implementation
-uses TypInfo, ScoreDlg, Log, PerlRegEx;
+
+uses
+  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX,
+  TypInfo, ScoreDlg, Log, PerlRegEx;
 
 {$R *.DFM}
 
@@ -480,7 +483,7 @@ begin
   // Adding a contest: implement a new contest-specific call history .pas file.
   Result := nil;
   case AContestId of
-  scWpx, scHst: Result := TContest.Create;
+  scWpx, scHst: Result := TCqWpx.Create;
   scCwt:        Result := TCWOPS.Create;
   scFieldDay:   Result := TArrlFieldDay.Create;
   scNaQp:       Result := TNcjNaQp.Create;

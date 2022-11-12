@@ -16,6 +16,8 @@ type
   private
     function DxCount: integer;
     procedure SwapFilters;
+  protected
+    constructor Create;
   public
     BlockNumber: integer;
     Me: TMyStation;
@@ -26,7 +28,6 @@ type
     RitPhase: Single;
     FStopPressed: boolean;
 
-    constructor Create;
     destructor Destroy; override;
     procedure Init;
     procedure LoadCallHistory(const AUserCallsign : string); virtual;
@@ -35,6 +36,7 @@ type
     function GetCall(id : integer) : string; virtual;
     procedure GetExchange(id : integer; out station : TDxStation); virtual;
     function GetStationInfo(const ACallsign : string) : string; virtual;
+    function PickCallOnly : string;
 
     function GetSentExchTypes(
       const AStationKind : TStationKind;
@@ -114,30 +116,26 @@ end;
 
 procedure TContest.LoadCallHistory(const AUserCallsign : string);
 begin
-  assert(SimContest in [scWpx, scHst]);
-  if SimContest in [scWPX, scHst] then
-    CallLst.LoadCallList;   // loads Master.dta (p/o CQ WPX Contest)
 end;
 
 
 function TContest.PickStation : integer;
 begin
-  assert(SimContest in [scWpx, scHst], 'PickStation should be overriden');
+  assert(false, 'PickStation should be overriden');
   Result := -1;
 end;
 
 
 function TContest.GetCall(id : integer) : string;
 begin
-  assert(SimContest in [scWpx, scHst]);
-  Result := CallLst.PickCall;
+  assert(false, 'GetCall should be overriden');
+  Result := '';
 end;
 
 
 procedure TContest.GetExchange(id : integer; out station : TDxStation);
 begin
-  assert(SimContest in [scWpx, scHst]);
-  station.NR := station.Oper.GetNR;
+  assert(false, 'PickStation should be overriden');
 end;
 
 
@@ -150,6 +148,16 @@ end;
 function TContest.GetStationInfo(const ACallsign : string) : string;
 begin
   Result := gDXCCList.Search(ACallsign);
+end;
+
+
+// helper function to return only a callsign (used by QrnStation)
+function TContest.PickCallOnly : string;
+var
+  id : integer;
+begin
+  id := PickStation;
+  Result := GetCall(id);
 end;
 
 
