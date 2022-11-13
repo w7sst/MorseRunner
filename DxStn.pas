@@ -74,6 +74,12 @@ begin
   Amplitude := 9000 + 18000 * (1 + RndUShaped);
   Pitch := Round(RndGaussLim(0, 300));
 
+  if Ini.RunMode = rmHst then
+    begin
+      Tst.DropStation(Operid);
+      Operid := -1;
+    end;
+
   //the MeSent event will follow immediately
   TimeOut := NEVER;
   State := stCopying;

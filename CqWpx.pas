@@ -21,6 +21,7 @@ public
   procedure LoadCallHistory(const AUserCallsign : string); override;
 
   function PickStation(): integer; override;
+  procedure DropStation(id : integer); override;
   function GetCall(id:integer): string; override;     // returns station callsign
   procedure GetExchange(id : integer; out station : TDxStation); override;
 
@@ -60,6 +61,12 @@ end;
 function TCqWpx.PickStation(): integer;
 begin
   Result := -1;
+end;
+
+
+procedure TCqWpx.DropStation(id : integer);
+begin
+  // already deleted by GetCall
 end;
 
 

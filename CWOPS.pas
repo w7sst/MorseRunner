@@ -24,6 +24,7 @@ type
     procedure LoadCallHistory(const AUserCallsign : string); override;
 
     function PickStation(): integer; override;
+    procedure DropStation(id : integer); override;
     function GetCall(id : integer): string; override;
     procedure GetExchange(id : integer; out station : TDxStation); override;
 
@@ -96,6 +97,13 @@ end;
 function TCWOPS.PickStation(): integer;
 begin
      result := random(CWOPSList.Count);
+end;
+
+
+procedure TCWOPS.DropStation(id : integer);
+begin
+  assert(id < CWOPSList.Count);
+  CWOPSList.Delete(id);
 end;
 
 

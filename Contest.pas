@@ -33,6 +33,7 @@ type
     procedure LoadCallHistory(const AUserCallsign : string); virtual;
 
     function PickStation : integer; virtual;
+    procedure DropStation(id : integer); virtual;
     function GetCall(id : integer) : string; virtual;
     procedure GetExchange(id : integer; out station : TDxStation); virtual;
     function GetStationInfo(const ACallsign : string) : string; virtual;
@@ -123,6 +124,11 @@ function TContest.PickStation : integer;
 begin
   assert(false, 'PickStation should be overriden');
   Result := -1;
+end;
+
+
+procedure TContest.DropStation(id : integer);
+begin
 end;
 
 

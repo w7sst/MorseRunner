@@ -30,6 +30,7 @@ public
   procedure LoadCallHistory(const AUserCallsign : string); override;
 
   function PickStation(): integer; override;
+  procedure DropStation(id : integer); override;
   function GetCall(id:integer): string; override;     // returns station callsign
   procedure GetExchange(id : integer; out station : TDxStation); override;
 
@@ -107,6 +108,13 @@ end;
 function TCqWw.PickStation(): integer;
 begin
      result := random(CqWwCallList.Count);
+end;
+
+
+procedure TCqWw.DropStation(id : integer);
+begin
+  assert(id < CqWwCallList.Count);
+  CqWwCallList.Delete(id);
 end;
 
 

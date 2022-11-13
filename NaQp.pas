@@ -27,6 +27,7 @@ public
   procedure LoadCallHistory(const AUserCallsign : string); override;
 
   function PickStation(): integer; override;
+  procedure DropStation(id : integer); override;
   function GetCall(id : integer): string; override; // returns station callsign
   procedure GetExchange(id : integer; out station : TDxStation); override;
 
@@ -110,6 +111,13 @@ end;
 function TNcjNaQp.PickStation(): integer;
 begin
      result := random(NaQpCallList.Count);
+end;
+
+
+procedure TNcjNaQp.DropStation(id : integer);
+begin
+  assert(id < NaQpCallList.Count);
+  NaQpCallList.Delete(id);
 end;
 
 
