@@ -18,7 +18,7 @@ type
 
   public
     constructor Create;
-    destructor Destroy;
+    destructor Destroy; override;
     procedure LoadCallList;
     function PickCall : string;
   end;

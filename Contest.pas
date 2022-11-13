@@ -30,12 +30,12 @@ type
 
     destructor Destroy; override;
     procedure Init;
-    procedure LoadCallHistory(const AUserCallsign : string); virtual;
+    procedure LoadCallHistory(const AUserCallsign : string); virtual; abstract;
 
-    function PickStation : integer; virtual;
-    procedure DropStation(id : integer); virtual;
-    function GetCall(id : integer) : string; virtual;
-    procedure GetExchange(id : integer; out station : TDxStation); virtual;
+    function PickStation : integer; virtual; abstract;
+    procedure DropStation(id : integer); virtual; abstract;
+    function GetCall(id : integer) : string; virtual; abstract;
+    procedure GetExchange(id : integer; out station : TDxStation); virtual; abstract;
     function GetStationInfo(const ACallsign : string) : string; virtual;
     function PickCallOnly : string;
 
@@ -112,36 +112,6 @@ begin
   Me.Init;
   Stations.Clear;
   BlockNumber := 0;
-end;
-
-
-procedure TContest.LoadCallHistory(const AUserCallsign : string);
-begin
-end;
-
-
-function TContest.PickStation : integer;
-begin
-  assert(false, 'PickStation should be overriden');
-  Result := -1;
-end;
-
-
-procedure TContest.DropStation(id : integer);
-begin
-end;
-
-
-function TContest.GetCall(id : integer) : string;
-begin
-  assert(false, 'GetCall should be overriden');
-  Result := '';
-end;
-
-
-procedure TContest.GetExchange(id : integer; out station : TDxStation);
-begin
-  assert(false, 'PickStation should be overriden');
 end;
 
 
