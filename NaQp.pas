@@ -24,7 +24,7 @@ private
 public
   constructor Create;
   destructor Destroy; override;
-  procedure LoadCallHistory(const AUserCallsign : string); override;
+  function LoadCallHistory(const AUserCallsign : string) : boolean; override;
 
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
@@ -47,7 +47,7 @@ uses
   StrUtils, SysUtils, Classes, Contnrs, PerlRegEx, pcre,
   log, ARRL;
 
-procedure TNcjNaQp.LoadCallHistory(const AUserCallsign : string);
+function TNcjNaQp.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
   DelimitChar: char = ',';
 var
@@ -55,6 +55,11 @@ var
   i: integer;
   rec: TNaQpCallRec;
 begin
+  // reload call history iff user's callsign has changed.
+  Result := not HasUserCallsignChanged(AUserCallsign);
+  if Result then
+    Exit;
+
   slst:= TStringList.Create;
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
@@ -85,6 +90,10 @@ begin
           NaQpCallList.Add(rec);
       end;
     end;
+
+    // retain user's callsign after successful load
+    SetUserCallsign(AUserCallsign);
+    Result := True;
 
   finally
     slst.Free;

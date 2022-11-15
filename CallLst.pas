@@ -20,6 +20,7 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure LoadCallList;
+    procedure Clear();
     function PickCall : string;
   end;
 
@@ -101,6 +102,12 @@ begin
 end;
 
 
+procedure TCallList.Clear();
+begin
+  Calls.Clear;
+end;
+
+
 // returns a single callsign
 function TCallList.PickCall : string;
 var
@@ -126,6 +133,7 @@ end;
 
 destructor TCallList.Destroy;
 begin
+  Calls.Clear;
   Calls.Free;
 end;
 

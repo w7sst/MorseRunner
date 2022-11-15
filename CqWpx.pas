@@ -18,7 +18,7 @@ private
 public
   constructor Create;
   destructor Destroy; override;
-  procedure LoadCallHistory(const AUserCallsign : string); override;
+  function LoadCallHistory(const AUserCallsign : string) : boolean; override;
 
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
@@ -38,9 +38,18 @@ implementation
 uses
   SysUtils, Classes, log, ARRL;
 
-procedure TCqWpx.LoadCallHistory(const AUserCallsign : string);
+function TCqWpx.LoadCallHistory(const AUserCallsign : string) : boolean;
 begin
+  // reload call history iff user's callsign has changed.
+  Result := not HasUserCallsignChanged(AUserCallsign);
+  if Result then
+    Exit;
+
   CallLst.LoadCallList;
+
+  // retain user's callsign after successful load
+  SetUserCallsign(AUserCallsign);
+  Result := True;
 end;
 
 

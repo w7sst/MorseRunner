@@ -913,7 +913,8 @@ begin
     assert(Tst.Filt2.SamplesInInput = Ini.BufSize);
 
     // load contest-specific call history file
-    Tst.LoadCallHistory(Ini.Call);
+    if not Tst.LoadCallHistory(Ini.Call) then
+      Exit;
 
     // update my sent exchange types (must be called after loading call lists?)
     Tst.Me.SentExchTypes:= Tst.GetSentExchTypes(skMyStation, Ini.Call);

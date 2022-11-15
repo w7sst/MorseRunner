@@ -14,10 +14,16 @@ uses
 type
   TContest = class
   private
+    UserCallsign : String;  // used by LoadCallHistory() to minimize reloads
+
     function DxCount: integer;
     procedure SwapFilters;
+
   protected
     constructor Create;
+    function HasUserCallsignChanged(const AUserCallsign : String) : boolean;
+    procedure SetUserCallsign(const AUserCallsign : String);
+
   public
     BlockNumber: integer;
     Me: TMyStation;
@@ -30,7 +36,7 @@ type
 
     destructor Destroy; override;
     procedure Init;
-    procedure LoadCallHistory(const AUserCallsign : string); virtual; abstract;
+    function LoadCallHistory(const AHomeCallsign : string) : boolean; virtual; abstract;
 
     function PickStation : integer; virtual; abstract;
     procedure DropStation(id : integer); virtual; abstract;
@@ -90,6 +96,7 @@ begin
   Agc.HoldSamples := 155;
   Agc.AgcEnabled := true;
   NoActivityCnt :=0;
+  UserCallsign := '';
 
   Init;
 end;
@@ -112,6 +119,21 @@ begin
   Me.Init;
   Stations.Clear;
   BlockNumber := 0;
+  UserCallsign := '';
+end;
+
+
+{ return whether to call history file is valid based on user's callsign. }
+function TContest.HasUserCallsignChanged(const AUserCallsign : string) : boolean;
+begin
+  // user's home callsign is required to load this contest.
+  Result := (not AUserCallsign.IsEmpty) and (UserCallsign <> AUserCallsign);
+end;
+
+
+procedure TContest.SetUserCallsign(const AUserCallsign : String);
+begin
+  UserCallsign := AUserCallsign;
 end;
 
 

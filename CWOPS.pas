@@ -21,7 +21,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure LoadCallHistory(const AUserCallsign : string); override;
+    function LoadCallHistory(const AUserCallsign : string) : boolean; override;
 
     function PickStation(): integer; override;
     procedure DropStation(id : integer); override;
@@ -40,16 +40,23 @@ implementation
 uses
     SysUtils, Log;
 
-procedure TCWOPS.LoadCallHistory(const AUserCallsign : string);
+function TCWOPS.LoadCallHistory(const AUserCallsign : string) : boolean;
 var
     slst, tl: TStringList;
     i: integer;
     CWO: TCWOPSRec;
 begin
+    // reload call history iff user's callsign has changed.
+    Result := not HasUserCallsignChanged(AUserCallsign);
+    if Result then
+      Exit;
+
     slst:= TStringList.Create;
     tl:= TStringList.Create;
+
     try
         CWOPSList.Clear;
+
         slst.LoadFromFile(ParamStr(1) + 'CWOPS.LIST');
         slst.Sort;
 
@@ -72,6 +79,10 @@ begin
 
             end;
         end;
+
+        // retain user's callsign after successful load
+        SetUserCallsign(AUserCallsign);
+        Result := True;
 
     finally
         slst.Free;

@@ -28,7 +28,7 @@ private
 public
   constructor Create;
   destructor Destroy; override;
-  procedure LoadCallHistory(const AUserCallsign : string); override;
+  function LoadCallHistory(const AUserCallsign : string) : boolean; override;
 
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
@@ -51,7 +51,7 @@ implementation
 uses
   SysUtils, Classes, Log, PerlRegEx, pcre, ARRL;
 
-procedure TArrlFieldDay.LoadCallHistory(const AUserCallsign : string);
+function TArrlFieldDay.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
   DelimitChar: char = ',';
 var
@@ -59,6 +59,11 @@ var
   i: integer;
   rec: TFdCallRec;
 begin
+  // reload call history iff user's callsign has changed.
+  Result := not HasUserCallsignChanged(AUserCallsign);
+  if Result then
+    Exit;
+
   slst:= TStringList.Create;
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
@@ -90,6 +95,10 @@ begin
           FdCallList.Add(rec);
       end;
     end;
+
+    // retain user's callsign after successful load
+    SetUserCallsign(AUserCallsign);
+    Result := True;
 
   finally
     slst.Free;
