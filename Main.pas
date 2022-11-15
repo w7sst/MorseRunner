@@ -16,7 +16,7 @@ uses
   Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, MAth,
   ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles, Idhttp, ARRL, ARRLFD, NAQP, CWOPS, CQWW,
+  WavFile, IniFiles, Idhttp,
   System.ImageList;
 
 const
@@ -352,6 +352,7 @@ type
 
   private
     MustAdvance: boolean;
+    function CreateContest(AContestId : TSimContest) : TContest;
     procedure ConfigureExchangeFields(
       AExchType1: TExchange1Type;
       AExchType2: TExchange2Type);
@@ -409,7 +410,10 @@ var
   MainForm: TMainForm;
 
 implementation
-uses TypInfo, ScoreDlg, Log, PerlRegEx;
+
+uses
+  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX,
+  TypInfo, ScoreDlg, Log, PerlRegEx;
 
 {$R *.DFM}
 
@@ -446,16 +450,8 @@ begin
   ListView2.Visible:= False;
   ListView2.Clear;
 
-  Tst := TContest.Create;
-  LoadCallList;
-
-  // Adding a contest: implement a new contest-specific call history .pas file.
-  // Adding a contest: load call history file (be sure to delete it below).
+  // load DXCC support
   gDXCCList := TDXCC.Create;
-  gARRLFD := TArrlFieldDay.Create;
-  gNAQP := TNcjNaQp.Create;
-  gCQWW := TCqWW.Create;
-  CWOPSCWT := TCWOPS.Create;
 
   Histo:= THisto.Create(PaintBox1);
 
@@ -466,6 +462,7 @@ begin
   Keyer.Rate := DEFAULTRATE;
   Keyer.BufSize := Ini.BufSize;
 
+  // create a derived TContest of the appropriate type
   SetContest(Ini.SimContest);
 end;
 
@@ -474,13 +471,26 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   ToIni;
   gDXCCList.Free;
-  gARRLFD.Free;
-  gNAQP.Free;
-  gCQWW.Free;
-  CWOPSCWT.Free;
   Histo.Free;
   Tst.Free;
   DestroyKeyer;
+end;
+
+
+// Contest Factory - allocate a derived TContest of the appropriate type
+function TMainForm.CreateContest(AContestId : TSimContest) : TContest;
+begin
+  // Adding a contest: implement a new contest-specific call history .pas file.
+  Result := nil;
+  case AContestId of
+  scWpx, scHst: Result := TCqWpx.Create;
+  scCwt:        Result := TCWOPS.Create;
+  scFieldDay:   Result := TArrlFieldDay.Create;
+  scNaQp:       Result := TNcjNaQp.Create;
+  scCQWW:       Result := TCqWW.Create;
+  else
+    assert(false);
+  end;
 end;
 
 
@@ -871,6 +881,11 @@ begin
 
   assert(ContestDefinitions[AContestNum].T = AContestNum,
     'Contest definitions are out of order');
+
+  // drop prior contest
+  if Assigned(Tst) then
+    FreeAndNil(Tst);
+
   Ini.SimContest := AContestNum;
   Ini.ActiveContest := @ContestDefinitions[AContestNum];
   SimContestCombo.ItemIndex := Ord(AContestNum);
@@ -881,8 +896,29 @@ begin
   sbar.Font.Color := clDefault;
   sbar.Visible := mnuShowCallsignInfo.Checked;
 
-  // update my sent exchange types
-  Tst.Me.SentExchTypes := Tst.GetSentExchTypes(skMyStation, Ini.Call);
+  // create new contest
+  Tst := CreateContest(AContestNum);
+
+  // the following will initialize simulation-specific data owned by contest.
+  // (moved here from Ini.FromIni)
+  begin
+    SetMyCall(Ini.Call);
+    SetPitch(ComboBox1.ItemIndex);
+    SetBw(ComboBox2.ItemIndex);
+    SetWpm(Ini.Wpm);
+    SetQsk(Ini.Qsk);
+
+    // buffer size - set in TContest.Create()
+    assert(Tst.Filt.SamplesInInput = Ini.BufSize);
+    assert(Tst.Filt2.SamplesInInput = Ini.BufSize);
+
+    // load contest-specific call history file
+    if not Tst.LoadCallHistory(Ini.Call) then
+      Exit;
+
+    // update my sent exchange types (must be called after loading call lists?)
+    Tst.Me.SentExchTypes:= Tst.GetSentExchTypes(skMyStation, Ini.Call);
+  end;
 
   // update Exchange field labels and length settings (e.g. RST, Nr.)
   ConfigureExchangeFields(ActiveContest.ExchType1, ActiveContest.ExchType2);
@@ -2015,7 +2051,7 @@ begin
   if buf = '' then begin
        exit;
   end;
-  if CWOPSCWT.isnum(buf)=False then  begin
+  if not CWOPS.isnum(buf) then begin
        exit;
   end;
     CWOPSNum := buf;

@@ -8,7 +8,7 @@ unit Qsb;
 interface
 
 uses
-  SysUtils, QuickAvg, SndTypes, RndFunc, Math, Ini;
+  QuickAvg, SndTypes;
 
 type
   TQsb = class
@@ -28,6 +28,9 @@ type
 
 
 implementation
+
+uses
+  SysUtils, RndFunc, Math, Ini;
 
 
 constructor TQsb.Create;

@@ -8,7 +8,7 @@ unit Station;
 interface
 
 uses
-  SysUtils, Classes, Math, SndTypes, Ini, MorseKey;
+  Classes, SndTypes, Ini;
 
 const
   NEVER = MAXINT;
@@ -96,7 +96,7 @@ type
 implementation
 
 uses
-  Contest;
+  SysUtils, Math, MorseKey, Contest;
 
 
 { TExchTypes }

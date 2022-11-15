@@ -8,22 +8,35 @@ unit CallLst;
 interface
 
 uses
-  SysUtils, Classes, Ini;
+  Classes;
 
-procedure LoadCallList;
-function PickCall: string;
+type
+  // simple calllist. contains a TStringList of callsigns.
+  TCallList = class
+  protected
+    Calls: TStringList;
 
-var
-  Calls: TStringList;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure LoadCallList;
+    procedure Clear();
+    function PickCall : string;
+  end;
+
 
 implementation
+
+uses
+  SysUtils, Ini;
 
 function CompareCalls(Item1, Item2: Pointer): Integer;
 begin
   Result := StrComp(PChar(Item1), PChar(Item2));
 end;
 
-procedure LoadCallList;
+// reads callsigns from Master.dta file
+procedure TCallList.LoadCallList;
 const
   Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/';
   CHRCOUNT = Length(Chars);
@@ -89,7 +102,14 @@ begin
 end;
 
 
-function PickCall: string;
+procedure TCallList.Clear();
+begin
+  Calls.Clear;
+end;
+
+
+// returns a single callsign
+function TCallList.PickCall : string;
 var
   Idx: integer;
 begin
@@ -106,11 +126,17 @@ begin
 end;
 
 
-initialization
+constructor TCallList.Create;
+begin
   Calls := TStringList.Create;
+end;
 
-finalization
+destructor TCallList.Destroy;
+begin
+  Calls.Clear;
   Calls.Free;
+end;
+
 
 end.
 
