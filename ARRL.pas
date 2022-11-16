@@ -100,13 +100,15 @@ end;
 
 function TDXCC.FindRec(out dxrec : TDXCCRec; const ACallsign : string) : Boolean;
 var
+  sP : string;
   index : integer;
 begin
   dxrec:= nil;
 
   // Use full call when extracting prefix, not user's call.
   // Example: F6/W7SST should return 'F6' not 'W7' (station located within F6)
-  Result:= SearchPrefix(index, ACallsign);
+  sP:= ExtractPrefix(ACallsign);
+  Result:= SearchPrefix(index, sP);
   if Result then
     dxrec:= TDXCCRec(DXCCList.Items[index]);
 end;
