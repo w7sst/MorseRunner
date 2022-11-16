@@ -25,6 +25,9 @@ function FormatScore(const AScore: integer):string;
 procedure UpdateSbar(const ACallsign: string);
 function ExtractCallsign(Call: string): string;
 function ExtractPrefix(Call: string): string;
+{$ifdef DEBUG}
+function ExtractPrefix0(Call: string): string;
+{$endif}
 
 type
   PQso = ^TQso;
@@ -61,6 +64,9 @@ var
   CallSent: boolean; // msgHisCall has been sent; cleared upon edit.
   NrSent: boolean;   // msgNR has been sent. Seems to imply exchange sent.
   Histo: THisto;
+{$ifdef DEBUG}
+  RunUnitTest : boolean;  // run ExtractPrefix unit tests once
+{$endif}
 
 
 implementation
@@ -303,7 +309,9 @@ begin
     end;
 end;
 
-function ExtractPrefix(Call: string): string;
+
+{$ifdef DEBUG}
+function ExtractPrefix0(Call: string): string;
 var
     reg: TPerlRegEx;
 begin
@@ -318,7 +326,9 @@ begin
         reg.Free;
     end;
 end;
-{
+{$endif}
+
+
 function ExtractPrefix(Call: string): string;
 const
   DIGITS = ['0'..'9'];
@@ -327,6 +337,30 @@ var
   p: integer;
   S1, S2, Dig: string;
 begin
+{$ifdef DEBUG}
+  if RunUnitTest then begin
+    RunUnitTest := false;
+    // original algorithm
+    assert(ExtractPrefix0('W7SST') = 'W7');
+    assert(ExtractPrefix0('W7SST/6') = 'W7');  // should be 'W6'
+    assert(ExtractPrefix0('N7SST/6') = 'N7');  // should be 'N6'
+    assert(ExtractPrefix0('F6/W7SST') = 'F6');
+    assert(ExtractPrefix0('F6/AB7Q') = 'F6');
+    assert(ExtractPrefix0('W7SST/W') = 'W7');  // should be 'W0'
+    assert(ExtractPrefix0('F6FVY/W7') = 'F6'); // should be 'W7'
+
+    // newer algorithm
+    assert(ExtractPrefix('W7SST') = 'W7');
+    assert(ExtractPrefix('W7SST/6') = 'W6');
+    assert(ExtractPrefix('N7SST/6') = 'N6');
+    assert(ExtractPrefix('F6/W7SST') = 'F6');
+    assert(ExtractPrefix('W7SST/W') = 'W0');
+    assert(ExtractPrefix('F6FVY/W7') = 'W7');
+    assert(ExtractPrefix('F6/W7SST/P') = 'F6');
+    assert(ExtractPrefix('W7SST/W/QRP') = 'W0');
+    assert(ExtractPrefix('F6FVY/W7/MM') = 'W7');
+  end;
+{$endif}
   //kill modifiers
   Call := Call + '|';
   Call := StringReplace(Call, '/QRP|', '', []);
@@ -390,7 +424,7 @@ begin
 
   Result := Copy(Result, 1, 5);
 end;
-}
+
 
 procedure SaveQso;
 var
@@ -475,7 +509,8 @@ begin
     end;
 
     Qso.RawCallsign:= ExtractCallsign(Qso.Call);
-    Qso.Pfx := ExtractPrefix(Qso.RawCallsign);
+    // Use full call when extracting prefix, not user's call.
+    Qso.Pfx := ExtractPrefix(Qso.Call);
     {if PfxList.Find(Qso.Pfx, Idx) then Qso.Pfx := '' else }
     PfxList.Add(Qso.Pfx);
     if Ini.RunMode = rmHst then
@@ -650,6 +685,9 @@ initialization
   PfxList := TStringList.Create;
   PfxList.Sorted := true;
   PfxList.Duplicates := dupIgnore;
+{$ifdef DEBUG}
+  RunUnitTest := true;
+{$endif}
 
 finalization
   PfxList.Free;
