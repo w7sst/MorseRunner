@@ -55,8 +55,8 @@ var
   i: integer;
   rec: TNaQpCallRec;
 begin
-  // reload call history iff user's callsign has changed.
-  Result := not HasUserCallsignChanged(AUserCallsign);
+  // reload call history if empty
+  Result := NaQpCallList.Count <> 0;
   if Result then
     Exit;
 

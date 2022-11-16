@@ -46,8 +46,8 @@ var
     i: integer;
     CWO: TCWOPSRec;
 begin
-    // reload call history iff user's callsign has changed.
-    Result := not HasUserCallsignChanged(AUserCallsign);
+    // reload call history if empty
+    Result := CWOPSList.Count <> 0;
     if Result then
       Exit;
 
