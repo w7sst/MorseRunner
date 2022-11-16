@@ -40,8 +40,8 @@ uses
 
 function TCqWpx.LoadCallHistory(const AUserCallsign : string) : boolean;
 begin
-  // reload call history iff user's callsign has changed.
-  Result := not HasUserCallsignChanged(AUserCallsign);
+  // reload call history if empty
+  Result := not CallLst.IsEmpty();
   if Result then
     Exit;
 
