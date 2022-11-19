@@ -13,8 +13,8 @@ then click on the fork button near the top right of the page.
 
 4 - Clone your your GitHub account's fork of the repo.
 - Using GitBash on Windows or a terminal on Linux or MacOS, clone your fork of the repo via the following command
-replacing <yourAccountName> with the name of your GitHub account.
-- git clone https://github.com/<yourAccountName>/MourseRunner.git
+replacing {yourAccountName} with the name of your GitHub account.
+- git clone https://github.com/{yourAccountName}/MourseRunner.git
 
 5 - Get your IDE (Integrated Development Environment) setup
 - This project is currently supported with the use of two seperate IDEs for Pascal
