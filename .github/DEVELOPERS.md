@@ -6,7 +6,7 @@ to be able to contribute.
 
 2 - Create a GitHub account if you don't already have one.
 - Details available at https://docs.github.com/en/get-started/signing-up-for-github/signing-up-for-a-new-github-account
-- Since you are new to GitHub you may also want to review https://docs.github.com/en/get-started/quickstart/contributing-to-projects
+- In which case since you are new to GitHub you may also want to review https://docs.github.com/en/get-started/quickstart/contributing-to-projects
 
 3 - Fork the w7sst/MoreseRunner repo to your own GitHub account.
 - With your browser go to https://github.com/w7sst/MorseRunner
