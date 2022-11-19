@@ -366,6 +366,7 @@ Label name | Search | Description
 `help wanted` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"help+wanted") | Extra attention is needed. The MorseRunner team would appreciate help from the community in resolving these issues.
 `invalid` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Ainvalid) | Issues which aren't valid (e.g. user errors).
 `more information needed` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"more+information+needed") | Likely bugs, but haven't been reliably reproduced.
+`someday maybe` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3A"someday+maybe") | Issues/Ideas to be considered in the future.
 `wontfix` | [search](https://github.com/search?q=is%3Aopen+is%3Aissue+repo%3Aw7sst%2FMorseRunner+label%3Awontfix) | The MorseRunner reviewer team has decided not to fix these issues now, either because they're not working as intended or for some other reason.
 
 #### Topic Categories

@@ -199,9 +199,11 @@ begin
       ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
       ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'OR');
 
-      MainForm.SetMyCall(ReadString(SEC_STN, 'Call', Call));
-      MainForm.SetPitch(ReadInteger(SEC_STN, 'Pitch', 3));
-      MainForm.SetBw(ReadInteger(SEC_STN, 'BandWidth', 9));
+      // load station settings...
+      // Calls to SetMyCall, SetPitch, SetBw, etc., moved to MainForm.SetContest
+      Call := ReadString(SEC_STN, 'Call', Call);
+      MainForm.ComboBox1.ItemIndex := ReadInteger(SEC_STN, 'Pitch', 3);
+      MainForm.ComboBox2.ItemIndex := ReadInteger(SEC_STN, 'BandWidth', 9);
 
       HamName := ReadString(SEC_STN, 'Name', '');
       CWOPSNum :=  ReadString(SEC_STN, 'cwopsnum', CWOPSNum);
@@ -210,8 +212,8 @@ begin
       MainForm.UpdCWMinRxSpeed(ReadInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm));
       MainForm.UpdNRDigits(ReadInteger(SEC_STN, 'NRDigits', NRDigits));
 
-      MainForm.SetWpm(ReadInteger(SEC_STN, 'Wpm', Wpm));
-      MainForm.SetQsk(ReadBool(SEC_STN, 'Qsk', Qsk));
+      Wpm := ReadInteger(SEC_STN, 'Wpm', Wpm);
+      Qsk := ReadBool(SEC_STN, 'Qsk', Qsk);
       CallsFromKeyer := ReadBool(SEC_STN, 'CallsFromKeyer', CallsFromKeyer);
       GetWpmUsesGaussian := ReadBool(SEC_STN, 'GetWpmUsesGaussian', GetWpmUsesGaussian);
 
@@ -241,8 +243,6 @@ begin
         begin V := 3; WriteInteger(SEC_SYS, 'BufSize', V); end;
       V := Max(1, Min(5, V));
       BufSize := 64 shl V;
-      Tst.Filt.SamplesInInput := BufSize;
-      Tst.Filt2.SamplesInInput := BufSize;
 
       V := ReadInteger(SEC_STN, 'SelfMonVolume', 0);
       MainForm.VolumeSlider1.Value := V / 80 + 0.75;

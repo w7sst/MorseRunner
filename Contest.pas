@@ -14,8 +14,16 @@ uses
 type
   TContest = class
   private
+    UserCallsign : String;  // used by LoadCallHistory() to minimize reloads
+
     function DxCount: integer;
     procedure SwapFilters;
+
+  protected
+    constructor Create;
+    function HasUserCallsignChanged(const AUserCallsign : String) : boolean;
+    procedure SetUserCallsign(const AUserCallsign : String);
+
   public
     BlockNumber: integer;
     Me: TMyStation;
@@ -26,9 +34,17 @@ type
     RitPhase: Single;
     FStopPressed: boolean;
 
-    constructor Create;
     destructor Destroy; override;
     procedure Init;
+    function LoadCallHistory(const AHomeCallsign : string) : boolean; virtual; abstract;
+
+    function PickStation : integer; virtual; abstract;
+    procedure DropStation(id : integer); virtual; abstract;
+    function GetCall(id : integer) : string; virtual; abstract;
+    procedure GetExchange(id : integer; out station : TDxStation); virtual; abstract;
+    function GetStationInfo(const ACallsign : string) : string; virtual;
+    function PickCallOnly : string;
+
     function GetSentExchTypes(
       const AStationKind : TStationKind;
       const AMyCallsign : string) : TExchTypes;
@@ -49,7 +65,7 @@ var
 implementation
 
 uses
-  Main;
+  Main, CallLst, ARRL;
 
 { TContest }
 
@@ -80,6 +96,7 @@ begin
   Agc.HoldSamples := 155;
   Agc.AgcEnabled := true;
   NoActivityCnt :=0;
+  UserCallsign := '';
 
   Init;
 end;
@@ -102,6 +119,43 @@ begin
   Me.Init;
   Stations.Clear;
   BlockNumber := 0;
+  UserCallsign := '';
+end;
+
+
+{ return whether to call history file is valid based on user's callsign. }
+function TContest.HasUserCallsignChanged(const AUserCallsign : string) : boolean;
+begin
+  // user's home callsign is required to load this contest.
+  Result := (not AUserCallsign.IsEmpty) and (UserCallsign <> AUserCallsign);
+end;
+
+
+procedure TContest.SetUserCallsign(const AUserCallsign : String);
+begin
+  UserCallsign := AUserCallsign;
+end;
+
+
+{
+  GetStationInfo() returns station's DXCC information.
+
+  Adding a contest: UpdateSbar - update status bar with station info (e.g. FD shows UserText)
+  Override as needed for each contest.
+}
+function TContest.GetStationInfo(const ACallsign : string) : string;
+begin
+  Result := gDXCCList.Search(ACallsign);
+end;
+
+
+// helper function to return only a callsign (used by QrnStation)
+function TContest.PickCallOnly : string;
+var
+  id : integer;
+begin
+  id := PickStation;
+  Result := GetCall(id);
 end;
 
 

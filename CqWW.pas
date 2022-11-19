@@ -7,8 +7,7 @@ unit CQWW;
 interface
 
 uses
-  Generics.Defaults, Generics.Collections,
-  SysUtils, Classes, {Contnrs,} PerlRegEx, pcre;
+  Generics.Defaults, Generics.Collections, Contest, DxStn;
 
 type
   TCqWwCallRec = class
@@ -20,35 +19,35 @@ type
     class function compareCall(const left, right: TCqWwCallRec) : integer; static;
   end;
 
-TCqWw = class
+TCqWw = class(TContest)
 private
   CqWwCallList: TObjectList<TCqWwCallRec>;
   Comparer: IComparer<TCqWwCallRec>;
 
-  procedure LoadHistoryFile;
-
 public
   constructor Create;
   destructor Destroy; override;
-  function pickStation(): integer;
-  function getCall(id:integer): string;     // returns station callsign
+  function LoadCallHistory(const AUserCallsign : string) : Boolean; override;
+
+  function PickStation(): integer; override;
+  procedure DropStation(id : integer); override;
+  function GetCall(id:integer): string; override;     // returns station callsign
+  procedure GetExchange(id : integer; out station : TDxStation); override;
+
   function getExch1(id:integer): string;    // returns RST (e.g. 5NN)
   function getExch2(id:integer): string;    // returns section info (e.g. 3)
   function getZone(id:integer): string;     // returns CQZone (e.g. 3)
   function FindCallRec(out fdrec: TCqWwCallRec; const ACall: string): Boolean;
-  function GetStationInfo(const ACallsign: string) : string;
+  function GetStationInfo(const ACallsign: string) : string; override;
   function IsNum(Num: String): Boolean;
 end;
-
-var
-  gCQWW: TCqWw;
 
 implementation
 
 uses
-  log, ARRL;
+  SysUtils, Classes, log, ARRL;
 
-procedure TCqWw.LoadHistoryFile;
+function TCqWw.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
   DelimitChar: char = ',';
 var
@@ -56,13 +55,18 @@ var
   i: integer;
   rec: TCqWwCallRec;
 begin
+  // reload call history if empty
+  Result := CqWwCallList.Count <> 0;
+  if Result then
+    Exit;
+
   slst:= TStringList.Create;
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
   tl.StrictDelimiter := True;
 
   try
-    CqWwCallList := TObjectList<TCqWwCallRec>.Create;
+    CqWwCallList.Clear;
 
     slst.LoadFromFile(ParamStr(1) + 'CQWWCW.TXT');
 
@@ -84,6 +88,10 @@ begin
       end;
     end;
 
+    // retain user's callsign after successful load
+    SetUserCallsign(AUserCallsign);
+    Result := True;
+
   finally
     slst.Free;
     tl.Free;
@@ -94,8 +102,8 @@ end;
 constructor TCqWw.Create;
 begin
     inherited Create;
+    CqWwCallList := TObjectList<TCqWwCallRec>.Create;
     Comparer := TComparer<TCqWwCallRec>.Construct(TCqWwCallRec.compareCall);
-    LoadHistoryFile;
 end;
 
 
@@ -106,9 +114,16 @@ begin
 end;
 
 
-function TCqWw.pickStation(): integer;
+function TCqWw.PickStation(): integer;
 begin
      result := random(CqWwCallList.Count);
+end;
+
+
+procedure TCqWw.DropStation(id : integer);
+begin
+  assert(id < CqWwCallList.Count);
+  CqWwCallList.Delete(id);
 end;
 
 
@@ -151,7 +166,7 @@ begin
   dxEntity := '';
   result:= '';
 
-  if gCQWW.FindCallRec(fdrec, ACallsign) then
+  if Self.FindCallRec(fdrec, ACallsign) then
     begin
     userText:= fdrec.UserText;
 
@@ -171,10 +186,18 @@ begin
 end;
 
 
-function TCqWw.getCall(id:integer): string;     // returns station callsign
+function TCqWw.getCall(id : integer): string;     // returns station callsign
 begin
   result := CqWwCallList.Items[id].Call;
 end;
+
+
+procedure TCqWw.GetExchange(id : integer; out station : TDxStation);
+begin
+  station.Exch2 := getExch2(station.Operid);
+  station.NR := StrToInt(getExch2(station.Operid));
+end;
+
 
 
 function TCqWw.getExch1(id:integer): string;    // returns RST (e.g. 5NN)

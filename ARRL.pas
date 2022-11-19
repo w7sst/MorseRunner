@@ -35,7 +35,7 @@ var
 implementation
 
 uses
-    SysUtils, Contnrs, log, PerlRegEx, pcre;
+    SysUtils, Contnrs, log, PerlRegEx, pcre, Ini;
 
 procedure TDXCC.LoadDxCCList;
 var
@@ -100,12 +100,14 @@ end;
 
 function TDXCC.FindRec(out dxrec : TDXCCRec; const ACallsign : string) : Boolean;
 var
-  sC, sP: string;
+  sP : string;
   index : integer;
 begin
   dxrec:= nil;
-  sC:= ExtractCallsign(ACallsign);
-  sP:= ExtractPrefix(sC);
+
+  // Use full call when extracting prefix, not user's call.
+  // Example: F6/W7SST should return 'F6' not 'W7' (station located within F6)
+  sP:= ExtractPrefix(ACallsign);
   Result:= SearchPrefix(index, sP);
   if Result then
     dxrec:= TDXCCRec(DXCCList.Items[index]);
@@ -115,32 +117,34 @@ end;
 function TDXCC.GetStationInfo(const ACallsign: string): string;
 var
   i : integer;
-  sC, sP: string;
+  sP: string;
 begin
   Result:= 'Unknown';
-  sC:= ExtractCallsign(ACallsign);
-  sP:= ExtractPrefix(sC);
+
+  // Use full call when extracting prefix, not user's call.
+  sP:= ExtractPrefix(ACallsign);
+
   if SearchPrefix(i, sP) then
-    Result:= sC + '  ' + TDXCCRec(DXCCList[i]).GetString;
+    Result:= sP + ':  ' + TDXCCRec(DXCCList[i]).GetString;
 end;
 
 function TDXCC.Search(ACallsign: string): string;
 var
     reg: TPerlRegEx;
     i: integer;
-    s, sC, sP: string;
+    s, sP: string;
 begin
     reg := TPerlRegEx.Create();
     try
         Result:= '';
-        sC:= ExtractCallsign(ACallsign);
-        sP:= ExtractPrefix(sC);
+        // Use full call when extracting prefix, not user's call.
+        sP:= ExtractPrefix(ACallsign);
         reg.Subject := UTF8Encode(sP);
         for i:= DXCCList.Count - 1 downto 0 do begin
             s:= '^(' + TDXCCRec(DXCCList.Items[i]).prefixReg + ')';
             reg.RegEx:= UTF8Encode(s);
             if Reg.Match then begin
-                Result:= sC + '  ' + TDXCCRec(DXCCList[i]).GetString;
+                Result:= sP + ':  ' + TDXCCRec(DXCCList[i]).GetString;
                 Break;
             end;
         end;
@@ -173,7 +177,11 @@ end;
 
 function TDXCCRec.GetString: string;
 begin
-    Result:= Format('%s/%s;  ITU Zone:%s;  CQ Zone:%s', [Entity, Continent, ITU, CQ]);
+  // make the long USA entry a little shorter (similar to N1MM)
+  if Entity = 'United States of America' then
+    Result:= Format('%s/United States;  ITU Zone: %s;  CQ Zone: %s', [Continent, ITU, CQ])
+  else
+    Result:= Format('%s/%s;  ITU Zone: %s;  CQ Zone: %s', [Continent, Entity, ITU, CQ]);
 end;
 
 end.

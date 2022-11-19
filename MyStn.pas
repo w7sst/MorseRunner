@@ -8,7 +8,7 @@ unit MyStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Ini, SndTypes, MorseKey;
+  Station, Classes, SndTypes;
 
 type
   TMyStation = class(TStation)
@@ -31,7 +31,7 @@ type
 implementation
 
 uses
-  Contest, Main;
+  SysUtils, RndFunc, Ini, MorseKey, Contest, Main;
 
 { TMyStation }
 

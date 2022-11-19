@@ -8,9 +8,7 @@ unit DxStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Dialogs, Ini, ARRLFD, NAQP, CWOPS,
-  CQWW,
-  CallLst, Qsb, DxOper, Log, SndTypes;
+  Station, Qsb, DxOper, SndTypes;
 
 type
   TDxStation = class(TStation)
@@ -32,7 +30,8 @@ type
 implementation
 
 uses
-  Contest;
+  SysUtils, Classes, RndFunc, Dialogs,
+  CallLst, Log, Ini, Contest;
 
 { TDxStation }
 
@@ -41,27 +40,10 @@ begin
   inherited Create(nil);
 
   HisCall := Ini.Call;
-  // Adding a contest: DxStation.CreateStation - load a random callsign
-  case SimContest of
-    scCwt: begin
-       Operid := CWOPSCWT.getcwopsid();
-       MyCall :=  CWOPSCWT.getcwopscall(Operid);
-    end;
-    scFieldDay: begin
-       Operid := gARRLFD.pickStation();
-       MyCall := gARRLFD.getCall(Operid);
-    end;
-    scNaQp: begin
-       Operid := gNAQP.pickStation();
-       MyCall := gNAQP.getCall(Operid);
-    end;
-    scCQWW: begin
-       Operid := gCQWW.pickStation();
-       MyCall := gCQWW.getCall(Operid);
-    end
-    else
-       MyCall := PickCall;     // Pick one Callsign from Calllist
-  end;
+
+  // Pick one Callsign from call history file
+  Operid := Tst.PickStation;
+  MyCall := Tst.GetCall(Operid);
 
   Oper := TDxOperator.Create;
   Oper.Call := MyCall;
@@ -75,30 +57,8 @@ begin
   SentExchTypes := Tst.GetSentExchTypes(skDxStation, MyCall);
 
   // Adding a contest: DxStation.CreateStation - get Exch1 (e.g. Name), Exch2 (e.g. NR), and optional UserText
-  case SimContest of
-    scCwt: begin
-      OpName := CWOPSCWT.getcwopsname(Operid);
-      NR :=  CWOPSCWT.getcwopsnum(Operid);
-    end;
-    scFieldDay: begin
-      Exch1 := gARRLFD.getExch1(Operid);
-      Exch2 := gARRLFD.getExch2(Operid);
-      UserText := gARRLFD.getUserText(Operid);
-    end;
-    scNaQp: begin
-      Exch1 := gNAQP.getExch1(Operid);
-      OpName := Exch1; // TODO - refactor etOpName to use Exch1
-      Exch2 := gNAQP.getExch2(Operid);
-      UserText := gNAQP.getUserText(Operid);
-    end;
-    scCQWW: begin
-      Exch2 := gCQWW.getExch2(Operid);
-      NR := StrToInt(gCQWW.getExch2(Operid));
-    end
-    else
-      NR := Oper.GetNR;
-  end;
-  //showmessage(MyCall);
+  // load dynamic exchange field information into this DxStation.
+  Tst.GetExchange(Operid, Self);
 
   if Ini.Lids and (Random < 0.03) then
     RST := 559 + 10 * Random(4)
@@ -113,6 +73,12 @@ begin
 
   Amplitude := 9000 + 18000 * (1 + RndUShaped);
   Pitch := Round(RndGaussLim(0, 300));
+
+  if Ini.RunMode = rmHst then
+    begin
+      Tst.DropStation(Operid);
+      Operid := -1;
+    end;
 
   //the MeSent event will follow immediately
   TimeOut := NEVER;

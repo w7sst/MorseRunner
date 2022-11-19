@@ -8,8 +8,7 @@ unit QrnStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Ini, CallLst,
-  Math;
+  Station;
 
 type
   TQrnStation = class(TStation)
@@ -19,6 +18,9 @@ type
   end;
 
 implementation
+
+uses
+  Ini, RndFunc, Math;
 
 constructor TQrnStation.CreateStation;
 var

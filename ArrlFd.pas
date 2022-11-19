@@ -7,8 +7,7 @@ unit ARRLFD;
 interface
 
 uses
-  Generics.Defaults, Generics.Collections, ARRL,
-  SysUtils, Classes, {Contnrs,} PerlRegEx, pcre;
+  Generics.Defaults, Generics.Collections, Contest, DxStn;
 
 type
   TFdCallRec = class
@@ -21,22 +20,21 @@ type
     class function compareCall(const left, right: TFdCallRec) : integer; static;
   end;
 
-TArrlFieldDay = class
+TArrlFieldDay = class(TContest)
 private
   FdCallList: TObjectList<TFdCallRec>;
   Comparer: IComparer<TFdCallRec>;
 
-  procedure LoadFdHistoryFile;
-
 public
   constructor Create;
   destructor Destroy; override;
-  function pickStation(): integer;
-  //function getcwopsid(): integer;
-  //function getcwopscall(id:integer): string;
-  //function getcwopsname(id:integer): string;
-  //function getcwopsnum(id:integer): integer;
-  function getCall(id:integer): string;     // returns station callsign
+  function LoadCallHistory(const AUserCallsign : string) : boolean; override;
+
+  function PickStation(): integer; override;
+  procedure DropStation(id : integer); override;
+  function GetCall(id : integer): string; override; // returns station callsign
+  procedure GetExchange(id : integer; out station : TDxStation); override;
+
   function getExch1(id:integer): string;    // returns station info (e.g. 3A)
   function getExch2(id:integer): string;    // returns section info (e.g. OR)
   function getClass(id:integer): string;    // returns station class (e.g. 3A)
@@ -44,19 +42,16 @@ public
   function getUserText(id:integer): string; // returns optional club name
   //function IsNum(Num: String): Boolean;
   function FindCallRec(out fdrec: TFdCallRec; const ACall: string): Boolean;
-  function GetStationInfo(const ACallsign: string) : string;
+  function GetStationInfo(const ACallsign: string) : string; override;
 end;
-
-var
-  gARRLFD: TArrlFieldDay;
 
 
 implementation
 
 uses
-  log;
+  SysUtils, Classes, Log, PerlRegEx, pcre, ARRL;
 
-procedure TArrlFieldDay.LoadFdHistoryFile;
+function TArrlFieldDay.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
   DelimitChar: char = ',';
 var
@@ -64,13 +59,18 @@ var
   i: integer;
   rec: TFdCallRec;
 begin
+  // reload call history if empty
+  Result := FdCallList.Count <> 0;
+  if Result then
+    Exit;
+
   slst:= TStringList.Create;
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
   tl.StrictDelimiter := True;
 
   try
-    FdCallList:= TObjectList<TFdCallRec>.Create;
+    FdCallList.Clear;
 
     slst.LoadFromFile(ParamStr(1) + 'FD_2022-004.TXT');
 
@@ -96,6 +96,10 @@ begin
       end;
     end;
 
+    // retain user's callsign after successful load
+    SetUserCallsign(AUserCallsign);
+    Result := True;
+
   finally
     slst.Free;
     tl.Free;
@@ -106,8 +110,8 @@ end;
 constructor TArrlFieldDay.Create;
 begin
     inherited Create;
+    FdCallList:= TObjectList<TFdCallRec>.Create;
     Comparer := TComparer<TFdCallRec>.Construct(TFdCallRec.compareCall);
-    LoadFdHistoryFile;
 end;
 
 
@@ -118,9 +122,16 @@ begin
 end;
 
 
-function TArrlFieldDay.pickStation(): integer;
+function TArrlFieldDay.PickStation(): integer;
 begin
      result := random(FdCallList.Count);
+end;
+
+
+procedure TArrlFieldDay.DropStation(id : integer);
+begin
+  assert(id < FdCallList.Count);
+  FdCallList.Delete(id);
 end;
 
 
@@ -163,7 +174,7 @@ begin
   dxEntity := '';
   result:= '';
 
-  if gArrlFd.FindCallRec(fdrec, ACallsign) then
+  if FindCallRec(fdrec, ACallsign) then
     begin
     userText:= fdrec.UserText;
 
@@ -184,9 +195,18 @@ begin
 end;
 
 
-function TArrlFieldDay.getCall(id:integer): string;     // returns station callsign
+// returns station callsign
+function TArrlFieldDay.GetCall(id : integer): string;
 begin
   result := FdCallList.Items[id].Call;
+end;
+
+
+procedure TArrlFieldDay.GetExchange(id : integer; out station : TDxStation);
+begin
+  station.Exch1 := getExch1(id);
+  station.Exch2 := getExch2(id);
+  station.UserText := getUserText(id);
 end;
 
 

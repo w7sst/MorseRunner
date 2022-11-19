@@ -8,7 +8,7 @@ unit QrmStn;
 interface
 
 uses
-  SysUtils, Classes, Station, RndFunc, Ini, CallLst;
+  Station;
 
 type
   TQrmStation = class(TStation)
@@ -22,6 +22,7 @@ type
 implementation
 
 uses
+  SysUtils, Classes, RndFunc, Ini, CallLst,
   Contest;
 
 constructor TQrmStation.CreateStation;
@@ -29,7 +30,7 @@ begin
   inherited Create(nil);
 
   Patience := 1 + Random(5);
-  MyCall := PickCall;
+  MyCall := Tst.PickCallOnly;
   HisCall := Ini.Call;
   Amplitude := 5000 + 25000 * Random;
   Pitch := Round(RndGaussLim(0, 300));
