@@ -91,8 +91,6 @@ begin
       end;
     end;
 
-    // retain user's callsign after successful load
-    SetUserCallsign(AUserCallsign);
     Result := True;
 
   finally

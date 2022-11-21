@@ -786,6 +786,7 @@ object MainForm: TMainForm
         TabOrder = 0
         Text = 'VE3NEA'
         OnChange = Edit4Change
+        OnExit = Edit4Exit
       end
       object SpinEdit1: TSpinEdit
         Left = 91
