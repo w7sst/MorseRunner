@@ -62,7 +62,7 @@ type
     // user's QTH/location (based on callsign & prefix), and whether the user's
     // station is local/DX relative to the contest.
     // This value is set by calling the virtual TContest.GetSentExchTypes()
-    // function.
+    // function. See TArrlDx.GetExchangeTypes() for additional information.
     SentExchTypes : TExchTypes;
 
     // Sent Exchange fields...
@@ -286,7 +286,7 @@ begin
       Result := Format('%s  %.d', [OpName, NR]);
     scFieldDay:
       Result := Format('%s %s', [Exch1, Exch2]);
-    scNaQp:
+    scNaQp, scArrlDx:
       Result := Format('%s %s', [Exch1, Exch2]);
     else
       Result := Format('%d%.3d', [RST, NR]);
@@ -310,7 +310,7 @@ begin
   if SentExchTypes.Exch1 = etRST then
      Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
   if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
-    [etSerialNr, etCqZone, etItuZone, etAge, etPower]) then
+    [etSerialNr, etCqZone, etItuZone, etAge, etPower, etStateProv]) then
     begin
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);

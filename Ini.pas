@@ -23,7 +23,7 @@ const
   DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
   // Adding a contest: Append new TSimContest enum value for each contest.
-  TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW);
+  TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW, scArrlDx);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
   // Exchange Field #1 types
@@ -121,7 +121,16 @@ const
      ExchFieldEditable: True;
      ExchDefault: '5NN 3';
      Msg: '''RST <cq-zone>'' (e.g. 5NN 3)';
-     T:scCQWW)
+     T:scCQWW),
+
+    (Name: 'ARRL DX';
+     Key: 'ARRLDXCW';
+     ExchType1: etRST;
+     ExchType2: etStateProv;  // or etPower
+     ExchFieldEditable: True;
+     ExchDefault: '5NN OR';   // or '5NN KW'
+     Msg: '''RST <state|province|power>'' (e.g. 5NN OR)';
+     T:scARRLDX)
   );
 
 var
@@ -200,6 +209,7 @@ begin
       UserExchangeTbl[scNaQp] := ReadString(SEC_STN, 'NAQPExchange', 'MIKE OR');
       UserExchangeTbl[scHst] := ReadString(SEC_STN, 'HSTExchange', '5NN #');
       UserExchangeTbl[scCQWW] := ReadString(SEC_STN, 'CQWWExchange', '5NN 3');
+      UserExchangeTbl[scArrlDx] := ReadString(SEC_STN, 'ArrlDxExchange', '5NN OR');
 
       ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
       ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'OR');
@@ -275,6 +285,7 @@ begin
       WriteString(SEC_STN, 'NAQPExchange', UserExchangeTbl[scNaQp]);
       WriteString(SEC_STN, 'HSTExchange', UserExchangeTbl[scHst]);
       WriteString(SEC_STN, 'CqWWExchange', UserExchangeTbl[scCQWW]);
+      WriteString(SEC_STN, 'ArrlDxExchange', UserExchangeTbl[scArrlDx]);
 
       WriteString(SEC_STN, 'ArrlClass', ArrlClass);
       WriteString(SEC_STN, 'ArrlSection', ArrlSection);

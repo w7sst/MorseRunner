@@ -74,7 +74,7 @@ implementation
 uses
   Windows, SysUtils, Graphics, RndFunc, Math,
   StdCtrls, PerlRegEx, pcre,
-  Contest, Main, DxStn, DxOper, Ini, MorseKey;
+  Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
 
 
 constructor THisto.Create(APaintBox: TPaintBOx);
@@ -188,6 +188,8 @@ begin
       scNaQp:
         ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Chk', 'Wpm');
       scCQWW:
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
+      scArrlDx:
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
       else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
@@ -457,7 +459,7 @@ var
       etCqZone:      Result := Length(text) > 0;
       //etItuZone:
       //etAge:
-      //etPower:
+      etPower:       Result := Length(text) > 0;
       //etJarlOblastCode:
       else
         assert(false, 'missing case');
@@ -502,7 +504,7 @@ begin
       etCqZone:      Qso.NR := StrToInt(Edit3.Text);
       //etItuZone:
       //etAge:
-      //etPower:
+      etPower:       Qso.Exch2 := Edit3.Text;
       //etJarlOblastCode:
       else
         assert(false, 'missing case');
@@ -592,6 +594,11 @@ begin
         , format('%.3d %4d', [Rst, NR])
         , format('%.3d %4d', [Tst.Me.Rst, Tst.Me.NR])
         , Pfx, Err, format('%.3d', [TrueWpm]));
+    scArrlDx:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d %4s', [Rst, Exch2])
+        , format('%.3d %4s', [Tst.Me.Rst, Tst.Me.Exch2])
+        , Pfx, Err, format('%.2d', [TrueWpm]));
     else
       assert(false, 'missing case');
     end;
@@ -626,7 +633,7 @@ begin
         etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';
         //etItuZone:
         //etAge:
-        //etPower:
+        etPower:       if TrueExch2 <> Exch2 then Err := 'PWR';
         //etJarlOblastCode:
         else
           assert(false, 'missing exchange 2 case');

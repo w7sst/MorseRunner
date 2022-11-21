@@ -198,6 +198,7 @@ begin
       etCqZone: TrueExch2 := IntToStr(Self.NR);
       etArrlSection: TrueExch2 := Self.Exch2;
       etStateProv: TrueExch2 := Self.Exch2;
+      etPower: TrueExch2 := Self.Exch2;
       else
         assert(false);
     end;

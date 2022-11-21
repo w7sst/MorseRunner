@@ -39,7 +39,8 @@ uses
   NaQp in 'NaQp.pas',
   CWOPS in 'CWOPS.pas',
   CqWW in 'CqWW.pas',
-  CqWpx in 'CqWpx.pas';
+  CqWpx in 'CqWpx.pas',
+  ArrlDx in 'ArrlDx.pas';
 
 {$R *.RES}
 
