@@ -57,7 +57,7 @@ type
       const ADxCallsign : string) : TExchTypes;
     function GetExchangeTypes(
       const AStationKind : TStationKind;
-      const AMsgType : TRequestedMsgType;
+      const ARequestedMsgType : TRequestedMsgType;
       const ADxCallsign : string) : TExchTypes; virtual;
     function Minute: Single;
     function GetAudio: TSingleArray;
@@ -246,14 +246,13 @@ function TContest.GetRecvExchTypes(
   const AMyCallsign : string;
   const ADxCallsign : string) : TExchTypes;
 begin
-  // perhaps need to pass in AUserCallsign instead of using TArrlDx.HomeCallIsWVE
   Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, ADxCallsign);
 end;
 
 
 function TContest.GetExchangeTypes(
   const AStationKind : TStationKind;
-  const AMsgType : TRequestedMsgType;
+  const ARequestedMsgType : TRequestedMsgType;
   const ADxCallsign : string) : TExchTypes;
 begin
   Result.Exch1 := ActiveContest.ExchType1;

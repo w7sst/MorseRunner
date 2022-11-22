@@ -119,6 +119,7 @@
             <Form>MainForm</Form>
         </DCCReference>
         <DCCReference Include="Contest.pas"/>
+        <DCCReference Include="DualExchContest.pas"/>
         <DCCReference Include="RndFunc.pas"/>
         <DCCReference Include="Ini.pas"/>
         <DCCReference Include="Station.pas"/>

@@ -4,6 +4,7 @@ uses
   Forms,
   Main in 'Main.pas' {MainForm},
   Contest in 'Contest.pas',
+  DualExchContest in 'DualExchContest.pas',
   RndFunc in 'RndFunc.pas',
   Ini in 'Ini.pas',
   Station in 'Station.pas',
