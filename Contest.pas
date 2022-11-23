@@ -8,21 +8,21 @@ unit Contest;
 interface
 
 uses
-  SysUtils, SndTypes, Station, StnColl, MyStn, Math,  Ini, System.Classes,
-  MovAvg, Mixers, VolumCtl, RndFunc, TypInfo, DxStn, DxOper, Log;
+  SndTypes, Station, StnColl, MyStn, Ini, System.Classes,
+  MovAvg, Mixers, VolumCtl, DxStn;
 
 type
   TContest = class
   private
-    UserCallsign : String;  // used by LoadCallHistory() to minimize reloads
+    LastLoadCallsign : String;  // used to minimize call history file reloads
 
     function DxCount: integer;
     procedure SwapFilters;
 
   protected
     constructor Create;
-    function HasUserCallsignChanged(const AUserCallsign : String) : boolean;
-    procedure SetUserCallsign(const AUserCallsign : String);
+    function IsReloadRequired(const AUserCallsign : String) : boolean;
+    procedure SetLastLoadCallsign(const AUserCallsign : String);
 
   public
     BlockNumber: integer;
@@ -36,7 +36,7 @@ type
 
     destructor Destroy; override;
     procedure Init;
-    function LoadCallHistory(const AHomeCallsign : string) : boolean; virtual; abstract;
+    function LoadCallHistory(const AUserCallsign : string) : boolean; virtual; abstract;
 
     function PickStation : integer; virtual; abstract;
     procedure DropStation(id : integer); virtual; abstract;
@@ -45,6 +45,9 @@ type
     function GetStationInfo(const ACallsign : string) : string; virtual;
     function PickCallOnly : string;
 
+    function OnSetMyCall(const AUserCallsign : string; out err : string) : boolean; virtual;
+    function OnContestPrepareToStart(const AUserCallsign: string;
+      const ASentExchange : string) : Boolean; virtual;
     function GetSentExchTypes(
       const AStationKind : TStationKind;
       const AMyCallsign : string) : TExchTypes;
@@ -52,6 +55,10 @@ type
       const AStationKind : TStationKind;
       const AMyCallsign : string;
       const ADxCallsign : string) : TExchTypes;
+    function GetExchangeTypes(
+      const AStationKind : TStationKind;
+      const AMsgType : TRequestedMsgType;
+      const ADxCallsign : string) : TExchTypes; virtual;
     function Minute: Single;
     function GetAudio: TSingleArray;
     procedure OnMeFinishedSending;
@@ -65,6 +72,7 @@ var
 implementation
 
 uses
+  SysUtils, RndFunc, Math, DxOper, Log,
   Main, CallLst, ARRL;
 
 { TContest }
@@ -96,7 +104,7 @@ begin
   Agc.HoldSamples := 155;
   Agc.AgcEnabled := true;
   NoActivityCnt :=0;
-  UserCallsign := '';
+  LastLoadCallsign := '';
 
   Init;
 end;
@@ -119,21 +127,26 @@ begin
   Me.Init;
   Stations.Clear;
   BlockNumber := 0;
-  UserCallsign := '';
+  LastLoadCallsign := '';
 end;
 
 
-{ return whether to call history file is valid based on user's callsign. }
-function TContest.HasUserCallsignChanged(const AUserCallsign : string) : boolean;
+{
+  user's home callsign is required when loading some contests
+  (don't load if user callsign is empty or is the same as last time).
+
+  return whether the call history file is valid. This varies by contest.
+}
+function TContest.IsReloadRequired(const AUserCallsign : string) : boolean;
 begin
-  // user's home callsign is required to load this contest.
-  Result := (not AUserCallsign.IsEmpty) and (UserCallsign <> AUserCallsign);
+  Result := not (AUserCallsign.IsEmpty or (LastLoadCallsign = AUserCallsign));
 end;
 
 
-procedure TContest.SetUserCallsign(const AUserCallsign : String);
+// called by LoadCallHistory after loading the call history file.
+procedure TContest.SetLastLoadCallsign(const AUserCallsign : String);
 begin
-  UserCallsign := AUserCallsign;
+  LastLoadCallsign := AUserCallsign;
 end;
 
 
@@ -160,14 +173,66 @@ end;
 
 
 {
+  OnSetMyCall() is called whenever the user's callsign is set.
+  Can be overriden by derived classes as needed to update contest-specific
+  settings. Note that derived classes should update contest-specific
+  settings before calling this function since the Sent Exchange settings
+  may depend upon this contest-specific information.
+
+  Returns whether the call was successful.
+}
+function TContest.OnSetMyCall(const AUserCallsign : string; out err : string) : boolean;
+begin
+  Me.MyCall:= AUserCallsign;
+
+  // update my sent exchange field types
+  Me.SentExchTypes:= GetSentExchTypes(skMyStation, AUserCallsign);
+
+  Result:= True;
+end;
+
+
+{
+  OnContestPrepareToStart() event is called whenever a contest is started.
+  Some contests will override this method to provide additional contest-specfic
+  behaviors. When overriding this function, be sure to call this base-class
+  function.
+
+  Current behavior is to load the call history file. This action has been
+  defferred until now since some contests use the user's callsign to determine
+  which stations can work other stations in the contest. For example, in the
+  ARRL DX Contest, US/CA Stations work DX (non-US/CA) stations.
+
+  Returns whether the operation was successfull.
+}
+function TContest.OnContestPrepareToStart(const AUserCallsign: string;
+  const ASentExchange : string) : Boolean;
+begin
+  // reload call history iff user's callsign has changed.
+  if IsReloadRequired(AUserCallsign) then
+    begin
+      // load contest-specific call history file
+      Result:= LoadCallHistory(AUserCallsign);
+
+      // retain user's callsign after successful load
+      if Result then
+        SetLastLoadCallsign(AUserCallsign);
+    end
+  else
+    Result:= True;
+end;
+
+
+{
   Return sent dynamic exchange types for the given kind-of-station and callsign.
+  AStationKind represents either the user's station (representing current
+  simulation) or the DxStn represented a simulated station calling the user.
 }
 function TContest.GetSentExchTypes(
   const AStationKind : TStationKind;
   const AMyCallsign : string) : TExchTypes;
 begin
-  Result.Exch1 := ActiveContest.ExchType1;
-  Result.Exch2 := ActiveContest.ExchType2;
+  Result:= Self.GetExchangeTypes(AStationKind, mtSendMsg, {ADxCallsign=}'');
 end;
 
 
@@ -179,6 +244,16 @@ end;
 function TContest.GetRecvExchTypes(
   const AStationKind : TStationKind;
   const AMyCallsign : string;
+  const ADxCallsign : string) : TExchTypes;
+begin
+  // perhaps need to pass in AUserCallsign instead of using TArrlDx.HomeCallIsWVE
+  Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, ADxCallsign);
+end;
+
+
+function TContest.GetExchangeTypes(
+  const AStationKind : TStationKind;
+  const AMsgType : TRequestedMsgType;
   const ADxCallsign : string) : TExchTypes;
 begin
   Result.Exch1 := ActiveContest.ExchType1;

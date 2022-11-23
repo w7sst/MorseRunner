@@ -12,12 +12,12 @@ unit Main;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Buttons, SndCustm, SndOut, Contest, Ini, MorseKey, CallLst,
-  VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls, MAth,
-  ComCtrls, Spin, SndTypes, ShellApi, jpeg, ToolWin, ImgList, Crc32,
-  WavFile, IniFiles, Idhttp,
-  System.ImageList;
+  Windows, Messages, Classes, Graphics, Controls, Forms,
+  Buttons, SndCustm, SndOut, Contest, Ini,
+  VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls,
+  ComCtrls, Spin, SndTypes,
+  WavFile,
+  System.ImageList, Vcl.ToolWin, Vcl.ImgList;
 
 const
   WM_TBDOWN = WM_USER+1;
@@ -349,13 +349,13 @@ type
     procedure mnuShowCallsignInfoClick(Sender: TObject);
     procedure SimContestComboChange(Sender: TObject);
     procedure ExchangeEditExit(Sender: TObject);
+    procedure Edit4Exit(Sender: TObject);
 
   private
     MustAdvance: boolean;
+    UserCallsignDirty: boolean; // SetMyCall is called after callsign edits
     function CreateContest(AContestId : TSimContest) : TContest;
-    procedure ConfigureExchangeFields(
-      AExchType1: TExchange1Type;
-      AExchType2: TExchange2Type);
+    procedure ConfigureExchangeFields;
     procedure SetMyExch1(const AExchType: TExchange1Type; const Avalue: string);
     procedure SetMyExch2(const AExchType: TExchange2Type; const Avalue: string);
     function ValidateExchField(const FieldDef: PFieldDefinition;
@@ -375,7 +375,7 @@ type
 
     // Received Exchange information is contest-specific and depends on contest,
     // user's QTH/location, DX station's QTH/location, and whether the user's
-    // station is local/DX relative to the contest.
+    // simulated station is local/DX relative to the contest.
     // This value is set by calling the virtual TContest.GetSentExchTypes()
     // function.
     RecvExchTypes: TExchTypes;
@@ -413,7 +413,9 @@ implementation
 
 uses
   ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX,
-  TypInfo, ScoreDlg, Log, PerlRegEx;
+  MorseKey, CallLst,
+  SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
+  Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
 
 {$R *.DFM}
 
@@ -789,6 +791,11 @@ begin
       ExchangeEditExit(ActiveControl);
       Exit;
     end;
+  if ActiveControl = Edit4 then
+    begin
+      Edit4Exit(ActiveControl);
+      Exit;
+    end;
   MustAdvance := false;
 
   if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0 then
@@ -859,7 +866,15 @@ end;
 
 procedure TMainForm.Edit4Change(Sender: TObject);
 begin
-  SetMyCall(Trim(Edit4.Text));
+  // user callsign edit has occurred; allows SetMyCall to be called.
+  UserCallsignDirty := True;
+end;
+
+procedure TMainForm.Edit4Exit(Sender: TObject);
+begin
+  // call SetMyCall if the callsign has been edited
+  if UserCallsignDirty then
+    SetMyCall(Trim(Edit4.Text));
 end;
 
 procedure TMainForm.ExchangeEditExit(Sender: TObject);
@@ -902,7 +917,12 @@ begin
   // the following will initialize simulation-specific data owned by contest.
   // (moved here from Ini.FromIni)
   begin
-    SetMyCall(Ini.Call);
+    // set contest-specific Sent Exchange field prior to calling SetMyCall().
+    // UI assumes uppercase only, so convert .ini file data to uppercase.
+    ExchangeEdit.Text := UpperCase(Ini.UserExchangeTbl[SimContest]);
+
+    // set user's call - also calls SetMyExchange and ConfigureExchangeFields.
+    SetMyCall(UpperCase(Ini.Call));
     SetPitch(ComboBox1.ItemIndex);
     SetBw(ComboBox2.ItemIndex);
     SetWpm(Ini.Wpm);
@@ -912,16 +932,9 @@ begin
     assert(Tst.Filt.SamplesInInput = Ini.BufSize);
     assert(Tst.Filt2.SamplesInInput = Ini.BufSize);
 
-    // load contest-specific call history file
-    if not Tst.LoadCallHistory(Ini.Call) then
-      Exit;
-
-    // update my sent exchange types (must be called after loading call lists?)
-    Tst.Me.SentExchTypes:= Tst.GetSentExchTypes(skMyStation, Ini.Call);
+    // my sent exchange set by SetMyCall() above
+    assert(Tst.Me.SentExchTypes = Tst.GetSentExchTypes(skMyStation, Ini.Call));
   end;
-
-  // update Exchange field labels and length settings (e.g. RST, Nr.)
-  ConfigureExchangeFields(ActiveContest.ExchType1, ActiveContest.ExchType2);
 end;
 
 {procedure TMainForm.SetNumber(ANumber: string);
@@ -934,6 +947,9 @@ end;}
 {
   Set my "sent" exchange fields using the exchange string containing two values,
   separated by a space. Error/warning messages are displayed in the status bar.
+
+  My "sent" exchange types (Tst.Me.SentExchTypes) have been previously set by
+  SetMyCall().
 }
 procedure TMainForm.SetMyExchange(const AExchange: string);
 var
@@ -944,8 +960,9 @@ var
 begin
   sl:= TStringList.Create;
   try
-    SentExchTypes:= Tst.GetSentExchTypes(skMyStation, Ini.Call);
-    assert(Tst.Me.SentExchTypes = SentExchTypes, 'this is already set; above call not necessary');
+    assert(Tst.Me.SentExchTypes = Tst.GetSentExchTypes(skMyStation, Ini.Call),
+      'set by TMainForm.SetMyCall');
+    SentExchTypes := Tst.Me.SentExchTypes;
     Field1Def := @Exchange1Settings[SentExchTypes.Exch1];
     Field2Def := @Exchange2Settings[SentExchTypes.Exch2];
 
@@ -956,7 +973,7 @@ begin
     if sl.Count = 1 then
       sl.AddStrings(['']);
 
-    // validate exchange string
+    // validate sent exchange strings
     if not ValidateExchField(Field1Def, sl[0]) or
        not ValidateExchField(Field2Def, sl[1]) then
       begin
@@ -966,7 +983,10 @@ begin
         sbar.Align:= alBottom;
         sbar.Visible:= true;
         sbar.Font.Color := clRed;
+
+        // update the Sent Exchange field value
         ExchangeEdit.Text := AExchange;
+        Ini.UserExchangeTbl[SimContest]:= AExchange;
         exit;
       end
     else
@@ -976,12 +996,12 @@ begin
         sbar.Caption := '';
       end;
 
-    // set contest-specific exchange values
+    // set contest-specific sent exchange values
     SetMyExch1(SentExchTypes.Exch1, sl[0]);
     SetMyExch2(SentExchTypes.Exch2, sl[1]);
     assert(Tst.Me.SentExchTypes = SentExchTypes);
 
-    // update the Exchange field value
+    // update the Sent Exchange field value
     ExchangeEdit.Text := AExchange;
     Ini.UserExchangeTbl[SimContest]:= AExchange;
 
@@ -1004,21 +1024,53 @@ end;
 
 
 procedure TMainForm.SetMyCall(ACall: string);
+var
+  err : string;
 begin
   Ini.Call := ACall;
   Edit4.Text := ACall;
   Tst.Me.MyCall := ACall;
+
+  // some contests have contest-specific settings (e.g location local/dx).
+  // sets Tst.Me.SentExchTypes.
+  if not Tst.OnSetMyCall(ACall, err) then
+  begin
+    MessageDlg(err, mtError, [mbOK], 0);
+    Exit;
+  end;
+  assert(Tst.Me.SentExchTypes = Tst.GetSentExchTypes(skMyStation, ACall));
+
+  // update my "sent" exchange information.
+  // depends on: contest, my call, sent exchange (ExchangeEdit).
+  // SetMyExchange() may report an error in the status field.
+  SetMyExchange(Trim(ExchangeEdit.Text));
+
+  // update "received" Exchange field types, labels and length settings
+  // (e.g. RST, Nr.). depends on: contest, my call and dx station's call.
+  ConfigureExchangeFields;
+
+  UserCallsignDirty := False;
 end;
 
 {
-  Exchange Field types are determined by each contest.
-  Exchange field labels and exchange field maximum length are set.
-  Prior field values from .INI file are applied.
-  This procedure is called by SetContest() whenever the contest changes.
+  Received Exchange Field types are defined by each contest.
+  Exchange Field types can also dynamically change for various contests:
+  - ARRL DX: Exchange 2 changes between etStateProv and etPower.
+  - ARRL 10m: Exchange 2 changes between etStateProv10m, etIARU, etSerial,
+    depending on sending station's callsign.
+
+  Received exchange field labels and exchange field maximum length are set.
+
+  This procedure is called whenever:
+  a) the contest changes by SetContest().
+  b) when DxStation's callsign is entered (dynamic during contest).
+
+  Note: using DxStations's callsign can be eliminated by using ASCII
+  exchange fields and not applying semantics until the log entry is
+  constructed and compared. This may simplify how dynamic exchange field
+  types are handled.
 }
-procedure TMainForm.ConfigureExchangeFields(
-  AExchType1: TExchange1Type;
-  AExchType2: TExchange2Type);
+procedure TMainForm.ConfigureExchangeFields;
 const
   { the logic below allows Exchange label to be optional.
     If necessary, move this value into ContestDefinitions[] table. }
@@ -1028,6 +1080,9 @@ var
   Visible: Boolean;
 
 begin
+  // Load Received exchange field types
+  RecvExchTypes:= Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall, Trim(Edit1.Text));
+
   // Optional Contest Exchange label and field
   Visible := AExchangeLabel <> '';
   Label17.Visible:= Visible;
@@ -1038,26 +1093,20 @@ begin
   ExchangeEdit.Enabled := ActiveContest.ExchFieldEditable;
 
   // setup Exchange Field 1 (e.g. RST)
-  assert(AExchType1 = TExchange1Type(Exchange1Settings[AExchType1].T),
+  assert(RecvExchTypes.Exch1 = TExchange1Type(Exchange1Settings[RecvExchTypes.Exch1].T),
     Format('Exchange1Settings[%d] ordering error: found %s, expecting %s.',
-      [Ord(AExchType1), ToStr(AExchType1),
-      ToStr(TExchange1Type(Exchange1Settings[AExchType1].T))]));
-  Label2.Caption:= Exchange1Settings[AExchType1].C;
-  Edit2.MaxLength:= Exchange1Settings[AExchType1].L;
-  RecvExchTypes.Exch1 := AExchType1;
+      [Ord(RecvExchTypes.Exch1), ToStr(RecvExchTypes.Exch1),
+      ToStr(TExchange1Type(Exchange1Settings[RecvExchTypes.Exch1].T))]));
+  Label2.Caption:= Exchange1Settings[RecvExchTypes.Exch1].C;
+  Edit2.MaxLength:= Exchange1Settings[RecvExchTypes.Exch1].L;
 
   // setup Exchange Field 2 (e.g. Serial #)
-  assert(AExchType2 = TExchange2Type(Exchange2Settings[AExchType2].T),
+  assert(RecvExchTypes.Exch2 = TExchange2Type(Exchange2Settings[RecvExchTypes.Exch2].T),
     Format('Exchange2Settings[%d] ordering error: found %s, expecting %s.',
-      [Ord(AExchType2), ToStr(AExchType2),
-      ToStr(TExchange2Type(Exchange2Settings[AExchType2].T))]));
-  Label3.Caption := Exchange2Settings[AExchType2].C;
-  Edit3.MaxLength := Exchange2Settings[AExchType2].L;
-  RecvExchTypes.Exch2 := AExchType2;
-
-  // Set my exchange value (from INI file)
-  // UI assumes uppercase only, so convert .ini files to uppercase.
-  SetMyExchange(UpperCase(Ini.UserExchangeTbl[SimContest]));
+      [Ord(RecvExchTypes.Exch2), ToStr(RecvExchTypes.Exch2),
+      ToStr(TExchange2Type(Exchange2Settings[RecvExchTypes.Exch2].T))]));
+  Label3.Caption := Exchange2Settings[RecvExchTypes.Exch2].C;
+  Edit3.MaxLength := Exchange2Settings[RecvExchTypes.Exch2].L;
 end;
 
 procedure TMainForm.SetMyExch1(const AExchType: TExchange1Type;
@@ -1139,7 +1188,7 @@ begin
       end;
     etStateProv:  // e.g. NAQP (OR)
       begin
-        // 'expecting State or Providence (e.g. OR)'
+        // 'expecting State or Province (e.g. OR)'
         Ini.UserExchange2[SimContest] := Avalue;
         Tst.Me.Exch2 := Avalue;
         if BDebugExchSettings then Edit3.Text := Avalue; // testing only
@@ -1378,6 +1427,23 @@ var
 begin
   if Value = Ini.RunMode then
     Exit;
+
+  if Value <> rmStop then
+  begin
+    {
+      consider special case of click Run while focus in CallSign or Exchange
+      fields.
+
+      clicking in the Run button does not generate an OnExit event for the
+      Callsign nor Exchange fields until after the Run button has been processed.
+    }
+    if UserCallsignDirty then
+       SetMyCall(Trim(Edit4.Text));
+
+    // load call history and other contest-specific setup before starting
+    if not Tst.OnContestPrepareToStart(Ini.Call, ExchangeEdit.Text) then
+      Exit;
+  end;
 
   BStop := Value = rmStop;
   BCompet := Value in [rmWpx, rmHst];

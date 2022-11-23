@@ -47,8 +47,6 @@ begin
 
   CallLst.LoadCallList;
 
-  // retain user's callsign after successful load
-  SetUserCallsign(AUserCallsign);
   Result := True;
 end;
 

@@ -49,6 +49,9 @@ type
   PContestDefinition = ^TContestDefinition;
 
 const
+  UndefExchType1 : TExchange1Type = TExchange1Type(-1);
+  UndefExchType2 : TExchange2Type = TExchange2Type(-1);
+
   {
     Each contest is declared here. Long-term, this will be a generalized
     table-driven implementation allowing new contests to be configured

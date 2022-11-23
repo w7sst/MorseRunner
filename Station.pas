@@ -93,6 +93,12 @@ type
     property Bfo: Single read GetBfo;
   end;
 
+const
+  ExchTypesUndef : TExchTypes = (
+    Exch1: TExchange1Type(-1);
+    Exch2: TExchange2Type(-1);
+  );
+
 implementation
 
 uses
@@ -113,8 +119,7 @@ constructor TStation.CreateStation;
 begin
   inherited Create(nil);
 
-  SentExchTypes.Exch1:= TExchange1Type(-1);
-  SentExchTypes.Exch2:= TExchange2Type(-1);
+  SentExchTypes:= ExchTypesUndef;
 end;
 
 

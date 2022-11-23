@@ -59,8 +59,8 @@ begin
   Wpm := Ini.Wpm;
   Amplitude := 300000;
 
-  // My sent exchange types depends on my callsign
-  SentExchTypes:= Tst.GetSentExchTypes(skMyStation, MyCall);
+  // invalidate SentExchTypes. Will be set by Tst.OnSetMyCall().
+  SentExchTypes := ExchTypesUndef;
 
   // Adding a contest: Initialize Exch1 and Exch2
   // (try to use the generalized Exch1 and Exch2 fields for new contests.)
