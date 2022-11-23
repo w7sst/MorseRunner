@@ -348,6 +348,7 @@ type
       Selected: Boolean);
     procedure mnuShowCallsignInfoClick(Sender: TObject);
     procedure SimContestComboChange(Sender: TObject);
+    procedure SimContestComboPopulate;
     procedure ExchangeEditExit(Sender: TObject);
     procedure Edit4Exit(Sender: TObject);
 
@@ -451,6 +452,9 @@ begin
   Label14.Caption:= Label12.Caption;
   ListView2.Visible:= False;
   ListView2.Clear;
+
+  // populate and sort SimContestCombo
+  SimContestComboPopulate;
 
   // load DXCC support
   gDXCCList := TDXCC.Create;
@@ -890,7 +894,8 @@ begin
     scCQWW]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
-    SimContestCombo.ItemIndex:= Ord(Ini.SimContest);
+    SimContestCombo.ItemIndex :=
+        SimContestCombo.Items.IndexOf(ActiveContest.Name);
     Exit;
   end;
 
@@ -903,7 +908,8 @@ begin
 
   Ini.SimContest := AContestNum;
   Ini.ActiveContest := @ContestDefinitions[AContestNum];
-  SimContestCombo.ItemIndex := Ord(AContestNum);
+  SimContestCombo.ItemIndex :=
+        SimContestCombo.Items.IndexOf(Ini.ActiveContest.Name);
   WipeBoxes;
 
   // clear any status messages
@@ -1260,7 +1266,18 @@ end;
 
 procedure TMainForm.SimContestComboChange(Sender: TObject);
 begin
-  SetContest(TSimContest(SimContestCombo.ItemIndex));
+  SetContest(FindContestByName(SimContestCombo.Items[SimContestCombo.ItemIndex]));
+end;
+
+{ add contest names to SimContest Combo box and sort }
+procedure TMainForm.SimContestComboPopulate;
+var
+  C: TContestDefinition;
+begin
+  SimContestCombo.Items.Clear;
+  for C in ContestDefinitions do
+    SimContestCombo.Items.Add(C.Name);
+  SimContestCombo.Sorted:= True;
 end;
 
 procedure TMainForm.ComboBox2Change(Sender: TObject);
