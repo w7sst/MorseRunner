@@ -950,13 +950,6 @@ object MainForm: TMainForm
         TabOrder = 0
         TabStop = False
         OnChange = SimContestComboChange
-        Items.Strings = (
-          'CQ WPX'
-          'CWOPS CWT'
-          'ARRL Field Day'
-          'NCJ NAQP'
-          'HST (High Speed Test)'
-          'CQ WW')
       end
       object ExchangeEdit: TEdit
         Left = 76

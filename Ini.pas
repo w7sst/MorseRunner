@@ -23,7 +23,6 @@ const
   DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
   // Adding a contest: Append new TSimContest enum value for each contest.
-  // Adding a contest: update menu in Main.dfm.
   TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
@@ -36,14 +35,14 @@ type
 
   // Contest definition.
   TContestDefinition = record
-    Name: PChar;    // Contest Name.
+    Name: PChar;    // Contest Name. Used in SimContestCombo dropdown box.
     Key: PChar;     // Identifying key (used in Ini files)
     ExchType1: TExchange1Type;
     ExchType2: TExchange2Type;
     ExchFieldEditable: Boolean; // whether the Exchange field is editable
     ExchDefault: PChar; // contest-specific Exchange default message
     Msg: PChar;     // Exchange error message
-    T: TSimContest; // used to verify array ordering
+    T: TSimContest; // used to verify array ordering and lookup by Name
   end;
 
   PContestDefinition = ^TContestDefinition;
@@ -60,10 +59,11 @@ const
     Note: The order of this table must match the declared order of
     TSimContest above.
 
-    Adding a contest: update ContestDefinitions[] array. (append at end until sorting is added)
+    Adding a contest: update ContestDefinitions[] array (append at end
+    because .INI uses TSimContest value).
   }
   ContestDefinitions: array[TSimContest] of TContestDefinition = (
-    (Name: 'CQ Wpx';
+    (Name: 'CQ WPX';
      Key: 'CqWpx';
      ExchType1: etRST;
      ExchType2: etSerialNr;
@@ -73,7 +73,7 @@ const
      T:scWpx),
      // 'expecting RST (e.g. 5NN)'
 
-    (Name: 'CWOPS Cwt';
+    (Name: 'CWOPS CWT';
      Key: 'Cwt';
      ExchType1: etOpName;
      ExchType2: etCwopsNumber;
@@ -170,6 +170,7 @@ var
 procedure FromIni;
 procedure ToIni;
 function IsNum(Num: String): Boolean;
+function FindContestByName(const AContestName : String) : TSimContest;
 
 
 implementation
@@ -187,7 +188,8 @@ begin
       V:= ReadInteger(SEC_TST, 'SimContest', Ord(scWpx));
       SimContest := TSimContest(V);
       ActiveContest := @ContestDefinitions[SimContest];
-      MainForm.SimContestCombo.ItemIndex := V;
+      MainForm.SimContestCombo.ItemIndex :=
+        MainForm.SimContestCombo.Items.IndexOf(ActiveContest.Name);
 
       // Adding a contest: read contest-specfic Exchange Strings from .INI file.
       // load contest-specific Exchange Strings
@@ -330,6 +332,23 @@ begin
    end;
 end;
 
+
+function FindContestByName(const AContestName : String) : TSimContest;
+var
+  C : TContestDefinition;
+begin
+  for C in ContestDefinitions do
+    if CompareText(AContestName, C.Name) = 0 then
+      begin
+        Result := C.T;
+        // DebugLn('Ini.FindContestByName(%s) --> %s', [AContestName, DbgS(Result)]);
+        Exit;
+      end;
+
+  raise Exception.Create(
+      Format('error: ''%s'' is an unsupported contest name', [AContestName]));
+  Halt;
+end;
 
 
 end.
