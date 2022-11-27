@@ -7,7 +7,7 @@ unit ARRLFD;
 interface
 
 uses
-  Generics.Defaults, Generics.Collections, Contest, DxStn;
+  Generics.Defaults, Generics.Collections, Contest, DxStn, Log;
 
 type
   TFdCallRec = class
@@ -43,13 +43,14 @@ public
   //function IsNum(Num: String): Boolean;
   function FindCallRec(out fdrec: TFdCallRec; const ACall: string): Boolean;
   function GetStationInfo(const ACallsign: string) : string; override;
+  function ExtractMultiplier(Qso: PQso) : string; override;
 end;
 
 
 implementation
 
 uses
-  SysUtils, Classes, Log, PerlRegEx, pcre, ARRL;
+  SysUtils, Classes, PerlRegEx, pcre, ARRL;
 
 function TArrlFieldDay.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
@@ -190,6 +191,17 @@ begin
     if dxEntity <> '' then
       result:= result + ' - ' + dxEntity;
     end;
+end;
+
+
+{
+  Field Day doesn't have an expliclit multiplier; return a non-empty string.
+  Also sets contest-specific Qso.Points for this QSO.
+}
+function TArrlFieldDay.ExtractMultiplier(Qso: PQso) : string;
+begin
+  Qso^.Points := 2;
+  Result:= '1';
 end;
 
 

@@ -13,7 +13,7 @@ uses
 procedure SaveQso;
 procedure LastQsoToScreen;
 procedure Clear;
-procedure UpdateStats;
+procedure UpdateStats(AVerifyResults : boolean);
 procedure UpdateStatsHst;
 procedure CheckErr;
 //procedure PaintHisto;
@@ -39,7 +39,9 @@ type
     Exch1, TrueExch1: string;   // exchange 1 (e.g. 3A, OpName)
     Exch2, TrueExch2: string;   // exchange 2 (e.g. OR, CWOPSNum)
     TrueWpm: integer;           // WPM of sending DxStn (reported in log)
-    Pfx: string;
+    Pfx: string;                // extracted call prefix
+    MultStr: string;            // contest-specific multiplier (e.g. Pfx, dxcc)
+    Points: integer;            // points for this QSO
     Dupe: boolean;
     Err: string;
   end;
@@ -54,13 +56,29 @@ type
     public procedure Repaint;
   end;
 
+  {
+    A MultList hold a set of unique strings, each representing a unique
+    multiplier for the current contest. The underlying TStringList is sorted
+    and duplicate strings are ignored.
+
+    An instance of this class is used for both raw and verified multipliers.
+  }
+  TMultList= class(TStringList)
+    public
+      constructor Create;
+      procedure ApplyMults(const AMultipliers: string);
+  end;
+
 const
   EM_SCROLLCARET = $B7;
   WM_VSCROLL= $0115;
 
 var
   QsoList: array of TQso;
-  PfxList: TStringList;
+  RawMultList:      TMultList; // sorted, no dups; counts raw multipliers.
+  VerifiedMultList: TMultList; // sorted, no dups; counts verified multipliers.
+  RawPoints:        integer;   // accumalated raw QSO points total
+  VerifiedPoints:   integer;   // accumulated verified QSO points total
   CallSent: boolean; // msgHisCall has been sent; cleared upon edit.
   NrSent: boolean;   // msgNR has been sent. Seems to imply exchange sent.
   Histo: THisto;
@@ -73,7 +91,7 @@ implementation
 
 uses
   Windows, SysUtils, Graphics, RndFunc, Math,
-  StdCtrls, PerlRegEx, pcre,
+  StdCtrls, PerlRegEx, pcre, StrUtils,
   Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
 
 
@@ -111,6 +129,24 @@ begin
       FillRect(Rect(x, y, x+w-1, Height-2));
     end;
   end;
+end;
+
+constructor TMultList.Create;
+begin
+  inherited Create;
+  Self.Sorted := true;
+  Self.Duplicates := dupIgnore;
+end;
+
+{
+  Split the multiplier string into one or more multiplier values.
+  These are then added to the sorted, no-dups TMultList. The final
+  count is the multiplier count for this contest run.
+}
+procedure TMultList.ApplyMults(const AMultipliers: string);
+begin
+  // split multiplier string on ';'. allows for multiple multipliers.
+  AddStrings(SplitString(AMultipliers, ';'));
 end;
 
 function FormatScore(const AScore: integer):string;
@@ -172,6 +208,10 @@ var
   Empty: string;
 begin
   QsoList := nil;
+  RawMultList.Clear;
+  VerifiedMultList.Clear;
+  RawPoints := 0;
+  VerifiedPoints := 0;
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
   MainForm.RichEdit1.DefAttributes.Name:= 'Consolas';
@@ -254,35 +294,49 @@ begin
   //MainForm.Panel11.Caption := IntToStr(Score);
 end;
 
-procedure UpdateStats;
+{
+  Update cumulative QSO scoring, including both Raw and Verified scores.
+  This procedure is called twice per QSO:
+  1) after data is copied from the UI into the QSO record. Updates raw results.
+  2) after data is verified against the actual DxStn. Update verified results.
+
+  The AVerifyResults argument indicates whether to collect Raw results or
+  Verify the final results for the current QSO.
+
+  Note: care must be taken to be sure this function is called exactly two
+  times, once each for Raw and Verified states. This is necessary since
+  cumulative raw and verify QSO point totals are being accumulated in
+  the variables RawPoints and VerifiedPoints.
+}
+procedure UpdateStats(AVerifyResults : boolean);
 var
-  i, Pts, Mul: integer;
+  Mul: integer;
 begin
-  //raw
+  // accumulate raw points count
+  if not AVerifyResults then
+    With QsoList[High(QsoList)] do
+      begin
+        Inc(RawPoints, Points);
+        RawMultList.ApplyMults(MultStr);
+      end;
+  Mul := RawMultList.Count;
 
-  Pts := Length(QsoList);
-  PfxList.Clear;
-  for i:=0 to High(QsoList) do
-     PfxList.Add(QsoList[i].Pfx);
-  Mul := PfxList.Count;
-
-  MainForm.ListView1.Items[0].SubItems[0] := FormatScore(Pts);
+  MainForm.ListView1.Items[0].SubItems[0] := FormatScore(RawPoints);
   MainForm.ListView1.Items[1].SubItems[0] := FormatScore(Mul);
-  MainForm.ListView1.Items[2].SubItems[0] := FormatScore(Pts*Mul);
+  MainForm.ListView1.Items[2].SubItems[0] := FormatScore(RawPoints*Mul);
 
-  //verified
-  Pts := 0;
-  PfxList.Clear;
-  for i:=0 to High(QsoList) do
-    if QsoList[i].Err = '   ' then begin
-      Inc(Pts);
-      PfxList.Add(QsoList[i].Pfx);
-    end;
-  Mul := PfxList.Count;
+  // accumulate verified points count
+  if AVerifyResults then
+    With QsoList[High(QsoList)] do
+      if Err = '   ' then begin
+        Inc(VerifiedPoints, Points);
+        VerifiedMultList.ApplyMults(MultStr);
+      end;
+  Mul := VerifiedMultList.Count;
 
-  MainForm.ListView1.Items[0].SubItems[1] := FormatScore(Pts);
+  MainForm.ListView1.Items[0].SubItems[1] := FormatScore(VerifiedPoints);
   MainForm.ListView1.Items[1].SubItems[1] := FormatScore(Mul);
-  MainForm.ListView1.Items[2].SubItems[1] := FormatScore(Pts*Mul);
+  MainForm.ListView1.Items[2].SubItems[1] := FormatScore(VerifiedPoints*Mul);
 
   MainForm.PaintBox1.Invalidate;
 end;
@@ -510,11 +564,12 @@ begin
         assert(false, 'missing case');
     end;
 
+    Qso.Points := 1;  // defaults to 1; override in ExtractMultiplier()
     Qso.RawCallsign:= ExtractCallsign(Qso.Call);
     // Use full call when extracting prefix, not user's call.
     Qso.Pfx := ExtractPrefix(Qso.Call);
-    {if PfxList.Find(Qso.Pfx, Idx) then Qso.Pfx := '' else }
-    PfxList.Add(Qso.Pfx);
+    // extract ';'-delimited multiplier string(s) and update Qso.Points.
+    Qso.MultStr := Tst.ExtractMultiplier(Qso);
     if Ini.RunMode = rmHst then
       Qso.Pfx := IntToStr(CallToScore(Qso.Call));
 
@@ -553,7 +608,7 @@ begin
   if Ini.RunMode = rmHst then
     UpdateStatsHst
   else
-    UpdateStats;
+    UpdateStats({AVerifyResults=}False);
 
   //wipe
   MainForm.WipeBoxes;
@@ -689,15 +744,15 @@ end;
 
 
 initialization
-  PfxList := TStringList.Create;
-  PfxList.Sorted := true;
-  PfxList.Duplicates := dupIgnore;
+  RawMultList := TMultList.Create;
+  VerifiedMultList := TMultList.Create;
 {$ifdef DEBUG}
   RunUnitTest := true;
 {$endif}
 
 finalization
-  PfxList.Free;
+  RawMultList.Free;
+  VerifiedMultList.Free;
 
 end.
 

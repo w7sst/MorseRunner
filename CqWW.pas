@@ -7,7 +7,7 @@ unit CQWW;
 interface
 
 uses
-  Generics.Defaults, Generics.Collections, Contest, DxStn;
+  Generics.Defaults, Generics.Collections, Contest, DxStn, Log;
 
 type
   TCqWwCallRec = class
@@ -39,13 +39,14 @@ public
   function getZone(id:integer): string;     // returns CQZone (e.g. 3)
   function FindCallRec(out fdrec: TCqWwCallRec; const ACall: string): Boolean;
   function GetStationInfo(const ACallsign: string) : string; override;
+  function ExtractMultiplier(Qso: PQso) : string; override;
   function IsNum(Num: String): Boolean;
 end;
 
 implementation
 
 uses
-  SysUtils, Classes, log, ARRL;
+  SysUtils, Classes, ARRL;
 
 function TCqWw.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
@@ -180,6 +181,46 @@ begin
       result:= result + ' - ' + userText;
     if dxEntity <> '' then
       result:= result + ' - ' + dxEntity;
+    end;
+end;
+
+
+{
+  For CQ WW, the multiplier is the sum of zone and country multipliers.
+  Return a composite string of the form: 'ZN-<CqZone>;<country>'
+
+  Also sets contest-specific Qso.Points for this QSO.
+}
+function TCqWw.ExtractMultiplier(Qso: PQso) : string;
+var
+  dxrec : TDXCCRec;
+begin
+  dxrec := nil;
+
+  // one point per QSO
+  Qso^.Points:= 1;
+
+  // first multiplier is CQ-Zone
+  Result := Format('ZN-%d', [Qso^.Nr]);
+
+  // Maritime-mobile stations count only as a Zone multiplier.
+  if Qso^.Call.EndsWith('/MM') then
+    Exit;
+
+  // the code below (checking for Alaska and Hawaii) assumes USA Entity
+  // string is 'United States of America'.
+  assert(gDXCCList.FindRec(dxrec, 'W7SST') and
+         dxrec.Entity.Equals('United States of America'));
+
+  // second multiplier is unique country names
+  if gDXCCList.FindRec(dxrec, Qso^.Call) then
+    begin
+      // Alaska and Hawaii are part of 50 US states
+      if dxrec.Entity.Equals('Alaska') or
+         dxrec.Entity.Equals('Hawaii') then
+        Result := Format('%s;%s', [Result, 'United States of America'])
+      else
+        Result := Format('%s;%s', [Result, dxrec.Entity]);
     end;
 end;
 

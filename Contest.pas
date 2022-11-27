@@ -8,7 +8,7 @@ unit Contest;
 interface
 
 uses
-  SndTypes, Station, StnColl, MyStn, Ini, System.Classes,
+  SndTypes, Station, StnColl, MyStn, Ini, Log, System.Classes,
   MovAvg, Mixers, VolumCtl, DxStn;
 
 type
@@ -59,6 +59,7 @@ type
       const AStationKind : TStationKind;
       const ARequestedMsgType : TRequestedMsgType;
       const ADxCallsign : string) : TExchTypes; virtual;
+    function ExtractMultiplier(Qso: PQso) : string; virtual;
     function Minute: Single;
     function GetAudio: TSingleArray;
     procedure OnMeFinishedSending;
@@ -72,7 +73,7 @@ var
 implementation
 
 uses
-  SysUtils, RndFunc, Math, DxOper, Log,
+  SysUtils, RndFunc, Math, DxOper,
   Main, CallLst, ARRL;
 
 { TContest }
@@ -260,6 +261,30 @@ begin
 end;
 
 
+{
+  Extract multiplier string for a given contest. Default behavior will
+  return the QSO.Pfx string (which implies this method must be called
+  after ExtractPrefix.
+  Also sets contest-specific Qso.Points for this QSO.
+
+  Derived contests will override this method when contest rules require
+  different multiplier rules or QSO points.
+
+  For example, ARRL DX Rules state: "Multiply total QSO points by the number
+  of DXCC entities (W/VE stations) or states and provinces (DX stations)
+  contacted to get your final score."
+
+  Return the multiplier string used by this contest. This string is accumlated
+  in the Log.RawMultList and Log.VerifiedMultList to count the multiplier value.
+}
+function TContest.ExtractMultiplier(Qso: PQso) : string;
+begin
+  Qso.Points := 1;
+  // assumes Log.ExtractPrefix() has already been called.
+  Result := Qso.Pfx;
+end;
+
+
 function TContest.GetAudio: TSingleArray;
 const
   NOISEAMP = 6000;
@@ -375,7 +400,7 @@ begin
               if Ini.RunMode = RmHst then
                 Log.UpdateStatsHst
               else
-                Log.UpdateStats;
+                Log.UpdateStats({AVerifyResults=}True);
           end;
   //show info
   ShowRate;

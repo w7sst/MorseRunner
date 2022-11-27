@@ -7,7 +7,7 @@ unit CQWPX;
 interface
 
 uses
-  Contest, CallLst, DxStn;
+  Contest, CallLst, DxStn, Log;
 
 type
 TCqWpx = class(TContest)
@@ -31,12 +31,13 @@ public
   function FindCallRec(out fdrec: TCqWpxCallRec; const ACall: string): Boolean;
   }
   function GetStationInfo(const ACallsign: string) : string; override;
+  function ExtractMultiplier(Qso: PQso) : string; override;
 end;
 
 implementation
 
 uses
-  SysUtils, Classes, log, ARRL;
+  SysUtils, Classes, ARRL;
 
 function TCqWpx.LoadCallHistory(const AUserCallsign : string) : boolean;
 begin
@@ -91,6 +92,18 @@ begin
   // find caller's Continent/Entity
   if gDXCCList.FindRec(dxrec, ACallsign) then
     Result := Format('%s - %s/%s', [ACallsign, dxRec.Continent, dxRec.Entity]);
+end;
+
+
+{
+  For CQ Wpx, the multiplier is the sum of unique Wpx prefixes worked.
+  Also sets contest-specific Qso.Points for this QSO.
+}
+function TCqWpx.ExtractMultiplier(Qso: PQso) : string;
+begin
+  Qso.Points := 1;
+  // assumes Log.ExtractPrefix() has already been called.
+  Result := Qso.Pfx;
 end;
 
 
