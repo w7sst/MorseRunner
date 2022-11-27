@@ -23,6 +23,8 @@ TCqWw = class(TContest)
 private
   CqWwCallList: TObjectList<TCqWwCallRec>;
   Comparer: IComparer<TCqWwCallRec>;
+  MyContinent : string;
+  MyEntity : string;
 
 public
   constructor Create;
@@ -55,6 +57,7 @@ var
   slst, tl: TStringList;
   i: integer;
   rec: TCqWwCallRec;
+  dxrec : TDXCCRec;
 begin
   // reload call history if empty
   Result := CqWwCallList.Count <> 0;
@@ -88,6 +91,13 @@ begin
           CqWwCallList.Add(rec);
       end;
     end;
+
+    // load MyContinent and MyEntity - used by ExtractMultiplier
+    if gDXCCList.FindRec(dxrec, AUserCallsign) then
+      begin
+        MyContinent := dxRec.Continent;
+        MyEntity := dxRec.Entity;
+      end;
 
     Result := True;
 
@@ -190,6 +200,13 @@ end;
   Return a composite string of the form: 'ZN-<CqZone>;<country>'
 
   Also sets contest-specific Qso.Points for this QSO.
+  QSO points are based on the location of the station worked.
+  - Contacts between stations on different continents count three (3) points.
+  - Contacts between stations on the same continent but in different countries
+    count one (1) point. Exception: Contacts between stations in different
+    countries within the North American boundaries count two (2) points.
+  - Contacts between stations in the same country have zero (0) QSO point value,
+    but count for zone and country multiplier credit.
 }
 function TCqWw.ExtractMultiplier(Qso: PQso) : string;
 var
@@ -197,15 +214,15 @@ var
 begin
   dxrec := nil;
 
-  // one point per QSO
-  Qso^.Points:= 1;
-
   // first multiplier is CQ-Zone
   Result := Format('ZN-%d', [Qso^.Nr]);
 
   // Maritime-mobile stations count only as a Zone multiplier.
   if Qso^.Call.EndsWith('/MM') then
-    Exit;
+    begin
+      Qso^.Points := 0;
+      Exit;
+    end;
 
   // the code below (checking for Alaska and Hawaii) assumes USA Entity
   // string is 'United States of America'.
@@ -221,6 +238,16 @@ begin
         Result := Format('%s;%s', [Result, 'United States of America'])
       else
         Result := Format('%s;%s', [Result, dxrec.Entity]);
+
+      // QSO points are based on the location of the station worked.
+      if dxrec.Continent <> MyContinent then
+        Qso^.Points := 3
+      else if dxrec.Entity = MyEntity then
+        Qso^.Points := 0
+      else if dxrec.Continent = 'NA' then
+        Qso^.Points := 2
+      else
+        Qso^.Points := 1;
     end;
 end;
 
