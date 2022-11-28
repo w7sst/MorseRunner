@@ -899,6 +899,14 @@ begin
     Exit;
   end;
 
+  // clear input fields prior to deleting Contest object.
+  WipeBoxes;
+
+  // clear any status messages
+  sbar.Caption := '';
+  sbar.Font.Color := clDefault;
+  sbar.Visible := mnuShowCallsignInfo.Checked;
+
   assert(ContestDefinitions[AContestNum].T = AContestNum,
     'Contest definitions are out of order');
 
@@ -910,12 +918,6 @@ begin
   Ini.ActiveContest := @ContestDefinitions[AContestNum];
   SimContestCombo.ItemIndex :=
         SimContestCombo.Items.IndexOf(Ini.ActiveContest.Name);
-  WipeBoxes;
-
-  // clear any status messages
-  sbar.Caption := '';
-  sbar.Font.Color := clDefault;
-  sbar.Visible := mnuShowCallsignInfo.Checked;
 
   // create new contest
   Tst := CreateContest(AContestNum);
