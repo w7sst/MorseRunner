@@ -26,6 +26,10 @@ type
      Operid: integer;
   end;
 
+var
+  LastDxCallsign : string = '';
+  LastExch1 : string = '';
+  LastExch2 : string = '';
 
 implementation
 
@@ -78,6 +82,14 @@ begin
     begin
       Tst.DropStation(Operid);
       Operid := -1;
+    end;
+
+  // retain most recent DxCallsign (used for debugging)
+  if Ini.RunMode = rmSingle then
+    begin
+      LastDxCallsign := MyCall;
+      LastExch1 := Self.Exch1;
+      LastExch2 := Self.Exch2;
     end;
 
   //the MeSent event will follow immediately

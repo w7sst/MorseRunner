@@ -411,6 +411,14 @@ begin
   if (RunMode = rmSingle) and (DxCount = 0) then begin
      Me.Msg := [msgCq]; //no need to send cq in this mode
      Stations.AddCaller.ProcessEvent(evMeFinished);
+
+     // special debug mode to populate callsign and exchange fields
+     if Main.BDebugExchSettings then
+       begin
+         MainForm.Edit1.Text := DxStn.LastDxCallsign;
+         MainForm.Edit2.Text := DxStn.LastExch1;
+         MainForm.Edit3.Text := DxStn.LastExch2;
+       end;
   end
   else
     if (RunMode = rmHst) and (DxCount < Activity) then begin

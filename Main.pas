@@ -64,7 +64,7 @@ const
     (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode))
   );
 
-  { display parsed Exchange field settings }
+  { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
   BDebugExchSettings: boolean = false;
 
 type
