@@ -3,7 +3,7 @@ unit NAQP;
 interface
 
 uses
-  Generics.Defaults, Generics.Collections, Contest, DxStn;
+  Generics.Defaults, Generics.Collections, Contest, DxStn, Log;
 
 type
   TNaQpCallRec = class
@@ -30,6 +30,7 @@ public
   procedure DropStation(id : integer); override;
   function GetCall(id : integer): string; override; // returns station callsign
   procedure GetExchange(id : integer; out station : TDxStation); override;
+  function ExtractMultiplier(Qso: PQso) : string; override;
 
   function getExch1(id:integer): string;    // returns station info (e.g. MIKE)
   function getExch2(id:integer): string;    // returns section info (e.g. OR)
@@ -45,7 +46,7 @@ implementation
 
 uses
   StrUtils, SysUtils, Classes, Contnrs, PerlRegEx, pcre,
-  log, ARRL;
+  ARRL;
 
 function TNcjNaQp.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
@@ -184,6 +185,22 @@ begin
 end;
 
 
+{
+  Extract multiplier string for a given contest.
+  Also sets contest-specific Qso.Points for this QSO.
+
+  For NCJ NAQP Contest, the State/Prov value is returned;
+
+  Return the multiplier string used by this contest. This string is accumlated
+  in the Log.RawMultList and Log.VerifiedMultList to count the multiplier value.
+}
+function TNcjNaQp.ExtractMultiplier(Qso: PQso) : string;
+begin
+  Qso^.Points := 1;
+  Result := Qso^.Exch2;
+end;
+
+
 function TNcjNaQp.GetCall(id : integer): string;     // returns station callsign
 begin
   result := NaQpCallList.Items[id].Call;
@@ -197,6 +214,7 @@ begin
   station.Exch2 := getExch2(station.Operid);
   station.UserText := getUserText(station.Operid);
 end;
+
 
 function TNcjNaQp.getExch1(id:integer): string;    // returns station info (e.g. MIKE)
 begin

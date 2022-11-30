@@ -7,7 +7,7 @@ unit CQWW;
 interface
 
 uses
-  Generics.Defaults, Generics.Collections, Contest, DxStn;
+  Generics.Defaults, Generics.Collections, Contest, DxStn, Log;
 
 type
   TCqWwCallRec = class
@@ -23,6 +23,8 @@ TCqWw = class(TContest)
 private
   CqWwCallList: TObjectList<TCqWwCallRec>;
   Comparer: IComparer<TCqWwCallRec>;
+  MyContinent : string;
+  MyEntity : string;
 
 public
   constructor Create;
@@ -39,13 +41,14 @@ public
   function getZone(id:integer): string;     // returns CQZone (e.g. 3)
   function FindCallRec(out fdrec: TCqWwCallRec; const ACall: string): Boolean;
   function GetStationInfo(const ACallsign: string) : string; override;
+  function ExtractMultiplier(Qso: PQso) : string; override;
   function IsNum(Num: String): Boolean;
 end;
 
 implementation
 
 uses
-  SysUtils, Classes, log, ARRL;
+  SysUtils, Classes, ARRL;
 
 function TCqWw.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
@@ -54,6 +57,7 @@ var
   slst, tl: TStringList;
   i: integer;
   rec: TCqWwCallRec;
+  dxrec : TDXCCRec;
 begin
   // reload call history if empty
   Result := CqWwCallList.Count <> 0;
@@ -87,6 +91,13 @@ begin
           CqWwCallList.Add(rec);
       end;
     end;
+
+    // load MyContinent and MyEntity - used by ExtractMultiplier
+    if gDXCCList.FindRec(dxrec, AUserCallsign) then
+      begin
+        MyContinent := dxRec.Continent;
+        MyEntity := dxRec.Entity;
+      end;
 
     Result := True;
 
@@ -180,6 +191,63 @@ begin
       result:= result + ' - ' + userText;
     if dxEntity <> '' then
       result:= result + ' - ' + dxEntity;
+    end;
+end;
+
+
+{
+  For CQ WW, the multiplier is the sum of zone and country multipliers.
+  Return a composite string of the form: 'ZN-<CqZone>;<country>'
+
+  Also sets contest-specific Qso.Points for this QSO.
+  QSO points are based on the location of the station worked.
+  - Contacts between stations on different continents count three (3) points.
+  - Contacts between stations on the same continent but in different countries
+    count one (1) point. Exception: Contacts between stations in different
+    countries within the North American boundaries count two (2) points.
+  - Contacts between stations in the same country have zero (0) QSO point value,
+    but count for zone and country multiplier credit.
+}
+function TCqWw.ExtractMultiplier(Qso: PQso) : string;
+var
+  dxrec : TDXCCRec;
+begin
+  dxrec := nil;
+
+  // first multiplier is CQ-Zone
+  Result := Format('ZN-%d', [Qso^.Nr]);
+
+  // Maritime-mobile stations count only as a Zone multiplier.
+  if Qso^.Call.EndsWith('/MM') then
+    begin
+      Qso^.Points := 0;
+      Exit;
+    end;
+
+  // the code below (checking for Alaska and Hawaii) assumes USA Entity
+  // string is 'United States of America'.
+  assert(gDXCCList.FindRec(dxrec, 'W7SST') and
+         dxrec.Entity.Equals('United States of America'));
+
+  // second multiplier is unique country names
+  if gDXCCList.FindRec(dxrec, Qso^.Call) then
+    begin
+      // Alaska and Hawaii are part of 50 US states
+      if dxrec.Entity.Equals('Alaska') or
+         dxrec.Entity.Equals('Hawaii') then
+        Result := Format('%s;%s', [Result, 'United States of America'])
+      else
+        Result := Format('%s;%s', [Result, dxrec.Entity]);
+
+      // QSO points are based on the location of the station worked.
+      if dxrec.Continent <> MyContinent then
+        Qso^.Points := 3
+      else if dxrec.Entity = MyEntity then
+        Qso^.Points := 0
+      else if dxrec.Continent = 'NA' then
+        Qso^.Points := 2
+      else
+        Qso^.Points := 1;
     end;
 end;
 

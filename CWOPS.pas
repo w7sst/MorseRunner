@@ -3,7 +3,7 @@ unit CWOPS;
 interface
 
 uses
-  Classes, Contest, Contnrs, DxStn;
+  Classes, Contest, Contnrs, DxStn, Log;
 
 type
     TCWOPSRec= class
@@ -27,6 +27,7 @@ type
     procedure DropStation(id : integer); override;
     function GetCall(id : integer): string; override;
     procedure GetExchange(id : integer; out station : TDxStation); override;
+    function ExtractMultiplier(Qso: PQso) : string; override;
 
     function getcwopsname(id:integer): string;
     function getcwopsnum(id:integer): integer;
@@ -38,7 +39,7 @@ type
 implementation
 
 uses
-    SysUtils, Log;
+    SysUtils;
 
 function TCWOPS.LoadCallHistory(const AUserCallsign : string) : boolean;
 var
@@ -126,6 +127,17 @@ procedure TCWOPS.GetExchange(id : integer; out station : TDxStation);
 begin
   station.OpName := getcwopsname(id);
   station.NR :=  getcwopsnum(id);
+end;
+
+
+{
+  CWOPS CWT contest uses number of unique callsigns worked as the multiplier.
+  Also sets contest-specific Qso.Points for this QSO.
+}
+function TCWOPS.ExtractMultiplier(Qso: PQso) : string;
+begin
+  Qso^.Points := 1;
+  Result:= Qso^.Call;
 end;
 
 

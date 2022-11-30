@@ -7,7 +7,8 @@ unit ARRLDX;
 interface
 
 uses
-  Generics.Defaults, Generics.Collections, Classes, DualExchContest, DxStn;
+  Generics.Defaults, Generics.Collections, Classes, DualExchContest, DxStn,
+  Log;
 
 type
   TArrlDxCallRec = class
@@ -43,13 +44,14 @@ type
     function IsNum(Num: String): Boolean;
     function FindCallRec(out dxrec: TArrlDxCallRec; const ACall: string): Boolean;
     function GetStationInfo(const ACallsign : string) : string; override;
+    function ExtractMultiplier(Qso: PQso) : string; override;
   end;
 
 
 implementation
 
 uses
-  SysUtils, PerlRegEx, pcre, log, ARRL, CallLst,
+  SysUtils, PerlRegEx, pcre, ARRL, CallLst,
   Ini, Main;
 
 
@@ -299,6 +301,35 @@ end;
 function TArrlDx.getUserText(id:integer): string; // returns optional club name
 begin
   result := ArrlDxCallList.Items[id].UserText;
+end;
+
+
+{
+  Extract multiplier string for ARRL DX Contest.
+
+  ARRL DX Rules state: "Multiply total QSO points by the number of DXCC
+  entities (W/VE stations) or states and provinces (DX stations) contacted
+  to get your final score."
+
+  Also sets contest-specific Qso.Points for this QSO.
+
+  return either DXCC Entity string or US state or CA province.
+}
+function TArrlDx.ExtractMultiplier(Qso: PQso) : string;
+var
+  dxrec: TDXCCRec;
+begin
+  dxrec:= nil;
+  Result:= '';
+
+  Qso^.Points := 3;
+  if Self.HomeCallIsLocal then
+    begin
+      if gDXCCList.FindRec(dxrec, Qso^.Call) then
+        Result:= dxrec.Entity;
+    end
+  else
+    Result:= Qso.Exch2;
 end;
 
 
