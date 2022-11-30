@@ -4,6 +4,7 @@ uses
   Forms,
   Main in 'Main.pas' {MainForm},
   Contest in 'Contest.pas',
+  DualExchContest in 'DualExchContest.pas',
   RndFunc in 'RndFunc.pas',
   Ini in 'Ini.pas',
   Station in 'Station.pas',
@@ -38,7 +39,8 @@ uses
   NaQp in 'NaQp.pas',
   CWOPS in 'CWOPS.pas',
   CqWW in 'CqWW.pas',
-  CqWpx in 'CqWpx.pas';
+  CqWpx in 'CqWpx.pas',
+  ArrlDx in 'ArrlDx.pas';
 
 {$R *.RES}
 

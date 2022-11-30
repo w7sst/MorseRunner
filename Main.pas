@@ -56,11 +56,11 @@ const
     (C: 'Nr.';        R: '([0-9][0-9]*)|(#)';              L: 4;  T:Ord(etSerialNr)),
     (C: 'Number';     R: '[1-9][0-9]*';                    L: 10; T:Ord(etCwopsNumber)),
     (C: 'Section';    R: '([A-Z][A-Z])|([A-Z][A-Z][A-Z])'; L: 3;  T:Ord(etArrlSection)),
-    (C: 'State/Prov'; R: '[A-Z]*';                         L: 6;  T:Ord(etStateProv)),
+    (C: 'State/Prov'; R: '[A-Z][A-Z]*';                    L: 6;  T:Ord(etStateProv)),
     (C: 'CQ-Zone';    R: '[0-9]*';                         L: 2;  T:Ord(etCqZone)),
     (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
     (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
-    (C: 'Power';      R: '([0-9]*)|(KW)|([0-9][OT]*)';     L: 4;  T:Ord(etPower)),
+    (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9][OT]*)'; L: 4;  T:Ord(etPower)),
     (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode))
   );
 
@@ -378,7 +378,7 @@ type
     // user's QTH/location, DX station's QTH/location, and whether the user's
     // simulated station is local/DX relative to the contest.
     // This value is set by calling the virtual TContest.GetSentExchTypes()
-    // function.
+    // function. See TArrlDx.GetExchangeTypes() for additional information.
     RecvExchTypes: TExchTypes;
 
     procedure Run(Value: TRunMode);
@@ -413,7 +413,7 @@ var
 implementation
 
 uses
-  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX,
+  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX,
   MorseKey, CallLst,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
   Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
@@ -494,6 +494,7 @@ begin
   scFieldDay:   Result := TArrlFieldDay.Create;
   scNaQp:       Result := TNcjNaQp.Create;
   scCQWW:       Result := TCqWW.Create;
+  scArrlDx:     Result := TArrlDx.Create;
   else
     assert(false);
   end;
@@ -891,7 +892,7 @@ begin
   // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
   if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst,
-    scCQWW]) then
+    scCQWW, scArrlDx]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex :=
@@ -1194,7 +1195,7 @@ begin
         Tst.Me.Exch2 := Avalue;
         if BDebugExchSettings then Edit3.Text := Avalue; // testing only
       end;
-    etStateProv:  // e.g. NAQP (OR)
+    etStateProv, etPower:  // e.g. NAQP (OR); ARRLDX (OR | KW)
       begin
         // 'expecting State or Province (e.g. OR)'
         Ini.UserExchange2[SimContest] := Avalue;
@@ -1209,7 +1210,6 @@ begin
       end;
     //etItuZone:
     //etAge:
-    //etPower:
     //etJarlOblastCode:
     else
       assert(false, Format('Unsupported exchange 2 type: %s.', [ToStr(AExchType)]));
@@ -1455,6 +1455,23 @@ begin
 
       clicking in the Run button does not generate an OnExit event for the
       Callsign nor Exchange fields until after the Run button has been processed.
+      Does this matter? Perhaps not... The contest audio will start before the
+      Exch1 and Exch2 fields are configured. The first thing sent after hitting
+      Run is a CQ from the DxStation and this CQ may depend on contest or
+      user callsign (e.g. ARRL DX controls Exch2).
+      THE CALLSIGN DOES AFFECT CQ!!!!
+      However, Exch2 does not affect CQ.
+      Only the Contest affects the CQ being sent (is this true for all contests?).
+      If user pushes Enter key after editing either the Exchange or Callsign
+      fields, then the proper OnEnter/OnExit event is sent for either control.
+      So I think we are okay if contest is started before dynamic exchange
+      setup is processed. As long as the CQ message is independent of Exchange
+      field setup, then we are okay.
+
+      to simplify this, the dynamic exchange can simply be an ascii-only field.
+      When QSO is saved to log, we know the calling DX Station and can get
+      it's sent type. The sent type is our receiving type which can be used
+      to check the accuracy of the entered QSO.
     }
     if UserCallsignDirty then
        SetMyCall(Trim(Edit4.Text));
