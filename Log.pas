@@ -647,12 +647,12 @@ begin
     scCQWW:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d %4d', [Rst, NR])
-        , format('%.3d %4d', [Tst.Me.Rst, Tst.Me.NR])
+        , format('%.3s %4d', [Tst.Me.Exch1, Tst.Me.NR])     // log my sent RST
         , Pfx, Err, format('%.3d', [TrueWpm]));
     scArrlDx:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d %4s', [Rst, Exch2])
-        , format('%.3d %4s', [Tst.Me.Rst, Tst.Me.Exch2])
+        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
         , Pfx, Err, format('%.2d', [TrueWpm]));
     else
       assert(false, 'missing case');

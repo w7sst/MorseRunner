@@ -46,7 +46,7 @@ const
   // Adding a contest: define contest-specific field types
   // Exchange Field 1 settings/rules
   Exchange1Settings: array[TExchange1Type] of TFieldDefinition = (
-    (C: 'RST';   R: '5[9N][9N]';        L: 3;  T:Ord(etRST)),
+    (C: 'RST';   R: '[5E][9N][9N]';     L: 3;  T:Ord(etRST)),
     (C: 'Name';  R: '[A-Z][A-Z]*';      L: 10; T:Ord(etOpName)),
     (C: 'Class'; R: '[1-9][0-9]*[A-F]'; L: 3;  T:Ord(etFdClass))
   );
@@ -546,9 +546,10 @@ begin
       begin
         if RunMode <> rmHst then
         begin
-          // for RST field, map (A,N) to (1,9)
+          // for RST field, map (A,E,N) to (1,5,9)
           case Key of
             'a', 'A': Key := '1';
+            'e', 'E': Key := '5';
             'n', 'N': Key := '9';
           end;
         end;
@@ -1129,7 +1130,8 @@ begin
       begin
         // Format('invalid RST (%s)', [AValue]));
         Ini.UserExchange1[SimContest] := Avalue;
-        Tst.Me.RST := StrToInt(Avalue.Replace('N', '9', [rfReplaceAll]));
+        Tst.Me.RST := StrToInt(Avalue.Replace('E', '5', [rfReplaceAll])
+                                     .Replace('N', '9', [rfReplaceAll]));
         Tst.Me.Exch1 := Avalue;
         if BDebugExchSettings then Edit2.Text := Avalue; // testing only
       end;
