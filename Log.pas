@@ -698,7 +698,8 @@ begin
         etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';
         //etItuZone:
         //etAge:
-        etPower:       if TrueExch2 <> ReducePowerStr(Exch2) then Err := 'PWR';
+        etPower: if ReducePowerStr(TrueExch2) <> ReducePowerStr(Exch2) then
+                   Err := 'PWR';
         //etJarlOblastCode:
         else
           assert(false, 'missing exchange 2 case');
