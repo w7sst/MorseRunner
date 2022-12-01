@@ -260,15 +260,16 @@ end;
 
 procedure TCqWw.GetExchange(id : integer; out station : TDxStation);
 begin
+  station.Exch1 := getExch1(station.Operid);  // RST
   station.Exch2 := getExch2(station.Operid);
-  station.NR := StrToInt(getExch2(station.Operid));
+  station.NR := StrToInt(station.Exch2);
 end;
 
 
 
-function TCqWw.getExch1(id:integer): string;    // returns RST (e.g. 5NN)
+function TCqWw.getExch1(id:integer): string;    // returns RST (e.g. 599)
 begin
-  result := '5NN';
+  result := '599';
 end;
 
 

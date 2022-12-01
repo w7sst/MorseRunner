@@ -274,6 +274,10 @@ end;
 
 
                                                 
+{
+  This function formats the exchange string to be sent by this station
+  by combining exchange fields 1 and 2.
+}
 function TStation.NrAsText: string;
 var
   Idx: integer;
@@ -281,7 +285,7 @@ begin
   // Adding a contest: TStation.NrAsText(), converts <#> to exchange (usually '<exch1> <exch2>'). Inject LID errors.
   case SimContest of
     scCQWW:
-      Result := Format('%d %d', [RST, NR]);
+      Result := Format('%s %d', [Exch1, NR]);     // <RST> <serial#>
     scCwt:
       Result := Format('%s  %.d', [OpName, NR]);
     scFieldDay:
@@ -308,9 +312,13 @@ begin
     end;
 
   if SentExchTypes.Exch1 = etRST then
+     begin
+     if (Ini.RunMode <> rmHST) and (Random < 0.05) then
+       Result := StringReplace(Result, '599', 'ENN', [rfReplaceAll]);
      Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
+     end;
   if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
-    [etSerialNr, etCqZone, etItuZone, etAge, etPower, etStateProv]) then
+    [etSerialNr, etCqZone, etItuZone, etAge, etPower]) then
     begin
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
