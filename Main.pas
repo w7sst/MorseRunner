@@ -809,8 +809,10 @@ begin
     Exit;
   end;
 
+  // Adding a contest: update status bar w/ station info.
+  // remember not to give a hint if exchange entry is affected by this info.
   // for certain contests (e.g. ARRL Field Day), update update status bar
-  if SimContest in [scFieldDay] then
+  if SimContest in [scCwt, scFieldDay, scArrlDx] then
     UpdateSbar(Edit1.Text);
 
   //no QSO in progress, send CQ
