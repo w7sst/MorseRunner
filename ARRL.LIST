@@ -1,5 +1,5 @@
-March 2016 Edition
-http://www.arrl.org/files/file/DXCC/dxcclist_mar_2016.txt
+March 2022 Edition
+https://www.arrl.org/files/file/DXCC/2022_DXCC_Current.pdf
 
 1A(1);1A;Sov. Mil. Order of Malta;EU;28;15;246
 3A*;3A;Monaco;EU;27;14;260
@@ -73,7 +73,7 @@ AP*;AP;Pakistan;AS;41;21;372
 B*;B;China;AS;33,42-44,47,48;23,24;318
 BS7(11);BS7;Scarborough Reef,China;AS;50;27;506
 BU-BX*;B[M-OU-X];Taiwan;AS;44;24;386
-*BV9P(12);Pratas I. China;AS;44;24;505
+BV9P(12)*;BV9P;Pratas I. China;AS;44;24;505
 C2;C2;Nauru;OC;65;31;157
 C3*;C3;Andorra;EU;27;14;203
 C5#;C5;The Gambia;AF;46;35;422
@@ -121,11 +121,11 @@ EX*;EX;Kyrgyzstan;AS;30,31;17;135
 EY*;EY;Tajikistan;AS;30;17;262
 EZ*;EZ;Turkmenistan;AS;30;17;280
 F*;F;France;EU;27;14;227
-FG,TO*;FG;Guadeloupe;NA;11;08;079
-FH,TO(13)*;FH;Mayotte;AF;53;39;169
-FJ,TO(49)*;FJ;Saint Barthelemy;NA;11;08;516
+FG,TO*;(FG)|(TO);Guadeloupe;NA;11;08;079
+FH,TO(13)*;(FH)|(TO);Mayotte;AF;53;39;169
+FJ,TO(49)*;(FJ)|(TO);Saint Barthelemy;NA;11;08;516
 FK,TX*;(FK)|(TX);New Caledonia;OC;56;32;162
-FK,TX(45);FK;Chesterfield Is.;OC;56;30;512
+FK,TX(45);(FK)|(TX);Chesterfield Is.;OC;56;30;512
 FM,TO*;(FM)|(TO);Martinique;NA;11;08;084
 FO,TO(16)*;(FO)|(TO);Austral I.;OC;63;32;508
 FO,TX*;(FO)|(TX);Clipperton I.;NA;10;07;036
@@ -133,13 +133,13 @@ FO,TX*;(FO)|(TX);French Polynesia;OC;63;32;175
 FO,TX(16)*;(FO)|(TX);Marquesas Is.;OC;63;31;509
 FP*;FP;St. Pierre & Miquelon;NA;09;05;277
 FR,TO*;(FR)|(TO);Reunion I.;AF;53;39;453
-*FT/G,TO(17)*;Glorioso Is.;AF;53;39;099
-*FT/J,E,TO(17)* Juan de Nova,Europa;AF;53;39;124
-*FT/T,TO*;Tromelin I.;AF;53;39;276
+FT/G,TO(17)*;(FT)|(TO);Glorioso Is.;AF;53;39;099
+FT/J,E,TO(17)*;(FT)|(E)|(TO);Juan de Nova,Europa;AF;53;39;124
+FT/T,TO*;(FT)|(TO);Tromelin I.;AF;53;39;276
 FS,TO*;(FS)|(TO);Saint Martin;NA;11;08;213
-*FT/W*;Crozet I.;AF;68;39;041
-*FT/X*;Kerguelen Is.;AF;68;39;131
-*FT/Z*;Amsterdam & St. Paul Is.;AF;68;39;010
+FT/W*;FT;Crozet I.;AF;68;39;041
+FT/X*;FT;Kerguelen Is.;AF;68;39;131
+FT/Z*;FT;Amsterdam & St. Paul Is.;AF;68;39;010
 FW*;FW;Wallis & Futuna Is.;OC;62;32;298
 FY*;FY;French Guiana;SA;12;09;063
 G,GX,M*;(G)|(GX)|(M);England;EU;27;14;223
@@ -154,8 +154,8 @@ H40(18)*;H40;Temotu Province;OC;51;32;507
 HA,HG*;H[A|G];Hungary;EU;28;15;239
 HB*;HB;Switzerland;EU;28;14;287
 HB0*;HB0;Liechtenstein;EU;28;14;251
-HC-HD#*;HC[C-D];Ecuador;SA;12;10;120
-HC8-HD8#*;H[C-D];8Galapagos Is.;SA;12;10;071
+HC-HD#*;H[C-D];Ecuador;SA;12;10;120
+HC8-HD8#*;H[C-D]8;Galapagos Is.;SA;12;10;071
 HH#;HH;Haiti;NA;11;08;078
 HI#*;HI;Dominican Republic;NA;11;08;072
 HJ-HK,5J-5K#*;(H[J-K])|(5[J-K]);Colombia;SA;12;09;116
@@ -221,17 +221,17 @@ OY*;OY;Faroe Is.;EU;18;14;222
 P2(24);P2;Papua New Guinea;OC;51;28;163
 P4(25)*;P4;Aruba;SA;11;09;091
 P5(26);P5;DPRK Korea;AS;44;25;344
-PA-PI*;P[A-Z];Netherlands;EU;27;14;263
+PA-PI*;P[A-I];Netherlands;EU;27;14;263
 PJ2(50);PJ2;Curacao;SA;11;09;517
 PJ4(51);PJ4;Bonaire;SA;11;09;520
-PJ5,6(52);PJ5;Saba & St. Eustatius;NA;11;08;519
+PJ5,6(52);PJ[5-6];Saba & St. Eustatius;NA;11;08;519
 PJ7(53);PJ7;St Maarten;NA;11;08;518
 PP-PY#*;P[P-Y];Brazil;SA;12,13,15;11;108
 PP0-PY0F#*;P[P-Y]0F;Fernando de Noronha;SA;13;11;056
 PP0-PY0S#*;P[P-Y]0S;St. Peter & St. Paul Rocks;SA;13;11;253
 PP0-PY0T#*;P[P-Y]0T;Trindade & Martim Vaz Is.;SA;15;11;273
 PZ;PZ;Suriname;SA;12;09;140
-*R1/F*;R1;Franz Josef Land;EU;75;40;061
+R1/F*;R1;Franz Josef Land;EU;75;40;061
 S0(1),(27);S0;Western Sahara;AF;46;33;302
 S2*;S2;Bangladesh;AS;41;22;305
 S5(6)*;S5;Slovenia;EU;28;15;499
@@ -252,7 +252,7 @@ T32;T32;E. Kiribati(Line Is.);OC;61,63;31;048
 T33;T33;Banaba I.(Ocean I.);OC;65;31;490
 T5,6O;(T5)|(6O);Somalia;AF;48;37;232
 T7*;T7;San Marino;EU;28;15;278
-T8,(21);T8;Palau;OC;64;27;022
+T8(21);T8;Palau;OC;64;27;022
 TA-TC*;T[A-C];Turkey;EU/AS;39;20;390
 TF*;TF;Iceland;EU;17;40;242
 TG,TD#*;T[DG];Guatemala;NA;12;07;076
@@ -300,7 +300,7 @@ VP8*;VP8;Falkland Is.;SA;16;13;141
 VP8,LU*;(VP8)|(LU);South Georgia I.;SA;73;13;235
 VP8,LU*;(VP8)|(LU);South Orkney Is.;SA;73;13;238
 VP8,LU*;(VP8)|(LU);South Sandwich Is.;SA;73;13;240
-VP8,LU,;(VP8)|(LU)|(CE9)|(HF0)|(4K1);South Shetland Is.;SA;73;13;241
+VP8,LU,CE9,HF0,4K1;(VP8)|(LU)|(CE9)|(HF0)|(4K1);South Shetland Is.;SA;73;13;241
 VP9*;BP9;Bermuda;NA;11;05;064
 VQ9*;VQ9;Chagos Is.;AF;41;39;033
 VR*;VR;Hong Kong,China;AS;44;24;321
@@ -328,6 +328,7 @@ YV-YY,4M#*;(Y[V-Y])|(4M);Venezuela;SA;12;09;148
 YV0#*;YV0;Aves I.;NA;11;08;017
 Z2;Z2;Zimbabwe;AF;53;38;452
 Z3(41)*;Z3;Macedonia;EU;28;15;502
+Z6(1),(55);Z6;Republic of Kosovo;EU;28;15;522
 Z8(54);Z8;South Sudan(Republic of);AF;48;34;521
 ZA;ZA;Albania;EU;28;15;007
 ZB2*;ZB2;Gibraltar;EU;37;14;233
