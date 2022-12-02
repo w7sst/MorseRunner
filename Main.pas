@@ -56,11 +56,12 @@ const
     (C: 'Nr.';        R: '([0-9][0-9]*)|(#)';              L: 4;  T:Ord(etSerialNr)),
     (C: 'Number';     R: '[1-9][0-9]*';                    L: 10; T:Ord(etCwopsNumber)),
     (C: 'Section';    R: '([A-Z][A-Z])|([A-Z][A-Z][A-Z])'; L: 3;  T:Ord(etArrlSection)),
-    (C: 'State/Prov'; R: '[A-Z][A-Z]*';                    L: 6;  T:Ord(etStateProv)),
+    (C: 'State/Prov'; R: '[ABCDFGHIKLMNOPQRSTUVWY][ABCDEFHIJKLMNORSTUVXYZ]';
+                                                           L: 6;  T:Ord(etStateProv)),
     (C: 'CQ-Zone';    R: '[0-9]*';                         L: 2;  T:Ord(etCqZone)),
     (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
     (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
-    (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9][OT]*)'; L: 4;  T:Ord(etPower)),
+    (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4;  T:Ord(etPower)),
     (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode))
   );
 
@@ -599,7 +600,7 @@ begin
       end;
     etPower:
       begin
-        { Yagi-Berra recommends not mapping these characters (PR #138)
+        { K6OK recommends not mapping these characters (PR #138)
         case Key of
           'a', 'A': Key := '1';
           'n', 'N': Key := '9';
