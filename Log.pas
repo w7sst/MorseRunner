@@ -662,6 +662,16 @@ end;
 
 
 procedure CheckErr;
+  // Reduce Power characters (T, O, A, N) to (0, 0, 1, 9) respectively.
+  function ReducePowerStr(const text: string): string;
+  begin
+    assert(Mainform.RecvExchTypes.Exch2 = etPower);
+    Result := text.Replace('T', '0', [rfReplaceAll])
+                  .Replace('O', '0', [rfReplaceAll])
+                  .Replace('A', '1', [rfReplaceAll])
+                  .Replace('N', '9', [rfReplaceAll]);
+  end;
+
 begin
   with QsoList[High(QsoList)] do begin
     Err := '';
@@ -688,7 +698,8 @@ begin
         etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';
         //etItuZone:
         //etAge:
-        etPower:       if TrueExch2 <> Exch2 then Err := 'PWR';
+        etPower: if ReducePowerStr(TrueExch2) <> ReducePowerStr(Exch2) then
+                   Err := 'PWR';
         //etJarlOblastCode:
         else
           assert(false, 'missing exchange 2 case');

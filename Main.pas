@@ -56,11 +56,12 @@ const
     (C: 'Nr.';        R: '([0-9][0-9]*)|(#)';              L: 4;  T:Ord(etSerialNr)),
     (C: 'Number';     R: '[1-9][0-9]*';                    L: 10; T:Ord(etCwopsNumber)),
     (C: 'Section';    R: '([A-Z][A-Z])|([A-Z][A-Z][A-Z])'; L: 3;  T:Ord(etArrlSection)),
-    (C: 'State/Prov'; R: '[A-Z][A-Z]*';                    L: 6;  T:Ord(etStateProv)),
+    (C: 'State/Prov'; R: '[ABCDFGHIKLMNOPQRSTUVWY][ABCDEFHIJKLMNORSTUVXYZ]';
+                                                           L: 6;  T:Ord(etStateProv)),
     (C: 'CQ-Zone';    R: '[0-9]*';                         L: 2;  T:Ord(etCqZone)),
     (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
     (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
-    (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9][OT]*)'; L: 4;  T:Ord(etPower)),
+    (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4;  T:Ord(etPower)),
     (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode))
   );
 
@@ -575,6 +576,14 @@ begin
   end;
 end;
 
+{
+  Exchange field 2 key press. This procedure is called upon any keystroke
+  in the Exchange 2 field. Depending on the exchange field type, it will
+  map some keys into an equivalent numeric value. For example, the 'N'
+  key is mapped to it's equivalent '9' value. this allows the user
+  to type what they hear and this function will convert to the equivalent
+  numeric value.
+}
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
   case RecvExchTypes.Exch2 of
@@ -592,13 +601,16 @@ begin
       end;
     etPower:
       begin
+        { K6OK recommends not mapping these characters (PR #138)
         case Key of
           'a', 'A': Key := '1';
           'n', 'N': Key := '9';
           't', 'T': Key := '0';
         end;
+        }
         // valid Power characters, including KW...
-        if not CharInSet(Key, ['0'..'9', 'K', 'k', 'W', 'w', #8]) then
+        if not CharInSet(Key, ['0'..'9', 'K', 'k', 'W', 'w', 'A', 'a',
+                               'n', 'N', 'o', 'O', 't', 'T', #8]) then
           Key := #0;
       end;
     etArrlSection:
