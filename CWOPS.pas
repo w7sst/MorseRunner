@@ -54,6 +54,7 @@ begin
 
     slst:= TStringList.Create;
     tl:= TStringList.Create;
+    CWO := nil;
 
     try
         CWOPSList.Clear;
@@ -64,7 +65,9 @@ begin
         for i:= 0 to slst.Count-1 do begin
             self.Delimit(tl, slst.Strings[i]);
             if (tl.Count = 4) then begin
-                CWO:= TCWOPSRec.Create;
+                if CWO = nil then
+                  CWO:= TCWOPSRec.Create;
+
                 CWO.Call:= UpperCase(tl.Strings[0]);
                 CWO.Name:= UpperCase(tl.Strings[1]);
                 CWO.Number:= tl.Strings[2];
@@ -76,8 +79,7 @@ begin
                 if length(CWO.Name) > 12 then continue;
 
                 CWOPSList.Add(CWO);
-
-
+                CWO := nil;
             end;
         end;
 
@@ -86,6 +88,7 @@ begin
     finally
         slst.Free;
         tl.Free;
+        if CWO <> nil then CWO.Free;
     end;
 
 
