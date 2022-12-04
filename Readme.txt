@@ -64,7 +64,7 @@ CONFIGURATION
      less than perfect operating skills, again to make the simulation more 
      realistic. These effects can be turned on and off using the checkboxes 
      described below.
-     
+
      QRM - interference form other running stations occurs from time to time.
      QRN - electrostatic interference.
      QSB - signal strength varies with time (Rayleigh fading channel).
