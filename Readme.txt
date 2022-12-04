@@ -208,10 +208,12 @@ SUBMITTING YOUR SCORE
 VERSION HISTORY
 
 Version 1.82 (Dec 2022)
-  - Add ARRL DX Contest (Coded by W7SST)
-  - Add Help | First Time Setup (KD4SIR & W7SST)
-  - Add cut numbers (e.g. 5NN = 599) in exchanges received (W7SST)
-  - Bug fixes
+  - Added ARRL DX Contest (Coded by W7SST)
+  - CWOPS Contest fixes (Coded by W7SST)
+  - Rename the F2 button to exchange (Coded by tekenny)
+  - Add `Help | First Time Setup` (Written by KD4SIR & W7SST)
+  - Add cut numbers (e.g. 5NN = 599) in exchanges received (Coded by W7SST)
+  - bug fixes
 
 Version 1.81 (Oct 2022)
   - Fix bad CWOPS CWT Exchange message (Coded by W7SST)
