@@ -1540,6 +1540,10 @@ object MainForm: TMainForm
     end
     object Help1: TMenuItem
       Caption = 'Help'
+      object FirstTime1: TMenuItem
+        Caption = 'First Time Setup'
+        OnClick = FirstTime1Click
+      end
       object WebPage1: TMenuItem
         Caption = 'Community Edition Home Page'
         OnClick = WebPage1Click

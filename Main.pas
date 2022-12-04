@@ -168,6 +168,7 @@ type
     VolumeSlider1: TVolumeSlider;
     Label18: TLabel;
     WebPage1: TMenuItem;
+    FirstTime1: TMenuItem;
     Settings1: TMenuItem;
     Call1: TMenuItem;
     QSK1: TMenuItem;
@@ -305,6 +306,7 @@ type
     procedure SpinEdit3Change(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
+    procedure FirstTime1Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
     procedure Readme1Click(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
@@ -1375,6 +1377,36 @@ begin
   NrSent := false;
 end;
                                    
+
+procedure TMainForm.FirstTime1Click(Sender: TObject);
+const
+    Msg='First Time?'#13 +
+        'Welcome! This is the first time setup:'#13 +
+        ''#13 +
+        '1) Select the Contest you wish to operate.'#13 +
+        '2) Type the exchange you wish to send.'#13 +
+        '3) In the station section replace VE3NEA with your call.'#13 +
+        '4) Select your CW Speed, Tone, and Bandwidth.'#13 +
+        '5) Set Min/Max CW Receive speed using Settings menu.'#13 +
+        '6) Under band conditions you can select any realistic hardships.'#13 +
+        '7) Activity is the average amount of responses you want per CQ.'#13 +
+        '    So if no one responds, you might get twice the number the'#13 +
+        '    following time. This is a pile up trainer after all - have fun.'#13 +
+        '8) Select the time limit you want to run the contest.'#13 +
+        '9) The Run button has a drop down.'#13 +
+        '    - Single Call - immediately you will get someone trying to'#13 +
+        '      contact you.'#13 +
+        '    - Pile up - You need to call CQ to start. hit enter or F1.'#13 +
+        ''#13 +
+        'Please visit us or provide feedback at either:'#13 +
+        '    - www.github.com/w7sst/MorseRunner/#readme'#13 +
+        '    - https://groups.io/g/MorseRunnerCE';
+begin
+    Application.MessageBox(PChar(Format(Msg, [sVersion])),
+      'First Time Setup',
+      MB_OK or MB_ICONINFORMATION);
+end;
+
 
 procedure TMainForm.About1Click(Sender: TObject);
 const
