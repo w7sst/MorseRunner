@@ -48,7 +48,9 @@ Below is a high-level overview of project activities over the next year.
 
 #### Now - Winter 2023 (Jan-Mar)
 Projects we are currently working on...
-- [ ] **Developer onboarding** - Help other developers get up to speed with compiling and pushing to the project.
+- [ ] **Developer on-boarding** - Help other developers get up to speed with compiling and pushing to the project.
+
+- [ ] **GUI Enhancements** - The team will evaluate the GUI for ergonomic enhancements.
 
 - [ ] **Multi-contest design** - Discuss the design approach for supporting multiple
 contests within Morse Runner based on FD prototype and most recently ARRL DX Contest.
@@ -80,6 +82,8 @@ popular logging programs.
 This team will develop and test an individual contest before it is released for general use.
 Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in either an advocate or developer role for this contest. As a point of reference, adding the NAQP contest to the FD prototype codebase was completed in one afternoon.
 
+- [ ] **Add additional contests** - Add IARU HF Championship contest (July).
+
 #### Later - 2nd Half 2023 (July-Dec)
 Projects that we'll work on later...
 - [ ] **Add additional contests** - by now, adding a contest should be fairly straight-forward.
@@ -92,6 +96,11 @@ project details, including recommended setups (both developer and user),
 design discussions, compile instructions, coding standards, release criteria, etc.
 This will also include details on adding a new contest to Morse Runner.
 Is this implemented within github or elsewhere?
+
+- [ ] **Localization/Internationalization** - As time permits and resources become available,
+consider providing multiple language support to MRCE.
+Please let the development know if you have experience in adding multi-language support
+to Delphi-based or Lazarus-based applications.
 
 - [ ] **User-defined contests** - Explore notion of user-defined contests using a contest configuration file. Perhaps a yaml file? Can this be similar to N1MM contest definition file?
 
