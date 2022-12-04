@@ -21,7 +21,6 @@ JOIN OUR COMMUNITY
   You can also discuss or leave feedback at [MorseRunnerCE on groups.io](https://groups.io/g/MorseRunnerCE).
   
 PLATFORMS
-
   - Windows XP/7/8/10/11
   - works on Linux systems under WINE (info TNX F8BQQ).
 
@@ -29,11 +28,9 @@ INSTALLATION
   Open the zip file, extract the folder to your desktop, and run `MorseRunner.exe` in that folder.
 
 UNINSTALLATION
-
   - Delete MorseRunner directory.
 
 CONFIGURATION
-
   First time setup instructions can be found within the program under help. 
 
   Contest Selection
@@ -42,7 +39,7 @@ CONFIGURATION
        any error messages will be displayed in the status area.
        * Cut Numbers in sending exchanges coming soon.
 
-  Contest Information is at the bottom of this document.
+    More contest information is at the bottom of this document.
 
   Station
     Call - enter your contest callsign here.
@@ -77,14 +74,12 @@ CONFIGURATION
        reply to your CQ.
 
   Audio buffer size
-
     You can adjust the audio buffer size by changing the BufSize value in the
     MorseRunner.ini file. Acceptable values are 1 through 5, the default is 3.
     Increase the buffer size for smooth audio without clicks and interruptions;
     decrease the size for faster response to keyboard commands.
 
   Competition duration
-
     The default duration of a competition session is 60 minutes. You can set it
     to a smaller value by changing the CompetitionDuration entry in the
     MorseRunner.ini file, e.g.:
@@ -92,7 +87,6 @@ CONFIGURATION
             CompetitionDuration=15
 
   Calls From Keyer
-
     If you have an electronic keyer that simulates a keyboard - that is, sends
     all transmitted characters to the PC as if they were entered from a keyboard,
     you can add the following to the INI file:
@@ -104,36 +98,33 @@ CONFIGURATION
     has no effect in the WPX and HST competition modes.
 
   Additional simulator settings
-
     Setup/CW Min Rx Speed - Set a speed below the CW Speed. If 0 it behaves like the original MorseRunner
     Setup/CW Max Rx Speed - Set a speed above the CW Speed. If 0 it behaves like the original MorseRunner
     Setup/NR Digits       - The number of digits of the DX Station NR
     Setup/CWOps Number    - CWOps ID number used on the CWT Contest
 
 STARTING A CONTEST
+  The selected contest can be started in one of four modes.
 
-The selected contest can be started in one of four modes.
+    Pile-Up mode: a random number of stations calls you after you send a CQ. Good
+    for improving copying skills.
 
- Pile-Up mode: a random number of stations calls you after you send a CQ. Good
-   for improving copying skills.
+    Single Calls mode: a single station calls you as soon as you finish the
+    previous QSO. Good for improving typing skills.
 
- Single Calls mode: a single station calls you as soon as you finish the
-   previous QSO. Good for improving typing skills.
+    WPX Competition mode: similar to the Pile-Up mode, but band conditions and contest
+    duration are fixed and cannot be changed. The keying speed and band activity
+    are still under your control.
 
- WPX Competition mode: similar to the Pile-Up mode, but band conditions and contest
-   duration are fixed and cannot be changed. The keying speed and band activity
-   are still under your control.
+    HST Competition mode: all settings conform to the IARU High Speed Telegraphy
+    competition rules.
 
- HST Competition mode: all settings conform to the IARU High Speed Telegraphy
-   competition rules.
-
-To start a contest, set the duration of the exercise in the Run for NN Minutes
-box (only for Pile-Up and Single Calls modes), and click on the desired mode
-in the Run button's menu. In the Pile-Up and Competition mode, hit F1 or Enter
-to send a CQ.
+  To start a contest, set the duration of the exercise in the Run for NN Minutes
+  box (only for Pile-Up and Single Calls modes), and click on the desired mode
+  in the Run button's menu. In the Pile-Up and Competition mode, hit F1 or Enter
+  to send a CQ.
 
 KEY ASSIGNMENTS
-
   F1-F8 - sends one of the pre-defined messages. The buttons under the input
     fields have the same functions as these keys, and the captions
     of the buttons show what each key sends.
@@ -164,13 +155,11 @@ KEY ASSIGNMENTS
     in 5 WPM increments.
 
 STATISTICS AREA 
-
   The bottom right panel shows your current score, both Raw (calculated
   from your log) and Verified (calculated after comparing your log to other
   stations' logs). The histogram shows your raw QSO rate in 5-minute blocks.
 
 LOG WINDOW
-
   The log window marks incorrect entries in your log as follows:
   DUP - duplicate QSO.
   NIL - not in other station's log: you made a mistake in the callsign, or forgot
@@ -183,7 +172,6 @@ LOG WINDOW
   ST - incorrect State in your log.
 
 SUBMITTING YOUR SCORE
-  
   If you complete a full 60-minute session in the WPX Competition mode, Morse Runner
   will generate a score string that you can post. (A replacement Hi-Score site is needed.)
 
@@ -222,7 +210,7 @@ VERSION HISTORY
 Version 1.82 (Dec 2022)
   - Add ARRL DX Contest (Coded by W7SST)
   - Add Help | First Time Setup (KD4SIR & W7SST)
-  - Add cut numbers (e.g. 5NN = 599) in exchanges received - WHO HELPED HERE
+  - Add cut numbers (e.g. 5NN = 599) in exchanges received (W7SST)
   - Bug fixes
 
 Version 1.81 (Oct 2022)
