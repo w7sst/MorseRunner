@@ -1394,7 +1394,8 @@ const
         '    following time. This is a pile up trainer after all - have fun.'#13 +
         '8) Select the time limit you want to run the contest.'#13 +
         '9) The Run button has a drop down.'#13 +
-        '    - Single Call - immediately you will get someone trying to'#13 +
+        '    - Pile up - Hit Enter or F1 to call CQ to start. Get ready for pileups!'#13 
+        '    - Single Calls - Work one station at a time with no pileups.'#13 +
         '      contact you.'#13 +
         '    - Pile up - You need to call CQ to start. hit enter or F1.'#13 +
         ''#13 +
