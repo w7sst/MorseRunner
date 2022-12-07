@@ -231,6 +231,8 @@ begin
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
       scArrlDx:
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
+      scIaruHf:
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
       else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
     end;
@@ -511,10 +513,12 @@ var
       etArrlSection: Result := Length(text) > 1;
       etStateProv:   Result := Length(text) > 1;
       etCqZone:      Result := Length(text) > 0;
-      //etItuZone:
+      etItuZone:     Result := Length(text) > 0;
       //etAge:
       etPower:       Result := Length(text) > 0;
       //etJarlOblastCode:
+      etGenericField: Result := Length(text) > 0;
+      etIaruSociety: Result := Length(text) > 1;
       else
         assert(false, 'missing case');
     end;
@@ -556,10 +560,12 @@ begin
       etArrlSection: Qso.Exch2 := Edit3.Text;
       etStateProv:   Qso.Exch2 := Edit3.Text;
       etCqZone:      Qso.NR := StrToInt(Edit3.Text);
-      //etItuZone:
+      etItuZone:     Qso.Exch2 := Edit3.Text;
       //etAge:
       etPower:       Qso.Exch2 := Edit3.Text;
       //etJarlOblastCode:
+      etGenericField:Qso.Exch2 := Edit3.Text;
+      etIaruSociety: Qso.Exch2 := Edit3.Text;
       else
         assert(false, 'missing case');
     end;
@@ -654,6 +660,11 @@ begin
         , format('%.3d %4s', [Rst, Exch2])
         , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
         , Pfx, Err, format('%.2d', [TrueWpm]));
+    scIaruHf:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d %4s', [Rst, Exch2])
+        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
+        , Pfx, Err, format('%.2d', [TrueWpm]));
     else
       assert(false, 'missing case');
     end;
@@ -696,11 +707,23 @@ begin
         etCqZone:      if TrueNr <> NR then Err := 'ZN ';
         etArrlSection: if TrueExch2 <> Exch2 then Err := 'SEC';
         etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';
-        //etItuZone:
+        etItuZone:     if TrueExch2 <> Exch2 then Err := 'ZN ';
         //etAge:
         etPower: if ReducePowerStr(TrueExch2) <> ReducePowerStr(Exch2) then
                    Err := 'PWR';
         //etJarlOblastCode:
+        etIaruSociety: if TrueExch2 <> Exch2 then Err := 'ZN ';
+        etGenericField:
+          // Adding a contest: implement comparison for Generic Field type
+          case Ini.SimContest of
+            scIaruHf:
+              // need to add ReduceNumeric...
+              if TrueExch2 <> Exch2 then
+                Err := IfThen(IsNum(TrueExch2), 'ZN ', 'Soc');
+            else
+              if TrueExch2 <> Exch2 then
+                Err := 'ERR';
+          end;
         else
           assert(false, 'missing exchange 2 case');
       end;

@@ -23,7 +23,8 @@ const
   DEFAULTWEBSERVER = 'http://www.dxatlas.com/MorseRunner/MrScore.asp';
 type
   // Adding a contest: Append new TSimContest enum value for each contest.
-  TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW, scArrlDx);
+  TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW, scArrlDx,
+	         scIaruHf);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
   // Exchange Field #1 types
@@ -31,7 +32,8 @@ type
 
   // Exchange Field #2 Types
   TExchange2Type = (etSerialNr, etCwopsNumber, etArrlSection, etStateProv,
-                    etCqZone, etItuZone, etAge, etPower, etJarlOblastCode);
+                    etCqZone, etItuZone, etAge, etPower, etJarlOblastCode,
+                    etGenericField, etIaruSociety);
 
   // Contest definition.
   TContestDefinition = record
@@ -130,7 +132,16 @@ const
      ExchFieldEditable: True;
      ExchDefault: '5NN OR';   // or '5NN KW'
      Msg: '''RST <state|province|power>'' (e.g. 5NN OR)';
-     T:scARRLDX)
+     T:scARRLDX),
+
+    (Name: 'IARU HF';
+     Key: 'IARUHFCW';
+     ExchType1: etRST;
+     ExchType2: etGenericField;
+     ExchFieldEditable: True;
+     ExchDefault: '5NN 6';
+     Msg: '''RST <Itu-zone> | <IARU Society>'' (e.g. 5NN 6)';
+     T:scIaruHf)
   );
 
 var
@@ -210,6 +221,7 @@ begin
       UserExchangeTbl[scHst] := ReadString(SEC_STN, 'HSTExchange', '5NN #');
       UserExchangeTbl[scCQWW] := ReadString(SEC_STN, 'CQWWExchange', '5NN 4');
       UserExchangeTbl[scArrlDx] := ReadString(SEC_STN, 'ArrlDxExchange', '5NN ON');
+      UserExchangeTbl[scIaruHf] := ReadString(SEC_STN, 'IaruHfExchange', '5NN 6');
 
       ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
       ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'ON');
@@ -286,6 +298,7 @@ begin
       WriteString(SEC_STN, 'HSTExchange', UserExchangeTbl[scHst]);
       WriteString(SEC_STN, 'CqWWExchange', UserExchangeTbl[scCQWW]);
       WriteString(SEC_STN, 'ArrlDxExchange', UserExchangeTbl[scArrlDx]);
+      WriteString(SEC_STN, 'IaruHfExchange', UserExchangeTbl[scIaruHf]);
 
       WriteString(SEC_STN, 'ArrlClass', ArrlClass);
       WriteString(SEC_STN, 'ArrlSection', ArrlSection);

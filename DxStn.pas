@@ -208,6 +208,9 @@ begin
       etSerialNr: TrueExch2 := IntToStr(Self.NR);
       etCwopsNumber: TrueExch2 := IntToStr(Self.NR);
       etCqZone: TrueExch2 := IntToStr(Self.NR);
+      etItuZone: TrueExch2 := Self.Exch2;
+      etGenericField: TrueExch2 := Self.Exch2;
+      etIaruSociety: TrueExch2 := Self.Exch2;
       etArrlSection: TrueExch2 := Self.Exch2;
       etStateProv: TrueExch2 := Self.Exch2;
       etPower: TrueExch2 := Self.Exch2;

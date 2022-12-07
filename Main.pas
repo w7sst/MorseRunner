@@ -62,7 +62,9 @@ const
     (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
     (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
     (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4;  T:Ord(etPower)),
-    (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode))
+    (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode)),
+    (C: 'Zone/Soc';   R: '[0-9A-Z]*';                      L: 12; T:Ord(etGenericField)),
+    (C: 'Society';    R: '[A-Z]*[0-9]';                    L: 12; T:Ord(etIaruSociety))
   );
 
   { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
@@ -416,7 +418,7 @@ var
 implementation
 
 uses
-  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX,
+  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, IARUHF,
   MorseKey, CallLst,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
   Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
@@ -498,6 +500,7 @@ begin
   scNaQp:       Result := TNcjNaQp.Create;
   scCQWW:       Result := TCqWW.Create;
   scArrlDx:     Result := TArrlDx.Create;
+  scIaruHf:     Result := TIaruHf.Create;
   else
     assert(false);
   end;
@@ -627,6 +630,12 @@ begin
         if not CharInSet(Key, ['A'..'Z', 'a'..'z', #8]) then
           Key := #0;
       end;
+    etGenericField:
+      begin
+        // log what the user types - assuming alpha numeric characters
+        if not CharInSet(Key, ['0'..'9', 'A'..'Z', 'a'..'z', #8]) then
+          Key := #0;
+      end
     else
       assert(false, Format('invalid exchange field 2 type: %s',
         [ToStr(RecvExchTypes.Exch2)]));
@@ -825,9 +834,10 @@ begin
   end;
 
   // Adding a contest: update status bar w/ station info.
+  // This status message occurs when user presses the Enter key.
   // remember not to give a hint if exchange entry is affected by this info.
   // for certain contests (e.g. ARRL Field Day), update update status bar
-  if SimContest in [scCwt, scFieldDay, scCQWW, scArrlDx] then
+  if SimContest in [scCwt, scFieldDay, scCQWW, scArrlDx, scIaruHf] then
     UpdateSbar(Edit1.Text);
 
   //no QSO in progress, send CQ
@@ -909,7 +919,7 @@ begin
   // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
   if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst,
-    scCQWW, scArrlDx]) then
+    scCQWW, scArrlDx, scIaruHf]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex :=
@@ -1226,7 +1236,13 @@ begin
         Tst.Me.Nr := StrToInt(Avalue);
         if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
       end;
-    //etItuZone:
+    etItuZone, etIaruSociety, etGenericField:
+      begin
+        // 'expecting Itu-Zone or IARU Society'
+        Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
     //etAge:
     //etJarlOblastCode:
     else
