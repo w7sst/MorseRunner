@@ -38,7 +38,7 @@ By establishing a community-based approach focused on a common project, we will 
 more efficient than individual efforts working on separately forked/cloned projects.
 
 Please refer to [CONTRIBUTING.md](.github/CONTRIBUTING.md) for more information.
-Developers can refer to [DEVELOPERS.md](.githup/DEVELOPERS.md) for onboarding
+Developers can refer to [DEVELOPERS.md](.githup/DEVELOPERS.md) for additional on-boarding
 information and build instructions.
 
 ## Roadmap
@@ -50,7 +50,11 @@ Below is a high-level overview of project activities over the next year.
 Projects we are currently working on...
 - [ ] **Developer on-boarding** - Help other developers get up to speed with compiling and pushing to the project.
 
-- [ ] **GUI Enhancements** - The team will evaluate the GUI for ergonomic enhancements.
+- [ ] **Add a few more contests** - Implement one or two more popular contests based on community input, including the IARU HF Championship Contest.
+
+- [ ] **Merge selected features and bug fixes** - Identify and integrate features from
+[other MR branches](#morse-runner-release-history) into the main release branch.
+Our initial focus will be F6FVY and N2IC changes, including bandwidth adjustment using mouse wheel and F7-key handling improvements.
 
 - [ ] **Multi-contest design** - Discuss the design approach for supporting multiple
 contests within Morse Runner based on FD prototype and most recently ARRL DX Contest.
@@ -61,11 +65,7 @@ to generalize an individual contest.
 setups on individual computers and git setups.
 Document this issue so other developers can understand avoid this issue.
 
-- [ ] **Add a few more contests** - Implement one or two more popular contests based on community input.
-
-- [ ] **Merge selected features and bug fixes** - Identify and integrate features from
-[other MR branches](#morse-runner-release-history) into the main release branch.
-Our initial focus will be F6FVY and N2IC changes, including bandwidth adjustment using mouse wheel and F7-key handling improvements.
+- [ ] **GUI Enhancements** - The team will evaluate the GUI for ergonomic enhancements.
 
 #### Next - Spring 2023 (Apr-June)
 Projects that we'll work on next...
@@ -80,9 +80,9 @@ popular logging programs.
 
 - [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
 This team will develop and test an individual contest before it is released for general use.
-Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in either an advocate or developer role for this contest. As a point of reference, adding the NAQP contest to the FD prototype codebase was completed in one afternoon.
+Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in helping as either an advocate or developer for a given contest.
 
-- [ ] **Add additional contests** - Add IARU HF Championship contest (July).
+- [ ] **Add additional contests** - Based on community input, we will add a few more contests for the fall contesting season.
 
 #### Later - 2nd Half 2023 (July-Dec)
 Projects that we'll work on later...
@@ -196,8 +196,8 @@ Jan 2022       | JR8PPG   | [JA-1.68.1](https://github.com/jr8ppg/MorseRunner/co
 Feb 2022       | JR8PPG   | [JA-1.68.2](https://github.com/jr8ppg/MorseRunner/commits/master) | MorseRunnerJA - JARL All Japan, ACAG, and CQ Wpx.
 June 2022      | zmetzing | [1.68z](https://github.com/zmetzing/MorseRunner/commits/master) | Linux port of VE3NEA's 1.68 codebase.
 Summer 2022    | W7SST    | [1.80](https://github.com/w7sst/MorseRunner/releases/tag/v1.80)   | FD prototype with CQ WPX, CWOPS CWT, ARRL FD, and NCJ NAQP.
-October 2022   | W7SST    | [1.81](https://github.com/w7sst/MorseRunner/releases/tag/v1.81)   | First general release, adds CQ WW, and perhaps ARRL Sweepstakes.
-December 2022  | W7SST    | [1.82](https://github.com/w7sst/MorseRunner/releases/tag/v1.82)   | CE Announcement release, adds ARRL DX Contest.
+October 2022   | W7SST    | [1.81](https://github.com/w7sst/MorseRunner/releases/tag/v1.81)   | First general release, adds CQ WW.
+December 2022  | W7SST    | [1.82](https://github.com/w7sst/MorseRunner/releases/tag/v1.82)   | Add ARRL DX Contest, CE Announcement release.
 
 # To Do
 - [x] Update MR History section
