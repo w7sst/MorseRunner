@@ -38,7 +38,7 @@ By establishing a community-based approach focused on a common project, we will 
 more efficient than individual efforts working on separately forked/cloned projects.
 
 Please refer to [CONTRIBUTING.md](.github/CONTRIBUTING.md) for more information.
-Developers can refer to [DEVELOPERS.md](.githup/DEVELOPERS.md) for additional on-boarding
+Developers can refer to [DEVELOPERS.md](.github/DEVELOPERS.md) for additional on-boarding
 information and build instructions.
 
 ## Roadmap
