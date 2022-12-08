@@ -18,14 +18,15 @@ JOIN OUR COMMUNITY
   please visit https://github.com/w7sst/MorseRunner#readme.  
   Feedback can be left in our discussions area. 
 
-  You can also discuss or leave feedback at [MorseRunnerCE on groups.io](https://groups.io/g/MorseRunnerCE).
+  You can also discuss or leave feedback at https://groups.io/g/MorseRunnerCE.
   
 PLATFORMS
   - Windows XP/7/8/10/11
   - works on Linux systems under WINE (info TNX F8BQQ).
 
 INSTALLATION
-  Open the zip file, extract the folder to your desktop, and run `MorseRunner.exe` in that folder.
+  Open the zip file, extract the folder to your desktop, and run
+  MorseRunner.exe in that folder.
 
 UNINSTALLATION
   - Delete MorseRunner directory.
@@ -211,7 +212,7 @@ Version 1.82 (Dec 2022)
   - Added ARRL DX Contest (Coded by W7SST)
   - CWOPS Contest fixes (Coded by W7SST)
   - Rename the F2 button to exchange (Coded by tekenny)
-  - Add `Help | First Time Setup` (Written by KD4SIR & W7SST)
+  - Add 'Help | First Time Setup' (Written by KD4SIR & W7SST)
   - Add cut numbers (e.g. 5NN = 599) in exchanges received (Coded by W7SST)
   - bug fixes
 
