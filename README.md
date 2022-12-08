@@ -38,65 +38,54 @@ By establishing a community-based approach focused on a common project, we will 
 more efficient than individual efforts working on separately forked/cloned projects.
 
 Please refer to [CONTRIBUTING.md](.github/CONTRIBUTING.md) for more information.
+Developers can refer to [DEVELOPERS.md](.githup/DEVELOPERS.md) for additional on-boarding
+information and build instructions.
 
 ## Roadmap
 Below is a high-level overview of project activities over the next year.
 
 ### Roadmap - Now, Next, and Future
 
-#### Now - Fall 2022 (Oct-Dec)
+#### Now - Winter 2023 (Jan-Mar)
 Projects we are currently working on...
+- [ ] **Developer on-boarding** - Help other developers get up to speed with compiling and pushing to the project.
 
-- [ ] **Solicit early feedback** - Invite users to try the FD prototype and provide
-early feedback. Discussions can occur within github regarding this prototype and
-future directions.
-Ask users to suggest which contests should be added next.
+- [ ] **Add a few more contests** - Implement one or two more popular contests based on community input, including the IARU HF Championship Contest.
 
-- [ ] **Foster Community Growth** - We are looking for ways to grow this community.
-To achieve this, we want to adequately document this project by improving
-community documentation, including README.md, CONTRIBUTING.md, etc., files.
-Once complete, we will reach out to various user communities
-(e.g. N1MM forums, and perhaps specific clubs).
+- [ ] **Merge selected features and bug fixes** - Identify and integrate features from
+[other MR branches](#morse-runner-release-history) into the main release branch.
+Our initial focus will be F6FVY and N2IC changes, including bandwidth adjustment using mouse wheel and F7-key handling improvements.
+
+- [ ] **Multi-contest design** - Discuss the design approach for supporting multiple
+contests within Morse Runner based on FD prototype and most recently ARRL DX Contest.
+Look for patterns across multiple contests and propose interface(s) to be used
+to generalize an individual contest.
 
 - [ ] **Document git setup** - Document a recommended git setup to avoid issues with CRLF caused by different git
 setups on individual computers and git setups.
 Document this issue so other developers can understand avoid this issue.
 
-- [ ] **N1MM Integration Design Discussions** - Work with Steve, N2IC, to discuss extensions to N1MM-to-MorseRunner protocol to support additional contests (e.g. Arrl Field Day). This is a feasibility study only and will not be released until early spring 2023.
+- [ ] **GUI Enhancements** - The team will evaluate the GUI for ergonomic enhancements.
 
-- [x] **Add CQ WW Contest** - simple contest with RST and CQ-Zone.
-
-- [ ] **Add ARRL DX Contest** - international contest with RST and State/Province (US & Canada) or RST and Power (DX Stations).
-
-#### Next - Winter 2023 (Jan-Mar)
-Projects we will work on next...
-
-- [ ] **Multi-contest design** - Discuss the design approach for supporting multiple
-contests within Morse Runner based on FD prototype.
-Look for patterns across multiple contests and propose interface(s) to be used
-to generalize an individual contest.
-
-- [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
-This team will develop and test an individual contest before it is released for general use.
-Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in either an advocate or developer role for this contest. As a point of reference, adding the NAQP contest to the FD prototype codebase was completed in one afternoon.
-
-- [ ] **Add a few more contests** - Implement one or two more popular contests based on community input.
-
-- [ ] **Merge selected features and bug fixes** - Identify and integrate features from
-[other MR branches](#morse-runner-release-history) into the main release branch.
-
-#### Later - 1st Half 2023 (Apr-June)
-
-Projects that we'll work on later...
+#### Next - Spring 2023 (Apr-June)
+Projects that we'll work on next...
 - [ ] **Multi-contest implementation** - finish the initial implementation of the
 multi-contest codebase. Major interfaces are developed and running. Contests are
-added by extending these interfaces only. Most switch states in code have been removed.
+added by extending these interfaces only. Most switch statements in code have been removed.
 
 - [ ] **Maintain existing integration with N1MM and DxLog.**
 N2IC has done work to integrate Morse Runner within N1MM and DxLog.
 We want to continue this work to allow Morse Runner to run with these
 popular logging programs.
-   
+
+- [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
+This team will develop and test an individual contest before it is released for general use.
+Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in helping as either an advocate or developer for a given contest.
+
+- [ ] **Add additional contests** - Based on community input, we will add a few more contests for the fall contesting season.
+
+#### Later - 2nd Half 2023 (July-Dec)
+Projects that we'll work on later...
 - [ ] **Add additional contests** - by now, adding a contest should be fairly straight-forward.
 Perhaps adding a contest will need two people, a contest developer and a contest advocate.
 This team can develop and test a contest before releasing to general use.
@@ -107,6 +96,11 @@ project details, including recommended setups (both developer and user),
 design discussions, compile instructions, coding standards, release criteria, etc.
 This will also include details on adding a new contest to Morse Runner.
 Is this implemented within github or elsewhere?
+
+- [ ] **Localization/Internationalization** - As time permits and resources become available,
+consider providing multiple language support to MRCE.
+Please let the development know if you have experience in adding multi-language support
+to Delphi-based or Lazarus-based applications.
 
 - [ ] **User-defined contests** - Explore notion of user-defined contests using a contest configuration file. Perhaps a yaml file? Can this be similar to N1MM contest definition file?
 
@@ -147,6 +141,25 @@ Document this issue so other developers can understand avoid this issue.
 - [x] **Release FD prototype (v1.80)** - Release the FD prototype to allow others to see the
 general direction of the project and solicit early feedback. Release expected late September 2022.
 
+#### Complete - Fall 2022 (Oct-Dec)
+- [x] **Solicit early feedback** - Invite users to try the FD prototype and provide
+early feedback. Discussions can occur within github regarding this prototype and
+future directions.
+Ask users to suggest which contests should be added next.
+
+- [x] **Foster Community Growth** - We are looking for ways to grow this community.
+To achieve this, we want to adequately document this project by improving
+community documentation, including README.md, [CONTRIBUTING.md](.github/CONTRIBUTING.md),
+[DEVELOEPRS.md](.github/DEVELOPERS.md), etc., files.
+Once complete, we will reach out to various user communities
+(e.g. N1MM forums, and perhaps specific clubs).
+
+- [x] **N1MM Integration Design Discussions** - Work with Steve, N2IC, to discuss extensions to N1MM-to-MorseRunner protocol to support additional contests (e.g. Arrl Field Day). This is a feasibility study only and will not be released until early spring 2023.
+
+- [x] **Add CQ WW Contest** - simple contest with RST and CQ-Zone. Release 1.81.
+
+- [x] **Add ARRL DX Contest** - international contest with RST and State/Province (US & Canada) or RST and Power (DX Stations). Release 1.82.
+
 # History
 TODO - add a paragraph or two regarding the history of MR.
 
@@ -182,8 +195,9 @@ Nov 2021       | CT7AUP   | 1.71a     | CWOPS CWT Contest, CW Rx Speed adjust.
 Jan 2022       | JR8PPG   | [JA-1.68.1](https://github.com/jr8ppg/MorseRunner/commits/master) | MorseRunnerJA - JARL All Japan.
 Feb 2022       | JR8PPG   | [JA-1.68.2](https://github.com/jr8ppg/MorseRunner/commits/master) | MorseRunnerJA - JARL All Japan, ACAG, and CQ Wpx.
 June 2022      | zmetzing | [1.68z](https://github.com/zmetzing/MorseRunner/commits/master) | Linux port of VE3NEA's 1.68 codebase.
-Summer 2022    | W7SST    | 1.80      | FD prototype with CQ WPX, CWOPS CWT, ARRL FD, and NCJ NAQP. Release is planned by mid-Sept 2022.
-Winter 2022    | W7SST    | 1.81      | First general release, adds CQ WW, and perhaps ARRL Sweepstakes.
+Summer 2022    | W7SST    | [1.80](https://github.com/w7sst/MorseRunner/releases/tag/v1.80)   | FD prototype with CQ WPX, CWOPS CWT, ARRL FD, and NCJ NAQP.
+October 2022   | W7SST    | [1.81](https://github.com/w7sst/MorseRunner/releases/tag/v1.81)   | First general release, adds CQ WW.
+December 2022  | W7SST    | [1.82](https://github.com/w7sst/MorseRunner/releases/tag/v1.82)   | Add ARRL DX Contest, CE Announcement release.
 
 # To Do
 - [x] Update MR History section
