@@ -138,7 +138,7 @@ var
   HamName: string = 'Alex';
   CWOPSNum: string = '1';
   ArrlClass: string = '3A';
-  ArrlSection: string = 'ON';
+  ArrlSection: string = 'GTA';
   Wpm: integer = 25;
   MaxRxWpm: integer = 0;
   MinRxWpm: integer = 0;
@@ -205,7 +205,7 @@ begin
       UserExchangeTbl[scWpx] := ReadString(SEC_STN, 'CqWpxExchange', '5NN #');
       UserExchangeTbl[scCwt] := ReadString(SEC_STN, 'CwtExchange',
         Format('%s 1234', [HamName]));
-      UserExchangeTbl[scFieldDay] := ReadString(SEC_STN, 'ArrlFdExchange', '3A ON');
+      UserExchangeTbl[scFieldDay] := ReadString(SEC_STN, 'ArrlFdExchange', '3A GTA');
       UserExchangeTbl[scNaQp] := ReadString(SEC_STN, 'NAQPExchange', 'ALEX ON');
       UserExchangeTbl[scHst] := ReadString(SEC_STN, 'HSTExchange', '5NN #');
       UserExchangeTbl[scCQWW] := ReadString(SEC_STN, 'CQWWExchange', '5NN 4');
