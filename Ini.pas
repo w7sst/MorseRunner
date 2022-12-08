@@ -138,8 +138,8 @@ var
   HamName: string = 'Alex';
   CWOPSNum: string = '1';
   ArrlClass: string = '3A';
-  ArrlSection: string = 'OR';
-  Wpm: integer = 30;
+  ArrlSection: string = 'ON';
+  Wpm: integer = 25;
   MaxRxWpm: integer = 0;
   MinRxWpm: integer = 0;
   NRDigits: integer = 1;
@@ -153,11 +153,11 @@ var
   PostMethod: string = '';
   ShowCallsignInfo: integer= 1;
   Activity: integer = 2;
-  Qrn: boolean = true;
-  Qrm: boolean = true;
-  Qsb: boolean = true;
-  Flutter: boolean = true;
-  Lids: boolean = true;
+  Qrn: boolean = false;
+  Qrm: boolean = false;
+  Qsb: boolean = false;
+  Flutter: boolean = false;
+  Lids: boolean = false;
   NoActivityCnt: integer=0;
   NoStopActivity: integer=0;
   GetWpmUsesGaussian: boolean = false;
@@ -205,14 +205,14 @@ begin
       UserExchangeTbl[scWpx] := ReadString(SEC_STN, 'CqWpxExchange', '5NN #');
       UserExchangeTbl[scCwt] := ReadString(SEC_STN, 'CwtExchange',
         Format('%s 1234', [HamName]));
-      UserExchangeTbl[scFieldDay] := ReadString(SEC_STN, 'ArrlFdExchange', '3A OR');
-      UserExchangeTbl[scNaQp] := ReadString(SEC_STN, 'NAQPExchange', 'MIKE OR');
+      UserExchangeTbl[scFieldDay] := ReadString(SEC_STN, 'ArrlFdExchange', '3A ON');
+      UserExchangeTbl[scNaQp] := ReadString(SEC_STN, 'NAQPExchange', 'ALEX ON');
       UserExchangeTbl[scHst] := ReadString(SEC_STN, 'HSTExchange', '5NN #');
-      UserExchangeTbl[scCQWW] := ReadString(SEC_STN, 'CQWWExchange', '5NN 3');
-      UserExchangeTbl[scArrlDx] := ReadString(SEC_STN, 'ArrlDxExchange', '5NN OR');
+      UserExchangeTbl[scCQWW] := ReadString(SEC_STN, 'CQWWExchange', '5NN 4');
+      UserExchangeTbl[scArrlDx] := ReadString(SEC_STN, 'ArrlDxExchange', '5NN ON');
 
       ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
-      ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'OR');
+      ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'ON');
 
       // load station settings...
       // Calls to SetMyCall, SetPitch, SetBw, etc., moved to MainForm.SetContest

@@ -640,8 +640,6 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'QSB'
-        Checked = True
-        State = cbChecked
         TabOrder = 0
         OnClick = CheckBoxClick
       end
@@ -652,8 +650,6 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'QRM'
-        Checked = True
-        State = cbChecked
         TabOrder = 1
         OnClick = CheckBoxClick
       end
@@ -664,8 +660,6 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'QRN'
-        Checked = True
-        State = cbChecked
         TabOrder = 2
         OnClick = CheckBoxClick
       end
@@ -676,20 +670,16 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'Flutter'
-        Checked = True
-        State = cbChecked
         TabOrder = 3
         OnClick = CheckBoxClick
       end
       object CheckBox6: TCheckBox
         Left = 76
-        Top = 43
+        Top = 41
         Width = 45
         Height = 17
         TabStop = False
-        Caption = 'LID'#39's'
-        Checked = True
-        State = cbChecked
+        Caption = 'LIDs'
         TabOrder = 4
         OnClick = CheckBoxClick
       end
@@ -798,7 +788,7 @@ object MainForm: TMainForm
         MaxValue = 120
         MinValue = 10
         TabOrder = 2
-        Value = 30
+        Value = 25
         OnChange = SpinEdit1Change
       end
       object CheckBox1: TCheckBox
@@ -808,8 +798,6 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'QSK'
-        Checked = True
-        State = cbChecked
         TabOrder = 1
         OnClick = CheckBox1Click
       end
@@ -958,7 +946,7 @@ object MainForm: TMainForm
         Height = 23
         CharCase = ecUpperCase
         TabOrder = 1
-        Text = '3A OR'
+        Text = '3A ON'
         OnExit = ExchangeEditExit
       end
     end
