@@ -145,7 +145,7 @@ var
   NRDigits: integer = 1;
   BandWidth: integer = 500;
   Pitch: integer = 600;
-  Qsk: boolean = true;
+  Qsk: boolean = false;
   Rit: integer = 0;
   BufSize: integer = DEFAULTBUFSIZE;
   WebServer: string = '';
