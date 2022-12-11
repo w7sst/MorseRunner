@@ -92,7 +92,7 @@ begin
   try
     IaruHfCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'IARU_2022-007.txt');
+    slst.LoadFromFile(ParamStr(1) + 'IARU_HF.txt');
 
     for i:= 0 to slst.Count-1 do begin
       tl.DelimitedText := slst.Strings[i];
