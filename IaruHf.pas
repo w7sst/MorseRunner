@@ -69,13 +69,26 @@ begin
 end;
 
 
-// load call history file iff user's callsign has changed.
+{
+  Load the call history file.
+  While loading, check for duplicate callsign due to multiple sections
+  being added to the history file.
+
+  Note: the IARU_HF.txt file is created in the following manner:
+  1) K6OK created a history file by combining several public logs from
+     different regions around the world.
+  2) W7SST appended the latest IARU HF Call History file as downloaded
+     from N1MM call history files. The idea was to add as many Society
+     callsigns as we can to get a slightly higher percentage of Society
+     vs. total calls in the history file.
+}
 function TIaruHf.LoadCallHistory(const AUserCallsign: string) : boolean;
 const
   DelimitChar: char = ',';
 var
   slst, tl: TStringList;
-  i: integer;
+  dupList: TStringList;
+  i, Index: integer;
   rec: TIaruHfCallRec;
   dxcc: TDxCCRec;
   CallInx, SectInx, UserTextInx: integer;
@@ -84,6 +97,7 @@ begin
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
   tl.StrictDelimiter := True;
+  dupList:= TStringList.Create(dupIgnore, {Sorted} True, {CaseSensitive} False);
   CallInx := -1;
   SectInx := -1;
   UserTextInx := -1;
@@ -125,6 +139,10 @@ begin
       if rec.Call.IsEmpty then continue;
       if rec.Sect.IsEmpty then continue;
 
+      // eliminate duplicates
+      if dupList.Find(rec.Call, Index) then continue;
+      dupList.Add(rec.Call);
+
       // only include calls with useable DXCC lookup
       if gDxCCList.FindRec(dxcc, AUserCallsign) then
         begin
@@ -133,13 +151,16 @@ begin
         end;
     end;
 
+    // do a final sort incase of multiple file sections
+    IaruHfCallList.Sort(Comparer);
+
     Result := True;
 
   finally
     if rec <> nil then rec.Free;
     slst.Free;
     tl.Free;
-
+    dupList.Free;
   end;
 end;
 
