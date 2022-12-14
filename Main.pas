@@ -63,8 +63,7 @@ const
     (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
     (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4;  T:Ord(etPower)),
     (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode)),
-    (C: 'Zone/Soc';   R: '[0-9A-Z]*';                      L: 12; T:Ord(etGenericField)),
-    (C: 'Society';    R: '[A-Z]*[0-9]';                    L: 12; T:Ord(etIaruSociety))
+    (C: 'Zone/Soc';   R: '[0-9A-Z]*';                      L: 12; T:Ord(etGenericField))
   );
 
   { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
@@ -1236,7 +1235,7 @@ begin
         Tst.Me.Nr := StrToInt(Avalue);
         if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
       end;
-    etItuZone, etIaruSociety, etGenericField:
+    etItuZone, etGenericField:
       begin
         // 'expecting Itu-Zone or IARU Society'
         Ini.UserExchange2[SimContest] := Avalue;

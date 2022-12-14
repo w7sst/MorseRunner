@@ -518,7 +518,6 @@ var
       etPower:       Result := Length(text) > 0;
       //etJarlOblastCode:
       etGenericField: Result := Length(text) > 0;
-      etIaruSociety: Result := Length(text) > 1;
       else
         assert(false, 'missing case');
     end;
@@ -565,7 +564,6 @@ begin
       etPower:       Qso.Exch2 := Edit3.Text;
       //etJarlOblastCode:
       etGenericField:Qso.Exch2 := Edit3.Text;
-      etIaruSociety: Qso.Exch2 := Edit3.Text;
       else
         assert(false, 'missing case');
     end;
@@ -712,7 +710,6 @@ begin
         etPower: if ReducePowerStr(TrueExch2) <> ReducePowerStr(Exch2) then
                    Err := 'PWR';
         //etJarlOblastCode:
-        etIaruSociety: if TrueExch2 <> Exch2 then Err := 'ZN ';
         etGenericField:
           // Adding a contest: implement comparison for Generic Field type
           case Ini.SimContest of

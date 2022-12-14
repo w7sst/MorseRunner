@@ -33,7 +33,7 @@ type
   // Exchange Field #2 Types
   TExchange2Type = (etSerialNr, etCwopsNumber, etArrlSection, etStateProv,
                     etCqZone, etItuZone, etAge, etPower, etJarlOblastCode,
-                    etGenericField, etIaruSociety);
+                    etGenericField);
 
   // Contest definition.
   TContestDefinition = record
