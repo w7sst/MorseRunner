@@ -7,7 +7,7 @@ unit IARUHF;
 interface
 
 uses
-  Generics.Defaults, Generics.Collections, Classes, DualExchContest, DxStn,
+  Generics.Defaults, Generics.Collections, Classes, Contest, DxStn,
   Log;
 
 type
@@ -20,7 +20,7 @@ type
     class function compareCall(const left, right: TIaruHfCallRec) : integer; static;
   end;
 
-  TIaruHf = class(TDualExchContest)
+  TIaruHf = class(TContest)
   private
     IaruHfCallList: TObjectList<TIaruHfCallRec>;
     Comparer: IComparer<TIaruHfCallRec>;
@@ -49,14 +49,13 @@ type
 implementation
 
 uses
-  SysUtils, PerlRegEx, pcre, ARRL, CallLst, Contest,
+  SysUtils, PerlRegEx, pcre, ARRL, CallLst,
   Ini, Main;
 
 
 constructor TIaruHf.Create;
 begin
-  inherited Create(etRST, etGenericField,   // IARU Society (Hdgtrs, AC, EC)
-                   etRST, etGenericField);  // regular station's exchange
+  inherited Create;
   IaruHfCallList:= TObjectList<TIaruHfCallRec>.Create;
   Comparer := TComparer<TIaruHfCallRec>.Construct(TIaruHfCallRec.compareCall);
 end;
@@ -166,12 +165,12 @@ end;
 
 
 {
-  OnSetMyCall is overriden for IARU HF Contest to determine which exchange
-  will be sent by this user.
+  OnSetMyCall is overriden for IARU HF Contest to determine which continent
+  this user resides within.
 
-  Sets TDualExchContest.HomeCallIsLocal. Used by GetExchangeTypes() to
-  determine sent messages types (regular stations send ITU-Zone,
-  IARU Headquarters send Headquarter abbreviations).
+  Note - what I send (my exchange) is determined and set in my Sent Exchange
+  Field. I'm either sending ITU-Zone or IARU Society information.
+  This is NOT based on my callsign, my region, Entity nor continent.
 }
 function TIaruHf.OnSetMyCall(const AUserCallsign : string;
   out err : string) : boolean;
@@ -181,11 +180,10 @@ begin
   Result:= True;
   err:= '';
 
-  // exchange is based on user's ITU Zone (numeric zone or IATU Headquarter abbreviations
+  // find this user's dxcc record
   if gDxCCList.FindRec(dxcc, AUserCallsign) then
     begin
-      // numeric Sect value is regular Itu-Zone
-      HomeCallIsLocal := IsNum(dxcc.Entity);
+      // MyContinent is retained and used by ExtractMultiplier for QSO Scoring
       MyContinent := dxcc.Continent;
     end
   else
@@ -194,8 +192,6 @@ begin
       err := Format('Error: ''%s'' is not recognized as a valid DXCC callsign.',
         [AUserCallsign]);
 
-      // for the error case, treat as regular station.
-      HomeCallIsLocal := true;
       Result := False;
     end;
 
