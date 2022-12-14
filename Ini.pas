@@ -102,7 +102,7 @@ const
      ExchType2: etStateProv;
      ExchFieldEditable: True;
      ExchDefault: 'MIKE OR';
-     Msg: '''<name> <state-prov>'' (e.g. MIKE OR)';
+     Msg: '''<name> <state|prov>'' (e.g. MIKE OR)';
      T:scNaQp),
      // expecting two strings [Name,State-Prov] (e.g. MIKE OR)
 
@@ -140,7 +140,7 @@ const
      ExchType2: etGenericField;
      ExchFieldEditable: True;
      ExchDefault: '5NN 6';
-     Msg: '''RST <Itu-zone> | <IARU Society>'' (e.g. 5NN 6)';
+     Msg: '''RST <Itu-zone|IARU Society>'' (e.g. 5NN 6)';
      T:scIaruHf)
   );
 
