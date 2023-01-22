@@ -507,7 +507,7 @@ var
     Result := false;
     case Mainform.RecvExchTypes.Exch2 of
       etSerialNr:    Result := Length(text) > 0;
-      etCwopsNumber: Result := Length(text) > 0;
+      etGenericField:Result := Length(text) > 0;
       etArrlSection: Result := Length(text) > 1;
       etStateProv:   Result := Length(text) > 1;
       etCqZone:      Result := Length(text) > 0;
@@ -552,7 +552,7 @@ begin
     //save Exchange2 (Edit3)
     case Mainform.RecvExchTypes.Exch2 of
       etSerialNr:    Qso.Nr := StrToInt(Edit3.Text);
-      etCwopsNumber: Qso.Nr := StrToInt(Edit3.Text);
+      etGenericField:Qso.Exch2 := Edit3.Text;
       etArrlSection: Qso.Exch2 := Edit3.Text;
       etStateProv:   Qso.Exch2 := Edit3.Text;
       etCqZone:      Qso.NR := StrToInt(Edit3.Text);
@@ -627,7 +627,7 @@ begin
     scCwt:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
-        , format('%.d', [Nr])
+        , Exch2
         , Pfx, Err, format('%.2d', [TrueWpm]));
     scFieldDay:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
@@ -692,7 +692,16 @@ begin
       // Adding a contest: check for contest-specific exchange field 2 errors
       case Mainform.RecvExchTypes.Exch2 of
         etSerialNr:    if TrueNr <> NR then Err := 'NR ';
-        etCwopsNumber: if TrueNr <> NR then Err := 'NR ';
+        etGenericField:
+          // Adding a contest: implement comparison for Generic Field type
+          case Ini.SimContest of
+            scCwt:
+              if TrueExch2 <> Exch2 then
+                Err := IfThen(IsNum(TrueExch2), 'NR ', 'QTH');
+            else
+              if TrueExch2 <> Exch2 then
+                Err := 'ERR';
+          end;
         etCqZone:      if TrueNr <> NR then Err := 'ZN ';
         etArrlSection: if TrueExch2 <> Exch2 then Err := 'SEC';
         etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';

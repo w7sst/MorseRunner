@@ -54,7 +54,7 @@ const
   // Exchange Field 2 settings/rules
   Exchange2Settings: array[TExchange2Type] of TFieldDefinition = (
     (C: 'Nr.';        R: '([0-9][0-9]*)|(#)';              L: 4;  T:Ord(etSerialNr)),
-    (C: 'Number';     R: '[1-9][0-9]*';                    L: 10; T:Ord(etCwopsNumber)),
+    (C: 'Exch';       R: '[0-9A-Z]*';                      L: 12; T:Ord(etGenericField)),
     (C: 'Section';    R: '([A-Z][A-Z])|([A-Z][A-Z][A-Z])'; L: 3;  T:Ord(etArrlSection)),
     (C: 'State/Prov'; R: '[ABCDFGHIKLMNOPQRSTUVWY][ABCDEFHIJKLMNORSTUVXYZ]';
                                                            L: 6;  T:Ord(etStateProv)),
@@ -250,7 +250,6 @@ type
     N9: TMenuItem;
     ListView2: TListView;
     sbar: TPanel;
-    N5: TMenuItem;
     mnuShowCallsignInfo: TMenuItem;
     NRDigits1: TMenuItem;
     NRDigitsSet1: TMenuItem;
@@ -341,7 +340,6 @@ type
     procedure Activity1Click(Sender: TObject);
     procedure Duration1Click(Sender: TObject);
     procedure Operator1Click(Sender: TObject);
-    procedure CWOPSNumberClick(Sender: TObject);
     procedure StopMNUClick(Sender: TObject);
     procedure ListView2CustomDrawSubItem(Sender: TCustomListView;
       Item: TListItem; SubItem: Integer; State: TCustomDrawState;
@@ -589,7 +587,7 @@ end;
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
   case RecvExchTypes.Exch2 of
-    etSerialNr, etCwopsNumber, etCqZone, etItuZone, etAge:
+    etSerialNr, etCqZone, etItuZone, etAge:
       begin
         if RunMode <> rmHst then
           case Key of
@@ -599,6 +597,12 @@ begin
           end;
         // valid Zone or NR field characters...
         if not CharInSet(Key, ['0'..'9', #8]) then
+          Key := #0;
+      end;
+    etGenericField:
+      begin
+        // log what the user types - assuming alpha numeric characters
+        if not CharInSet(Key, ['0'..'9', 'A'..'Z', 'a'..'z', #8]) then
           Key := #0;
       end;
     etPower:
@@ -1189,20 +1193,11 @@ begin
 
         if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
       end;
-    etCwopsNumber:  // e.g. scCwt (123)
+    etGenericField:
       begin
-        {Edit3.Text := sl[1];
-        Ini.CWOPSNum:= sl[1];
-        Tst.Me.CWOPSNR := StrToInt(sl[1]); }
-        // todo - verify this is a number
-        i := StrToIntDef(Avalue, 0);
+        // 'expecting alpha-numeric field'
         Ini.UserExchange2[SimContest] := Avalue;
-        Ini.CWOPSNum:= IntToStr(i);
-        // ExchangeEdit.Text := Avalue;
-        if Avalue <> '' then
-          Tst.Me.CWOPSNR := StrToIntDef(Avalue, 0)
-        else
-          Tst.Me.CWOPSNR := 0;
+        Tst.Me.Exch2 := Avalue;
         if BDebugExchSettings then Edit3.Text := Avalue; // testing only
       end;
     etArrlSection:  // e.g. Field Day (OR)
@@ -2174,44 +2169,14 @@ end;
 
 procedure TMainForm.Operator1Click(Sender: TObject);
 begin
-  HamName := InputBox('HST/CWOps Operator', 'Enter operator''s name', HamName);
+  HamName := InputBox('HST Operator', 'Enter operator''s name', HamName);
   HamName := UpperCase(HamName);
-
-  Ini.UserExchangeTbl[scCwt] := Format('%s %s', [HamName, CWOPSNum]);
-  if SimContest = scCwt then
-    SetMyExchange(Ini.UserExchangeTbl[SimContest]);
 
   UpdateTitleBar;
 
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
       WriteString(SEC_STN, 'Name', HamName);
-    finally
-      Free;
-    end;
-end;
-
-
-procedure TMainForm.CWOPSNumberClick(Sender: TObject);
-Var
-buf: string;
-begin
-  buf := InputBox('CWOps Number', 'Enter CWOPS Number', CWOPSNum);
-  if buf = '' then begin
-       exit;
-  end;
-  if not CWOPS.isnum(buf) then begin
-       exit;
-  end;
-    CWOPSNum := buf;
-
-  Ini.UserExchangeTbl[scCwt] := Format('%s %s', [HamName, CWOPSNum]);
-  if SimContest = scCwt then
-    SetMyExchange(Ini.UserExchangeTbl[SimContest]);
-
-  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
-    try
-      WriteString(SEC_STN, 'cwopsnum', CWOPSNum);
     finally
       Free;
     end;

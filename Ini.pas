@@ -30,7 +30,7 @@ type
   TExchange1Type = (etRST, etOpName, etFdClass);
 
   // Exchange Field #2 Types
-  TExchange2Type = (etSerialNr, etCwopsNumber, etArrlSection, etStateProv,
+  TExchange2Type = (etSerialNr, etGenericField, etArrlSection, etStateProv,
                     etCqZone, etItuZone, etAge, etPower, etJarlOblastCode);
 
   // Contest definition.
@@ -39,6 +39,7 @@ type
     Key: PChar;     // Identifying key (used in Ini files)
     ExchType1: TExchange1Type;
     ExchType2: TExchange2Type;
+    ExchCaptions: array[0..1] of String; // exchange field captions
     ExchFieldEditable: Boolean; // whether the Exchange field is editable
     ExchDefault: PChar; // contest-specific Exchange default message
     Msg: PChar;     // Exchange error message
@@ -76,13 +77,14 @@ const
     (Name: 'CWOPS CWT';
      Key: 'Cwt';
      ExchType1: etOpName;
-     ExchType2: etCwopsNumber;
+     ExchType2: etGenericField;
+     ExchCaptions: ('Name', 'Exch');
      ExchFieldEditable: True;
      ExchDefault: 'David 1';
-     Msg: '''<op name> <CWOPS number>'' (e.g. DAVID 123)';
+     Msg: '''<op name> <CWOPS Number|State|Country>'' (e.g. DAVID 123)';
      T:scCwt),
      // expecting two strings [Name,Number] (e.g. David 123)
-     // Contest Exchange: <Name> <CW Ops Num>
+     // Contest Exchange: <Name> <CW Ops Num|State|Country Prefix>
 
     (Name: 'ARRL Field Day';
      Key: 'ArrlFd';
@@ -136,7 +138,6 @@ const
 var
   Call: string = 'VE3NEA';
   HamName: string = 'Alex';
-  CWOPSNum: string = '1';
   ArrlClass: string = '3A';
   ArrlSection: string = 'GTA';
   Wpm: integer = 25;
@@ -221,7 +222,7 @@ begin
       MainForm.ComboBox2.ItemIndex := ReadInteger(SEC_STN, 'BandWidth', 9);
 
       HamName := ReadString(SEC_STN, 'Name', '');
-      CWOPSNum :=  ReadString(SEC_STN, 'cwopsnum', CWOPSNum);
+      DeleteKey(SEC_STN, 'cwopsnum');  // obsolete at v1.83
 
       MainForm.UpdCWMaxRxSpeed(ReadInteger(SEC_STN, 'CWMaxRxSpeed', MaxRxWpm));
       MainForm.UpdCWMinRxSpeed(ReadInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm));

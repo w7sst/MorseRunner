@@ -65,7 +65,6 @@ begin
   // Adding a contest: Initialize Exch1 and Exch2
   // (try to use the generalized Exch1 and Exch2 fields for new contests.)
   OpName := HamName;
-  CWOPSNR := strtoint(CWOPSNum);
   Exch1 := '3A';
   Exch2 := 'OR';
 end;
@@ -95,11 +94,6 @@ begin
     begin
     assert(OpName = HamName, 'HamName doesn''t change; should already be set');
     OpName := HamName;
-    end;
-  if SentExchTypes.Exch2 = etCwopsNumber then
-    begin
-    //assert(NR = strtoint(CWOPSNUM), 'CWOPS Num doesn''t change, should be set');
-    NR := strtoint(CWOPSNum);
     end;
   AddToPieces(AMsg);
   if State <> stSending then

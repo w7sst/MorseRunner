@@ -3,19 +3,25 @@ unit CWOPS;
 interface
 
 uses
-  Classes, Contest, Contnrs, DxStn, Log;
+  Classes, Generics.Defaults, Generics.Collections, Contest, Contnrs, DxStn, Log;
 
 type
     TCWOPSRec= class
     public
-        call: string;
-        Name: string;
-        Number: string;
+        Call: string;     // Station Callsign
+        Exch1: string;    // Operator Name
+        Exch2: string;    // Number/State/Province/Country Prefix
+        UserText: string; // station location/information string
+
+        //function GetString: string; // returns <Name> <Exch2> [station info]
+        function IsCWOpsMember: Boolean;  // return whether operator is a member
+        class function compareCall(const left, right: TCWOPSRec) : integer; static;
     end;
 
   TCWOPS= class(TContest)
   private
-    CWOPSList: TList;
+    CWOPSList: TObjectList<TCWOPSRec>;
+    Comparer: IComparer<TCWOPSRec>;
     procedure Delimit(var AStringList: TStringList; const AText: string);
 
   public
@@ -26,11 +32,10 @@ type
     function PickStation(): integer; override;
     procedure DropStation(id : integer); override;
     function GetCall(id : integer): string; override;
+    function FindCallRec(out outrec: TCWOPSRec; const ACall: string): Boolean;
     procedure GetExchange(id : integer; out station : TDxStation); override;
+    function GetStationInfo(const ACallsign: string) : string; override;
     function ExtractMultiplier(Qso: PQso) : string; override;
-
-    function getcwopsname(id:integer): string;
-    function getcwopsnum(id:integer): integer;
   end;
 
   function IsNum(Num: String): Boolean;
@@ -39,9 +44,14 @@ type
 implementation
 
 uses
-    SysUtils;
+    SysUtils, ARRL;
 
 function TCWOPS.LoadCallHistory(const AUserCallsign : string) : boolean;
+const
+    CallInx : integer = 0;
+    NameInx : integer = 1;
+    ExchInx : integer = 2;
+    UserTextInx : integer = 3;
 var
     slst, tl: TStringList;
     i: integer;
@@ -68,15 +78,15 @@ begin
                 if CWO = nil then
                   CWO:= TCWOPSRec.Create;
 
-                CWO.Call:= UpperCase(tl.Strings[0]);
-                CWO.Name:= UpperCase(tl.Strings[1]);
-                CWO.Number:= tl.Strings[2];
+                CWO.Call:= UpperCase(tl.Strings[CallInx]);
+                CWO.Exch1:= UpperCase(tl.Strings[NameInx]);
+                CWO.Exch2:= UpperCase(tl.Strings[ExchInx]);
+                CWO.UserText:= tl.Strings[UserTextInx];
                 if CWO.Call='' then continue;
-                if CWO.Name='' then  continue;
-                if CWO.Number='' then continue;
-                if IsNum(CWO.Number) = False then  continue;
-                if length(CWO.Name) > 10 then continue;
-                if length(CWO.Name) > 12 then continue;
+                if CWO.Exch1='' then  continue;
+                if CWO.Exch2='' then continue;
+                if length(CWO.Exch1) > 10 then continue;
+                if length(CWO.Exch2) > 5 then continue;
 
                 CWOPSList.Add(CWO);
                 CWO := nil;
@@ -97,7 +107,8 @@ end;
 constructor TCWOPS.Create;
 begin
     inherited Create;
-    CWOPSList:= TList.Create;
+    CWOPSList:= TObjectList<TCWOPSRec>.Create;
+    Comparer := TComparer<TCWOPSRec>.Construct(TCWOPSRec.compareCall);
 end;
 
 destructor TCWOPS.Destroy;
@@ -122,14 +133,86 @@ end;
 
 function TCWOPS.GetCall(id : integer): string;
 begin
-     result := TCWOPSRec(CWOPSList.Items[id]).Call;
+     result := CWOPSList[id].Call;
+end;
+
+
+function TCWOPS.FindCallRec(out outrec: TCWOPSRec; const ACall: string): Boolean;
+var
+  rec: TCWOPSRec;
+{$ifdef FPC}
+  index: int64;
+{$else}
+  index: integer;
+{$endif}
+begin
+  rec := TCWOPSRec.Create();
+  rec.Call := ACall;
+  outrec:= nil;
+  try
+    if CWOPSList.BinarySearch(rec, index, Comparer) then
+      outrec:= CWOPSList.Items[index];
+  finally
+    rec.Free;
+  end;
+  Result:= outrec <> nil;
 end;
 
 
 procedure TCWOPS.GetExchange(id : integer; out station : TDxStation);
 begin
-  station.OpName := getcwopsname(id);
-  station.NR :=  getcwopsnum(id);
+  station.OpName := CWOPSList.Items[id].Exch1;
+  station.Exch1 := CWOPSList.Items[id].Exch1;
+  station.Exch2 := CWOPSList.Items[id].Exch2;
+end;
+
+
+{
+  return status bar information string from CWOPS call history file.
+  for members (w/ numeric Exch2), return their QTH string (UserText)
+  for DX Stations (not USA or Canada), return their Entity/Continent.
+  this string is used in MainForm.sbar.Caption (status bar).
+  We are careful not to disclose information that would give hints during
+  exchange copy (e.g. for non-members in US or Canada, we do not return
+  their city/state/province).
+  Format:  '<call> [- <user text from CWOPS.LIST>] [- Entity/Continent]'
+}
+function TCWOPS.GetStationInfo(const ACallsign: string) : string;
+var
+  cwopsrec : TCWOPSRec;
+  dxrec : TDXCCRec;
+  userText : string;
+  dxEntity : string;
+begin
+  cwopsrec := nil;
+  dxrec := nil;
+  userText := '';
+  dxEntity := '';
+  result:= '';
+
+  if FindCallRec(cwopsrec, ACallsign) then
+    begin
+    // if caller is a member, include their UserText string
+    if cwopsrec.IsCWOpsMember then
+      userText := cwopsrec.UserText;
+
+    // if caller is non-USA or non-Canada, include their Continent/Entity.
+    // for USA/Canada non-members, include either NA/USA or NA/Canada.
+    if userText.IsEmpty and
+       gDXCCList.FindRec(dxrec, ACallsign) and
+       (dxrec.Entity.Equals('United States of America') or
+        dxrec.Entity.Equals('Canada')) then
+      dxEntity:= dxRec.Continent + '/' + dxRec.Entity;
+    end;
+
+  if not userText.IsEmpty or not dxEntity.IsEmpty then
+    begin
+    result:= ACallsign;
+    if userText <> '' then
+      result:= result + ' - ' + userText;
+    if dxEntity <> '' then
+      result:= result + ' - ' + dxEntity;
+    end;
 end;
 
 
@@ -144,17 +227,16 @@ begin
 end;
 
 
-function TCWOPS.getcwopsname(id:integer): string;
-
+function TCWOPSRec.IsCWOpsMember: Boolean;
 begin
-     result := TCWOPSRec(CWOPSList.Items[id]).Name;
+  Result := IsNum(Exch2);
 end;
 
-function TCWOPS.getcwopsnum(id:integer): integer;
-
+class function TCWOPSRec.compareCall(const left, right: TCWOPSRec) : integer;
 begin
-     result := strtoint(TCWOPSRec(CWOPSList.Items[id]).Number);
+  Result := CompareStr(left.Call, right.Call);
 end;
+
 
 function IsNum(Num: String): Boolean;
 var

@@ -1514,12 +1514,8 @@ object MainForm: TMainForm
         end
       end
       object Operator1: TMenuItem
-        Caption = 'HST/CWOps Operator'
+        Caption = 'HST Operator'
         OnClick = Operator1Click
-      end
-      object N5: TMenuItem
-        Caption = 'CWOps Number'
-        OnClick = CWOPSNumberClick
       end
       object mnuShowCallsignInfo: TMenuItem
         Caption = 'Show Callsign Info'
