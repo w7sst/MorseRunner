@@ -82,6 +82,8 @@ var
   CallSent: boolean; // msgHisCall has been sent; cleared upon edit.
   NrSent: boolean;   // msgNR has been sent. Seems to imply exchange sent.
   Histo: THisto;
+  LogColWidths : Array[0..6] of integer;  // retain original Log column widths
+  LogColWidthInitialized : boolean;       // initialize LogColWidths on time only
 {$ifdef DEBUG}
   RunUnitTest : boolean;  // run ExtractPrefix unit tests once
 {$endif}
@@ -155,14 +157,32 @@ begin
 end;
 
 procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
+var
+  I: Integer;
+
+  // adjust column with for empty table title strings
+  procedure SetCaption(const I : integer; const ACaption : string);
+  begin
+    MainForm.ListView2.Column[I].Width:= IfThen(ACaption.IsEmpty, 0, LogColWidths[I]);
+    MainForm.ListView2.Column[I].Caption:= ACaption;
+  end;
+
 begin
-  MainForm.ListView2.Column[0].Caption:= ACol1;
-  MainForm.ListView2.Column[1].Caption:= ACol2;
-  MainForm.ListView2.Column[2].Caption:= ACol3;
-  MainForm.ListView2.Column[3].Caption:= ACol4;
-  MainForm.ListView2.Column[4].Caption:= ACol5;
-  MainForm.ListView2.Column[5].Caption:= ACol6;
-  MainForm.ListView2.Column[6].Caption:= ACol7;
+  // retain initial log column widths (used to restore column widths)
+  if not LogColWidthInitialized then
+    begin
+      for I := Low(LogColWidths) to High(LogColWidths) do
+        LogColWidths[I]:= MainForm.ListView2.Column[I].Width;
+      LogColWidthInitialized:= true;
+    end;
+
+  SetCaption(0, ACol1);
+  SetCaption(1, ACol2);
+  SetCaption(2, ACol3);
+  SetCaption(3, ACol4);
+  SetCaption(4, ACol5);
+  SetCaption(5, ACol6);
+  SetCaption(6, ACol7);
 end;
 
 procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
@@ -222,7 +242,7 @@ begin
     // Adding a contest: set Score Table titles
     case Ini.SimContest of
       scCwt:
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'NR', 'Pref', 'Chk', 'Wpm');
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', 'Wpm');
       scFieldDay:
         ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
       scNaQp:
