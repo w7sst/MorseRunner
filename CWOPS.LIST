@@ -6,60 +6,61 @@
 # Always LOG what is sent.
 # Last Edit,2021-09-24
 # CWOPS
+# W7SST added primary country prefix to DX Contacts for usage in MorseRunnerCE 2023-01-24
 
-2E0DCW,Gerald,,London England
+2E0DCW,Gerald,G,London England
 2E0OBO,Bob,2381,Edingthorpe Norfolk England
-3B9FR,Robert,,Rodriguez Island
+3B9FR,Robert,3B9,Rodriguez Island
 3D2AG,Antoine,2554,Suva Fiji
-3DA0AQ,Hans,,Manzini Swaziland
-3Z50GP,Dick,,(SP9GR) Czesthochdwa Poland
-4O3A,Ranko,,Montenegro
-4U1ITU,,,Geneva Switzerland
-4X0A,Jan,,Israel (4X1VF)
-4X1DF,Karl,,T.-A. Zahala Israel
-4X1VF,Jan,,Givatayim Israel
-4X4DK,Ami,,Rehovot Israel
-4X4NJ,Riki,,D.N. Israel Modin (also K7NJ)
+3DA0AQ,Hans,3DA0,Manzini Swaziland
+3Z50GP,Dick,SP,(SP9GR) Czesthochdwa Poland
+4O3A,Ranko,4O,Montenegro
+4U1ITU,,4U1ITU,Geneva Switzerland
+4X0A,Jan,4X,Israel (4X1VF)
+4X1DF,Karl,4X,T.-A. Zahala Israel
+4X1VF,Jan,4X,Givatayim Israel
+4X4DK,Ami,4X,Rehovot Israel
+4X4NJ,Riki,4X,D.N. Israel Modin (also K7NJ)
 4X4PP,Eric,1442,Migdalim Israel
 4X6GP,Vic,5,Rehovot Israel (K2VCO)
 4X6KF,Moshe,659,Natanya Israel
 4Z1UF,Ilya,636,Lod Israel
 4Z4DX,Dov,175,Ramat Hasharon Israel
-4Z4KX,Mark,,Rishon Le-Zion Israel
-4Z5LA,Ros,,Nofim Israel
+4Z4KX,Mark,4X,Rishon Le-Zion Israel
+4Z5LA,Ros,4X,Nofim Israel
 5B/UX1HW,Art,1890,
-5T5PA,Johannes,,Nouadhibou Mauritania
+5T5PA,Johannes,5T,Nouadhibou Mauritania
 6Y2T,Yuri,21,Jamaica (VE3DZ)
-6Y5WJ,Josh,,St-Elizabeth Jamaica
+6Y5WJ,Josh,6Y,St-Elizabeth Jamaica
 7J1ABD,Dan,1176,Tokyo Japan
-7S3A,Jan,,Sundbruk Sweden
+7S3A,Jan,SM,Sundbruk Sweden
 7X2TT,Abdel,2344,(M0NPT)  Alger Algeria
 7X3DA,Hamid,1676,Laghouat Algeria
-7Z1HL,Harry,,Riyadh Saudi Arabia
+7Z1HL,Harry,HZ,Riyadh Saudi Arabia
 8P9AA,Yuri,21,Barbados (VE3DZ)
 8P9AL,Chuck,969,Barbados
-8P9NX,Peter,,Barbados (W0SA)
+8P9NX,Peter,8P,Barbados (W0SA)
 8Q7ZO,Mark,1224,(N5ZO)
 9A/S57KM,Sandi,9A,
 9A1AA,Ivo,2447,Belisce Croatia
 9A2AJ,Tom,2506,(Tomislav)  Lipik Croatia
-9A2EU,Zlatko,,Zapresic Croatia
-9A2KI,Ico,,Croatia
-9A2N,Dado,,Novska Croatia
-9A2UN,Bert,,Hektoroviceva Solin
-9A3R,Amir,,Pazin Croatia
-9A3SMS,Srdan,,Dubrovnik Croatia
+9A2EU,Zlatko,9A,Zapresic Croatia
+9A2KI,Ico,9A,Croatia
+9A2N,Dado,9A,Novska Croatia
+9A2UN,Bert,9A,Hektoroviceva Solin
+9A3R,Amir,9A,Pazin Croatia
+9A3SMS,Srdan,9A,Dubrovnik Croatia
 9A3XV,Sale,2590,Zagred Croatia
 9A5KVU,Mike,1247,(N1EN)  (Remote)  Croatia
 9A5MX,Sven,2697,(remote)  Also DJ4MX Croatia
-9A5W,Nikola,,Velika Gorica Croatia
+9A5W,Nikola,9A,Velika Gorica Croatia
 9A7R,Braco,1482,Draganic Croatia
-9A9A,Emil,,Zagreb Croatia
+9A9A,Emil,9A,Zagreb Croatia
 9A9CW,Rif,2576,Croatia
-9A9XX,Marin,,Rijeka Croatia
-9H1XT,John,,Xghajra Malta
+9A9XX,Marin,9A,Rijeka Croatia
+9H1XT,John,9H,Xghajra Malta
 9H3AK,Steve,1268,Malta  (KL7SB)
-9M6BG,Alex,,E Malaysia
+9M6BG,Alex,9M6,E Malaysia
 9N7DX,Dov,175,Nepal
 9V1VV,John,678,Singapore
 9V1YC,James,66,Singapore
@@ -377,9 +378,9 @@ AL7R,Brent,AZ,Yuma AZ
 AO1AAW,Juanjo,714,Asturias Spain (EA1WX)
 BA1RB,Bin,564,Beijing China
 BA4TB,Dale,259,Wuxi China
-C6AKQ,Bob,,N4BP in Bahamas
+C6AKQ,Bob,C6,N4BP in Bahamas
 C6AQQ,Brian,302,Mt.Airy MD
-C6ARU,Tim,,(N4UM) Bahamas
+C6ARU,Tim,C6,(N4UM) Bahamas
 C6AUM,Mike,1182,K4RUM in Bahamas
 C6AYW,Steve,2289,Bahamas WA8Y
 C6AZM,Juan,2419,Bahamas
@@ -387,27 +388,27 @@ C92ZO,Mark,1224,N5ZO
 CA3FJK,Fernando,CWA,Santiago de Chilie
 CE2LR,Matt,2281,La Calera V Region Chile (Director)
 CE3CT,Roberto,2837,Santiago Chile
-CE3DNP,Carlos,,Santiago Chile
+CE3DNP,Carlos,CE,Santiago Chile
 CM8NMN,Noe,2082,Santiago de Cuba
 CN8YR,Med,1656,Casablanca Morocco
 CO2IR,Frank,1147,La Habana Cuba
-CO2UE,Fred,,Habana Cuba
+CO2UE,Fred,CM,Habana Cuba
 CO6RD,Rey,1898,Sancti Spiritus Cuba
-CO8CY,Oriol,,Guantanamo Cuba
+CO8CY,Oriol,CM,Guantanamo Cuba
 CO8NMN,Noe,2082,Santiago de Cuba
 CO8ZZ,Raul,1682,Las Tunas Cuba
 CR6K,Fil,2699,(CT1ILT)  S. Martinho da Gandara Portugal
-CR7AJL,Men,,Almada Portugal
-CT1BOH,Jose,,Portugal
-CT1DBS,Pedro,,Lisboa Portugal
+CR7AJL,Men,CT,Almada Portugal
+CT1BOH,Jose,CT,Portugal
+CT1DBS,Pedro,CT,Lisboa Portugal
 CT1DRB,Dave,430,Paio Pires Portugal
 CT1ILT,Fil,2699,(CR6K)  S. Martinho da Gandara Portugal 
-CT7AFN,Carlos,,Near Fatima Portugal
+CT7AFN,Carlos,CT,Near Fatima Portugal
 CT7AGZ,Ken,2126,(G4RWD)  Carvoeiro LGA Portugal
 CT9ABV,Ulf,1517,(DL5AXX)  Santana Madeira Island AF-014
 CU3AA,Joao,1804,Angra Do Heroismo Portugal
-CU3H,Dave,,Lajes Azores
-CU3HQ,Dave,,Lajes Azores
+CU3H,Dave,CU,Lajes Azores
+CU3HQ,Dave,CU,Lajes Azores
 CX6VM,Jorge,525,Cerro Largo Uruguay
 CX7CW,Phil,570,Montevideo Uruguay
 CX7TT,Tom,518,Rocha Uruguay
@@ -415,536 +416,537 @@ DD5CF,Colin,1832,Bonn Germany (QRP)
 DD5KG,Gabor,2471,Munich Germany
 DD5XX,Saki,2354,Esslingen  (nr Stuttgart) Germany
 DD7CW,Rocky,2587,
-DF0BA,Vlad,,(RC)  Hannover Germany
-DF1J,Ugene,,no info
+DF0BA,Vlad,DL,(RC)  Hannover Germany
+DF1J,Ugene,DL,no info
 DF1PY,Steve,2502,Grafschaft Germany
-DF1TL,Klaus,,Murrhardt Germany
-DF2UD,Bernd,,Speyer Germany
-DF2UU,Hans,,Steinmauern Germany
-DF3CE,Wolf,,Buchen Germany
-DF3FS,Bert,,Geinhausen Germany
+DF1TL,Klaus,DL,Murrhardt Germany
+DF2UD,Bernd,DL,Speyer Germany
+DF2UU,Hans,DL,Steinmauern Germany
+DF3CE,Wolf,DL,Buchen Germany
+DF3FS,Bert,DL,Geinhausen Germany
 DF3IAL,Andy,176,(SM6CNN) Nieder-Olm Germany
-DF3PN,Guenter,,Weiler Germany
+DF3PN,Guenter,DL,Weiler Germany
 DF4XX,Kurt,1753,Barsbuettel Germany
-DF4ZK,Gunter,,Wald-Michelbach Germany
+DF4ZK,Gunter,DL,Wald-Michelbach Germany
 DF4ZL,Paul,2707,Moerfelden-Walldorf Germany
 DF5EG,Joe,2687,Weeze Germany
-DF5RF,Gernot,,Schwalbach Germany
-DF5RI,Laft,,no info
-DF6FQ,Juergen,,Kahl a Main Germany
-DF6RI,Alfred,,Happurg Germany
+DF5RF,Gernot,DL,Schwalbach Germany
+DF5RI,Laft,DL,no info
+DF6FQ,Juergen,DL,Kahl a Main Germany
+DF6RI,Alfred,DL,Happurg Germany
 DF7TV,Tom,2613,Stuttgart Germany
-DF8LY,Sven,,Ruesselsheim Germany
+DF8LY,Sven,DL,Ruesselsheim Germany
 DF9TF,Rich,2493,Neuenburg Germany
-DG3BCZ,Florian,,Stuhr Germany  (Occ. QRP)
-DH4NWG,Martin,,Hersbruck Germany
-DJ0AJ,Ekrem,,Duesseldorf Germany
+DG3BCZ,Florian,DL,Stuhr Germany  (Occ. QRP)
+DH4NWG,Martin,DL,Hersbruck Germany
+DJ0AJ,Ekrem,DL,Duesseldorf Germany
 DJ0MCH,Relly,409,Stuttgart Germany
-DJ0MDR,Mike,,Muenchen Germany
+DJ0MDR,Mike,DL,Muenchen Germany
 DJ0QN,Mitch,747,Putzbrunn Germany
-DJ0SP,Hans,,Vreden Germany
-DJ1KJ,Hans,,Kronberg Germany
+DJ0SP,Hans,DL,Vreden Germany
+DJ1KJ,Hans,DL,Kronberg Germany
 DJ1OJ,Heijo,425,Muenchen Germany
-DJ1PQ,Rob,,Darmstadt Germany
+DJ1PQ,Rob,DL,Darmstadt Germany
 DJ1YFK,Fabian,1566,Germany
-DJ2AX,Peter,,Tautenhain Germany
-DJ2IA,Dieter,,Sallgast Germany
-DJ2JES,Hardy,,Hainichen Germany
+DJ2AX,Peter,DL,Tautenhain Germany
+DJ2IA,Dieter,DL,Sallgast Germany
+DJ2JES,Hardy,DL,Hainichen Germany
 DJ2MX,Mario,2801,Muenchen Germany
-DJ2PR,Rudi,,Mainz Germany
+DJ2PR,Rudi,DL,Mainz Germany
 DJ3CQ,Jo,2969,(Juergen)  Groebenzell Germany
-DJ4CW,Simone,,Hamburg Germany
+DJ4CW,Simone,DL,Hamburg Germany
 DJ4MX,Sven,2697,(9A5MX)  Muenchen Germany
-DJ6PC,Fred,,Anroechte Germany
-DJ6TK,Wilf,,Flensburg Germany
+DJ6PC,Fred,DL,Anroechte Germany
+DJ6TK,Wilf,DL,Flensburg Germany
 DJ7AO,Steve,2254,Ahrensburg Germany
-DJ7MH,Mario,,Wilhelmshaven Germany
+DJ7MH,Mario,DL,Wilhelmshaven Germany
 DJ7UC,Dirk,2575,Berlin Germany
-DJ7YP,Helmut,,Bielefeld Germany
+DJ7YP,Helmut,DL,Bielefeld Germany
 DJ8GE,Gunter,2546,(Gunther)   Guenzburg Germany
-DJ8QQ,Horst,,Cuxhaven Germany
-DJ9AO,Oli,,Jena Germany
-DJ9IE,Uli,,Unna Germany
-DJ9RB,Nob,,Andechs Germany
-DK0LT,Hans,,RC Stadtlohn Germany
-DK1OU,Fritz,,Geseke Germany
+DJ8QQ,Horst,DL,Cuxhaven Germany
+DJ9AO,Oli,DL,Jena Germany
+DJ9IE,Uli,DL,Unna Germany
+DJ9RB,Nob,DL,Andechs Germany
+DK0LT,Hans,DL,RC Stadtlohn Germany
+DK1OU,Fritz,DL,Geseke Germany
 DK1WI,Ed,1602,Katzwinkel Germany
-DK2FE,Leo,,Kassel Germany
-DK3HM,Heinz,,Usingen Germany
+DK2FE,Leo,DL,Kassel Germany
+DK3HM,Heinz,DL,Usingen Germany
 DK3WW,Uwe,2523,Kichendorf Germany
-DK3YD,Hans,,Muenchen Germany
-DK4BX,Erwin,,Heidelberg Germany
-DK4FP,Gerd,,Welzheim Germany
+DK3YD,Hans,DL,Muenchen Germany
+DK4BX,Erwin,DL,Heidelberg Germany
+DK4FP,Gerd,DL,Welzheim Germany
 DK4LX,Holger,802,Hosenfeld Germany
 DK5AX,Markus,1812,Ilsede Germany
 DK5KK,Kolja,1965,Essen Germany (Occ. QRP)
-DK5TX,Ulf,,Detmold Germany
+DK5TX,Ulf,DL,Detmold Germany
 DK6SP,Phil,2588,Erding Germany
-DK6XZ,Suad,,Pforzheim Germany
-DK7LX,Georg,,Kirch-Goens/Butzbach Germany
+DK6XZ,Suad,DL,Pforzheim Germany
+DK7LX,Georg,DL,Kirch-Goens/Butzbach Germany
 DK7PE,Rudi,2864,Mainz Germany
-DK8FG,Peter,,Trappebnkamp Germany
-DK8MCT,Tom,,Augsburg Germany
+DK8FG,Peter,DL,Trappebnkamp Germany
+DK8MCT,Tom,DL,Augsburg Germany
 DK8SR,Paul,2539,Moegglingen Germany
-DK8WZ,Joerg,,Near Frankfurt Germany
-DK8ZB,Jo,,Muenster Germany
+DK8WZ,Joerg,DL,Near Frankfurt Germany
+DK8ZB,Jo,DL,Muenster Germany
 DK9HE,Andy,2553,(Andreas)  Stelle Germany
-DK9IP,Win,,Karisruhe Germany
+DK9IP,Win,DL,Karisruhe Germany
 DK9PY,Armin,2062,Waldalgesheim Germany  (Occ. QRP)
-DL0AF,Fritz,,RC Erwitte Germany
+DL/KK0U,Jim,DL,
+DL0AF,Fritz,DL,RC Erwitte Germany
 DL0DA,Hardy,2802,(DL1VDL)
-DL1AXX,Seb,,Cologne Germany
-DL1EJM,Christ,,Duisburg Germany
+DL1AXX,Seb,DL,Cologne Germany
+DL1EJM,Christ,DL,Duisburg Germany
 DL1FY,Erwin,2636,Moosinning Germany
-DL1GRC,Sascha,,Kandern Germany
+DL1GRC,Sascha,DL,Kandern Germany
 DL1IAO,Stef,1884,(SM9A)  Birkenfeld Germany
-DL1LBV,Heinz,,Nordfriesland Germany
+DL1LBV,Heinz,DL,Nordfriesland Germany
 DL1NKB,Bernd,2486,Forchheim Germany
 DL1NKS,Steve,2963,Eichenbuelh Germany
-DL1ONI,Olli,,Ingolstadt Germany
+DL1ONI,Olli,DL,Ingolstadt Germany
 DL1QQ,Sandy,1581,Hoexter Germany
 DL1REM,Frank,2382,Schoeppingen Germany
-DL1RNN,Lutz,,Wolfsburg Germany
+DL1RNN,Lutz,DL,Wolfsburg Germany
 DL1VDL,Hardy,2802,Dresden Germany
-DL1XX,Klaus,,Spechbach Germany
+DL1XX,Klaus,DL,Spechbach Germany
 DL21EURO,Kolja,1965,
-DL2ANM,Heinz,,Altenburg Germany
+DL2ANM,Heinz,DL,Altenburg Germany
 DL2CC,Frank,511,Dornstadt-Scharenstetten Germany
-DL2DSL,Joerg,,Dresden Germany
-DL2DXA,Ben,,Dresden Germany
-DL2JRM,Rene,,Lunzenau Germany
-DL2MKZ,Rainer,,Helmbrechts Germany
-DL2NYC,Gunther,,Eggesin Germany
+DL2DSL,Joerg,DL,Dresden Germany
+DL2DXA,Ben,DL,Dresden Germany
+DL2JRM,Rene,DL,Lunzenau Germany
+DL2MKZ,Rainer,DL,Helmbrechts Germany
+DL2NYC,Gunther,DL,Eggesin Germany
 DL2OE,Mike,2735,Guerstenwalde Germany
-DL2RNF,Fritz,,Luckenwalde Germany
-DL2RPS,Klaus,,Gerolstein Germany
-DL2SWU,Siggi,,Ludwigslust Germany
-DL2VPF,Gerd,,Weisskeissel Germany
+DL2RNF,Fritz,DL,Luckenwalde Germany
+DL2RPS,Klaus,DL,Gerolstein Germany
+DL2SWU,Siggi,DL,Ludwigslust Germany
+DL2VPF,Gerd,DL,Weisskeissel Germany
 DL3AZ,Andy,982,Elkenroth Germany
 DL3DXX,Mar,1164,Pirna-Jessen Germany
-DL3GJ,Greg,,Bad Oldesloe Germany
-DL3MXX,Olaf,,Nr. Munchen Germany
-DL3NAA,Peter,,Kehl Germany
-DL3PB,Peter,,Krefeld Germany
-DL3RDM,Max,,Essesbach Germany
+DL3GJ,Greg,DL,Bad Oldesloe Germany
+DL3MXX,Olaf,DL,Nr. Munchen Germany
+DL3NAA,Peter,DL,Kehl Germany
+DL3PB,Peter,DL,Krefeld Germany
+DL3RDM,Max,DL,Essesbach Germany
 DL3TM,Toby,2921,Fulda Germany
-DL3XH,Wim,,Mari Germany
-DL3XO,Etlev,,Hamburg Germany
+DL3XH,Wim,DL,Mari Germany
+DL3XO,Etlev,DL,Hamburg Germany
 DL3YM,Andy,2520,(Andreas)  Karlsruhe Germany
-DL3ZI,Fred,,Jesberg Germany
+DL3ZI,Fred,DL,Jesberg Germany
 DL4FDM,Fritz,1084,Bensheim-Auerbach Germany
 DL4FO,Chris,2484,Maintal Germany
-DL4IA,Bernd,,Doberlug-Kirchlhain Germany
-DL4JU,Yuri,,Erkrath Germany
+DL4IA,Bernd,DL,Doberlug-Kirchlhain Germany
+DL4JU,Yuri,DL,Erkrath Germany
 DL4KG,Gerald,2501,Stuttgart Germany
-DL4MO,Loy,,Meiniwgen Germany
-DL4NAC,Maddiin,,Schwaig Bei Nurnberg Germany
-DL5ANT,Ben,,Ilmenau Germany
+DL4MO,Loy,DL,Meiniwgen Germany
+DL4NAC,Maddiin,DL,Schwaig Bei Nurnberg Germany
+DL5ANT,Ben,DL,Ilmenau Germany
 DL5AXX,Ulf,1517,Staufengerg Germany
-DL5AZZ,Alex,,LLmenau Germany
+DL5AZZ,Alex,DL,LLmenau Germany
 DL5CW,Paul,2677,Berlin Germany
 DL5DBY,Tom,1751,Lindlar Germany
-DL5DQZ,Frank,,Germany
+DL5DQZ,Frank,DL,Germany
 DL5JQ,Erhard,2376,Goch Germany
-DL5OAB,Ben,,Dormagen Germany
-DL5RJ,Josef,,Straubing Germany
+DL5OAB,Ben,DL,Dormagen Germany
+DL5RJ,Josef,DL,Straubing Germany
 DL5RMH,Martin,2779,Ergolding Germany
 DL5XL,Felix,2268,Hagen im Bremischen Germany
-DL5YCI,Mic,,Loehne Germany
-DL5YL,Tina,,Germany
-DL5YM,Fred,,Strausberg Germany
-DL6AST,Andre,,Wickau-Hablau Germany
-DL6BE,Volkert,,Ostseebad Sellin Germany
-DL6KVA,Axel,1678,Rostock Germany
-DL6LBI,Ingo,,Ellerhoop Germany
-DL6MIG,Wil,,Wahlitz Germany
-DL6RAI,Ben,2776,Kuenhback Germany
-DL6RDR,Stephan,,Golding Germany
+DL5YCI,Mic,DL,Loehne Germany
+DL5YL,Tina,DL,Germany
+DL5YM,Fred,DL,Strausberg Germany
 DL65ESSEN,Kolja,1965,
-DL6UNF,Frank,,Guben Germany
-DL7AA,Alex,,Greifswald Germany
-DL7CX,Olaf,,Klingenthal Germany
-DL7FAZ,Karl,,Lampertheim Germany
-DL7HU,Wolf,,Berlin Germany
-DL7JV,Jan,,Berlin Germany
-DL7LPH,Peter,,Glueckstadt Germany
-DL7SBV,Ben,,Schwaebisch Gmuend Germany
-DL7SX,Ruedi,,Berlin Germany
-DL7UC,Dirk,,Berlin Germany
+DL6AST,Andre,DL,Wickau-Hablau Germany
+DL6BE,Volkert,DL,Ostseebad Sellin Germany
+DL6KVA,Axel,1678,Rostock Germany
+DL6LBI,Ingo,DL,Ellerhoop Germany
+DL6MIG,Wil,DL,Wahlitz Germany
+DL6RAI,Ben,2776,Kuenhback Germany
+DL6RDR,Stephan,DL,Golding Germany
+DL6UNF,Frank,DL,Guben Germany
+DL7AA,Alex,DL,Greifswald Germany
+DL7CX,Olaf,DL,Klingenthal Germany
+DL7FAZ,Karl,DL,Lampertheim Germany
+DL7HU,Wolf,DL,Berlin Germany
+DL7JV,Jan,DL,Berlin Germany
+DL7LPH,Peter,DL,Glueckstadt Germany
+DL7SBV,Ben,DL,Schwaebisch Gmuend Germany
+DL7SX,Ruedi,DL,Berlin Germany
+DL7UC,Dirk,DL,Berlin Germany
 DL8BH,Bernd,2596,nr Kiel Germany
-DL8BV,Harry,,Goldenstedt Germany
-DL8FBH,Mike,,Buediwgen Germany
+DL8BV,Harry,DL,Goldenstedt Germany
+DL8FBH,Mike,DL,Buediwgen Germany
 DL8HK,Karen,2829,Quierschied Germany
-DL8IH,Willi,,Konz Germany
-DL8KX,Tommy,,Wentorf Germany
-DL8MX,Wil,,Hochstadt Germany
+DL8IH,Willi,DL,Konz Germany
+DL8KX,Tommy,DL,Wentorf Germany
+DL8MX,Wil,DL,Hochstadt Germany
 DL8PG,Gerd,833,Weyerbusch near Bonn Germany
 DL8TG,Klaus,2524,Wolfsburg Germany  (Occ. QRP)
 DL9ABM,Stefan,1922,Bergen Germany
-DL9FCQ,Tom,,Greigericht Germany
-DL9GFB,Franz,,Bad Doberan Germany
-DL9LM,Yuri,,Schwerin Germany
-DL9MDW,Chris,,Bad Aibling Germany (Also AD0DO)
-DL9MFY,Bodo,,Muenchen Germany
-DL9UO,Mike,,Ahrensfelde Germany
-DL9YPS,Joerg,,Enger Germany
+DL9FCQ,Tom,DL,Greigericht Germany
+DL9GFB,Franz,DL,Bad Doberan Germany
+DL9LM,Yuri,DL,Schwerin Germany
+DL9MDW,Chris,DL,Bad Aibling Germany (Also AD0DO)
+DL9MFY,Bodo,DL,Muenchen Germany
+DL9UO,Mike,DL,Ahrensfelde Germany
+DL9YPS,Joerg,DL,Enger Germany
 DM1TT,Hannu,333,Frankfurt am Main Germany
-DM2DMI,Peter,,Arnstadt Germany
-DM2DZM,Peter,,Bad Lausick Germany
-DM3KF,Horst,,Kessau Germany
-DM3XI,Klaus,,Arnstadt Germany
+DM2DMI,Peter,DL,Arnstadt Germany
+DM2DZM,Peter,DL,Bad Lausick Germany
+DM3KF,Horst,DL,Kessau Germany
+DM3XI,Klaus,DL,Arnstadt Germany
 DM4CW,Martin,1870,Uslar Germany
-DM4EE,Joe,,Ziethen Germany
-DM4WL,Dieter,,Kreisca Germany
+DM4EE,Joe,DL,Ziethen Germany
+DM4WL,Dieter,DL,Kreisca Germany
 DM6EE,Lutz,2654,Wolfsburg Germany  (Occ. QRP)
 DO4DXA,Marc,1851,Germering Germany (V31MA)
-DO6AN,Nils,,Hamburg Germany
-DP7D,Frank,,Essen Germany
+DO6AN,Nils,DL,Hamburg Germany
+DP7D,Frank,DL,Essen Germany
 DU3LA,Larry,644,Mabalacat Phillippines (N0QM)
 E21EIC,Champ,264,Bangkok Thailand
-E7/Z35M,Vlado,E7
+E7/Z35M,Vlado,E7,
 E71A,Emil,484,Sarajevo Bosnia and Herzegovina
-E73ESP,RC,,(Club Stjepan Polje)  Bosnia and Herzegovina
-E74D,Nermin,,Zenica Bosnia & Herzegovina
+E73ESP,RC,E7,(Club Stjepan Polje)  Bosnia and Herzegovina
+E74D,Nermin,E7,Zenica Bosnia & Herzegovina
 E74X,Veljko,2583,LJubija Bosnia and Herzegovina
-E77XZ,Suad,,near Zenica Bosnia and Herzegovina
-EA1ARB,Vic,,Asturias Spain
-EA1CS,Luis,,Aviles Spain
+E77XZ,Suad,E7,near Zenica Bosnia and Herzegovina
+EA1ARB,Vic,EA,Asturias Spain
+EA1CS,Luis,EA,Aviles Spain
 EA1DP,Jose,2503,Cantabria Spain
-EA1DR,Oscar,,Cantabria Spain
+EA1DR,Oscar,EA,Cantabria Spain
 EA1WX,Juanjo,714,Aviles Spain
 EA1X,Juan,2562,La coruna Spain
 EA2AJB,Andres,1048,Alcaniz Turuel Spain
-EA2BD,Igna,,Pamplona Spain
-EA2CW,Mike,,Basque Country Spain
-EA2DDE,Jorge,,Navarra Spain
+EA2BD,Igna,EA,Pamplona Spain
+EA2CW,Mike,EA,Basque Country Spain
+EA2DDE,Jorge,EA,Navarra Spain
 EA2DPA,Raul,2519,Vizcaya Spain
 EA2EFI,Nol,2841,(Imanol) Biscay Spain
-EA2HW,Enio,,San Sebastian Spain
+EA2HW,Enio,EA,San Sebastian Spain
 EA2KV,Jose,2845,Zaragoza Spain
-EA3BV,Jon,,Barcelona Spain
+EA3BV,Jon,EA,Barcelona Spain
 EA3FZT,Francis,2560,Cubelles Spain
-EA3GHZ,Joan,,Tarragona Spain
+EA3GHZ,Joan,EA,Tarragona Spain
 EA3HSO,Al,2132,Barcelona Spain
-EA3IAA,Manel,,Barcelona Spain
-EA3NN,Dany,,Tarragona Spain
+EA3IAA,Manel,EA,Barcelona Spain
+EA3NN,Dany,EA,Tarragona Spain
 EA4BB,Nando,2981,Masdrid Spain
-EA4GMX,Felipe,,Cuenca Spain
-EA4KD,Pete,,Madrid Spain
+EA4GMX,Felipe,EA,Cuenca Spain
+EA4KD,Pete,EA,Madrid Spain
 EA4M,Rick,1070,(Ricardo) (EA4ZM)   Aranjuez Spain
 EA4OR,Nacho,2218,Meco Madrid Spain
 EA4ZK,Rick,1070,(Ricardo) Aranjuez Spain
 EA5FID,Juan,2977,Alicante Spain
-EA5FV,Dani,,Murcia Spain
-EA5IIK,Andy,,Castellon Spain
+EA5FV,Dani,EA,Murcia Spain
+EA5IIK,Andy,EA,Castellon Spain
 EA5IUY,Gary,2508,Muro de Alcoy Spain
 EA5KA,Raul,1512,Castellon de la Plana Spain
 EA5KO,Andy,2545,Castellon Spain
 EA5M,Dani,2979,Murcia Spain
-EA6TS,Pedro,,Balearic Isl. Spain
-EA7AM,Pedro,,Jaen Spain
+EA6TS,Pedro,EA6,Balearic Isl. Spain
+EA7AM,Pedro,EA,Jaen Spain
 EA7EGU,Manuel,2505,Malaga Spain
 EA7JW,David,1933,Cadiz Spain
-EA8/DH2MS,Manfred,,Sankt Augustin Germany
-EA8AY,Luis,,Santa Cruz Canary Island
-EA8BEX,Manuel,,Telde Canary Is.
+EA8/DH2MS,Manfred,EA8,Sankt Augustin Germany
+EA8AY,Luis,EA8,Santa Cruz Canary Island
+EA8BEX,Manuel,EA8,Telde Canary Is.
 EA8BMG,Luis,1063,La Hidalga Arago Canary Island
 EA8CAC,Juan,850,Canary Island
 EA8CN,Andy,265,Los Realejos Canary Island
-EA8DDM,Carlos,,Las Palmas Canary Island
-EA8DP,Marino,,Las Palmas Canary Island
-EA8F,Franky,,Canary Island
+EA8DDM,Carlos,EA8,Las Palmas Canary Island
+EA8DP,Marino,EA8,Las Palmas Canary Island
+EA8F,Franky,EA8,Canary Island
 EA8KW,Carlos,1565,Las Palmas Canary Island
-EA8NQ,Isi,,Tenerife Spain
+EA8NQ,Isi,EA8,Tenerife Spain
 EA8OM,Heijo,425,Puerto de la Cruz Canary Island (DJ1OJ)
 EA8RM,Juan,850,Canary Islands
 EA8ZS,Manuel,907,Las Palmas Canary Island
 EC7ABV,Tony,1558,Cadiz Spain
 EE8E,Juan,850,Canary Island
-EE8X,Luis,,Canary Island
+EE8X,Luis,EA8,Canary Island
 EF8M,Val,536,Canary Island  (UA3DX)
 EF8N,Andy,265,El Sauzal Canary Island
 EF8O,Heijo,425,Puerto de Cruz Canary Islands
 EF8R,Juan,850,Gran Canaria Canary Islands
-EF8USA,Luis,,Canary Islands
-EF8X,Luis,,Canary Island
+EF8USA,Luis,EA8,Canary Islands
+EF8X,Luis,EA8,Canary Island
 EI2CN,Doug,1503,Ireland
-EI2HIB,Martin,,Waterford Ireland
-EI2IDB,Slav,,Meath Ireland
+EI2HIB,Martin,EI,Waterford Ireland
+EI2IDB,Slav,EI,Meath Ireland
 EI2IM,Don,55,Virginia Beach VA (W4ZYT)
-EI3HA,Tony,,Strandhill Sligo Ireland
+EI3HA,Tony,EI,Strandhill Sligo Ireland
 EI6FR,Declan,2811,Dublin Ireland
-EI6KW,Slav,,Ashbourne Ireland
 EI6KT,John,2965,DublinIreland
-EI7BA,John,,Whitegate Co. Cork. Ireland
-ER1SN,Alex,,Chisinau Moldova
-ER5AL,Tony,,Moldova
-ES0NW,Ivo,,Kardla Estonia
-EU3AA,Vic,,Brest Belarus
-EU8F,Serg,,Belarus
-EV1R,Al,,Minsk Belarus
-EW1I,Alex,,Minsk Belarus
-EW1TZ,Serge,,Minsk Belarus
-EW7LO,Vlad,,Bobruisk Belarus
+EI6KW,Slav,EI,Ashbourne Ireland
+EI7BA,John,EI,Whitegate Co. Cork. Ireland
+ER1SN,Alex,ER,Chisinau Moldova
+ER5AL,Tony,ER,Moldova
+ES0NW,Ivo,ES,Kardla Estonia
+EU3AA,Vic,EU,Brest Belarus
+EU8F,Serg,EU,Belarus
+EV1R,Al,EU,Minsk Belarus
+EW1I,Alex,EU,Minsk Belarus
+EW1TZ,Serge,EU,Minsk Belarus
+EW7LO,Vlad,EU,Bobruisk Belarus
 EY8MM,Nodir,815,Dushanbe Tajikistan 
-F2IL,Jean Marie,,Ribeaucourt France
-F3OA,Mike,,Hyeres France
-F4GFT,Andy,,Paris France
-F4GOP,Denis,,La Lande Patry France
-F4IBT,Jose,,ND de Gravenchon France
-F4IGG,Eric,,Gerard France  (QRP)
-F4VRS,Gil,,Vingrau France
+F2IL,Jean Marie,F,Ribeaucourt France
+F3OA,Mike,F,Hyeres France
+F4GFT,Andy,F,Paris France
+F4GOP,Denis,F,La Lande Patry France
+F4IBT,Jose,F,ND de Gravenchon France
+F4IGG,Eric,F,Gerard France  (QRP)
+F4VRS,Gil,F,Vingrau France
 F4WAR,Jose,CWA,ND de Gravenchon France
-F5BQU,Seb,,Cappel France
-F5BWA,Dan,,France
-F5EQR,Regis,,Gizy France
-F5IN,Mike,,Pithiviers Fance 
-F5IUZ,Moise,,Aubagne France
-F5IYC,Chris,,Tourcoing France
+F5BQU,Seb,F,Cappel France
+F5BWA,Dan,F,France
+F5EQR,Regis,F,Gizy France
+F5IN,Mike,F,Pithiviers Fance 
+F5IUZ,Moise,F,Aubagne France
+F5IYC,Chris,F,Tourcoing France
 F5IYJ,Phil,1842,Longeault France  (Occasionally QRP)
-F5JLQ,Georges,,Calais France
-F5JU,Jon,,L'Hermitage France
-F5JVP,Didier,,Le Vieil Dampierre France
-F5MAI,Regis,,Nouvion le Vineux France
+F5JLQ,Georges,F,Calais France
+F5JU,Jon,F,L'Hermitage France
+F5JVP,Didier,F,Le Vieil Dampierre France
+F5MAI,Regis,F,Nouvion le Vineux France
 F5MNK,LO,1291,St-Gervais France
-F5MNW,Guy,,La Farlede France
-F5NTZ,Xavier,,Chelles France
+F5MNW,Guy,F,La Farlede France
+F5NTZ,Xavier,F,Chelles France
 F5NZY,Steph,1528,Paris France
-F5OHM,Chris,,Chasseneuil France
+F5OHM,Chris,F,Chasseneuil France
 F5PBL,Claude,2326,Villeparisis France
-F5PGA,Peter,,Vercheny France
+F5PGA,Peter,F,Vercheny France
 F5PLC,Mike,2370,Evette-Salbert France
-F5ROW,Eric,,Hardinvast France
+F5ROW,Eric,F,Hardinvast France
 F5SGI,Jean,2532,Prcues France
-F5TGR,Jean,,Dompierre sur Mer France
-F5TYQ,Elio,,Valencielles France
-F5VHN,Rob,,Tournan en Brie France
+F5TGR,Jean,F,Dompierre sur Mer France
+F5TYQ,Elio,F,Valencielles France
+F5VHN,Rob,F,Tournan en Brie France
 F5VJC,Deni,2142,(Denis)  Pontorson France
 F5VV,Joel,1885,Attignat France
-F6ARL,Dan,,Antibes France
+F6ARL,Dan,F,Antibes France
 F6AXX,Norbert,2428,La Seyne sur Mer France
 F6BCW,Didier,2818,Genouilly France
-F6BUL,Lo,,Annecy France
+F6BUL,Lo,F,Annecy France
 F6CEL,Ghis,1876,Pignicourt France
 F6ENO,Alain,2261,Rilly La Montagne France
-F6FNL,Pedro,,Presov Slovak Republic
-F6FTI,Pierre,,Bethencourt France
-F6GPT,John,,Saint-Loubes France
+F6FNL,Pedro,F,Presov Slovak Republic
+F6FTI,Pierre,F,Bethencourt France
+F6GPT,John,F,Saint-Loubes France
 F6HKA,Bert,1088,Isle France  (SW-EU Amb.)(Director)
-F6ICA,Jean,,St Cast le Guildo France
-F6IRE,Charles,,Espondeilhan France
-F6IRO,Chris,,Noisy le Grand France
+F6ICA,Jean,F,St Cast le Guildo France
+F6IRE,Charles,F,Espondeilhan France
+F6IRO,Chris,F,Noisy le Grand France
 F6JOE,Jean,1091,Ceyzeriat France
-F6UIG,Pascal,,Creutzwald France
-F8BBL,Lor,,Tresses France
-F8BJE,Guy,,Metz France
-F8DGF,Nico,,St-Genies de Malgoires France
-F8DGY,Chris,,Boissile Le Roi France
-F8DML,Bernard,,Dunkerque France
+F6UIG,Pascal,F,Creutzwald France
+F8BBL,Lor,F,Tresses France
+F8BJE,Guy,F,Metz France
+F8DGF,Nico,F,St-Genies de Malgoires France
+F8DGY,Chris,F,Boissile Le Roi France
+F8DML,Bernard,F,Dunkerque France
 F8FQX,Nic,1755,France
 F8FSN,Georges,2610,Carpentras France
-F8NUH,Jean,,St-Andre Le Gaz France
+F8NUH,Jean,F,St-Andre Le Gaz France
 FG8NY,Jean,1091,St Claude Guadeloupe (F6JOE) (SAN Amb.)
 G0AYD,Dave,2159,Wiltshire England
-G0BQV,Mary,,Tolworth England
-G0BYH,Geoff,,Buckinghamshire England
-G0CEJ,Harry,,Gloucester England
+G0BQV,Mary,G,Tolworth England
+G0BYH,Geoff,G,Buckinghamshire England
+G0CEJ,Harry,G,Gloucester England
 G0CKP,Steve,2451,(M1X)  Sevenoaks Kent England 
 G0DJA,Dave,266,Bolsover (CWops UHF/VHF/QRP)
 G0DJA/P,Dave,266,Portable with a KX3
-G0EFO,Mike,,Buildford England
+G0EFO,Mike,G,Buildford England
 G0ELZ,Bill,239,Liverpool England
-G0EML,Ray,,Shrewsbury England
+G0EML,Ray,G,Shrewsbury England
 G0HKC,Keith,1739,Salisbury England
-G0IBN,Andy,,Tollesbury Maldon England
+G0IBN,Andy,G,Tollesbury Maldon England
 G0JPS,Chris,2080,Bristol England
-G0KDZ,Mike,,N York England
+G0KDZ,Mike,G,N York England
 G0LLX,Andy,2954,Blackpool England
 G0MDR,Fred,G,St. Albans England
 G0MFR,Gareth,2490,Dorset England
 G0MGM,Rob,1771,Bourne End England
-G0NIG,Nigel,,W Yorkshire England
+G0NIG,Nigel,G,W Yorkshire England
 G0OOD,Tim,2941,Norwich England
 G0OOR,Tony,2971,Norfold England
-G0ORH,Ken,,Thatcham West Berkshire
-G0PNM,Peter,,Cornwall England
-G0RDO,John,,Newton Abbot Devon Egnland
+G0ORH,Ken,G,Thatcham West Berkshire
+G0PNM,Peter,G,Cornwall England
+G0RDO,John,G,Newton Abbot Devon Egnland
 G0TPH,Al,2956,Desford England
-G0TZZ,Chris,,Sporte England
-G0UJK,Colin,,Nr London England
+G0TZZ,Chris,G,Sporte England
+G0UJK,Colin,G,Nr London England
 G0UYG,Andy,2453,Port Sunlight Wirral England
-G0VQW,Sandy,,Swindon Wiltshire
+G0VQW,Sandy,G,Swindon Wiltshire
 G0WCZ,Grae,1983,Brigaton England
 G1ZOS,Colin,1832,Clacton-on-Sea England (DD5CF)
 G2CWO,Duncan,1979,(G3WZD)  England
 G2E,Rog,2797,Pinkneys Green England
 G2JL,Mort,32,Hampshire England
-G3ILO,Steve,,Glos England
-G3KDP,Tony,,St-Ives Cornwall England
-G3KSU,Alan,,Wiltshire England (QRP)
-G3KTZ,Ron,,Littlebourne Canterbury England
+G3ILO,Steve,G,Glos England
+G3KDP,Tony,G,St-Ives Cornwall England
+G3KSU,Alan,G,Wiltshire England (QRP)
+G3KTZ,Ron,G,Littlebourne Canterbury England
 G3LDI,Roger,1843,The Old Nursery Swardeston England
-G3LIK,Mick,,Waterlooville England
-G3LQC,Ray,,Oxford England
-G3MPN,Dave,,Wymondham England
+G3LIK,Mick,G,Waterlooville England
+G3LQC,Ray,G,Oxford England
+G3MPN,Dave,G,Wymondham England
 G3NKC,Dave,449,Wistaston Crewe England
-G3OAC,Ken,,Derby England
-G3OKA,John,,Meols Virral UK
-G3PXT,Gordon,,Norwich England
-G3ROO,Ian,,Rosemount England
+G3OAC,Ken,G,Derby England
+G3OKA,John,G,Meols Virral UK
+G3PXT,Gordon,G,Norwich England
+G3ROO,Ian,G,Rosemount England
 G3RTJ,Colin,2940,
 G3SVK,Fred,1357,Romford Essex England
 G3SYS,Darrel,1578,Tucson AZ (AA7FV)
 G3SZU,Keith,2784,Lancashire England
-G3TBK,Dave,,Grantham England
+G3TBK,Dave,G,Grantham England
 G3TXF,Nigel,166,Surrey England
 G3UNA,David,509,Knaresborough England
-G3USA,Colin,,Alcester Germany
-G3VDB,Jim,,Macclesfield England
-G3WAB,Phile,,Norfolk England
-G3WCY,Brian,,Hampshire England
+G3USA,Colin,G,Alcester Germany
+G3VDB,Jim,G,Macclesfield England
+G3WAB,Phile,G,Norfolk England
+G3WCY,Brian,G,Hampshire England
 G3WGN,Dave,482,Okehampton England
-G3WPH,Mike,,Berkshire England
+G3WPH,Mike,G,Berkshire England
 G3WRJ,Dick,2209,Hitchin Gngland
 G3WZD,Mac,1979,(Duncan)  Somerset England
 G3XLG,Ray,1365,Norfolk England
-G3XPO,Ken,,(M3XPO) Kent England
+G3XPO,Ken,G,(M3XPO) Kent England
 G3XTT,Don,1874,Henley on Thames England
 G3YIQ,Bob,618,BRADFORD ON AVON
 G3YJQ,Fred,1378,Plymouth Devon England
 G3YLA,Jim,2015,Dereham England
 G3YXX,David,493,Hythe KE England
-G3ZRJ,Tony,,Devon England
+G3ZRJ,Tony,G,Devon England
 G3ZYV,Dave,356,Gillingham England
-G4AFU,Paul,,Bedale England
-G4AJY,Dave,,Benfleet Essex England
-G4AON,Dave,,East Yorkshire England
+G4AFU,Paul,G,Bedale England
+G4AJY,Dave,G,Benfleet Essex England
+G4AON,Dave,G,East Yorkshire England
 G4AXX,Mark,1057,Saffron Walden England
 G4BSW,Nigel,2083,Margate England
 G4BUE,Chris,1294, West Sussex England (G4E N4CJ)
 G4CCX,Chris,2003,Norfork England
-G4CMY,Tony,,Gloucestershire England
-G4CPA,Geoff,,North Yorkshire England
-G4DJX,Alan,,Herts England
+G4CMY,Tony,G,Gloucestershire England
+G4CPA,Geoff,G,North Yorkshire England
+G4DJX,Alan,G,Herts England
 G4DRS,John,1457,Dorchester England
 G4DYC,Mike,2116,Norfolk England
 G4E,Chris,1294,West Sussex England (G4BUE N4CJ)
 G4FAD,Rich,547,Hereford England
-G4FJW,Chris,,Kent England
-G4GIR,Ian,,Bedford England
-G4HOM,Fred,,Birmingham England
-G4HXL,Larry,,Colne England
+G4FJW,Chris,G,Kent England
+G4GIR,Ian,G,Bedford England
+G4HOM,Fred,G,Birmingham England
+G4HXL,Larry,G,Colne England
 G4HZE,Ed,2753,Saltash England
 G4HZV,Bob,1636,Guildford England
 G4ILW,James,1729,London England
 G4IRN,John,268,Thames Ditton England
 G4IZZ,Mike,2511,Cheltenham England
 G4KQY,Mike,2987,Norwich England
-G4LJU,Colin,,Redhill England
-G4LMW,Rob,,Berkshire England
+G4LJU,Colin,G,Redhill England
+G4LMW,Rob,G,Berkshire England
 G4LPP,Phil,2547,Sutton Norfolk England
-G4MPN,Dave,,Kent England
+G4MPN,Dave,G,Kent England
 G4NVR,Phil,1583,(M2D)  Northumberland England
 G4PFZ,John,2777,Norwich England
 G4PIQ,Andy,2767,Suffolk England
 G4PVM,Paul,2413,Essex England
-G4PVN,Paul,,Billingham England
+G4PVN,Paul,G,Billingham England
 G4RCG,John,2379,Wakefield England
-G4RGK,Dave,,Bucks England
+G4RGK,Dave,G,Bucks England
 G4RMV,Mike,1614,Pershore England
 G4RWD,Ken,2126,(CT7AGZ)  Barton-under-Needwood England
 G4SMB,Mike,2700,Yorkshire Englandd
-G4TSH,Justin,,Hounslow England
-G4USI,Daimon,,Wiveliscombe England
+G4TSH,Justin,G,Hounslow England
+G4USI,Daimon,G,Wiveliscombe England
 G4UZE,Chris,2641,Ruislip England
-G4UZN,Tony,,LEEDS England
+G4UZN,Tony,G,LEEDS England
 G4VIW,Andy,2586,Upminster England
-G4VYI,Mike,,Sheffield England
-G4WQI,Dean,,Witham England
+G4VYI,Mike,G,Sheffield England
+G4WQI,Dean,G,Witham England
 G4XUM,Martin,569,Shavington Crewe England
 G5CL,Ryan,422,Buckinghamshire England (Mainly QRP)
 G5VZ,Chris,2877,Pontefract England
 G7VJR,Michael,968,via M0OXO England
 G8AJM,Chris,1572,Maidenhead England
-G8RWG,Niels,,Coulsdon England
+G8RWG,Niels,G,Coulsdon England
 G8VKQ,Clive,CWA,West Sussex England
-G8VPE,John,,Norfoldk England
-G8VR,Kerry,,Cockfosters Barnet England
+G8VPE,John,G,Norfoldk England
+G8VR,Kerry,G,Cockfosters Barnet England
 GB50AGC,Mac,1979,(G3WZD)  5oth ann. German CW Club
 GD0OUD,Stu,1829,Onchan Isle of Man
 GD4EIP,Colyn,2187,Foxdale Isle of Man
-GI2CWO,,,CWOPS Northern Ireland
+GI2CWO,,GI,CWOPS Northern Ireland
 GI4CFQ,Gary,765,Belfast Northen Ireland
-GI4SZW,Jim,,County Armagh Northern Ireland
+GI4SZW,Jim,GI,County Armagh Northern Ireland
 GM0EPO,John,1974,Scotland  (Occasionally QRP)
 GM0EUL,Peter,1899,Duns Scotland
-GM0LIR,Phil,,Wishaw Scotland
-GM2CWO,,,(Various users)  Scotland
+GM0LIR,Phil,GM,Wishaw Scotland
+GM2CWO,,GM,(Various users)  Scotland
 GM2V,Chris,2436,(GM3WOJ)  Scotland 
 GM3JOB,Rod,2204,Irvine Scotland
 GM3WOJ,Chris,2436,(GM2V)  Near Inverness Scotland
 GM3WUX,Terry,2826,Glasgow Scotland
-GM3YOR,Drew,,Inverekip Scotland
+GM3YOR,Drew,GM,Inverekip Scotland
 GM4JPZ,Colin,2537,Dundee Scottland
 GM4WZG,Bernie,2689,Dalgety Bay Scotland
 GU4CHY,Dick,1543,Channel Islands Guernsey
 GW0ETF,Stew,919,Bangor Wales (CWops President)
 GW0KRL,Ian,2896,Anglesey Wales
-GW2CWO,,,(Various users) Bangor Wales 
+GW2CWO,,GW,(Various users) Bangor Wales 
 GW3KGV,Ken,171,Welshpool Powys Wales
-GW3NJW,Clive,,CARDIFF
+GW3NJW,Clive,GW,CARDIFF
 GW3YDX,Ron,100,Four Crosses Wales
-GW4GNY,Martin,,Wales
+GW4GNY,Martin,GW,Wales
 GW4J,Stew,919,Wales (GW0ETF) (CWops President)
 GW4MM,Tim,2755,
 GW4MVA,Glen,2178,Flintshire Wales
 GW4OKT,Keith,1952,Near Chester Wales
 GW4VXE,Tim,2755,St Nicholas Goodwick Wales
-GW7APP,Ian,,Anglesey Wales
+GW7APP,Ian,GW,Anglesey Wales
 GW7N,Glen,2178,(GW4MVA)  Flintshire Wales
 HA0NAR,Laszlo,2172,Debrecen Hungary
-HA1RJ,Andras,,Gyor Hungary
-HA2EAV,Joe,,Komarom Hungary
-HA2NP,Robert,,Pilis Hungary
-HA2NY,Feri,,Tatabanya Hungary
-HA2SB,Gabor,,Papa Hungary
-HA3HK,Zoli,,Lengyeloti Hungary
-HA3MN,Egon,,Nyirabrany Hungary
-HA3YGD,Zoli,,Lengyeltoti Hungary
-HA4AA,Andras,,Budapest Hungary
+HA1RJ,Andras,HA,Gyor Hungary
+HA2EAV,Joe,HA,Komarom Hungary
+HA2NP,Robert,HA,Pilis Hungary
+HA2NY,Feri,HA,Tatabanya Hungary
+HA2SB,Gabor,HA,Papa Hungary
+HA3HK,Zoli,HA,Lengyeloti Hungary
+HA3MN,Egon,HA,Nyirabrany Hungary
+HA3YGD,Zoli,HA,Lengyeltoti Hungary
+HA4AA,Andras,HA,Budapest Hungary
 HA5AO,Istvan,1522,Budapest Hungary
-HA5CQZ,Zoltan,,Budapest Hungary
+HA5CQZ,Zoltan,HA,Budapest Hungary
 HA5JI,Gyuri,538,Budapest Hungary
 HA5NR,Gabor,2471,Budapest Hungary
-HA5UL,Feri,,Karpitos Hungary
-HA6OA,Gabi,,Szandavaralja Hugary
-HA7AP,Imre,,Budapest Hungary
-HA7I,Laci,,(HA7JTR)  Bogacs Hungary
-HA7JQK,Alex,,Bekescsaba Hungary
-HA7MF,Gabor,,Mezotur Hungary
+HA5UL,Feri,HA,Karpitos Hungary
+HA6OA,Gabi,HA,Szandavaralja Hugary
+HA7AP,Imre,HA,Budapest Hungary
+HA7I,Laci,HA,(HA7JTR)  Bogacs Hungary
+HA7JQK,Alex,HA,Bekescsaba Hungary
+HA7MF,Gabor,HA,Mezotur Hungary
 HA8EV,Peter,2655,Budapest Hungary
-HA8JV,Paul,,(HG8R) Bekescsaba Hungary
-HA8LLK,Aty,,Szeghalum Hungary
+HA8JV,Paul,HA,(HG8R) Bekescsaba Hungary
+HA8LLK,Aty,HA,Szeghalum Hungary
 HA8RJ,Ati,HA,
-HA8RM,Peter,,Kecskemet Hungary
-HA8SLT,Tibor,,Helvecia Hungary
-HA8TI,Janos,,Orgovany Hungary
-HA8VV,Paul,,Nurnberg Germany
-HA8VX,Marty,,Hungary
-HA8WV,Janos,,Bekescsaba Hungary
+HA8RM,Peter,HA,Kecskemet Hungary
+HA8SLT,Tibor,HA,Helvecia Hungary
+HA8TI,Janos,HA,Orgovany Hungary
+HA8VV,Paul,HA,Nurnberg Germany
+HA8VX,Marty,HA,Hungary
+HA8WV,Janos,HA,Bekescsaba Hungary
 HA9RC,Zoli,2766,Tiszaluc Hungary
-HA9RP,Oszu,,Szent Gyorgy Hungary
+HA9RP,Oszu,HA,Szent Gyorgy Hungary
 HA9RT,Joska,1213,Fonyod Hungary
 HB0/UX1HW/M,Art,1890,Mobile 
 HB9AJY,Fritz,2672,Utziben Switzerland
 HB9ARF,Phil,1354,St-Cergue Switzerland
 HB9AUK,Walt,2593,Wil/ZH Switzerland
 HB9BJL,Chris,2541,(W9BJL) Messen Switzerland
-HB9CAT,Marco,,Spluegen Switzerland
-HB9CBR,Bruno,,Meikirch Switzerland
-HB9CPS,Geo,,Faelladen Switzerland
+HB9CAT,Marco,HB,Spluegen Switzerland
+HB9CBR,Bruno,HB,Meikirch Switzerland
+HB9CPS,Geo,HB,Faelladen Switzerland
 HB9CSA,Fri,1084,Zurich-Altstetten
-HB9CTU,Herbert,,Kuttigen Switzerland
+HB9CTU,Herbert,HB,Kuttigen Switzerland
 HB9CVQ,Andy,219,Berikon Switzerland
 HB9DAQ,Peter,2592,Walzenhausen Switzerland
 HB9DAX,Fred,687,Landquart Switzerland
@@ -952,21 +954,21 @@ HB9DDZ,Nick,2442,Rheinsulz Switzerland
 HB9DHG,Fulvio,2889,Origilio Switzerland
 HB9DQJ,Marco,2747,Near Zurich Switzerland
 HB9DQL,Juerg,2582,Wald Switzerland
-HB9EBC,Mike,,Reinnach Switzerland
+HB9EBC,Mike,HB,Reinnach Switzerland
 HB9EGA,Marcin,2047,Zurich Switzerland
-HB9FBP,Francesco,,Lugano Switzerland
+HB9FBP,Francesco,HB,Lugano Switzerland
 HB9FIR,Clay,598,Oriolo Romano Italy
-HB9GCE,Carl,,Schwarzsee Switzerland
-HB9JAI,Karl,,Unteraegeri Zug Switzerland
-HC2AO,Alex,,Guayaquil Ecuador
+HB9GCE,Carl,HB,Schwarzsee Switzerland
+HB9JAI,Karl,HB,Unteraegeri Zug Switzerland
+HC2AO,Alex,HC,Guayaquil Ecuador
 HC2TDZ,Yuri,21,Ecuador (VE3DZ)
-HF1D,Jerzy,,Szczecin Poland
-HG1G,Gus,,Hungary
-HG2DX,Joe,,Szechenyi Utca Hungary
-HG8C,Tami,,Sleged Hungary
-HH2AA,,,Radio Club d'Haiti (Remote)
+HF1D,Jerzy,SP,Szczecin Poland
+HG1G,Gus,HA,Hungary
+HG2DX,Joe,HA,Szechenyi Utca Hungary
+HG8C,Tami,HA,Sleged Hungary
+HH2AA,,HH,Radio Club d'Haiti (Remote)
 HI3CC,Tino,1780,Dominican Repuplic
-HK1AR,Tony,,Columbia
+HK1AR,Tony,HK,Columbia
 HK3CQ,Juan,888,Miami FL USA
 HK3CW,Roberto,877,Miami FL USA
 HP/VE1RM,Gerry,191,(W1VE)
@@ -979,93 +981,93 @@ HS0ZCK,Joe,339,Floyd VA USA
 HS0ZDJ,John,751,via W2YR USA
 I0GOJ,Tony,602,Roma RM Italia
 I0YQX,Italo,1746,Roma Italy
-I0ZUT,Jan,,Perugia PG Italia
-I2AZ,Joe,,Milano Italy
-I2CZQ,Peter,,Italia
+I0ZUT,Jan,I,Perugia PG Italia
+I2AZ,Joe,I,Milano Italy
+I2CZQ,Peter,I,Italia
 I2IFT,John,2704,Seriate Italy
 I2RTF,Piero,621,Brescia BS Italia
 I2WIJ,Bob,2406,Milano Italy
 I5ECW,Vanni,1679,Montale PT Italy
 I5EFO,Emil,1486,Gragnano Lucca Italia
-I5LHY,Fabio,,Pisa Italy
-I5NHG,Stefano,,Quarrata Italy
+I5LHY,Fabio,I,Pisa Italy
+I5NHG,Stefano,I,Quarrata Italy
 I8NHJ,Max,24,Campobasso CB Italia
 I8QFK,Ben,2769,Bagnara Calabra Italy
-I8QJU,Joe,,Napoli Italia
+I8QJU,Joe,I,Napoli Italia
 IK0HBN,Sante,617,Bassano in Teverina Italia
-IK0IXI,Fabio,,Civitavecchia Italy
+IK0IXI,Fabio,I,Civitavecchia Italy
 IK0NOJ,Dany,1732,Roma Italia
-IK0OPS,Piero,,Roma Italy
+IK0OPS,Piero,I,Roma Italy
 IK0XCB,Clay,598,Roma Italia (SC-EU Amb.)
 IK0XFD,Giordano,1570,Roma Italy
 IK0YGJ,Carlo,574,Rome Italia
-IK0YUJ,Luigi,,Castello Italy
+IK0YUJ,Luigi,IK,Castello Italy
 IK0YVV,Marco,1505,Terni Italia
 IK1HGE,Bob,2632,Almese Italy
-IK1NEG,Gab,,Imperia IM Italy
-IK1PML,Otto,,(Ottavio)  Borgone Di Susa Italy  
-IK1RGK,Aldo,,Novara Italy
+IK1NEG,Gab,I,Imperia IM Italy
+IK1PML,Otto,I,(Ottavio)  Borgone Di Susa Italy  
+IK1RGK,Aldo,I,Novara Italy
 IK1WNO,Enrico,2525,Genova Italy
 IK1YRA,Carl,2866,Torino Italy
-IK2QEI,Nel,,Timis Romania
-IK2SAT,Mauro,,Nizzollina Italy
+IK2QEI,Nel,I,Timis Romania
+IK2SAT,Mauro,I,Nizzollina Italy
 IK2WAD,Joe,2200,(Giosue) Zanica Italia
-IK2YYM,Giu,,Rovescala Italy
+IK2YYM,Giu,I,Rovescala Italy
 IK3YBX,Ricky,2563,Venezia Italy
-IK4EWX,Ian,,Cento Italy
-IK4GBU,Val,,Casalecchio Di Reno Italy
-IK4VFD,Rudy,,Parma Italia
-IK4ZIF,Lou,,Bettola Italy
-IK5DFE,Enroco,,Prato PO Italy
-IK5FKF,Larry,,Lucca Italia
-IK5TBK,Steve,,Lucca Italy
+IK4EWX,Ian,I,Cento Italy
+IK4GBU,Val,I,Casalecchio Di Reno Italy
+IK4VFD,Rudy,I,Parma Italia
+IK4ZIF,Lou,I,Bettola Italy
+IK5DFE,Enroco,I,Prato PO Italy
+IK5FKF,Larry,I,Lucca Italia
+IK5TBK,Steve,I,Lucca Italy
 IK5VLL,Andy,1545,(Andrea) Manciano GR Italy
-IK7MIY,Raffael,,Corato Italy
+IK7MIY,Raffael,I,Corato Italy
 IK7UKF,Sal,2762,Bari Ba Italy
-IK8BIZ,Bob,,Cremano Italy
-IK8TEO,Francesco,,Mirabello Sannitico Italy
+IK8BIZ,Bob,I,Cremano Italy
+IK8TEO,Francesco,I,Mirabello Sannitico Italy
 IN3FHE,Helga,1548,(Helga) Merano BZ Italy
 IS0AFM,Simone,692,Cagliari Sardinia
-IS0ESG,Gian,,Iglesias Sardinia (Occ. QRP)
+IS0ESG,Gian,IS,Iglesias Sardinia (Occ. QRP)
 IT9BLB,Joe,2138,Palermo Italy
-IT9CDU,Vince,,Palermo Italy
+IT9CDU,Vince,IT9,Palermo Italy
 IT9CKA,Serafino,2584,Trapani Italy
-IT9IML,Rosario,,Nascalucia Italy
+IT9IML,Rosario,IT9,Nascalucia Italy
 IT9MUO,Alf,1569,Ribera Italy 
-IT9RZU,Joe,,Sicily Isl. Italy 
+IT9RZU,Joe,IT9,Sicily Isl. Italy 
 IT9SSI,Dario,2137,(W1SSI) Capo d'Orlando Messina Italy
 IT9VDQ,Giu,1538,Palermo Italy (IB9T Crew)
-IU0HMB/M,Vlado,,Tuscania Italy
-IU0HMB,Vlado,,Tuscania Italy
-IU4APC,Andrea,,Cesena FC Italia
-IV3ZUY,Dudine,,Aiello Del Friuli Italy
-IW0EFO,Daniele,,Italy
+IU0HMB,Vlado,I,Tuscania Italy
+IU0HMB/M,Vlado,I,Tuscania Italy
+IU4APC,Andrea,I,Cesena FC Italia
+IV3ZUY,Dudine,I,Aiello Del Friuli Italy
+IW0EFO,Daniele,I,Italy
 IW2CNM,Alex,I,Ttaly
 IW2MXE,Diego,2165,Pedrengo Bergamo Italy
-IW4AOT,Piero,,Italia
-IW4EGA,Gian,,Rimini Italy
+IW4AOT,Piero,I,Italia
+IW4EGA,Gian,I,Rimini Italy
 IW5EFO,Dan,1574,Lucca Italy
-IW9HPE,Biagio,,Siracusa Italy
-IX1IIU,Maurizzio,,St.Christophe Ilaty
+IW9HPE,Biagio,I,Siracusa Italy
+IX1IIU,Maurizzio,I,St.Christophe Ilaty
 IZ0KBW,Luigi,2156,Roma Italy
-IZ0TZI,Gian,,Roma Italy
-IZ1IFT,John,,Italy
-IZ2DQD,Renato,,Monza Brianza Italy
+IZ0TZI,Gian,I,Roma Italy
+IZ1IFT,John,I,Italy
+IZ2DQD,Renato,I,Monza Brianza Italy
 IZ2FME,Mik,2151,Borghetto Italy
-IZ3ASA,Rudy,,Mestre VE Italy
-IZ3GOM,GAbrielle,,San Tomaso Agordino BL Italy
-IZ3IRJ,Al,,
-IZ3YPS,Guido,,Cadoneghe Italy
-IZ4AKO,Pierluigi,,Vigarano Mainarda Italy
-IZ4ORF,Joi,,Parma Italy
-IZ5BBS,Renato,,Barberino Di Mugello Italy
-IZ7DJR,Nigo,,Foggia Italy
-IZ7GEG,Luca,,S. Vito Dei Normanni Italy
-IZ8VKW,Luigi,,Caserta Italia
+IZ3ASA,Rudy,I,Mestre VE Italy
+IZ3GOM,GAbrielle,I,San Tomaso Agordino BL Italy
+IZ3IRJ,Al,I,
+IZ3YPS,Guido,I,Cadoneghe Italy
+IZ4AKO,Pierluigi,I,Vigarano Mainarda Italy
+IZ4ORF,Joi,I,Parma Italy
+IZ5BBS,Renato,I,Barberino Di Mugello Italy
+IZ7DJR,Nigo,I,Foggia Italy
+IZ7GEG,Luca,I,S. Vito Dei Normanni Italy
+IZ8VKW,Luigi,I,Caserta Italia
 J6/K4ZGB,Tom,468,St-Lucia
 J6/WA4PGM,Kyle,255,
-J68SS,Steve,1862,(NY3B) St.Lucia
 J68PG,Kyle,255,
+J68SS,Steve,1862,(NY3B) St.Lucia
 J75Y,Doug,817,Dominica (K1LI)
 J79IX,John,984,Dominica (W4IX)
 J79SB,Steve,1268,Dominica (KL7SB)
@@ -1073,45 +1075,45 @@ JA1GQC,Kazu,1204,Yokohama
 JA1GZV,Moto,1014,Tokyo Japan
 JA1LZR,Joe,1010,Suginamiku Tokyo Japan
 JA1NUT,Shin,15,Mohka Tochigi Japan
-JA2BCQ,Kaz,,HAZUGUN AICHI
+JA2BCQ,Kaz,JA,HAZUGUN AICHI
 JA3AVO,Masumi,1200,Itami
 JA4IIJ,Takeshi,733,Hiroshima Japan
 JA4MRL,MasaG,269,Okayama Japan
 JA5DQH,Aki,777,Tokushima Japan
-JA6LCJ,Yuki,,(Yukihisa) Kumamoto Japan
-JA7QVI,Tac,,Miyagi Japan
+JA6LCJ,Yuki,JA,(Yukihisa) Kumamoto Japan
+JA7QVI,Tac,JA,Miyagi Japan
 JA8CDG,Ken,161,Machida Tokyo Japan
 JE1TRV,Atsu,141,Machida-City Tokyo Japan (JA Amb.)
-JF1TTN,Masa,,Wako-City Japan
+JF1TTN,Masa,JA,Wako-City Japan
 JF1UOX,Misa,3011,(NQ1J)  Kanagawa Japan
-JF2IWL,Dai,,Takayama City Japan (CWOpen Reg 3 Mgr.)
+JF2IWL,Dai,JA,Takayama City Japan (CWOpen Reg 3 Mgr.)
 JF3KNW,Nobu,394,Kato City Japan
 JH1GNU,Shigeru,713,Kanagawa Japan
 JH1JDI,Mai,1199,Asaka Japan
-JH3MUV/2,Yoshie,,(JK2VOC)  Mie Japan
+JH3MUV/2,Yoshie,JA,(JK2VOC)  Mie Japan
 JI1RXQ,Hiro,2223,Ibaraki Japan
 JI3CJP,Kan,1140,Ohmi-Hachiman city Japan
 JJ1BDX,Kenji,384,Toyhonaka City Osaka Japan
 JJ1FXF,Hiro,2898,Yachimata City Japan
-JJ8KGZ,Leo,,Hokaido Japan
+JJ8KGZ,Leo,JA,Hokaido Japan
 JK1JHB,Satoru,879,Chiba Japan
-JK2VOC,Yoshie,,Tsu-City Mie Japan
+JK2VOC,Yoshie,JA,Tsu-City Mie Japan
 JL1GEL,Aki,1202,Tokyo Japan
 JL1IRB,Hoz,420,Sagamihara City Japan
 JL8KUS,Tubo,1179,Hokkaido Japan
 JN1THL,Ken,161,Tokyo Japan (Director)
-JN1WFF,Naoki,,Tochigi
-JO1LVZ,OM,,Saitama Japan
-JR1NHD,Shin,,Kawasaki Kanagawa Japan
-JT1AA,Gan,,Ulaanbaatar Mongolia
-JT1AS,Sank,,Ulaanbaatar Mongolia
-JT1BE,Timur,,Ulaanbaatar Mongolia
-JT1CD,Khos,,Ulaanbaatar Mongolia
-JT1CO,Chak,,Ulaanbaatar Mongolia
-JT1CS,Bat,,Ulaabaatar Mongolia 
-JT1DA,Enkh,,Ulaanbaatar Mongolia
-JT1DX,Bat,,Ulaabaatar Mongolia 
-JT1F,RC,,Ulaanbaatar DX Club Mongolia
+JN1WFF,Naoki,JA,Tochigi
+JO1LVZ,OM,JA,Saitama Japan
+JR1NHD,Shin,JA,Kawasaki Kanagawa Japan
+JT1AA,Gan,JT,Ulaanbaatar Mongolia
+JT1AS,Sank,JT,Ulaanbaatar Mongolia
+JT1BE,Timur,JT,Ulaanbaatar Mongolia
+JT1CD,Khos,JT,Ulaanbaatar Mongolia
+JT1CO,Chak,JT,Ulaanbaatar Mongolia
+JT1CS,Bat,JT,Ulaabaatar Mongolia 
+JT1DA,Enkh,JT,Ulaanbaatar Mongolia
+JT1DX,Bat,JT,Ulaabaatar Mongolia 
+JT1F,RC,JT,Ulaanbaatar DX Club Mongolia
 K0AD,Al,138,Plymouth MN
 K0AF,Andy,2990,Cedar Rapids IA
 K0ALN,Bob,CO,Aspen CO
@@ -1211,7 +1213,7 @@ K1DFT,Rob,RI,Warwick RI
 K1DG,Doug,817,Windham NH
 K1DJ,Rich,1556,Scituate MA (Occ. QRP)
 K1DT,Tess,RI,Warwick RI
-K1DW,DW,326,(Dallas)  Folsom LA
+K1DW,LA,326,(Dallas)  Folsom LA
 K1EBY,Frank,1593,Windsor CT
 K1ECU,Chas,2816,Pawcatuck CT
 K1EP,Ed,465,North Reading MA
@@ -1803,7 +1805,7 @@ K7FOP,Roland,2600,Beaverton OR
 K7FOS,Evan,OR,Amity OR
 K7FU,Ray,UT,Washington UT
 K7GA,Jeff,AZ,Yuma AZ
-K7GF,Mike,,
+K7GF,Mike
 K7GM,Rick,NC,Greenville NC
 K7GS,Gary,1624,Spokane WA
 K7GT,Allan,682,Central Point OR
@@ -2046,8 +2048,8 @@ KA5ZLQ,Jackie,OR,Bend OR
 KA6AIL,Duaine,CA,Palmdale CA
 KA6JLT,Rob,NV,Reno NV
 KA6KKE,Ken,CA,Chino Hills CA
-KA6LMS/1,John,,Last Man Standing Station
 KA6LMS,John,CA,Last Man sanding Station
+KA6LMS/1,John,,Last Man Standing Station
 KA6S,Steve,CA,Fremont CA
 KA6U,Peter,CA,San Jose CA
 KA6U/VY2,Peter,PE,
@@ -2150,9 +2152,9 @@ KC3JJF,Daryl,MD,Baltimore MD
 KC3KBE,Jon,MD,Silver Spring MD
 KC3TOM,Tom,PA,Burgettstown PA
 KC3X,Hollis,1725,Snow Hill NC
+KC4BBD,Aaron,VA,Lynchburg VA
 KC4D,Bill,419,Lynchburg VA (SE-US Amb.)
 KC4DUT,Silas,IN,Tasell IN
-KC4BBD,Aaron,VA,Lynchburg VA
 KC4HW,Jim,AL,Slocomb AL
 KC4LE,Red,AL,Birmingham AL
 KC4T,Mark,2953,Atlanta GA
@@ -2176,7 +2178,7 @@ KC9K,Dave,1875,Knoxville IL
 KC9LIF,Kent,IL,Cary IL
 KC9MJA,Dan,2929,Weldon Spring >MO
 KC9MRA,Claudia,WI,Eau Claire WI
-KC9MZ,Randy,CCWA,Belleville IL
+KC9MZ,Randy,CWA,Belleville IL
 KC9QQ,Fred,IN,Martinsville IN
 KC9RXI,Tom,WI,West Salem WI
 KC9SS,Pete,WI,Greenfield WI
@@ -2254,7 +2256,7 @@ KE3X,Ken,460,Washington DC
 KE4D,John,1688,Lesburg FL
 KE4KY,Tom,1763,Fisherville KY
 KE4RG,Ken,1765,Gretna VA (Occ. QRP)
-KE4RWJ,Cary,,
+KE4RWJ,Cary
 KE4S,Dave,1508,Leesburg VA
 KE4TWI,Wes,TN,Watertown TN
 KE5AKL,Mike,NM,Albuquerque NM
@@ -2273,9 +2275,9 @@ KE6YLH,Jeff,CA,Aptos CA
 KE7LOY,Brian,2819,Twin Falls ID
 KE7ZJC,Kim,UT,Pleasant Grove UT
 KE8AKC,Steve,MI,Northville MI
+KE8AQW,Mike,2883,Plymouth MI
 KE8DI,Dave,MI,Kalamazoo MI
 KE8EAS,Josh,OH,Athens OH
-KE8AQW,Mike,2883,Plymouth MI
 KE8G,Jim,1616,Parma OH
 KE8G/5,Jim,1616,Texas
 KE9I,George,IL,Northbrook IL
@@ -2417,7 +2419,6 @@ KJ9C,Mel,898,Indianapolis IN
 KJ9I,Dave,WI,Sullivan WI
 KK0ECT,Eric,2066,Fort Collins CO
 KK0U,Jim,MO,Rock Hill MO
-DL/KK0U,Jim,DL,
 KK1CWO,Pete,91,(W1UU)  Cape Cop ARC
 KK1MM,Mike,1272,Arlington VA
 KK1W,Jim,2479,Brimfield MA
@@ -2512,7 +2513,7 @@ KO5USA,Tom,TX,Woodlands TX
 KO6U,Nathan,CA,Corona CA
 KO8SCA,Adrian,2408,Bayside NY
 KP2/K3CT,John,466,
-KP2M,Phil,,Christiansted VI
+KP2M,Phil,KP2,Christiansted VI
 KP2Q,John,466,(K3CT)  St-Croix
 KP3SK,Angel,1792,Manassas VA (Fajardo PR)
 KP3W,Jose,1499,San Juan PR
@@ -2579,7 +2580,7 @@ KU4NY,Tony,TN,Knoxville TN
 KU4V,Wayne,NC,Cary NC
 KU5B,Colin,418,Houston TX
 KU6CW,Trey,CA,San Diego CA  (Classic Mode Contest Club)
-KU6CWO,,,San Diego CA
+KU6CWO,,CA,San Diego CA
 KU7T,Andy,1300,North Bend WA
 KU7Y,Ron,1211,(New QTH) Mountain Home ID (DN23)
 KU8E,Jeff,208,Ellerslie GA
@@ -2611,7 +2612,7 @@ KW9R,Theo,WI,Pardeville WI
 KX1E,Bob,ME,Portland ME
 KX2P,Jeff,2676,Glendale CO
 KX3H,Tony,2900,Waukesha WI
-KX4CWO,,,Roanoke CWops Club (Spotsylvania VA)
+KX4CWO,,VA,Roanoke CWops Club (Spotsylvania VA)
 KX4FZ,Terry,2737,Bradenton FL
 KX4KU,Kevin,1978,Boston VA
 KX6A,Mike,1782,Newport Beaach CA
@@ -2630,76 +2631,76 @@ KY7M,Lee,84,Phoenix AZ
 KY9I,Jay,2341,Paducah KY
 KZ5D,Art,12,New Ibria LA (CWops Vice-Pres. Activities + Events)
 KZ6H,Steve,2286,Thousand Oaks CA
-LA0CX,Uli,,Halden Norway
+LA0CX,Uli,LA,Halden Norway
 LA1IO,Halvor,2651,Algard Norway
-LA1K,Jens,,(LB6RH)  RC Trondheim Norway
-LA1XFA,Tore,,Fredrikstad Norway
-LA2T,Jan,,(LA7VV) Trondheimsgruppen Av NRRL Norway
-LA3RK,Olaf,,Oslo Norway
+LA1K,Jens,LA,(LB6RH)  RC Trondheim Norway
+LA1XFA,Tore,LA,Fredrikstad Norway
+LA2T,Jan,LA,(LA7VV) Trondheimsgruppen Av NRRL Norway
+LA3RK,Olaf,LA,Oslo Norway
 LA4XX,Hal,989,Heimdal Norway
-LA6CF,Jim,,Ulefoss Norway
-LA6FJA,Rag,,Reinsvoll Norway
+LA6CF,Jim,LA,Ulefoss Norway
+LA6FJA,Rag,LA,Reinsvoll Norway
 LA6PH,John,2448,Isle of Hvaasser Norway
-LA6RK,Olaf,,Oslo Norway
+LA6RK,Olaf,LA,Oslo Norway
 LA7GIA,Ken,1888,Hagan Norway
-LA7XIA,Morten,,Kopervik Norway
+LA7XIA,Morten,LA,Kopervik Norway
 LA8OM,Chris,1848,Hafrsfjord Norway
 LB1GB,Bjorn,992,Oslo Norway
-LB2TB,Lars,,(2842) Tranby Norway
+LB2TB,Lars,LA,(2842) Tranby Norway
 LB3RE,Rag,933,Broabakken Norway
 LB6GG,Hans,2530,Sandnes Norway
 LC0X,Rag,933,Broabakken Norway
 LJ3RE,Rag,933,Broabakken Norway also LB3RE
 LU1AW,Juan,1835,Buenos Aires Argentina
-LU3MAM,Osvaldo,,(L33M) Mendoza Argenetina
+LU3MAM,Osvaldo,LU,(L33M) Mendoza Argenetina
 LU5DX,Martin,2986,Lujan Argentina
 LX/DJ1YFK,Fabian,1566,
-LY2AX,Arunas,,Kaunas Lithuania
+LY2AX,Arunas,LY,Kaunas Lithuania
 LY5A,Jonas,1459,Siauliai Lithuania
 LY5G,Vitas,1518,Vilnius Lithuania (Mostly QRP)
-LY7M,Al,,Anyksciai Lithuania
+LY7M,Al,LY,Anyksciai Lithuania
 LY8O,Remi,1858,Vilnius Lithuania
 LZ1HW,Spas,2001,Lom Bulgaria
-LZ1QI,Petko,,Bulgaria
+LZ1QI,Petko,LZ,Bulgaria
 LZ1QN,Boyko,2653,Burgas Bulgaria
-LZ1UK,Savi,,Plovdiv Bulgaria
-LZ1XC,Mitko,,Samokov Bulgaria
+LZ1UK,Savi,LZ,Plovdiv Bulgaria
+LZ1XC,Mitko,LZ,Samokov Bulgaria
 LZ1ZF,Gosho,2824,Stara Zagora Bulgaria
-LZ1ZJ,Slav,,Velingrad Bulgaria
-LZ2CH,Krasimir,,Silistra Bulgaria
-LZ2FH,Stefan,,Knezha Bulgaria
+LZ1ZJ,Slav,LZ,Velingrad Bulgaria
+LZ2CH,Krasimir,LZ,Silistra Bulgaria
+LZ2FH,Stefan,LZ,Knezha Bulgaria
 LZ2NG,Darin,2876,Balchik Bulgaria
-LZ2PP,Valentin,,Razgrad Bulgaria
-LZ2RS,Rumi,,Gabrovo Bulgaria
-LZ3ND,Nick,,Am Gries 27 Germany
+LZ2PP,Valentin,LZ,Razgrad Bulgaria
+LZ2RS,Rumi,LZ,Gabrovo Bulgaria
+LZ3ND,Nick,LZ,Am Gries 27 Germany
 LZ3ZZ,Aleko,LZ,
-LZ4YJ,Rosenh,,Russe 7000 Bulgaria
+LZ4YJ,Rosenh,LZ,Russe 7000 Bulgaria
 LZ5DB,Milen,2393,Kazanlak Bulgaria
-LZ5GB,Eugen,,Sofia Bulgaria
-LZ5PW,Vasy,,(Vassil)  Plovdiv Bulgaria
+LZ5GB,Eugen,LZ,Sofia Bulgaria
+LZ5PW,Vasy,LZ,(Vassil)  Plovdiv Bulgaria
 LZ5R,Milen,2393,Plovdiv Bulgaria  (LZ5DB)
 LZ5XQ,Steve,LZ,Burgas Bulgaria
-LZ9A,Andy,,LZ Contest Team Bulgaria
+LZ9A,Andy,LZ,LZ Contest Team Bulgaria
 M0AGA,Kevin,19,Sutton in Ahfield England
 M0BEW,Tim,2985,ShropshireEngland
 M0CDL,John,2965,Kingswinford England
 M0DHP,Ray,2090,(M2U) Thames Ditton England
 M0DOV,Dov,175,Ramat-Hasharon England
-M0DSR,Dick,,Stoke on Trent England
+M0DSR,Dick,G,Stoke on Trent England
 M0GAA,Motoaki,1014,London
-M0GGK,Dave,,near Liverpool England
+M0GGK,Dave,G,near Liverpool England
 M0HDF,Angel,2862,(M8A)  Birmingham England
-M0IBC,David,,West Midlands England
+M0IBC,David,G,West Midlands England
 M0IHT,Harry,560,(M3X) Exeter England
-M0JWB,Jim,,Bistol England
+M0JWB,Jim,G,Bistol England
 M0MUI,Mui,2855,Norwich England
 M0NGN,Nige,2459,(Nigel) Durham England
 M0NPT,Abdel,2344,(7X2TT) Nottingham England
 M0ORD,Rog,2797,Pinkneys Green England
 M0RJC,Rich,2752,N.Yorkshire England
 M0RYB,Peter,2061,Norwich England
-M0SHM,Steve,,Lancs England
-M0TJU,Evan,,Stockport England
+M0SHM,Steve,G,Lancs England
+M0TJU,Evan,G,Stockport England
 M0TZX,Ed,2462,Leicestershire England
 M0XUU,Pan,2895,Reading England
 M1X,Steve,2451,(G0CKP)  Kent England
@@ -2709,24 +2710,24 @@ M2S,Rob,1771,(G0MGM)  Bourne End England
 M2U,Ray,2090,(M0DHP)  Thames Ditton England (Occ. QRP)
 M3AWD,Scott,G,Aylesbury Buckinghamshire England
 M3X,Harry,560,(M0IHT)  Exeter England
-M3ZFF,David,,Somerset England
+M3ZFF,David,G,Somerset England
 M4X,Keith,2784,(G3SZU)
-M5KVK,Gaz,,(Gareth)  St Neots England
+M5KVK,Gaz,G,(Gareth)  St Neots England
 M6O,Dave,482,Okehampton England (G3WGN)
 M8A,Angel,2862,(M0HDF)  Birmingham England
 MD0CCE,Bob,552,Ramsey Isle of Man
-MI0AYR,Paul,,Antrim Northern Ireland
-MI0HOZ,Mick,,Strabane Northern Ireland
-MI0SAI,Simon,,Armagh Northern Ireland
+MI0AYR,Paul,GI,Antrim Northern Ireland
+MI0HOZ,Mick,GI,Strabane Northern Ireland
+MI0SAI,Simon,GI,Armagh Northern Ireland
 MI0VKO,Dave,2445,Fermanagh Northern Ireland
 MI0WWB,Will,2081,(William) Baligowan N. Ireland (Occ. QRP)
-MJ0ASP,Mat,,Le Quai Bisson St.Brelade Jersey
+MJ0ASP,Mat,GJ,Le Quai Bisson St.Brelade Jersey
 MM0FME,Mik,2151,Mozzo Scotland
-MM0TWX,Pete,,
-MM0WXE,Tony,,Perth Scotland
+MM0TWX,Pete,GM,
+MM0WXE,Tony,GM,Perth Scotland
 MM2D,Phil,1583,(G4NVR)  IO88CB NE Scotland
-MM3AWD,Scott,,Scotland (QRP)
-MM9I,John,,(SM0OPS)  East Kilbridge Scotland
+MM3AWD,Scott,GM,Scotland (QRP)
+MM9I,John,GM,(SM0OPS)  East Kilbridge Scotland
 N0AC,Bill,1252,Ankeny IA (Occ. QRP)
 N0AC/M,Bill,1252,
 N0AIE,Everett,SD,Springfield SD
@@ -2822,7 +2823,7 @@ N2AML,Frank,NM,Albuquerque NM
 N2AN,Jeff,1715,Holliston MA (PCCC WC4E)
 N2ATB,Tony,213,Cherry Hill NJ
 N2BA,Brooke,NJ,Glen Ridge NJ
-N2BA/M,Brooke,,
+N2BA/M,Brooke
 N2CJ,Glenn,1419,River Vale NJ
 N2DA,Craig,2806,Forest VA
 N2DE,Ric,NY,Pleasant Valley NY
@@ -2891,7 +2892,7 @@ N3CU,Ken,PA,Quarryville PA
 N3CW,Ed,1509,Palm Coast FL
 N3CZ,Vlad,1891,Asheville NC
 N3DXX,Art,DE,(1232) Wilmington DE
-N3DXX/0,Art,,
+N3DXX/0,Art
 N3EA,Al,1438,Lake Worth FL
 N3ED,Ed,PA,Clarks Summit PA
 N3FJ,Robert,PA,Chadds Ford PA
@@ -2984,7 +2985,7 @@ N4KS,Ken,1274,New Smyrna Beach FL (QRP K2/10)
 N4KS/3,Ken,1274,Delaware
 N4KW,Pete,1638,Hurdle Mills NC
 N4LAG,Andy,CWA,Asheville NC
-N4LGG,Andy,,
+N4LGG,Andy
 N4LW,Bob,CWA,Rockledge FL
 N4NBM,Al,FL,Winter Springs FL
 N4NM,Chuck,AL,Huntsville AL
@@ -3076,7 +3077,7 @@ N5NA,Alan,TX,Midland TX
 N5NHJ,Max,24,Allen TX
 N5NU,Jason,1920,Nacogdoches TX
 N5OE,Carl,983,Whitt TX
-N5OT,Mark,UAND,(2198) Bartlesville OK
+N5OT,Mark,ND,(2198) Bartlesville OK
 N5PHT,Gary,1489,Indianola Iowa 
 N5PV,Sean,TX,Brookshire TX
 N5QQ,Ron,TX,Dallas TX
@@ -3348,8 +3349,8 @@ NE4EA,Al,SC,Surfside Beach SC
 NE4EI,Dave,2856,Dunwoody GA
 NE5DL,Dave,3005,Mansfield TX
 NE5T,Gary,TX,Canton TX
-NE6ET,Shin,2835,Huntington Beac CA
 NE6DX,Mike,CA,Santa Ana CA (Dawn Patrol Surf Club)
+NE6ET,Shin,2835,Huntington Beac CA
 NE7D,Rocky,829,Salem OR
 NE7EE,Chris,2616,Scottdale AZ
 NE8J,Howard,1940,Coopersville MI
@@ -3530,24 +3531,24 @@ NZ4CW,Craig,SC,Charleston SC
 NZ6Q,John,CA,Stockton CA
 NZ8J,Tim,1217,Fairborn OH
 OA4DX,Tony,2934,San Miguel Lima Peru
-OD5NJ,Gabe,,Mardiros Lebanon
+OD5NJ,Gabe,OD,Mardiros Lebanon
 OE1TKW,Helmut,2770,Wien Austria
-OE2BZL,Knut,,Pfarrwerfen Austria
-OE3BBC,Rain,,Wien Austria
+OE2BZL,Knut,OE,Pfarrwerfen Austria
+OE3BBC,Rain,OE,Wien Austria
 OE3GSA,Gerd,537,Wolfsbach Austria
-OE3K,Ivan,,(OE1DIA) Vienna Austria
-OE3KAB,Karl,,Muenichsthal Austria
-OE3MWS,Fred,,Krems an der Donau Austria
+OE3K,Ivan,OE,(OE1DIA) Vienna Austria
+OE3KAB,Karl,OE,Muenichsthal Austria
+OE3MWS,Fred,OE,Krems an der Donau Austria
 OE3OPW,Peter,OE,Wien Austria
-OE3THC,Heinz,,Gross Ewzersdorf Austria
-OE3XMA,Ian,,AMRS Austria
-OE4AAC,Eric,,Jennersdorf Austria
+OE3THC,Heinz,OE,Gross Ewzersdorf Austria
+OE3XMA,Ian,OE,AMRS Austria
+OE4AAC,Eric,OE,Jennersdorf Austria
 OE5FIN,Fritz,2193,Hofkirchen Austria
 OE5TXF,Nigel,166,(G3TXF) near Wels Austria
 OE6FYG,Herb,1661,Fuerstenfeld Austria
-OE6GC,Harry,,Graz Austria
-OE7LVI,Viktor,,Meilensteinweg Austria
-OE8DEK,Gerald,,Passering Austria
+OE6GC,Harry,OE,Graz Austria
+OE7LVI,Viktor,OE,Meilensteinweg Austria
+OE8DEK,Gerald,OE,Passering Austria
 OE9TXF,Nigel,166,(G3TXF)  Vorarberg Austria
 OE9WGI,Walt,2635,Neuziders Austria
 OH/UX1HW/M,Art,1890,Mobile
@@ -3557,286 +3558,286 @@ OH1RX,Jouko,608,Salo Finland
 OH1SIC,GI,2094,(SM5SIC)  Finland
 OH1VR,Seppo,153,Tampere Finland
 OH1ZAA,Zaba,1856,Pori Finland (Also OH5ZA OH3BCX)
-OH2BH,Marty,,Espoo Finland
+OH2BH,Marty,OH,Espoo Finland
 OH2BN,Jarmo,135,Helsinki Finland
 OH2BR,Jukka,616,Mantsala Finland
 OH2EA,Hans,2014,Helsinki Finland
 OH2EV,Esa,510,Espoo Finland
-OH2JSR,Denis,,Esbo Finland
+OH2JSR,Denis,OH,Esbo Finland
 OH2KI,Jorma,144,Harviala Finland
-OH2KM,Jyri,,Roykka Finland
-OH2MA,Jukka,,Helsinki Finland
-OH2MGA,Sam,,Heinola Finland
+OH2KM,Jyri,OH,Roykka Finland
+OH2MA,Jukka,OH,Helsinki Finland
+OH2MGA,Sam,OH,Heinola Finland
 OH2MZA,Zaba,1856,Pori Finland
 OH3BCX,Zaba,1856,Pori Finland (OH1ZAA)
-OH5BM,Tap,,Simpele Finland
-OH5LQ,Pentti,,Rauha Finland
-OH5NZ,John,,Lappeenranta Finland
-OH5RP,Raino,,Lotka Finland
+OH5BM,Tap,OH,Simpele Finland
+OH5LQ,Pentti,OH,Rauha Finland
+OH5NZ,John,OH,Lappeenranta Finland
+OH5RP,Raino,OH,Lotka Finland
 OH5ZA,Zaba,1856,Pori Finland (OH1ZAA)
-OH6LW,Roy,,Jakobstad Finland
-OH6NJ,Jarno,,Jyska Finland
+OH6LW,Roy,OH,Jakobstad Finland
+OH6NJ,Jarno,OH,Jyska Finland
 OH6NVC,Mika,1919,Viiasaari Finland
-OH6OS,Juna,,Seinajoki Finland
+OH6OS,Juna,OH,Seinajoki Finland
 OH7CW,Panu,1559,Vlamylly Finland
-OK1AK,Josef,,Tabor Czech Republic
-OK1AL,Kaj,,Usti nad Labem Czech Republic
-OK1AU,Stan,,Lysa nad Labem Czech Republic
-OK1AVG,Jan,,Praha Czech Republic
-OK1AY,Josef,,Czech Republic
-OK1BZ,Mirek,,Usti nad Labem Czech Republic
-OK1DSA,Roman,,Lovosice Czech Republic
-OK1DSP,Slava,,Zatel Czech Republic
+OK1AK,Josef,OK,Tabor Czech Republic
+OK1AL,Kaj,OK,Usti nad Labem Czech Republic
+OK1AU,Stan,OK,Lysa nad Labem Czech Republic
+OK1AVG,Jan,OK,Praha Czech Republic
+OK1AY,Josef,OK,Czech Republic
+OK1BZ,Mirek,OK,Usti nad Labem Czech Republic
+OK1DSA,Roman,OK,Lovosice Czech Republic
+OK1DSP,Slava,OK,Zatel Czech Republic
 OK1FCJ,Petr,2830,Ritka Czech Republic (OL8R)
-OK1FFU,Petr,,Louny Czech Republic
-OK1FHD,Josef,,Czech Republic
-OK1FKM,Petr,,Policka Czech Republic
-OK1GS,Miro,,Czech Republic
-OK1KT,Vrata,,Hradec Kralove Czech Republic
-OK1MAG,Karelk,,Czech Republic
-OK1NE,Julius,,Pardubice Czech Republic
-OK1NU,Jan,,Liberec Czech Republic
-OK1OA,Jiri,,Praha Czech Republic
-OK1PI,Ivan,,Slatinany Czech Republic
+OK1FFU,Petr,OK,Louny Czech Republic
+OK1FHD,Josef,OK,Czech Republic
+OK1FKM,Petr,OK,Policka Czech Republic
+OK1GS,Miro,OK,Czech Republic
+OK1KT,Vrata,OK,Hradec Kralove Czech Republic
+OK1MAG,Karelk,OK,Czech Republic
+OK1NE,Julius,OK,Pardubice Czech Republic
+OK1NU,Jan,OK,Liberec Czech Republic
+OK1OA,Jiri,OK,Praha Czech Republic
+OK1PI,Ivan,OK,Slatinany Czech Republic
 OK1RP,Petr,2437,Kostice Czech Republic
 OK1RR,Martin,87,Praha 2 Czech Republic
 OK1TN,Slavek,662,Liban Czech Republic
-OK1US,Jiri,,No info
-OK1VD,Vasek,,Osice Czech Republic
+OK1US,Jiri,OK,No info
+OK1VD,Vasek,OK,Osice Czech Republic
 OK1VK,Pavel,1897,Prague Czech Republic
-OK1ZE,Vasek,,Hradec Kralove Czech Republic
-OK2AP,Milan,,Dusejov Czech Republic
-OK2BOB,Bob,,Olomouc Czech Republic
-OK2BTE,Alois,,Jablunkova Czech Republic
-OK2FD,Karel,,Stare Hobzi Czech Republic
-OK2JS,Jan,,Velka Bites Czech Republic
+OK1ZE,Vasek,OK,Hradec Kralove Czech Republic
+OK2AP,Milan,OK,Dusejov Czech Republic
+OK2BOB,Bob,OK,Olomouc Czech Republic
+OK2BTE,Alois,OK,Jablunkova Czech Republic
+OK2FD,Karel,OK,Stare Hobzi Czech Republic
+OK2JS,Jan,OK,Velka Bites Czech Republic
 OK2NAJ,Jiri,2740,Czech Republic
-OK2OX,Jiri,,no info
+OK2OX,Jiri,OK,no info
 OK2PAY,Lada,816,Ostrov nad oslavou Czech Republic
-OK2PBA,Mirek,,No info
-OK2PTU,Zdeno,,Kunstat Czech Republic
+OK2PBA,Mirek,OK,No info
+OK2PTU,Zdeno,OK,Kunstat Czech Republic
 OK2QA,Ruda,2891,Hrainice Czech Republic
-OK2QX,Jiri,,Preron Czech Republic
-OK2RJC,Jiri,,(RC) Jistebnik Czech Republic
-OK2RRR,Jiri,,Czech Republic RC of Jara Da Cimrman
-OK2RZ,Jiri,,Trebovice Czech Republic
-OK2TJ,Mirk,,Prostejov Czech Republic
+OK2QX,Jiri,OK,Preron Czech Republic
+OK2RJC,Jiri,OK,(RC) Jistebnik Czech Republic
+OK2RRR,Jiri,OK,Czech Republic RC of Jara Da Cimrman
+OK2RZ,Jiri,OK,Trebovice Czech Republic
+OK2TJ,Mirk,OK,Prostejov Czech Republic
 OK2ZV,Vit,2873,Uhersky  Brod Czech Republic
 OK4MM,Jara,2669,Kyjov Czech Republic
 OK4RM,Jindra,2787,Miskovice Czech Republic
 OK5M,Vit,2499,Slavkova Czech Republic
 OK5MM,Vit,2499,Slavkova Czech Republic
-OK5OK,Jiri,,Czech Republic
-OK6DJ,David,,Holysov Czech Republic
+OK5OK,Jiri,OK,Czech Republic
+OK6DJ,David,OK,Holysov Czech Republic
 OK7AN,Petr,92,(ex:OK2CQR)  Neratovice Czech Republic
-OK8AU,Slav,,Pruhonice Czech Republic
-OK8RB,Dave,,Near Prague Czech Republic
-OK9RKZ,Riky,,Jenikiv Czech Republic  (QRP)
+OK8AU,Slav,OK,Pruhonice Czech Republic
+OK8RB,Dave,OK,Near Prague Czech Republic
+OK9RKZ,Riky,OK,Jenikiv Czech Republic  (QRP)
 OL8R,Petr,2830,Ritka Czech Republic
 OM0CS,Kamil,1194,Bardejov Slovak Rep.
-OM0DX,Pedro,,Presov Slovak Republic
-OM2DT,Dusan,,Senica Slovak Republic
+OM0DX,Pedro,OM,Presov Slovak Republic
 OM0RM,Jindra,2787,Spisske Hanusovce 
+OM2DT,Dusan,OM,Senica Slovak Republic
 OM2VL,Laci,1542,Dunajska Streda Slovak Republic
-OM3CPF,Dus,,Slovak Republic
-OM3EY,Ed,,Banovce N.Bebr Slovak Republic
-OM3TBG,Milan,,Nitra Slovak Republic
-OM3YAD,Rudo,,no info
+OM3CPF,Dus,OM,Slovak Republic
+OM3EY,Ed,OM,Banovce N.Bebr Slovak Republic
+OM3TBG,Milan,OM,Nitra Slovak Republic
+OM3YAD,Rudo,OM,no info
 ON1DX,Ron,2423,Merksplas Belgium
-ON3MK,Maurits,,Zele Belgium
-ON4AE,Jean,,Belgium
-ON4AEF,Jean,,Merksem Belgium
-ON4BEN,Ben,,Namur Belgium
+ON3MK,Maurits,ON,Zele Belgium
+ON4AE,Jean,ON,Belgium
+ON4AEF,Jean,ON,Merksem Belgium
+ON4BEN,Ben,ON,Namur Belgium
 ON4CAS,Egbert,756,Mechelen Belgium
-ON4CLF,Theo,,Zottegem Belgium
-ON4FD,Gil,,no info
-ON4RO,Guy,,Eeklo Belgium
-ON4TC,Jean,,Sombreffe Belgique
+ON4CLF,Theo,ON,Zottegem Belgium
+ON4FD,Gil,ON,no info
+ON4RO,Guy,ON,Eeklo Belgium
+ON4TC,Jean,ON,Sombreffe Belgique
 ON4TTT,Lee,ON,
 ON4VT,Danny,2170,Hulshout Belgium
-ON4WW,Mark,,Sint-Denijs-Westrem
+ON4WW,Mark,ON,Sint-Denijs-Westrem
 ON5AM,Albert,ON,Ans Belgium
-ON5JT,Jean,,Belgium (Mainly QRP)
-ON5LGS,Edy,,Mouscron Belgium
-ON5LK,Erik,,Mechelen Belgium
+ON5JT,Jean,ON,Belgium (Mainly QRP)
+ON5LGS,Edy,ON,Mouscron Belgium
+ON5LK,Erik,ON,Mechelen Belgium
 ON5UK,Luk,971,De Pinte(OV) Belgium
 ON5ZO,Franki,56,Herne Belgium
-ON6DC/A,Morris,,Merelbeke Belgium
-ON6LEO,Leo,,Kinrooi Belgium
+ON6DC/A,Morris,ON,Merelbeke Belgium
+ON6LEO,Leo,ON,Kinrooi Belgium
 ON6LY,Francis,2429,(OP4A) Turnhout An Belgium 
 ON6PJ,Jelle,2736,Heule Belgium
-ON6PQ,Ed,,Wachtebeke Belgium
-ON6QEP,Bruno,,Reet Belgium
+ON6PQ,Ed,ON,Wachtebeke Belgium
+ON6QEP,Bruno,ON,Reet Belgium
 ON6SAS,Fil,2561,Flanders Fields Belgium
-ON6UQ,Cel,,Rijkevorsel Belgium
+ON6UQ,Cel,ON,Rijkevorsel Belgium
 ON6WP,Pol,1009,Wuustwezel Belgium
-ON6XY,Jean Marie,,Mazy Belgium
+ON6XY,Jean Marie,ON,Mazy Belgium
 ON7PQ,Pat,2365,Kortryk Belgium
 OP4A,Francis,2429,(ON6LY) Turnhout An Belgium 
-OQ3R,Mar,,Ciney Belgium
+OQ3R,Mar,ON,Ciney Belgium
 OT4V,Danny,2170,(ON4VT)
-OT7T,John,,Merelbeke Belgium
-OV2V,Per,,Viuf Denmark
+OT7T,John,ON,Merelbeke Belgium
+OV2V,Per,ON,Viuf Denmark
 OX3XR,Peter,1116,Nuuk Greenland
 OY1CT,Carsten,797,Kvivik Faroe Islands
 OZ1AAR,Villy,2694,Horsholm Denmark
 OZ1JHM,Jal,1420,Lundby Denmark
-OZ1THC,Tommy,,Nyborg Denmark
+OZ1THC,Tommy,OZ,Nyborg Denmark
 OZ3SM,Steve,2361,Horsholm Denmark
-OZ4UN,Paul,,Fredenborg Denmark
-OZ4WIL,Neils,,Nyborg Denmark
-OZ5DX,Hans,,Nykobing Denmark
-OZ5KU,Kurt,,Nimtofte Denmark
-OZ6FRS,Per,,Prederikssund Denmark
-OZ7JC,Jorgen,,Skals Denmark
+OZ4UN,Paul,OZ,Fredenborg Denmark
+OZ4WIL,Neils,OZ,Nyborg Denmark
+OZ5DX,Hans,OZ,Nykobing Denmark
+OZ5KU,Kurt,OZ,Nimtofte Denmark
+OZ6FRS,Per,OZ,Prederikssund Denmark
+OZ7JC,Jorgen,OZ,Skals Denmark
 P40LE,Andy,39,Aruba  (also K2LE)
-P40TA,Ken,,Martell  CA USA
+P40TA,Ken,P4,Martell  CA USA
 PA0ABM,Wino,2890,Huijbergen Netherlands
 PA0HOP,Hans,414,Leuth Netherlands
-PA0IA,LJ,,Pijnacker Netherlands
+PA0IA,LJ,PA,Pijnacker Netherlands
 PA0INA,Frans,443,Goes Netherlands
 PA0JLS,Hans,849,Liederdorp Netherlands
-PA0KBN,Klaas,,Stiens Netherlands
-PA0MIR,Nico,,Purmerend Netherlands
+PA0KBN,Klaas,PA,Stiens Netherlands
+PA0MIR,Nico,PA,Purmerend Netherlands
 PA0Q,Hans,386,Zieuwent Netherlands
-PA0VDV,Joeke,,Oldeberkoop Netherlands
+PA0VDV,Joeke,PA,Oldeberkoop Netherlands
 PA0VLD,Jan,2307,Drachten Netherlands
-PA0ZAV,Jan,,Westbeemster Netherlands
-PA1AT,Gerrey,,DR Netherlands
-PA1BBO,Bert,,Hellendoorn Netherlands
+PA0ZAV,Jan,PA,Westbeemster Netherlands
+PA1AT,Gerrey,PA,DR Netherlands
+PA1BBO,Bert,PA,Hellendoorn Netherlands
 PA1FOX,Alex,1225,Hengelo Netherlands
-PA1LEX,Lex,,Hardewijk Netherlands
-PA1LIO,Adriaan,,Eemnes Netherlands
+PA1LEX,Lex,PA,Hardewijk Netherlands
+PA1LIO,Adriaan,PA,Eemnes Netherlands
 PA2ST,Ben,2897,Spijkenisse Netherlands
 PA2TA,Tjakko,2955,Papendrecht Netherlands
 PA3AAV,Gert,2624,Oost Beemster Netherlands
 PA3ACA,Hans,1320,Spijkenisse Netherlands
 PA3BFH,Herman,2485,Kudelstaart Netherlands
-PA3CNI,Willem,,Apeldoorn Netherlands
-PA3CWN,Oene,,Dokkum Netherlands
+PA3CNI,Willem,PA,Apeldoorn Netherlands
+PA3CWN,Oene,PA,Dokkum Netherlands
 PA3DBS,Peter,702,Halsteren Netherlands
-PA3DEU,Dick,,Haarlem Netherlands
+PA3DEU,Dick,PA,Haarlem Netherlands
 PA3DZM,Eric,2569,Tilburg Netherlands
-PA3EVY,Willy,,(PI4DX)  Terneuzen Netherlands
+PA3EVY,Willy,PA,(PI4DX)  Terneuzen Netherlands
 PA3GDG,Fred,PA,Hendrik Ido Ambacht Netherlands
-PA3GLH,Rimus,,Doorn Netherlands
+PA3GLH,Rimus,PA,Doorn Netherlands
 PA3GSV,Jan,2932,Alphen aan den Rijn Netherlands
 PA3HEN,Theo,2481,(K4HEN)  Purmerend Netherlands
-PA3KC,Jurgen,,Eindhoven Netherlands
-PA3OES,Andre,,Emmen Netherlands
-PA4M,Mark,,Houten Netherlands
+PA3KC,Jurgen,PA,Eindhoven Netherlands
+PA3OES,Andre,PA,Emmen Netherlands
+PA4M,Mark,PA,Houten Netherlands
 PA4N,Frank,1161,Almere Netherlands
 PA5KT,Henk,1962,Abtskerke Netherlands
 PA5TT,Teun,283,Burgh Haamstede Netherlands
 PA5V,Bob,179,Boskoop Netherlands
-PA5XM,Kees,,AW Waddinxveen Netherlands
-PA7CG,Kees,,Netherlands
+PA5XM,Kees,PA,AW Waddinxveen Netherlands
+PA7CG,Kees,PA,Netherlands
 PA7RA,Rien,284,Bergen op Zoom Netherlands
-PA8MM,Victor,,Purmerend Netherlands
-PA9WOR,Bart,,Apeldoorn/Almelo Netherlands
-PC4H,Henk,,Hoofddorp Netherlands
+PA8MM,Victor,PA,Purmerend Netherlands
+PA9WOR,Bart,PA,Apeldoorn/Almelo Netherlands
+PC4H,Henk,PA,Hoofddorp Netherlands
 PE2K,Adi,2638,Apeldoorn Netherlands
-PE5B,Ben,,Haren Netherlands
+PE5B,Ben,PA,Haren Netherlands
 PE5O,Onno,1852,Rotherdam Netherlands
 PF5X,Enno,2531,Cuijk Netherlands
-PG1I,Marinus,,Noord-Holland Netherlands
+PG1I,Marinus,PA,Noord-Holland Netherlands
 PG4I,Jo,2225,(Joop)  Culemborg Netherlands
-PG7V,Jan,,Hulshorst Netherlands
+PG7V,Jan,PA,Hulshorst Netherlands
 PH60VHSC,Frans,443,(PA0INA) 60th anniversary VHSC
 PJ4LS,Hans,849,Bonaire Netherland Antillies
 PJ7AA,Tom,1092,(AA9A)  Saint Maarten
 PP5EG,Oms,549,Florianopolis Brazil
-PR7AB,Junior,,Guarabira Brazil
-PS7CE,CHA,,Natal Brazil
-PY1NB,Felipe,,Rio de Janeiro Brazil
-PY2EGM,Sergio,,Sao Paulo Brazil
+PR7AB,Junior,PY,Guarabira Brazil
+PS7CE,CHA,PY,Natal Brazil
+PY1NB,Felipe,PY,Rio de Janeiro Brazil
+PY2EGM,Sergio,PY,Sao Paulo Brazil
 PY2OMS,Oms,549,Florianopolis Brazil
-PY2XC,Carlos,,Sao Paulo Brazil
+PY2XC,Carlos,PY,Sao Paulo Brazil
 PY4XX,Carlos,2750,Juiz de Fora Brazil
 PY5EG,Oms,549,Curitiba Brazil
-PZ5RA,Ramon,,Suriname
+PZ5RA,Ramon,PZ,Suriname
 PZ5T,Yuri,21,(VE3DZ)  Suriname
-R2ZM,Alex,,Belgorodskaya Russia
-R3EV,Larry,,Oriovskaya Russia
-R3LB,Alex,,Smolensk Russia
-R4AZ,Yuri,,Volgograd Russia
+R2ZM,Alex,UA,Belgorodskaya Russia
+R3EV,Larry,UA,Oriovskaya Russia
+R3LB,Alex,UA,Smolensk Russia
+R4AZ,Yuri,UA,Volgograd Russia
 R5AF,Ilya,2474,Moscow Russia
-R5AK,Anatoly,,Moscow Russia
+R5AK,Anatoly,UA,Moscow Russia
 R6AF,Vic,406,Novorossiysk Russia
 R6AF/P,Vic,406,Russia
-R6KD,Slave,,Alushta Russia
-R7DA,Alex,,Novorossiysk Russia
-R9SK,Vlad,,Mednogorsk Asiatic Russia
-RA2FV,Anatoly,,Rybnoe Russia
-RA3AV,Alek,,Moscow Russia
+R6KD,Slave,UA,Alushta Russia
+R7DA,Alex,UA,Novorossiysk Russia
+R9SK,Vlad,UA,Mednogorsk Asiatic Russia
+RA2FV,Anatoly,UA2,Rybnoe Russia
+RA3AV,Alek,UA,Moscow Russia
 RA3CQ,Igor,20,Moscow Russia
-RA3LDP,Alex,,Yartsevo
-RA4ACX,Alexey,,Volgograd Russia
-RC6R,Vlad,,Russia
-RD1AP,Ogpr,,St-Petersburg Russia
+RA3LDP,Alex,UA,Yartsevo
+RA4ACX,Alexey,UA,Volgograd Russia
+RC6R,Vlad,UA,Russia
+RD1AP,Ogpr,UA,St-Petersburg Russia
 RD3A,Val,536,Moscow Rusia
 RD3AF,Val,536,Moscow Russia
 RG6G,Alex,399,Stavropol Russia
-RK1OWZ,Serg,,RC Koryazhma Russia
-RK6F,Victor,,no info
-RL3AA,Mikhail,,Moscow Russia
+RK1OWZ,Serg,UA,RC Koryazhma Russia
+RK6F,Victor,UA,no info
+RL3AA,Mikhail,UA,Moscow Russia
 RM2D,Mats,1820,Moscow Russia (SM6LRR)
 RM3F,Marko,1224,Moscow Russia (N5ZO)
-RN1QA,Yuri,,Vologodska Russia
-RN3DN,Serge,,Moskovskaya Russia
-RN4W,Igor,,Izhevsk Russia
-RO5A,Joe,,Moscow Russia
-RO9O,Alex,,Novosibirskij Asiatic Russia
-RQ3D,Alex,,Moscow Russia
-RT1Q,Andy,,Volgodskaya Russia
-RT5G,Dima,,Lipetsk Russia
+RN1QA,Yuri,UA,Vologodska Russia
+RN3DN,Serge,UA,Moskovskaya Russia
+RN4W,Igor,UA,Izhevsk Russia
+RO5A,Joe,UA,Moscow Russia
+RO9O,Alex,UA,Novosibirskij Asiatic Russia
+RQ3D,Alex,UA,Moscow Russia
+RT1Q,Andy,UA,Volgodskaya Russia
+RT5G,Dima,UA,Lipetsk Russia
 RT5P,Gene,2706,(RY3PAE) no info
-RT9S,Yuri,,Orenburgskaya Russia
-RT9T/3,Tony,,Orenburg Russia
-RU3TJ,Dima,,Dzerzhinsk Russia
-RV3FF,Andy,,Russia
-RV3ZN,Alex,,Gubkin Russia
-RW3RN,Alex,,Tambov Russia
-RW3YW,Vlad,,Bryansk Russia
-RW3ZA,Toly,,Stary Oskol Russia
-RW3ZO,Sergey,,Belgorodskaya Russia
-RW4CLF,Gene,,Saratov Novaya Russia
-RW4CLF/3,Gene,,
+RT9S,Yuri,UA,Orenburgskaya Russia
+RT9T/3,Tony,UA,Orenburg Russia
+RU3TJ,Dima,UA,Dzerzhinsk Russia
+RV3FF,Andy,UA,Russia
+RV3ZN,Alex,UA,Gubkin Russia
+RW3RN,Alex,UA,Tambov Russia
+RW3YW,Vlad,UA,Bryansk Russia
+RW3ZA,Toly,UA,Stary Oskol Russia
+RW3ZO,Sergey,UA,Belgorodskaya Russia
+RW4CLF,Gene,UA,Saratov Novaya Russia
+RW4CLF/3,Gene,UA,
 RW6HX,Alex,399,(no info) Russia
-RW9QA,Vlad,,Kurgan Russia
-RX3FC,Vlad,,Russia
-RX3QNE,Misha,,Varonezh Russia
-RX4CD,Sergey,,Saratovskaya Russia
-RX6CB,Ed,,Novorossiysk Russia
-RX9TX,Art,,(no info) Russia
+RW9QA,Vlad,UA9,Kurgan Russia
+RX3FC,Vlad,UA,Russia
+RX3QNE,Misha,UA,Varonezh Russia
+RX4CD,Sergey,UA,Saratovskaya Russia
+RX6CB,Ed,UA,Novorossiysk Russia
+RX9TX,Art,UA,(no info) Russia
 RY3PAE,Savin,2706,(RT5P) no info
-RY7KV,Mike,,Yalta
-RZ3AM,Vlad,,Moscow Russia
-RZ3DN,Alex,,Moskovskaya Russia
-RZ9OO,Alex,,(no info) Russia
-S50R,Leo,,Idrija SI Idrija Slovenia
-S51DV,Alojz,,Sevnica Slovenia
-S51MF,Franz,,Spodnji Duplek Slovenia
-S51NM,Herman,,Ptuj Slovenia
-S51RU,Marjan,,Bistrica Slovenia
-S51V,Silvo,,Ljutomer Slovenia
-S51WO,Sam,,Koroskem Slovenia
-S52R,Tone,,Crnomelj Slovenia
-S53O,Ljubo,,Martjanci Blovenia 
+RY7KV,Mike,UA,Yalta
+RZ3AM,Vlad,UA,Moscow Russia
+RZ3DN,Alex,UA,Moskovskaya Russia
+RZ9OO,Alex,UA,(no info) Russia
+S50R,Leo,S5,Idrija SI Idrija Slovenia
+S51DV,Alojz,S5,Sevnica Slovenia
+S51MF,Franz,S5,Spodnji Duplek Slovenia
+S51NM,Herman,S5,Ptuj Slovenia
+S51RU,Marjan,S5,Bistrica Slovenia
+S51V,Silvo,S5,Ljutomer Slovenia
+S51WO,Sam,S5,Koroskem Slovenia
+S52R,Tone,S5,Crnomelj Slovenia
+S53O,Ljubo,S5,Martjanci Blovenia 
 S53R,Rob,492,Spodnja Idrija Slovenia
 S55N,Joc,2513,(Joze) Slovenia
-S56A,Mario,,Ljubljana Slovenia
-S57KM,Sandi,,Dob Slovenia
-S58M,Dare,,Morvce Slovenia
+S56A,Mario,S5,Ljubljana Slovenia
+S57KM,Sandi,S5,Dob Slovenia
+S58M,Dare,S5,Morvce Slovenia
 S58MU,Milan,3002,Videm pri Ptuju Slovenia
-S58Q,Darko,,Celje Slovenia
-S59N,Dan,,Naklo Slovenia
+S58Q,Darko,S5,Celje Slovenia
+S59N,Dan,S5,Naklo Slovenia
 SA0BXV,Claes,1849,Varmdo Sweden
 SA1CCQ,Eddie,2789,Gotland Isl. Sweden   EU020
 SA2RFQ,Dan,1601,Lulea Sweden (WB4RFQ)
 SA6BGR,Per,1773,Lindome Sweden (also SD6M)
 SA6G,Lars,173,Dalsjofors Sweden (SM6CUK)
-SA7UFO,Uno,,Hassleholm Sweden
+SA7UFO,Uno,SM,Hassleholm Sweden
 SC3N,Andy,265,Iggo Island Sweden (EA8CN)
 SD1A,Eric,1718,Visby Sweden (SM1TDE)
 SD6F,Klas,2163,Askim Sweden (SM6JWR) (Occ. QRP)
@@ -3845,141 +3846,141 @@ SE0B,Claes,1849,Varmdo Sweden (SA0BXV)
 SE0C,Ola,1737,Upplands-Vasby Sweden (SM0CUH)
 SE4E,Lars,950,Ludvika Sweden (SM4DQE)
 SE5E,Ingo,2097,Vallingby Sweden (SM5AJV)
-SE5L,Ben,,Fagersta Sweden (SM5ALJ)
+SE5L,Ben,SM,Fagersta Sweden (SM5ALJ)
 SE6J,Johan,2880,(SM6XHM)  Alingsas Sweden
 SF0Z,Jens,2237,(SM0HEV) Upplands-Vasby Sweden
 SF1Z,Jens,2237,(SM0HEV) Sweden
-SF3A,Jan,,Sundsbruk Sweden (SM3CER)
+SF3A,Jan,SM,Sundsbruk Sweden (SM3CER)
 SI5Y,Kurt,904,Ostervala Sweden (SM5BKK)
-SJ6W,Sten,,(SM6MIS)  Gothenburg Sweden
-SK2T,,,Umea Sweden (FURA Club Umea)
-SK6SAQ,,,Grimeton Sweden (World heritage radio station)
-SM0AIG,Ingemar,,Kista Sweden
+SJ6W,Sten,SM,(SM6MIS)  Gothenburg Sweden
+SK2T,,SM,Umea Sweden (FURA Club Umea)
+SK6SAQ,,SM,Grimeton Sweden (World heritage radio station)
+SM0AIG,Ingemar,SM,Kista Sweden
 SM0BYD,Hans,998,Sollentuna Sweden
 SM0CUH,Ola,1737,Upplands-Vasby Sweden (also SE0C)
 SM0FPR,Mats,2125,Norrtelje Sweden
 SM0HEV,Jens,2237,Upplands-Vasby Sweden
 SM0OEK,Jaan,2548,Faarsta Sweden
 SM0Y,Lars,1155,Sollentuna Sweden (SM0Y)
-SM1IRS,Andy,,Havdhem Sweden
+SM1IRS,Andy,SM,Havdhem Sweden
 SM1TDE,Eric,1718,Visby Sweden (also SD1A)
 SM2CEW,Peter,2385,Lulea Sweden
 SM2EKM,Jim,2976,Boden Sweden
 SM2LIY,Per,2906,(SM2M)  Umea Sweden
 SM2M,Per,2906,(SM2LIY)  Umea Sweden
 SM3EVR,Tord,261,Njurunda Sweden
-SM3KMB,Ben,,Nyland Sweden
-SM4ASX,Len,,Orebro Sweden
+SM3KMB,Ben,SM,Nyland Sweden
+SM4ASX,Len,SM,Orebro Sweden
 SM4DQE,Lars,950,Ludvika Sweden (also SE4E)
-SM4EMO,Ken,,Kumla Sweden
-SM5ACQ,Don,,Vasteras Sweden
+SM4EMO,Ken,SM,Kumla Sweden
+SM5ACQ,Don,SM,Vasteras Sweden
 SM5AJV,Ingo,2097,Vallingby Sweden (also SE5E)
-SM5ALJ,Ben,,Fagersta Sweden (also SE5L)
+SM5ALJ,Ben,SM,Fagersta Sweden (also SE5L)
 SM5BKK,Kurt,904,Ostervala Sweden (also SI5Y)
 SM5CCE,Kjell,169,Tystberga Sweden
 SM5CIL,Arne,1410,Rejmyre Sweden (SM7CIL)
-SM5COP,Rune,,Styckebruk Sweden
+SM5COP,Rune,SM,Styckebruk Sweden
 SM5DJZ,Jan,SM,Knivsta Sweden
 SM5GLC,Lasse,1529,Linkoping Sweden
 SM5IMO,Dan,1854,Vingaker Sweden
 SM5S,GI,2094,(Goran) Torshalla Sweden (SM5SIC)
 SM5SIC,Goran,2094,Torshalla Sweden (also SM5S)
 SM6BGA,Hans,456,Mullsjo Sweden
-SM6CLU,Len,,Gudhem Sweden (also SM6X)
-SM6CMU,Ingemar,,Vallda Sweden
+SM6CLU,Len,SM,Gudhem Sweden (also SM6X)
+SM6CMU,Ingemar,SM,Vallda Sweden
 SM6CNN,Andy,176,Boras Sweden (DF3IAL)
 SM6CUK,Lars,173,Dalsjofors Sweden (also SA6G)
-SM6CWK,Sven,,Dals-Langed Sweden
+SM6CWK,Sven,SM,Dals-Langed Sweden
 SM6F,Lars,173,Dalsjofors Sweden
 SM6FKF,Fredy,999,Asarp Sweden
-SM6IQD,Rolf,,Gothenburg Sweden
+SM6IQD,Rolf,SM,Gothenburg Sweden
 SM6JWR,Klas,2163,Askim Sweden
 SM6LRR,Mats,1820,(now RM2D)
 SM6M,Peter,2663,(SM6MCW)  Axvall Sweden
 SM6MCW,Peter,2663,(SM6MCW) Axvall Sweden
-SM6NT,Lars,,Vegby Sweden
-SM6X,Len,,Gudhem Sweden (SM6CLU)
+SM6NT,Lars,SM,Vegby Sweden
+SM6X,Len,SM,Gudhem Sweden (SM6CLU)
 SM6XHM,Johan,2880,Aligsas Sweden
-SM6YNO,Hans,,Karlgustav Sweden
-SM7ATL,Ulf,,Kalmar Sweden
+SM6YNO,Hans,SM,Karlgustav Sweden
+SM7ATL,Ulf,SM,Kalmar Sweden
 SM7BUA,Mats,1950,Bankeryd Sweden
 SM7CIL,Arne,1410,Borgholm Sweden (also SM5CIL)
-SM7DLK,Goran,,Saxtorp Sweden
-SM7DZD,Lars,,Eksjo Sweden
+SM7DLK,Goran,SM,Saxtorp Sweden
+SM7DZD,Lars,SM,Eksjo Sweden
 SM7FCU,Bengt,2033,Nattraby Sweden
 SM7IUN,Bjorn,2101,Bjarred Sweden
 SM7RYR,Roger,1855,Malmo Sweden
-SM7WNM,Jocke,,Bjarnum Sweden
-SM7YIN,Ingvar,,Skillinge Sweden
+SM7WNM,Jocke,SM,Bjarnum Sweden
+SM7YIN,Ingvar,SM,Skillinge Sweden
 SM9A,Stef,1884,Ystad Sweden (DL1IAO also SA3CWW)
 SM9X,Jaan,2548,Farsta Sweden
-SN1T,Ted,,(SP1NQN) Siemianile Poland
+SN1T,Ted,SP,(SP1NQN) Siemianile Poland
 SN5J,Jan,2887,Zegrze Poland
-SN5N,Chris,,Lukow 1 Poland
+SN5N,Chris,SP,Lukow 1 Poland
 SN9EA,Cary,1828,(VE4EA) travelling
-SN9MT,Mirek,,Ruda Slaska Poland
+SN9MT,Mirek,SP,Ruda Slaska Poland
 SO5CW,Fabian,1566,(DJ1YFK) Warka Poland
-SP1AEN,Max,,Debrzno Poland
-SP1ALK,Jan,,Szczcin Poland
+SP1AEN,Max,SP,Debrzno Poland
+SP1ALK,Jan,SP,Szczcin Poland
 SP1D,Robert,2542,Szczecin Poland
-SP1HN,Piotr,,Tanowo Poland
-SP2AQB,Joe,,Torun Poland
-SP2BMX,Jan,,Oslek n/Wisla Poland
-SP2DX,Wes,,Gdansk Poland
-SP2IST,Matt,,Rimia Poland
-SP2J,Mike,,Jaszczerek Poland
+SP1HN,Piotr,SP,Tanowo Poland
+SP2AQB,Joe,SP,Torun Poland
+SP2BMX,Jan,SP,Oslek n/Wisla Poland
+SP2DX,Wes,SP,Gdansk Poland
+SP2IST,Matt,SP,Rimia Poland
+SP2J,Mike,SP,Jaszczerek Poland
 SP2LNW,Slaw,2544,(Slawomir) Mirachowo Poland
 SP2R,Darek,2674,Slupsk Poland
-SP3BLC,Mietek,,no info
+SP3BLC,Mietek,SP,no info
 SP3FSM,Stan,2961,Poznan Poland
-SP4AWE,Kaz,,Bialystok Poland
-SP4Z,Wes,,Lapy Poland
-SP5ENA,Mirek,,Warszawa Poland
-SP5ICQ,Wes,,Warszawa Poland
+SP4AWE,Kaz,SP,Bialystok Poland
+SP4Z,Wes,SP,Lapy Poland
+SP5ENA,Mirek,SP,Warszawa Poland
+SP5ICQ,Wes,SP,Warszawa Poland
 SP5JXK,Jan,2887,(SN5J)  Zegrze Poland
-SP5ULV,Krisz,,Warszawa Poland
-SP6A,Zbig,,Wroclaw Poland
-SP7BCA,Tom,,Skierniewice Poland
-SP8ARY,Ron,,Krasnik Poland
-SP9AVR,Claudio,,Naklo Slaskie Poland
-SP9BRP,Jan,,Krakow Poland
-SP9FOW,Roman,,Swierklany Poland
-SP9R,Jan,,Krakow Poland
-SP9RXP,Peter,,Niedzica Poland
+SP5ULV,Krisz,SP,Warszawa Poland
+SP6A,Zbig,SP,Wroclaw Poland
+SP7BCA,Tom,SP,Skierniewice Poland
+SP8ARY,Ron,SP,Krasnik Poland
+SP9AVR,Claudio,SP,Naklo Slaskie Poland
+SP9BRP,Jan,SP,Krakow Poland
+SP9FOW,Roman,SP,Swierklany Poland
+SP9R,Jan,SP,Krakow Poland
+SP9RXP,Peter,SP,Niedzica Poland
 SQ5VCO,Adam,2781,Chrzczanka-Folwark Poland
-SQ5WAJ,Jacek,,Plock Poland
+SQ5WAJ,Jacek,SP,Plock Poland
 SQ6GIT,Konrad,2045,Pisarzowice Poland
-SQ6MIH,Barteck,,
+SQ6MIH,Barteck,SP,
 SQ9IWA,Tomasz,2240,Wodsislaw Slaski Poland
 SQ9S,Adam,2309,Pszow Poland
-ST2AR,Rob,,Khartoum Sudan
+ST2AR,Rob,ST,Khartoum Sudan
 SV0XCC/9,Paul,1009,Crete Greece
-SV1ACL,John,,Marousi Greece
-SV1CEI,Nik,,Nea Penteli Greece
-SV1CQN,Kostas,,Agrinio Greece
-SV1DAY,Manos,,Athens Greece
-SV1DOJ,Tassos,,Piraeus Greece
-SV1JB,Dimis,,ATHENS-NIKEA Greece
-SV1RUX,Dave,,Athens Greece
+SV1ACL,John,SV,Marousi Greece
+SV1CEI,Nik,SV,Nea Penteli Greece
+SV1CQN,Kostas,SV,Agrinio Greece
+SV1DAY,Manos,SV,Athens Greece
+SV1DOJ,Tassos,SV,Piraeus Greece
+SV1JB,Dimis,SV,ATHENS-NIKEA Greece
+SV1RUX,Dave,SV,Athens Greece
 SV2BBK,Theo,1976,(Fanis) Thessaloniki Greece (Director)
 SV2BXA,Alex,2400,Thessaloniki Greece
-SV2ESW,,,Thessaloniki Greece
-SV2KF,George,,Hellas Greece
-SV5BYR,Mike,,Dodecanese Greece
-SV8PMM,Panos,,Aegina Greece
+SV2ESW,,SV,Thessaloniki Greece
+SV2KF,George,SV,Hellas Greece
+SV5BYR,Mike,SV5,Dodecanese Greece
+SV8PMM,Panos,SV,Aegina Greece
 SV9RNG,Pol,1009,Crete
 T6AA,Rob,492,(S53R) Kabul Afghanistan
-T6AG,Dave,,Afghanistan (CT1DRB)
+T6AG,Dave,YA,Afghanistan (CT1DRB)
 TA1UT,Bora,2768,Karakoy Istanbul Turkey
-TA2BD,Halil,,Istanbul Turkey
-TA2SE,Rifat,,Canakkale Turkey
-TA2SE/3,Rifat,,Canakkale Turkey
+TA2BD,Halil,TA,Istanbul Turkey
+TA2SE,Rifat,TA,Canakkale Turkey
+TA2SE/3,Rifat,TA,Canakkale Turkey
 TA7I,Ozkan,2646,Trabson Turkey
 TF3DC,Oskar,285,Reykjavik Iceland
 TF3JB,Jonas,2803,Reykjavik Icland
 TF3Y,Yngvi,238,Reykjavik Iceland
 TF4M,Thor,177,Bildudalur Iceland
-TG9AJR,Juan,,Puerta Parada Guatemala
+TG9AJR,Juan,TG,Puerta Parada Guatemala
 TI5KS,Kam,146,Costa Rica (N3KS)
 TI5W,Nate,445,Costa Rica (N4YDU)
 TI7W,Chris,1576,(KL9A)
@@ -3987,89 +3988,89 @@ TO9W,John,471,(W9ILY) in Dxpedition
 TX5T,Madison,1479,(W5MJ) Austral Islands Tubuai
 TY2AC,Nicolas,1755,Cotonou Benin
 TZ4AM,Jeff,1716,Bamako Mali Africa
-UA1ABW,Val,,St.Petersburg Russia
-UA1AJ,VAl,,St-Petersburg Russia
-UA1MU,Victor,,St.Peteresburg Russia
-UA2FAK,Mikolaj,,Svetlogorsk Ka Kaliningrad
-UA3AB,Andy,,Moscow Russia
-UA3AO,Lery,,Moscow Russia
-UA3AP,Serge,,Moscow Russia
-UA3DSN,Sergey,,Moskovskaia
-UA3GR,Sergi,,Lipetskaya Russia
-UA3QAM,Alex,,Nekrasova Russia
-UA4FCO,Yuri,,Chernozerie village Russia
+UA1ABW,Val,UA,St.Petersburg Russia
+UA1AJ,VAl,UA,St-Petersburg Russia
+UA1MU,Victor,UA,St.Peteresburg Russia
+UA2FAK,Mikolaj,UA2,Svetlogorsk Ka Kaliningrad
+UA3AB,Andy,UA,Moscow Russia
+UA3AO,Lery,UA,Moscow Russia
+UA3AP,Serge,UA,Moscow Russia
+UA3DSN,Sergey,UA,Moskovskaia
+UA3GR,Sergi,UA,Lipetskaya Russia
+UA3QAM,Alex,UA,Nekrasova Russia
+UA4FCO,Yuri,UA,Chernozerie village Russia
 UA6AF,Vic,406,NOVOROSSIYSK Russia
-UA6HAQ,Dima,,Kochubeevskoe Russia
-UA6HRB,Boris,,Mineralnye Vody Russia
-UA6XT,Tolik,,Nal'chik Russia
+UA6HAQ,Dima,UA,Kochubeevskoe Russia
+UA6HRB,Boris,UA,Mineralnye Vody Russia
+UA6XT,Tolik,UA,Nal'chik Russia
 UA9BA,Willy,428,Asiatic Russia
-UA9CDC,Igor,,Ekaterinburg Russia
-UA9FAR,Vlad,,Perm Russia
-UA9FGJ,Valery,,Gubakha Permsky Kr. Russia
+UA9CDC,Igor,UA9,Ekaterinburg Russia
+UA9FAR,Vlad,UA9,Perm Russia
+UA9FGJ,Valery,UA9,Gubakha Permsky Kr. Russia
 UB4Y,Vlad,UA,Novocheboksarsk Russia
-UN7GP,Boris,,Almaty Kazakhstan
-UR0CB,Gena,,Cherkasy Ukraine
-UR0IG,Ivan,,Enakievo Ukraine
-UR1YAA,Seva,,Kiev Ukraine
+UN7GP,Boris,UN,Almaty Kazakhstan
+UR0CB,Gena,UR,Cherkasy Ukraine
+UR0IG,Ivan,UR,Enakievo Ukraine
+UR1YAA,Seva,UR,Kiev Ukraine
 UR2Y,Val,2698,Chernivtsi Ukraine
-UR3HC,Alex,,Krekenchuk Ukraine
-UR4GA,Boris,,Chaplinka Ukraine
-UR5AO,Vlad,,Sumy Ukraine
-UR5FCM,Igor,,Odessa Ukraine (Occ. QRP)
-UR5LMB,Sergey,,Kharkovskaya Ukraine
+UR3HC,Alex,UR,Krekenchuk Ukraine
+UR4GA,Boris,UR,Chaplinka Ukraine
+UR5AO,Vlad,UR,Sumy Ukraine
+UR5FCM,Igor,UR,Odessa Ukraine (Occ. QRP)
+UR5LMB,Sergey,UR,Kharkovskaya Ukraine
 UR5MM,Rudy,382,Privolie Ukraine
-UR5YKO,Artem,,Chernivtsi Ukraine
-UR5ZW,Victor,,Pervomaysk Ukraine
+UR5YKO,Artem,UR,Chernivtsi Ukraine
+UR5ZW,Victor,UR,Pervomaysk Ukraine
 UR7GO,Alex,2685,Kherson Ukraine
-US0KF,Jackob,,Rovno Ukraine
+US0KF,Jackob,UR,Rovno Ukraine
 US0MF,Serge,381,Lisichansk Ukraine
 US2YW,Slava,2828,Chernivtsi Ukraine
-US3EZ,Serge,,Ukraine
-US4IRC,Gena,,Donetsk Ukraine
-UT1LF,Alex,,Khar'Kov Ukraine
-UT2UB,Andre,,Klev UIkraine
-UT3GP,Vlad,,Kherson Ukraine
-UT3RN,Nick,,Chernigovskaya Ukraine
+US3EZ,Serge,UR,Ukraine
+US4IRC,Gena,UR,Donetsk Ukraine
+UT1LF,Alex,UR,Khar'Kov Ukraine
+UT2UB,Andre,UR,Klev UIkraine
+UT3GP,Vlad,UR,Kherson Ukraine
+UT3RN,Nick,UR,Chernigovskaya Ukraine
 UT3UZ,Alex,614,Kiev Ukraine
-UT4UP,Alex,,Kiev Ukraine
+UT4UP,Alex,UR,Kiev Ukraine
 UT4UZ,Yuri,21,Kiev Ukraine (also VE3DZ)
-UT4WA,Igor,,Lviv Ukraine
+UT4WA,Igor,UR,Lviv Ukraine
 UT5CW,Bob,527,(UZ1WW)  Bryuhovychi Ukraine
-UT5EOX,Ion,,Timisonra Romania
-UT5UDX,Serg,,Kiev Ukraine
-UT5WAA,Volod,,Lviv Ukraine (Occ. QRP)
+UT5EOX,Ion,UR,Timisonra Romania
+UT5UDX,Serg,UR,Kiev Ukraine
+UT5WAA,Volod,UR,Lviv Ukraine (Occ. QRP)
 UT6UA,Dim,1756,Kiev Ukraine
 UT7UJ,Dim,619,Kiev Ukraine
-UT7UV,Sasha,,Kiev Ukraine
-UU5JZ,Stan,,Simferopol Crinea Ukraine
-UW2ZO,Igor,,Nikolaev Ukraine
+UT7UV,Sasha,UR,Kiev Ukraine
+UU5JZ,Stan,UR,Simferopol Crinea Ukraine
+UW2ZO,Igor,UR,Nikolaev Ukraine
 UW3HM,Slava,1810,Poitava Ukraine
-UW3QV,Victor,,Primorsk Ukraine
-UW8SM,Andy,2964,Ivano-Frankivssk Ukraine
+UW3QV,Victor,UR,Primorsk Ukraine
 UW7LL,Yarik,2229,Kharkov Ukraine
-UX0CQ,Vlad,,Cherkasy Ukraine
-UX0KR,Vlad,,Kiev Ukraine
+UW8SM,Andy,2964,Ivano-Frankivssk Ukraine
+UX0CQ,Vlad,UR,Cherkasy Ukraine
+UX0KR,Vlad,UR,Kiev Ukraine
 UX1HW,Art,1890,Kremenchuck Ukraine
 UX1HW/M,Art,1890,Mobile in Ukraine
-UX1IW,Serge,,Donetsk ME
+UX1IW,Serge,UR,Donetsk ME
 UX1UA,Sergei,522,Kyiv Ukraine
-UX1VT,Pavlo,,Kirivogradska Ukraine
+UX1VT,Pavlo,UR,Kirivogradska Ukraine
 UX2HB,Waddy,2538,Poltava Ukraine
-UX7VA,Vlad,,Kirovogradskaya Ukraine
+UX7VA,Vlad,UR,Kirovogradskaya Ukraine
 UY1HY,VAl,2349,Poltavskayua Ukraine
-UY2UA,Vlad,,Donetsk Ukraine
-UY3QT,Alex,,Lenina Ukraine
-UY5LX,Mike,,Kharlovskaya Ukraine
-UY5MB,Vlad,,Lugansk Ukraine
-UY5QZ,Val,,Zaporozh'e Ukraine
-UY7LU,Alex,,Kharkov Ukraine
+UY2UA,Vlad,UR,Donetsk Ukraine
+UY3QT,Alex,UR,Lenina Ukraine
+UY5LX,Mike,UR,Kharlovskaya Ukraine
+UY5MB,Vlad,UR,Lugansk Ukraine
+UY5QZ,Val,UR,Zaporozh'e Ukraine
+UY7LU,Alex,UR,Kharkov Ukraine
 UZ1WW,Bob,527,Lviv Ukraine
 V21XN,Bill,KY,Richmond KY USA
 V26K,Bud,242,Antigua (AA3B)
 V26M,Alan,727,(N3AD) Antigua and Barbuda
 V26OC,Brian,2944,(N3OC)
-V31AT,Rob,,K5PI Belize
-V31JP,Joe,,Dangriga Belize
+V31AT,Rob,V3,K5PI Belize
+V31JP,Joe,V3,Dangriga Belize
 V31MA,Marc,1851,Belize  (Also DO4DXA)
 V31SP,Phil,2588,(DK6SP)
 V31UB,Colin,418,Belize
@@ -4264,7 +4265,7 @@ VE7FO,Jim,1368,Vancouver BC
 VE7GPG,Greg,BC,Creston BC
 VE7IO,Fred,2696,Surrey BC
 VE7JH,Gabor,2702,Crofton BC
-VE7KHI,Kevin,,Hornby Island BC (NA036)
+VE7KHI,Kevin,BC,Hornby Island BC (NA036)
 VE7KW,Keith,2182,Port Coquitlam BC
 VE7MR,Willi,427,Nanaimo BC
 VE7NZ,Adrian,2758,Coquitlam BC
@@ -4282,19 +4283,19 @@ VE9WW,Bill,NB,Moncton NM
 VE9XDX,Gerry,191,(W1VE)
 VE9XX,Don,AB,Calgary AB
 VE9XX/6,Don,AB,Calgary AB
-VK2AFA,Samuel,,Morpeth Australia
+VK2AFA,Samuel,VK,Morpeth Australia
 VK2BJ,Barry,294,St-Ives  (Director)
-VK2DX,Nick,,Soit Junction Australia
+VK2DX,Nick,VK,Soit Junction Australia
 VK2IO,Gerard,2362,Castle Hill Australia
 VK2IOW,Patrick,2791,Millthorpe Austrilia
 VK3CWB,Moz,1895,(Maurie) Mildura Australia
-VK3ELT,Roger,,Upwey Vic Australia
-VK3GDM,David,,Melbourne Australia
+VK3ELT,Roger,VK,Upwey Vic Australia
+VK3GDM,David,VK,Melbourne Australia
 VK3QB,Chris,2949,Foster Austrilia
-VK4AQ,Rossco,,Innisfail Australia
+VK4AQ,Rossco,VK,Innisfail Australia
 VK4TJF,James,1191,Stafford Heights Australia (OC Amb.)
-VK4TT,Keith,,Wynnum North
-VK5EEE,Lou,,Findon Australia
+VK4TT,Keith,VK,Wynnum North
+VK5EEE,Lou,VK,Findon Australia
 VK5PL,Dave,CWA,Williamstown Australia
 VK6GX,Phil,2425,Gidgegannup Australia
 VK6HG,Rob,1029,Western Australia
@@ -4303,21 +4304,21 @@ VK8XX,Joe,339,Floyd VA USA
 VO1AAM,Yuri,21,also VE3DZ
 VO1AW,BK,NL,(Brian)  Gander NL
 VO1BQ,Joe,1325,St-John NL
-VO1DD,Doug,,Heart's Delight NL
+VO1DD,Doug,NL,Heart's Delight NL
 VO1HP,Frank,684,St-John's NL
 VO1MP,Gus,134,Portugal Cove St Philips NL
 VO1SA,Rick,NL,St John's NL
 VO1TTT,Mike,1347,VE9AA Newfoundland
 VO1WIN,Gerry,191,(W1VE)
 VO2AC,Chris,2778,(VE3FU)  Goose Bay NL
-VP2MKG,Geo,,(K5KG) Montserrat
+VP2MKG,Geo,VP2M,(K5KG) Montserrat
 VP2MVV,Ken,697,Montserrat (N2ZN)
 VP2MXF,Nigel,166,Beru Montserrat (G3TXF)
 VP5M,Dennis,124,(K2SX) QRV WPX 
 VQ9JC,Jim,389,Panama City Beach FL USA
 VQ9LA,Larry,644,Grandview MO USA
-VU2BGS,Kumar,,Bangalore India
-VU2PAI,PAI,,MANGALORE India
+VU2BGS,Kumar,VU,Bangalore India
+VU2PAI,PAI,VU,MANGALORE India
 VU2PTT,Prasad,615,BAngalore India
 VY1EI,Eric,YT,Whitehorse YT Canada
 VY2SS,Robby,PE,O'LEARY PE
@@ -4534,7 +4535,7 @@ W3MF,John,PA,Kresgeville PA
 W3MS,Craig,MD,Salisbury MD
 W3OKC,Steve,1808,Dover PA
 W3PNM,Bill,1985,Willow Hill PA
-W3PU,NY,Adrian,(KO8SCA)  Voyager DX Ass. 
+W3PU,Adrian,NY,(KO8SCA)  Voyager DX Ass. 
 W3RE,Matt,2625,East Petersburg PA
 W3RGA,Pat,PA,Sunbury PA
 W3RJ,Rich,PA,Coopersburg PA
@@ -4842,6 +4843,7 @@ W7RN,Tom,108,VC Highlands NV (K5RC)
 W7RX,Scott,2034,Eugene OR
 W7SAG,John,1582,Eagle ID (Occ. QRP)
 W7SAG/0,John,1582,
+W7SST,Mike,OR,Tigard OR
 W7SW,,143,(Scotty) Sun City West AZ
 W7TAO,Todd,WA,Mount Vernon WA
 W7UDH,Dick,WA,Seattle WA
@@ -4906,7 +4908,7 @@ W8TK,Tom,2129,Tucson AZ
 W8TU,Jim,MI,Plymouth MI
 W8UA,Javan,2662,Rittman OH
 W8UE,Ted,MI,Ypsilanti MI
-W8UE/4,Ted,,
+W8UE/4,Ted
 W8UV,Phil,DE,Wilford DE
 W8VNZ,Mark,MI,Montrose MI
 W8WOJ,Don,MI,Midland MI
@@ -5351,77 +5353,77 @@ WZ0W,Scott,MO,Moscow Mills MO
 WZ6T,Dave,CA,Vacaville CA
 WZ8P,Ev,OH,Zanesville OH
 XE1IM,Hector,2673,Puebla Mexico
-XE1KK,Ramon,,Mexico City
-XE1YZY,Pete,,Queretaro Mexico
-XE2V,Mode,,La Paz Mexico
+XE1KK,Ramon,XE,Mexico City
+XE1YZY,Pete,XE,Queretaro Mexico
+XE2V,Mode,XE,La Paz Mexico
 XE2X,Jorge,796,Hidalgo TX
-XQ1KZ,Nicolas,,Antofagasta Chile
-XQ4CW,Roberto,,Curico Chile
+XQ1KZ,Nicolas,CE,Antofagasta Chile
+XQ4CW,Roberto,CE,Curico Chile
 XV2W,Larry,1209,Ho Chi Minh City Vietnam
 XV9D,Mats,1820,Phan Thiet Vietnam
 YL1ZF,Kas,2256,Riga Latvia
-YL2AG,Alex,,Riga Latvia
-YL2CB,Arky,,Riga Latvia
-YL2CV,Vlad,,Kuldiga Latvia
+YL2AG,Alex,YL,Riga Latvia
+YL2CB,Arky,YL,Riga Latvia
+YL2CV,Vlad,YL,Kuldiga Latvia
 YL2TD,Gene,YL,
 YL3JD,Hanz,2227,Ikskile Latvia
 YN2AA,Jeff,67,Grenada Nicaragua
-YO2BBX,Nel,,Timis Romania
-YO2CEQ,Dan,,Sannicolau Mare Romania
-YO2LEA,Nelu,,Ineu Romania
-YO2ZQ,Dan,,Arad Romania
+YO2BBX,Nel,YO,Timis Romania
+YO2CEQ,Dan,YO,Sannicolau Mare Romania
+YO2LEA,Nelu,YO,Ineu Romania
+YO2ZQ,Dan,YO,Arad Romania
 YO3FLR,Christian,2527,Bucharest Romania
 YO3FRI,Tina,475,Bucuresti Romania
-YO3GCL,Mike,,Bucuresti Romania
-YO3GNF,Jack,,Bucuresti Romania
+YO3GCL,Mike,YO,Bucuresti Romania
+YO3GNF,Jack,YO,Bucuresti Romania
 YO3LW,Cris,2205,(Christian) Bucharest Romania
-YO3RZ,Gil,,Bucharest Romania
+YO3RZ,Gil,YO,Bucharest Romania
 YO4AAC,George,2881,Braila Romania
-YO4BP,Paul,,No Info
-YO4DCF,Marin,,Romania
-YO4PX,Fery,,Constanta Romania
-YO4TNV,Victor,,(CWA) Focsani Romania
+YO4BP,Paul,YO,No Info
+YO4DCF,Marin,YO,Romania
+YO4PX,Fery,YO,Constanta Romania
+YO4TNV,Victor,YO,(CWA) Focsani Romania
 YO5OHO,Chris,1079,Turda Romania
-YO6DDF,Val,,Tirgu Mures Romania
-YO6LB,Laszo,,Tirgu Mures Romania
-YO7YO,Max,,Romania
-YO9AYN,Ion,,Jud. Dambovita Romania
-YO9GDN,Marian,,Sotanga/DB Romania
-YO9GNF,Jack,,Romania
-YT1AA,Vema,,Paracin Serbia
-YT1E,Rod,,Lazarevac Serbia
-YT5FD,Slavko,,lajkovac Serbia
-YT5N,Mike,,Serbia
+YO6DDF,Val,YO,Tirgu Mures Romania
+YO6LB,Laszo,YO,Tirgu Mures Romania
+YO7YO,Max,YO,Romania
+YO9AYN,Ion,YO,Jud. Dambovita Romania
+YO9GDN,Marian,YO,Sotanga/DB Romania
+YO9GNF,Jack,YO,Romania
+YT1AA,Vema,YU,Paracin Serbia
+YT1E,Rod,YU,Lazarevac Serbia
+YT5FD,Slavko,YU,lajkovac Serbia
+YT5N,Mike,YU,Serbia
 YU6DX,Alex,2744,Novi Beograd Serbia
 Z32U,Zoki,2667,North Macedonia
-Z33B,Kirk,,North Macedonia
+Z33B,Kirk,Z3,North Macedonia
 Z35M,Vlado,Z3,Skopje Republic of North Macedonia
-ZB2CW,Derek,,Gibraltar
+ZB2CW,Derek,ZB,Gibraltar
 ZB2X,Jorma,144,Gibraltar
-ZD8W,Oli,,Ascension Island (W6NV)
+ZD8W,Oli,ZD8,Ascension Island (W6NV)
 ZF2DO,Dave,TX,Alpine TX
 ZF2DX,Kevin,1293,Cayman Isl. (N5DX)
 ZF2ET,Stan,272,(K5GO)
 ZF2IN,Tim,1942,(N6WIN)
 ZF2LZ,Martin,MA,Waban MA
-ZF2NE,Joe,,Cayman Isl.
+ZF2NE,Joe,ZF,Cayman Isl.
 ZF2SC,Scott,1698,Cayman Isl. (KA9P)
 ZF9CW,Stan,272,(K5GO) Siloam Springs Cayman Islands
-ZL1MH,Mike,,Ahipara Northland
-ZL2AGY,Tony,,Haweera South Taranaki
+ZL1MH,Mike,ZL,Ahipara Northland
+ZL2AGY,Tony,ZL,Haweera South Taranaki
 ZL2AIM,Ian,1174,RD1 Hikuai
 ZL2KE,Steve,1281,70km NE of Wellington
-ZL3CW,Jacky,,(F2CCW) Tauranga New Zealand
+ZL3CW,Jacky,ZL,(F2CCW) Tauranga New Zealand
 ZL3XDJ,Brian,ZL,Waikouaiti New Zealand
-ZP6CW,Doug,,Caacupe Paraguy
+ZP6CW,Doug,ZP,Caacupe Paraguy
 ZR2A,Ulrich,2470,Port Elizabeth SA
 ZS1C,Raoul,338,Kraaifontein SA (AFS Amb. Director)
 ZS1EL,Vidi,13,Somerset Mall South Africa
-ZS1I,Johan,,Heiderand South Africa
-ZS1X,Dirk,,Parklands Cape Town South Africa
-ZS2I,Johan,,Heiderand South Africa
-ZS4TX,Bernie,,Danhof SA
-ZS5SJ,John,,Richards Bay South Africa
-ZS6AKU,Dirk,,Glenvista South Africa
+ZS1I,Johan,ZS,Heiderand South Africa
+ZS1X,Dirk,ZS,Parklands Cape Town South Africa
+ZS2I,Johan,ZS,Heiderand South Africa
+ZS4TX,Bernie,ZS,Danhof SA
+ZS5SJ,John,ZS,Richards Bay South Africa
+ZS6AKU,Dirk,ZS,Glenvista South Africa
 ZS6RI,Chris,1236,The Reeds South Africa
-ZS6UT,Ed,,Lynnwood Ridge South Africa
+ZS6UT,Ed,ZS,Lynnwood Ridge South Africa
