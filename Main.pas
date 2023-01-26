@@ -21,7 +21,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.82';  { Sets version strings in UI panel. }
+  sVersion: String = '1.83';  { Sets version strings in UI panel. }
 
 type
 
@@ -1413,7 +1413,7 @@ const
         'CW CONTEST SIMULATOR'#13#13 +
         'Version %s'#13#13 +
         'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13 +
-        'Copyright ©2022 Morse Runner Community Edition Contributors'#13#13 +
+        'Copyright ©2022-2023 Morse Runner Community Edition Contributors'#13#13 +
         'https://www.github.com/w7sst/MorseRunner';
 begin
     Application.MessageBox(PChar(Format(Msg, [sVersion])),
