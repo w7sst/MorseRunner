@@ -13,7 +13,6 @@ type
         Exch2: string;    // Number/State/Province/Country Prefix
         UserText: string; // station location/information string
 
-        //function GetString: string; // returns <Name> <Exch2> [station info]
         function IsCWOpsMember: Boolean;  // return whether operator is a member
         class function compareCall(const left, right: TCWOPSRec) : integer; static;
     end;
@@ -48,6 +47,7 @@ uses
 
 function TCWOPS.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
+    // !!Order!!,Call,Name,Exch1,UserText,
     CallInx : integer = 0;
     NameInx : integer = 1;
     ExchInx : integer = 2;
@@ -74,14 +74,15 @@ begin
 
         for i:= 0 to slst.Count-1 do begin
             self.Delimit(tl, slst.Strings[i]);
-            if (tl.Count = 4) then begin
+            if (tl.Count >= 3) then begin
                 if CWO = nil then
                   CWO:= TCWOPSRec.Create;
 
                 CWO.Call:= UpperCase(tl.Strings[CallInx]);
                 CWO.Exch1:= UpperCase(tl.Strings[NameInx]);
                 CWO.Exch2:= UpperCase(tl.Strings[ExchInx]);
-                CWO.UserText:= tl.Strings[UserTextInx];
+                if tl.Count > UserTextInx then
+                  CWO.UserText:= tl.Strings[UserTextInx];
                 if CWO.Call='' then continue;
                 if CWO.Exch1='' then  continue;
                 if CWO.Exch2='' then continue;
@@ -182,36 +183,28 @@ var
   cwopsrec : TCWOPSRec;
   dxrec : TDXCCRec;
   userText : string;
-  dxEntity : string;
 begin
   cwopsrec := nil;
   dxrec := nil;
   userText := '';
-  dxEntity := '';
   result:= '';
 
   if FindCallRec(cwopsrec, ACallsign) then
     begin
-    // if caller is a member, include their UserText string
-    if cwopsrec.IsCWOpsMember then
+      // if caller is a member, include their UserText string.
+      // if non-member calling from USA or Canada, use either NA/USA or NA/Canada
+      // (otherwise UserText string gives a hint for State/Province).
+      // if UserText is empty, always return DXCC Continent/Entity.
       userText := cwopsrec.UserText;
+      if gDXCCList.FindRec(dxrec, ACallsign) then
+        if userText.IsEmpty or
+          (not cwopsrec.IsCWOpsMember and
+            (dxrec.Entity.Equals('United States of America') or
+             dxrec.Entity.Equals('Canada'))) then
+          userText:= dxRec.Continent + '/' + dxRec.Entity;
 
-    // if caller is non-USA or non-Canada, include their Continent/Entity.
-    // for USA/Canada non-members, include either NA/USA or NA/Canada.
-    if userText.IsEmpty and
-       gDXCCList.FindRec(dxrec, ACallsign) and
-       (dxrec.Entity.Equals('United States of America') or
-        dxrec.Entity.Equals('Canada')) then
-      dxEntity:= dxRec.Continent + '/' + dxRec.Entity;
-    end;
-
-  if not userText.IsEmpty or not dxEntity.IsEmpty then
-    begin
-    result:= ACallsign;
-    if userText <> '' then
-      result:= result + ' - ' + userText;
-    if dxEntity <> '' then
-      result:= result + ' - ' + dxEntity;
+      if not userText.IsEmpty then
+        result:= ACallsign + ' - ' + userText;
     end;
 end;
 
