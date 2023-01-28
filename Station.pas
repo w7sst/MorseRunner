@@ -293,6 +293,8 @@ begin
       Result := Format('%s %d', [Exch1, NR]);     // <RST> <serial#>
     scCwt:
       Result := Format('%s  %s', [Exch1, Exch2]); // <Name> <NR|State|Prov|Prefix>
+    scSst:
+      Result := Format('%s %s', [Exch1, Exch2]); // <Name> <State|Prov|DX>
     scFieldDay:
       Result := Format('%s %s', [Exch1, Exch2]);
     scNaQp, scArrlDx:
