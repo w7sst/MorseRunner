@@ -71,7 +71,6 @@ type
     NR, RST: integer;
     MyCall, HisCall: string;
     OpName: string;
-    CWOPSNR: integer;
     Exch1: string;  // Exchange field 1 (e.g. class, name, etc.)
     Exch2: string;  // Exchange field 2 (e.g. zone, state/prov, section, grid, etc.)
     UserText: string; // club name or description (from fdHistory file)
@@ -287,7 +286,7 @@ begin
     scCQWW:
       Result := Format('%s %d', [Exch1, NR]);     // <RST> <serial#>
     scCwt:
-      Result := Format('%s  %.d', [OpName, NR]);
+      Result := Format('%s  %s', [Exch1, Exch2]); // <Name> <NR|State|Prov|Prefix>
     scFieldDay:
       Result := Format('%s %s', [Exch1, Exch2]);
     scNaQp, scArrlDx:
