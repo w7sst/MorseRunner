@@ -165,7 +165,7 @@ begin
     msgR_NR: begin
       // Adding a contest: TStation.SendMsg(msgR_NR): send 'R <#>' message, where # is exch (e.g. 3A OR)
       case SimContest of
-        scCwt: SendText('<#>')
+        scCwt: SendText('R <#>');
       else
         SendText('R <#>');
       end;
@@ -173,7 +173,7 @@ begin
     msgR_NR2: begin
       // Adding a contest: TStation.SendMsg(msgR_NR2): send 'R <#> <#>' message, where # is exch (e.g. 3A OR)
       case SimContest of
-        scCwt: SendText('<#>')
+        scCwt: SendText('R <#> <#>');
       else
         SendText('R <#> <#>');
       end;
@@ -187,7 +187,8 @@ begin
     msgLongCQ:
       begin
         case SimContest of
-          scFieldDay: SendText('CQ CQ FD <my> <my>')
+          scFieldDay: SendText('CQ CQ FD <my> <my>');
+          scCwt: SendText('CQ CQ CWT <my>');
         else
           SendText('CQ CQ TEST <my> <my> TEST');
         end;
