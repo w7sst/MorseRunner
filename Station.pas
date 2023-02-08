@@ -166,7 +166,10 @@ begin
     msgR_NR: begin
       // Adding a contest: TStation.SendMsg(msgR_NR): send 'R <#>' message, where # is exch (e.g. 3A OR)
       case SimContest of
-        scCwt: SendText('R <#>');
+        scCwt:
+          if (random < 0.9)
+            then SendText('<#>')
+            else SendText('R <#>');
       else
         SendText('R <#>');
       end;
@@ -174,7 +177,10 @@ begin
     msgR_NR2: begin
       // Adding a contest: TStation.SendMsg(msgR_NR2): send 'R <#> <#>' message, where # is exch (e.g. 3A OR)
       case SimContest of
-        scCwt: SendText('R <#> <#>');
+        scCwt:
+          if (random < 0.9)
+            then SendText('<#> <#>')
+            else SendText('R <#> <#>');
       else
         SendText('R <#> <#>');
       end;
