@@ -1428,17 +1428,15 @@ end;
 
 {
   called whenever callsign field (Edit1) changes. Any callsign edit will
-  invalidate the callsign and NR (Exchange) field(s) already sent, so clear
-  the CallSent and NrSent values.
+  invalidate the callsign already sent by clearing the CallSent value.
+  If the Callsign is empty, also crear the NrSent value.
 }
 procedure TMainForm.Edit1Change(Sender: TObject);
 begin
     if Edit1.Text = '' then
         NrSent := false;
-    if not Tst.Me.UpdateCallInMessage(Edit1.Text) then begin
+    if not Tst.Me.UpdateCallInMessage(Edit1.Text) then
         CallSent := false;
-        NrSent := false;
-    end;
 end;
 
 
