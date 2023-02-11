@@ -175,6 +175,7 @@ var
 
   { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
   DebugExchSettings: boolean = false;
+  DebugCwDecoder: boolean = false;  // stream CW to status bar
 
   SimContest: TSimContest = scWpx;
   ActiveContest: PContestDefinition = @ContestDefinitions[scWpx];
@@ -271,6 +272,7 @@ begin
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
 
       DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
+      DebugCwDecoder := ReadBool(SEC_DBG, 'DebugCwDecoder', DebugCwDecoder);
     finally
       Free;
     end;

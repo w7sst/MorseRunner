@@ -212,7 +212,11 @@ begin
   // '&' are suppressed in this control; replace with '&&'
   s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
 
-  MainForm.sbar.Caption:= '  ' + s;
+  // during debug, use status bar to show CW stream
+  if BDebugCwDecoder then
+    Mainform.sbar.Caption:= LeftStr(Mainform.sbar.Caption, 40) + ' -- ' + s
+  else
+    MainForm.sbar.Caption:= '  ' + s;
 end;
 
 

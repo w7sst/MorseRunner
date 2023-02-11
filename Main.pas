@@ -407,12 +407,14 @@ function ToStr(const val : TExchange2Type): string; overload;
 
 const
   CDebugExchSettings: boolean = false;  // compile-time exchange settings debug
+  CDebugCwDecoder: boolean = false;     // compile-time enable for CW Decoder
 
 var
   MainForm: TMainForm;
 
   { debug switches - set via .INI file or compile-time switches (above) }
   BDebugExchSettings: boolean;    // display parsed Exchange field settings
+  BDebugCwDecoder: boolean;       // enables CW stream to status bar
 
 implementation
 
@@ -470,6 +472,7 @@ begin
 
   // enable Exchange debugging either locally or via .INI file
   BDebugExchSettings := CDebugExchSettings or Ini.DebugExchSettings;
+  BDebugCwDecoder := CDebugCwDecoder or Ini.DebugCwDecoder;
 
   MakeKeyer;
   Keyer.Rate := DEFAULTRATE;
@@ -1531,6 +1534,7 @@ begin
 
   //debug switches
   BDebugExchSettings := (CDebugExchSettings or Ini.DebugExchSettings) and not BCompet;
+  BDebugCwDecoder := (CDebugCwDecoder or Ini.DebugCwDecoder) and not BCompet;
 
   //main ctls
   EnableCtl(SimContestCombo, BStop);
@@ -2153,7 +2157,7 @@ end;
 procedure TMainForm.ListView2SelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
 begin
-    if (mnuShowCallsignInfo.Checked) then
+    if (Selected and mnuShowCallsignInfo.Checked) then
         UpdateSbar(Item.SubItems[0]);
     //Item.Index  @QsoList[High(QsoList)];
 end;

@@ -101,7 +101,8 @@ const
 implementation
 
 uses
-  SysUtils, Math, MorseKey, Contest;
+  Main,     // for Mainform.sbar.Caption, BDebugCwDecoder
+  SysUtils, Math, MorseKey;
 
 
 { TExchTypes }
@@ -145,6 +146,10 @@ begin
   if Envelope = nil then Msg := [];
   if AMsg = msgNone then begin State := stListening; Exit; End;
   Include(Msg, AMsg);
+
+  // during debug, use status bar to show CW stream
+  if (AMsg = msgTU) and BDebugCwDecoder then
+    Mainform.sbar.Caption:= '';
 
   case AMsg of
     msgCQ: begin
@@ -227,6 +232,11 @@ begin
   if MsgText <> ''
     then MsgText := MsgText + ' ' + AMsg
     else MsgText := AMsg;
+
+  // during debug, use status bar to show CW stream
+  if BDebugCwDecoder then
+    Mainform.sbar.Caption := (MsgText + '; ' + Mainform.sbar.Caption).Substring(0, 80);
+
   SendMorse(Keyer.Encode(MsgText));
 end;
 
