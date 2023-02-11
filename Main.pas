@@ -65,9 +65,6 @@ const
     (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode))
   );
 
-  { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
-  BDebugExchSettings: boolean = false;
-
 type
 
   { TMainForm }
@@ -408,8 +405,14 @@ type
 function ToStr(const val : TExchange1Type): string; overload;
 function ToStr(const val : TExchange2Type): string; overload;
 
+const
+  CDebugExchSettings: boolean = false;  // compile-time exchange settings debug
+
 var
   MainForm: TMainForm;
+
+  { debug switches - set via .INI file or compile-time switches (above) }
+  BDebugExchSettings: boolean;    // display parsed Exchange field settings
 
 implementation
 
@@ -464,6 +467,9 @@ begin
 
   AlSoundOut1.BufCount := 4;
   FromIni;
+
+  // enable Exchange debugging either locally or via .INI file
+  BDebugExchSettings := CDebugExchSettings or Ini.DebugExchSettings;
 
   MakeKeyer;
   Keyer.Rate := DEFAULTRATE;
@@ -1178,8 +1184,6 @@ end;
 
 procedure TMainForm.SetMyExch2(const AExchType: TExchange2Type;
   const Avalue: string);
-var
-  i: integer;
 begin
   // Adding a contest: setup contest-specific exchange field 2
   case AExchType of
@@ -1524,6 +1528,9 @@ begin
   BStop := Value = rmStop;
   BCompet := Value in [rmWpx, rmHst];
   RunMode := Value;
+
+  //debug switches
+  BDebugExchSettings := (CDebugExchSettings or Ini.DebugExchSettings) and not BCompet;
 
   //main ctls
   EnableCtl(SimContestCombo, BStop);

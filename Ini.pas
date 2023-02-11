@@ -15,6 +15,8 @@ const
   SEC_BND = 'Band';
   SEC_TST = 'Contest';
   SEC_SYS = 'System';
+  SEC_SET = 'Settings';
+  SEC_DBG = 'Debug';
 
   DEFAULTBUFCOUNT = 8;
   DEFAULTBUFSIZE = 512;
@@ -171,6 +173,9 @@ var
   SaveWav: boolean = false;
   CallsFromKeyer: boolean = false;
 
+  { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
+  DebugExchSettings: boolean = false;
+
   SimContest: TSimContest = scWpx;
   ActiveContest: PContestDefinition = @ContestDefinitions[scWpx];
   UserExchangeTbl: array[TSimContest] of string;
@@ -264,6 +269,8 @@ begin
       MainForm.VolumeSlider1.Value := V / 80 + 0.75;
 
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
+
+      DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
     finally
       Free;
     end;
