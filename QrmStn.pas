@@ -28,6 +28,7 @@ uses
 constructor TQrmStation.CreateStation;
 begin
   inherited Create(nil);
+  inherited Init;
 
   Patience := 1 + Random(5);
   MyCall := Tst.PickCallOnly;
