@@ -3,7 +3,8 @@ unit CWOPS;
 interface
 
 uses
-  Classes, Generics.Defaults, Generics.Collections, Contest, Contnrs, DxStn, Log;
+  Classes, Generics.Defaults, Generics.Collections, Contest, Contnrs,
+  Station, DxStn, Log;
 
 type
     TCWOPSRec= class
@@ -33,6 +34,7 @@ type
     function GetCall(id : integer): string; override;
     function FindCallRec(out outrec: TCWOPSRec; const ACall: string): Boolean;
     procedure GetExchange(id : integer; out station : TDxStation); override;
+    procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
     function GetStationInfo(const ACallsign: string) : string; override;
     function ExtractMultiplier(Qso: PQso) : string; override;
   end;
@@ -165,6 +167,30 @@ begin
   station.OpName := CWOPSList.Items[id].Exch1;
   station.Exch1 := CWOPSList.Items[id].Exch1;
   station.Exch2 := CWOPSList.Items[id].Exch2;
+end;
+
+
+{
+  Overrides TContest.SendMsg() to send contest-specific messages.
+
+  Adding a contest: TContest.SendMsg(AMsg): send contest-specfic messages
+}
+procedure TCWOPS.SendMsg(const AStn: TStation; const AMsg: TStationMessage);
+begin
+  case AMsg of
+    msgCQ: SendText(AStn, 'CQ CWT <my>');
+    msgR_NR:
+      if (random < 0.9)
+        then SendText(AStn, '<#>')
+        else SendText(AStn, 'R <#>');
+    msgR_NR2:
+      if (random < 0.9)
+        then SendText(AStn, '<#> <#>')
+        else SendText(AStn, 'R <#> <#>');
+    msgLongCQ: SendText(AStn, 'CQ CQ CWT <my> <my>');  // QrmStation only
+    else
+      inherited SendMsg(AStn, AMsg);
+  end;
 end;
 
 

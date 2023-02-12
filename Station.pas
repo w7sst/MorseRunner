@@ -55,7 +55,7 @@ type
   public
     Amplitude: Single;
     Wpm: integer;
-    Envelope: TSingleArray;
+    Envelope: TSingleArray; // this station's digitized Envelope being sent
     State: TStationState;
 
     // Sent Exchange field types...
@@ -77,7 +77,7 @@ type
     UserText: string; // club name or description (from fdHistory file)
 
     Msg: TStationMessages;
-    MsgText: string;
+    MsgText: string;  // this station's current message being sent
 
     constructor CreateStation;
 
@@ -104,6 +104,8 @@ implementation
 uses
   Main,     // for Mainform.sbar.Caption, BDebugCwDecoder
   QrmStn,   // for TQrmStation.ClassType
+  Contest,  // for Tst (TContest)
+  StrUtils, // for PosEx
   SysUtils, Math, MorseKey;
 
 
@@ -159,67 +161,41 @@ begin
   if (AMsg = msgTU) and BDebugCwDecoder and not (self is TQrmStation) then
     Mainform.sbar.Caption:= '';
 
-  case AMsg of
-    msgCQ: begin
-      // Adding a contest: TStation.SendMsg(msgCQ): send CQ message (e.g. CQ FD <my>)
-      case SimContest of
-        scCwt: SendText('CQ CWT <my>');
-        scFieldDay: SendText('CQ FD <my>');
-        else SendText('CQ <my> TEST');
-      end;
-    end;
-    msgNR: SendText('<#>');
-    msgTU: SendText('TU');
-    msgMyCall: SendText('<my>');
-    msgHisCall: SendText('<his>');
-    msgB4: SendText('QSO B4');
-    msgQm: SendText('?');
-    msgNil: SendText('NIL');
-    msgR_NR: begin
-      // Adding a contest: TStation.SendMsg(msgR_NR): send 'R <#>' message, where # is exch (e.g. 3A OR)
-      case SimContest of
-        scCwt:
-          if (random < 0.9)
-            then SendText('<#>')
-            else SendText('R <#>');
-      else
-        SendText('R <#>');
-      end;
-    end;
-    msgR_NR2: begin
-      // Adding a contest: TStation.SendMsg(msgR_NR2): send 'R <#> <#>' message, where # is exch (e.g. 3A OR)
-      case SimContest of
-        scCwt:
-          if (random < 0.9)
-            then SendText('<#> <#>')
-            else SendText('R <#> <#>');
-      else
-        SendText('R <#> <#>');
-      end;
-    end;
-    msgDeMyCall1: SendText('DE <my>');
-    msgDeMyCall2: SendText('DE <my> <my>');
-    msgDeMyCallNr1: SendText('DE <my> <#>');
-    msgDeMyCallNr2: SendText('DE <my> <my> <#>');
-    msgMyCallNr2: SendText('<my> <my> <#>');
-    msgNrQm: SendText('NR?');
-    msgLongCQ:
-      begin
-        case SimContest of
-          scFieldDay: SendText('CQ CQ FD <my> <my>');
-          scCwt: SendText('CQ CQ CWT <my>');
-        else
-          SendText('CQ CQ TEST <my> <my> TEST');
-        end;
-      end;
-    msgQrl: SendText('QRL?');
-    msgQrl2: SendText('QRL?   QRL?');
-    msqQsy: SendText('<his>  QSY QSY');
-    msgAgn: SendText('AGN');
-    end;
+  // Create contest-specific messages...
+  Tst.SendMsg(self, AMsg);
 end;
 
+{
+  Handle station-specific messaging by replacing message tokens with
+  their respective values. The resulting message is then passed to
+  Keyer.Encode() and SendMorse().
+}
 procedure TStation.SendText(AMsg: string);
+var
+  P : integer;
+
+  // Modifies AMsg by replacing AToken at position P with ANewText and
+  // advances the token offset P to the start of the next token.
+  // Successive occurances of the same token are replaced in one call.
+  // Returns true when no additional tokens are available.
+  function ReplaceTokenAt(
+    var AMsg : string;      // in/out: message to be modified
+    var P : integer;        // in/out: current token offset; advanced to next
+    const AToken : string;  // token to be replaced
+    const ANewText : string // NewText to replace token
+    ) : boolean;            // return true when no additional tokens available
+  begin
+    // loop with valid token and look for successive matches of current token
+    while (P > 0) and (PosEx(AToken, AMsg, P) = P) do
+      begin
+        AMsg := StuffString(AMsg, P, AToken.Length, ANewText);
+        P := PosEx('<', AMsg, P);
+      end;
+
+    // return whether no additional tokens are present in string.
+    Result := (P = 0);
+  end;
+
 begin
   if Pos('<#>', AMsg) > 0 then
     begin
@@ -229,7 +205,12 @@ begin
     AMsg := StringReplace(AMsg, '<#>', NrAsText, [rfReplaceAll]);
     end;
 
-  AMsg := StringReplace(AMsg, '<my>', MyCall, [rfReplaceAll]);
+  // replace tokens with actual values
+  P := Pos('<', AMsg);
+  while (P > 0) do
+    begin
+      if ReplaceTokenAt(AMsg, P, '<my>', MyCall) then Break;
+    end;
 
 {
   if CallsFromKeyer
