@@ -102,6 +102,7 @@ implementation
 
 uses
   Main,     // for Mainform.sbar.Caption, BDebugCwDecoder
+  QrmStn,   // for TQrmStation.ClassType
   SysUtils, Math, MorseKey;
 
 
@@ -148,7 +149,7 @@ begin
   Include(Msg, AMsg);
 
   // during debug, use status bar to show CW stream
-  if (AMsg = msgTU) and BDebugCwDecoder then
+  if (AMsg = msgTU) and BDebugCwDecoder and not (self is TQrmStation) then
     Mainform.sbar.Caption:= '';
 
   case AMsg of
@@ -234,7 +235,7 @@ begin
     else MsgText := AMsg;
 
   // during debug, use status bar to show CW stream
-  if BDebugCwDecoder then
+  if BDebugCwDecoder and not (self is TQrmStation) then
     Mainform.sbar.Caption := (MsgText + '; ' + Mainform.sbar.Caption).Substring(0, 80);
 
   SendMorse(Keyer.Encode(MsgText));
