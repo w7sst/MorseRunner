@@ -42,6 +42,7 @@ uses
 constructor TDxStation.CreateStation;
 begin
   inherited Create(nil);
+  inherited Init;
 
   HisCall := Ini.Call;
 

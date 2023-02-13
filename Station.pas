@@ -50,6 +50,7 @@ type
     SendPos: integer;
     TimeOut: integer;
     NrWithError: boolean;
+    procedure Init;
     function NrAsText: string;
   public
     Amplitude: Single;
@@ -120,6 +121,12 @@ constructor TStation.CreateStation;
 begin
   inherited Create(nil);
 
+  Init;
+end;
+
+
+procedure TStation.Init;
+begin
   SentExchTypes:= ExchTypesUndef;
 end;
 

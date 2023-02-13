@@ -52,6 +52,8 @@ end;
 
 procedure TMyStation.Init;
 begin
+  inherited Init;
+
   MyCall := Ini.Call;
   NR := 1;
   RST := 599;
