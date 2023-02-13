@@ -34,6 +34,8 @@ type
     function FindCallRec(out outrec: TCWSSTRec; const ACall: string): Boolean;
     procedure GetExchange(id : integer; out station : TDxStation); override;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
+    procedure SendText(const AStn: TStation; const AMsg: string); override;
+    function GreetingAsText(const AStn: TStation) : string;
     function GetStationInfo(const ACallsign: string) : string; override;
     function ExtractMultiplier(Qso: PQso) : string; override;
   end;
@@ -44,7 +46,7 @@ type
 implementation
 
 uses
-    SysUtils, ARRL;
+    SysUtils, StrUtils, ARRL;
 
 function TCWSST.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
@@ -182,19 +184,84 @@ procedure TCWSST.SendMsg(const AStn: TStation; const AMsg: TStationMessage);
 begin
   case AMsg of
     msgCQ: SendText(AStn, 'CQ SST <my>'); // sent by MyStation
+    msgNrQm: // sent by calling station (DxStation)
+      case Random(5) of
+        0,1: SendText(AStn, 'NR?');
+        2:   SendText(AStn, 'NAME?');
+        3:   SendText(AStn, 'ST?');
+        4:   SendText(AStn, 'AGN?');
+       end;
+    msgTU:  // sent by MyStation
+      case Random(20) of
+        0..9:   SendText(AStn, '73 E E');                   // 50%
+        10..13: SendText(AStn, 'GL <HisName> TU');          // 20%
+        14:     SendText(AStn, 'GL OM 73 E E');             //  5%
+        15:     SendText(AStn, 'FB 73 E E');                //  5%
+        16:     SendText(AStn, 'OK FB TU 73');              //  5%
+        17:     SendText(AStn, 'GL <HisName> TU <my> SST'); //  5%
+        18:     SendText(AStn, 'TU E E');                   //  5%
+        19:     SendText(AStn, '73 DE <my> SST');           //  5%
+      end;
     msgR_NR: // sent by calling station (DxStation)
       if Random < 0.9
-        then SendText(AStn, '<#>')
-        else SendText(AStn, 'R <#>');
+        then SendText(AStn, '<greeting> <#>')
+        else SendText(AStn, 'R <greeting> <#>');
     msgR_NR2: // sent by calling station (DxStation)
-      case Random(10) of
-        0..8:   SendText(AStn, '<#> <#>');
-        9:      SendText(AStn, 'R <#> <#>');
+      case Random(20) of
+        0..8:   SendText(AStn, '<greeting> <#> <#>');
+        9..17:  SendText(AStn, '<greeting> <exch1> <exch1> <exch2> <exch2>');
+        18:     SendText(AStn, 'R <greeting> <#> <#>');
+        19:     SendText(AStn, 'R <greeting> <exch1> <exch1> <exch2> <exch2>');
       end;
     msgLongCQ: SendText(AStn, 'CQ CQ SST <my> <my>');  // QrmStation only
     else
       inherited SendMsg(AStn, AMsg);
   end;
+end;
+
+
+{
+  This virtual procedure is provided in case a derived contest needs
+  to perform additional processing on the message being sent before
+  passing the string to the Encoder and Keyer.
+}
+procedure TCWSST.SendText(const AStn: TStation; const AMsg: string);
+var
+  P : integer;
+begin
+  // note - the <greeting> token below is intentionally followed by a
+  // space to allow GreetingAsText() to randomly return an empty greeting.
+  P := Pos('<greeting> ', AMsg);
+  if P > 0 then
+    inherited SendText(AStn, StuffString(AMsg, P, 11, GreetingAsText(AStn)))
+  else
+    inherited SendText(AStn, AMsg);
+end;
+
+
+{ return a random casual conversation string for SST Contest.
+  Includes the trailing space if a name is returned;
+  otherwise a NULL string is returned. This allows an empty
+  greeting to be returned.
+
+  Note: that the caller is typically using a message of the form
+  'R <greeting> <#>' (see TCWSST.SendMsg above). This function returns
+  a string to replace the '<greeting> ' token, including the trailing space.
+}
+function TCWSST.GreetingAsText(const AStn: TStation) : string;
+begin
+  // Adding a contest: contest-specific messages (e.g. for CWOPS SST, 'GM Mike ').
+  if AStn.MsgTemp = 'undef' then
+    begin
+      // format greeting of the form: 'GM <MyName> '
+      case Random(10) of
+        0..2: AStn.MsgTemp := Format('GM %s ', [Tst.Me.Exch1]);  // 30%
+        3..5: AStn.MsgTemp := Format('GA %s ', [Tst.Me.Exch1]);  // 30%
+        6..8: AStn.MsgTemp := Format('GE %s ', [Tst.Me.Exch1]);  // 30%
+        9:    AStn.MsgTemp := '';                                // 10%
+      end;
+    end;
+  Result := AStn.MsgTemp;
 end;
 
 
