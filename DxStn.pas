@@ -34,6 +34,7 @@ implementation
 
 uses
   SysUtils, Classes, RndFunc, Dialogs,
+  Main,     // for Mainform
   CallLst, Log, Ini, Contest;
 
 { TDxStation }
@@ -125,7 +126,13 @@ begin
       if State = stListening then
         begin
         Oper.MsgReceived([msgNone]);
-        if Oper.State = osFailed then begin Free; Exit; end;
+        if Oper.State = osFailed then begin
+          // during debug, use status bar to show CW stream
+          if BDebugCwDecoder then
+            Mainform.sbar.Caption := (Format('[%s-Failed]',[MyCall]) + '; ' + Mainform.sbar.Caption).Substring(0, 80);
+          Free;
+          Exit;
+          end;
         State := stPreparingToSend;
         end;
       //preparations to send are done, now send
