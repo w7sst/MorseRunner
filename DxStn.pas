@@ -19,7 +19,6 @@ type
     constructor CreateStation;
     destructor Destroy; override;
     procedure ProcessEvent(AEvent: TStationEvent); override;
-    procedure SendMsg(AMsg: TStationMessage); override;
     procedure DataToLastQso;
     function GetBlock: TSingleArray; override;
   var
@@ -166,25 +165,6 @@ begin
         TimeOut := NEVER;
       end;
     end;
-end;
-
-
-// override SendMsg to allow Dx Stations to send alternate field day messages
-// (SECT?, CLASS?, CL?) whenever a 'NR?' message (msgNrQm) is sent.
-procedure TDxStation.SendMsg(AMsg: TStationMessage);
-begin
-  if (SimContest = scFieldDay) and
-    (AMsg = msgNrQm) then
-    begin
-      case Random(5) of
-        0,1: SendText('NR?');
-        2: SendText('SECT?');
-        3: SendText('CLASS?');
-        4: SendText('CL?');
-      end;
-    end
-  else
-    inherited SendMsg(AMsg);
 end;
 
 
