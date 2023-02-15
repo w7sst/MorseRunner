@@ -91,6 +91,8 @@ type
     procedure SendText(AMsg: string); virtual;
     procedure SendMorse(AMorse: string);
 
+    function WpmAsText : string;
+
     property Pitch: integer read FPitch write SetPitch;
     property Bfo: Single read GetBfo;
   end;
@@ -346,6 +348,15 @@ begin
     if Random < 0.97
       then Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
     end;
+end;
+
+
+function TStation.WpmAsText : string;
+begin
+  if WpmS < WpmC then
+    Result:= Format('%d/%d', [WpmS, WpmC])
+  else
+    Result:= Format('%3d', [WpmS]);
 end;
 
 end.

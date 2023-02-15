@@ -19,6 +19,7 @@ procedure CheckErr;
 //procedure PaintHisto;
 procedure ShowRate;
 procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
+procedure ScoreTableScaleWidth(const ACol : integer; const AScaleWidth : Single);
 procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
 procedure ScoreTableUpdateCheck;
 function FormatScore(const AScore: integer):string;
@@ -38,7 +39,7 @@ type
     Nr, TrueNr: integer;
     Exch1, TrueExch1: string;   // exchange 1 (e.g. 3A, OpName)
     Exch2, TrueExch2: string;   // exchange 2 (e.g. OR, CWOPSNum)
-    TrueWpm: integer;           // WPM of sending DxStn (reported in log)
+    TrueWpm: string;            // WPM of sending DxStn (reported in log)
     Pfx: string;                // extracted call prefix
     MultStr: string;            // contest-specific multiplier (e.g. Pfx, dxcc)
     Points: integer;            // points for this QSO
@@ -185,6 +186,23 @@ begin
   SetCaption(6, ACol7);
 end;
 
+{
+  Adjust the Log Table column width by AScaleWidth scaling factor.
+  This scaling number is multiplied by the original column width from the UI.
+  Typical usage is to increase the width of a column for a given contest.
+  For example, the SST contest will increase the column width from 3 to 5
+  characters by using 'ScoreTableScaleWidth(6, 5.0/3)' or to increase width
+  by 40% use 'ScoreTableScaleWidth(6, 1.4)'.
+  This method can also be used to set the column width to zero if desired.
+  Note that whenever a new contest is started, the column widths are restored
+  to their original column widths.
+}
+procedure ScoreTableScaleWidth(const ACol : integer; const AScaleWidth : Single);
+begin
+  assert(LogColWidthInitialized, 'must be called after ScoreTableSetTitle');
+  MainForm.ListView2.Column[ACol].Width:= Ceil(AScaleWidth * LogColWidths[ACol]);
+end;
+
 procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
 begin
   with MainForm.ListView2.Items.Add do begin
@@ -248,7 +266,12 @@ begin
       scCwt:
         ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', 'Wpm');
       scSst:
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', 'Wpm');
+        begin
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', ' Wpm');
+        ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
+        ScoreTableScaleWidth(5, 1.2);   // expand Chk column for 'NAME' error
+        ScoreTableScaleWidth(6, 1.4);   // expand Wpm column for 22/25 Farnsworth
+        end;
       scFieldDay:
         ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
       scNaQp:
@@ -612,7 +635,7 @@ begin
         with Tst.Stations[i] as TDxStation do
           if (MyCall = Qso.Call) then
           begin
-            Qso.TrueWpm := Wpm;
+            Qso.TrueWpm := WpmAsText();
             Break;
           end;
 
@@ -650,36 +673,41 @@ begin
   with QsoList[High(QsoList)] do begin
     // Adding a contest: LastQsoToScreen, add last qso to Score Table
     case Ini.SimContest of
-    scCwt, scSst:
+    scCwt:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
-        , Pfx, Err, format('%.2d', [TrueWpm]));
+        , Pfx, Err, format('%3s', [TrueWpm]));
+    scSst:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , Exch1
+        , Exch2
+        , Pfx, Err, format('%5s', [TrueWpm]));
     scFieldDay:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
-        , Pfx, Err, format('%.2d', [TrueWpm]));
+        , Pfx, Err, format('%3s', [TrueWpm]));
     scNaQp:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
-        , Pfx, Err, format('%.2d', [TrueWpm]));
+        , Pfx, Err, format('%3s', [TrueWpm]));
     scWpx, scHst:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d %.4d', [Rst, Nr])
         , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
-        , Pfx, Err, format('%.3d', [TrueWpm]));
+        , Pfx, Err, format('%3s', [TrueWpm]));
     scCQWW:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d %4d', [Rst, NR])
         , format('%.3s %4d', [Tst.Me.Exch1, Tst.Me.NR])     // log my sent RST
-        , Pfx, Err, format('%.3d', [TrueWpm]));
+        , Pfx, Err, format('%3s', [TrueWpm]));
     scArrlDx:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d %4s', [Rst, Exch2])
         , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
-        , Pfx, Err, format('%.2d', [TrueWpm]));
+        , Pfx, Err, format('%3s', [TrueWpm]));
     else
       assert(false, 'missing case');
     end;
