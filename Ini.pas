@@ -185,6 +185,7 @@ var
 
   SaveWav: boolean = false;
   CallsFromKeyer: boolean = false;
+  F8: string = '';
 
   { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
   DebugExchSettings: boolean = false;
@@ -287,6 +288,7 @@ begin
 
       DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
       DebugCwDecoder := ReadBool(SEC_DBG, 'DebugCwDecoder', DebugCwDecoder);
+      F8 := ReadString(SEC_DBG, 'F8', F8);
     finally
       Free;
     end;

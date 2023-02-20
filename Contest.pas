@@ -281,7 +281,8 @@ begin
     msgHisCall: SendText(AStn, '<his>');
     msgB4: SendText(AStn, 'QSO B4');
     msgQm: SendText(AStn, '?');
-    msgNil: SendText(AStn, 'NIL');
+    msgNil: if Ini.F8.IsEmpty then SendText(AStn, 'NIL')
+                              else SendText(Astn, Ini.F8);
     msgR_NR: SendText(AStn, 'R <#>');
     msgR_NR2: SendText(AStn, 'R <#> <#>');
     msgDeMyCall1: SendText(AStn, 'DE <my>');
