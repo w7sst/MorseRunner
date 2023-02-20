@@ -213,7 +213,7 @@ begin
   s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
 
   // during debug, use status bar to show CW stream
-  if BDebugCwDecoder then
+  if not s.IsEmpty and (BDebugCwDecoder or BDebugGhosting) then
     Mainform.sbar.Caption:= LeftStr(Mainform.sbar.Caption, 40) + ' -- ' + s
   else
     MainForm.sbar.Caption:= '  ' + s;

@@ -128,8 +128,10 @@ begin
         Oper.MsgReceived([msgNone]);
         if Oper.State = osFailed then begin
           // during debug, use status bar to show CW stream
-          if BDebugCwDecoder then
-            Mainform.sbar.Caption := (Format('[%s-Failed]',[MyCall]) + '; ' + Mainform.sbar.Caption).Substring(0, 80);
+          if BDebugCwDecoder or BDebugGhosting then
+            Mainform.sbar.Caption :=
+              (Format('[%s-Timeout]',[MyCall]) + '; ' +
+              Mainform.sbar.Caption).Substring(0, 80);
           Free;
           Exit;
           end;
@@ -157,9 +159,18 @@ begin
           end;
 
           //react to the message
-          if Oper.State = osFailed
-            then begin Free; Exit; end         //give up
-            else TimeOut := Oper.GetSendDelay; //reply or switch to standby
+          if Oper.State = osFailed then // give up
+            begin
+              // during debug, use status bar to show CW stream
+              if BDebugCwDecoder or BDebugGhosting then
+                Mainform.sbar.Caption :=
+                  (Format('[%s-Failed]',[MyCall]) + '; ' +
+                  Mainform.sbar.Caption).Substring(0, 80);
+              Free;
+              Exit;
+            end
+          else
+            TimeOut := Oper.GetSendDelay; //reply or switch to standby
           State := stPreparingToSend;
         end;
 

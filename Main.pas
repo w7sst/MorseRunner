@@ -408,6 +408,7 @@ function ToStr(const val : TExchange2Type): string; overload;
 const
   CDebugExchSettings: boolean = false;  // compile-time exchange settings debug
   CDebugCwDecoder: boolean = false;     // compile-time enable for CW Decoder
+  CDebugGhosting : boolean = false;     // compile-time enable for Ghosting debug
 
 var
   MainForm: TMainForm;
@@ -415,6 +416,7 @@ var
   { debug switches - set via .INI file or compile-time switches (above) }
   BDebugExchSettings: boolean;    // display parsed Exchange field settings
   BDebugCwDecoder: boolean;       // enables CW stream to status bar
+  BDebugGhosting: boolean;        // enabled DxStation ghosting issues
 
 implementation
 
@@ -1536,6 +1538,7 @@ begin
   //debug switches
   BDebugExchSettings := (CDebugExchSettings or Ini.DebugExchSettings) and not BCompet;
   BDebugCwDecoder := (CDebugCwDecoder or Ini.DebugCwDecoder) and not BCompet;
+  BDebugGhosting := (CDebugGhosting or Ini.DebugGhosting) and not BCompet;
 
   //main ctls
   EnableCtl(SimContestCombo, BStop);

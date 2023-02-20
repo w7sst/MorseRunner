@@ -190,6 +190,7 @@ var
   { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
   DebugExchSettings: boolean = false;
   DebugCwDecoder: boolean = false;  // stream CW to status bar
+  DebugGhosting: boolean = false;   // enable DxStation Ghosting debug
 
   SimContest: TSimContest = scWpx;
   ActiveContest: PContestDefinition = @ContestDefinitions[scWpx];
@@ -286,8 +287,12 @@ begin
 
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
 
+      // [Settings]
+
+      // [Debug]
       DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
       DebugCwDecoder := ReadBool(SEC_DBG, 'DebugCwDecoder', DebugCwDecoder);
+      DebugGhosting := ReadBool(SEC_DBG, 'DebugGhosting', DebugGhosting);
       F8 := ReadString(SEC_DBG, 'F8', F8);
     finally
       Free;
