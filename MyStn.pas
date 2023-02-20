@@ -97,7 +97,10 @@ begin
     assert(OpName = HamName, 'HamName doesn''t change; should already be set');
     OpName := HamName;
     end;
+
+  // Split message around '<his>' token to allow special callsign processing.
   AddToPieces(AMsg);
+
   if State <> stSending then
     begin
     SendNextPiece;
@@ -115,15 +118,17 @@ begin
   p := Pos('<his>', AMsg);
   while p > 0 do
     begin
-    Pieces.Add(Copy(AMsg, 1, p-1));
+    if p > 1 then Pieces.Add(Copy(AMsg, 1, p-1));
     Pieces.Add('@');  //his callsign indicator
     Delete(AMsg, 1, p+4);
     p := Pos('<his>', AMsg);
     end;
-  Pieces.Add(AMsg);
+  if AMsg <> '' then Pieces.Add(AMsg);
 
+  // remove any empty pieces (there shouldn't be any)
+  // todo - this can be removed in the future.
   for i:= Pieces.Count-1 downto 0 do
-    if Pieces[i] = '' then Pieces.Delete(i);
+    if Pieces[i] = '' then begin assert(false); Pieces.Delete(i); end;
 end;
 
 
