@@ -360,7 +360,7 @@ type
     function ValidateExchField(const FieldDef: PFieldDefinition;
       const Avalue: string) : Boolean;
     procedure ProcessSpace;
-    procedure SendMsg(Msg: TStationMessage);
+    procedure SendMsg(AMsg: TStationMessage);
     procedure ProcessEnter;
     procedure EnableCtl(Ctl: TWinControl; AEnable: boolean);
     procedure WmTbDown(var Msg: TMessage); message WM_TBDOWN;
@@ -531,18 +531,18 @@ begin
 end;
 
 
-procedure TMainForm.SendMsg(Msg: TStationMessage);
+procedure TMainForm.SendMsg(AMsg: TStationMessage);
 begin
-  if Msg = msgHisCall then begin
+  if AMsg = msgHisCall then begin
     // retain current callsign, including ''. if empty, return.
     Tst.Me.HisCall := Edit1.Text;
     CallSent := Edit1.Text <> '';
     if not CallSent then
       Exit;
   end;
-  if Msg = msgNR then
+  if AMsg = msgNR then
     NrSent := true;
-  Tst.Me.SendMsg(Msg);
+  Tst.Me.SendMsg(AMsg);
 end;
 
 
