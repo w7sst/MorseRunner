@@ -40,7 +40,8 @@ uses
   CWOPS in 'CWOPS.pas',
   CqWW in 'CqWW.pas',
   CqWpx in 'CqWpx.pas',
-  ArrlDx in 'ArrlDx.pas';
+  ArrlDx in 'ArrlDx.pas',
+  CWSST in 'CWSST.pas';
 
 {$R *.RES}
 

@@ -75,6 +75,7 @@ type
     Exch1: string;  // Exchange field 1 (e.g. class, name, etc.)
     Exch2: string;  // Exchange field 2 (e.g. zone, state/prov, section, grid, etc.)
     UserText: string; // club name or description (from fdHistory file)
+    MsgTemp: string;  // hold a portion of the message (randomly generated once)
 
     Msg: TStationMessages;
     MsgText: string;  // this station's current message being sent
@@ -104,7 +105,7 @@ implementation
 uses
   Main,     // for Mainform.sbar.Caption, BDebugCwDecoder
   QrmStn,   // for TQrmStation.ClassType
-  Contest,  // for Tst (TContest)
+  Contest,  // for Tst (TContest), Tst.Me.OpName
   StrUtils, // for PosEx
   SysUtils, Math, MorseKey;
 
@@ -130,6 +131,7 @@ end;
 procedure TStation.Init;
 begin
   SentExchTypes:= ExchTypesUndef;
+  MsgTemp := 'undef';
 end;
 
 
@@ -210,6 +212,10 @@ begin
   while (P > 0) do
     begin
       if ReplaceTokenAt(AMsg, P, '<my>', MyCall) then Break;
+      if ReplaceTokenAt(AMsg, P, '<exch1>', Exch1) then Break;
+      if ReplaceTokenAt(AMsg, P, '<exch2>', Exch2) then Break;
+      if ReplaceTokenAt(AMsg, P, '<HisName>', MainForm.Edit2.Text) then Break;
+      if ReplaceTokenAt(AMsg, P, '<MyName>', Tst.Me.OpName) then Break;
     end;
 
 {
@@ -293,6 +299,8 @@ begin
       Result := Format('%s %d', [Exch1, NR]);     // <RST> <serial#>
     scCwt:
       Result := Format('%s  %s', [Exch1, Exch2]); // <Name> <NR|State|Prov|Prefix>
+    scSst:
+      Result := Format('%s %s', [Exch1, Exch2]); // <Name> <State|Prov|DX>
     scFieldDay:
       Result := Format('%s %s', [Exch1, Exch2]);
     scNaQp, scArrlDx:

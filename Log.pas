@@ -247,6 +247,8 @@ begin
     case Ini.SimContest of
       scCwt:
         ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', 'Wpm');
+      scSst:
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', 'Wpm');
       scFieldDay:
         ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
       scNaQp:
@@ -648,7 +650,7 @@ begin
   with QsoList[High(QsoList)] do begin
     // Adding a contest: LastQsoToScreen, add last qso to Score Table
     case Ini.SimContest of
-    scCwt:
+    scCwt, scSst:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
@@ -722,6 +724,9 @@ begin
             scCwt:
               if TrueExch2 <> Exch2 then
                 Err := IfThen(IsNum(TrueExch2), 'NR ', 'QTH');
+            scSst:
+              if TrueExch2 <> Exch2 then
+                Err := 'QTH';
             else
               if TrueExch2 <> Exch2 then
                 Err := 'ERR';

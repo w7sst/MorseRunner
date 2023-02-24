@@ -419,7 +419,7 @@ var
 implementation
 
 uses
-  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX,
+  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, CWSST,
   MorseKey, CallLst,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
   Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
@@ -505,6 +505,7 @@ begin
   scNaQp:       Result := TNcjNaQp.Create;
   scCQWW:       Result := TCqWW.Create;
   scArrlDx:     Result := TArrlDx.Create;
+  scSst:        Result := TCWSST.Create;
   else
     assert(false);
   end;
@@ -852,7 +853,7 @@ begin
 
   //current state
   C := CallSent;
-  N := NrSent;
+  N := NrSent;    // 'Nr' represents the exchange (<exch1> <exch2>).
   Q := Edit2.Text <> '';
   R := Edit3.Text <> '';
 
@@ -922,7 +923,7 @@ begin
   // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
   if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst,
-    scCQWW, scArrlDx]) then
+    scCQWW, scArrlDx, scSst]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex :=
