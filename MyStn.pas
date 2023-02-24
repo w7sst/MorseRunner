@@ -20,6 +20,7 @@ type
     constructor CreateStation;
     destructor Destroy; override;
     procedure Init;
+    procedure SetWpm(const AWpmS : integer);
     procedure ProcessEvent(AEvent: TStationEvent); override;
     procedure AbortSend;
     procedure SendText(AMsg: string); override;
@@ -58,7 +59,7 @@ begin
   NR := 1;
   RST := 599;
   Pitch := Ini.Pitch;
-  Wpm := Ini.Wpm;
+  WpmS := Ini.Wpm;
   Amplitude := 300000;
 
   // invalidate SentExchTypes. Will be set by Tst.OnSetMyCall().
@@ -69,6 +70,15 @@ begin
   OpName := HamName;
   Exch1 := '3A';
   Exch2 := 'OR';
+end;
+
+
+{
+  Called by TMainForm.SetWpm whenever Wpm is updated via UI.
+}
+procedure TMyStation.SetWpm(const AWpmS : integer);
+begin
+  WpmS := AWpmS;   // set via UI
 end;
 
 
@@ -176,7 +186,7 @@ begin
   if Result then
     begin
     //create new envelope
-    Keyer.Wpm := Wpm;
+    Keyer.WpmS := Wpm;
     Keyer.MorseMsg := Keyer.Encode(ACall);
     NewEnvelope := Keyer.Envelope;
     for i:=0 to High(NewEnvelope) do

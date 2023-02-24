@@ -35,7 +35,7 @@ begin
   HisCall := Ini.Call;
   Amplitude := 5000 + 25000 * Random;
   Pitch := Round(RndGaussLim(0, 300));
-  Wpm := 30 + Random(20);
+  WpmS := 30 + Random(20);
 
   // DX's sent exchange types depends on kind-of-station and their callsign
   SentExchTypes:= Tst.GetSentExchTypes(skDxStation, MyCall);

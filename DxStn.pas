@@ -56,7 +56,7 @@ begin
   Oper.SetState(osNeedPrevEnd);
   NrWithError := Ini.Lids and (Random < 0.1);
 
-  Wpm := Oper.GetWpm;
+  WpmS := Oper.GetWpm;
 
   // DX's sent exchange types depends on kind-of-station and their callsign
   SentExchTypes := Tst.GetSentExchTypes(skDxStation, MyCall);

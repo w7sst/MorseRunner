@@ -2007,7 +2007,7 @@ procedure TMainForm.SetWpm(AWpm : integer);
 begin
   Wpm := Max(10, Min(120, AWpm));
   SpinEdit1.Value := Wpm;
-  Tst.Me.Wpm := Wpm;
+  Tst.Me.SetWpm(Wpm);
 end;
 
 
