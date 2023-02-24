@@ -55,6 +55,7 @@ type
   public
     Amplitude: Single;
     WpmS: integer;          // Words per minute, sending speed (set by UI)
+    WpmC: integer;          // Words per minute, character speed (set via .INI)
     Envelope: TSingleArray; // this station's digitized Envelope being sent
     State: TStationState;
 
@@ -143,6 +144,7 @@ begin
 end;
 
 
+// returns the next block of 512 samples from this station's current Envelope.
 function TStation.GetBlock: TSingleArray;
 begin
   Result := Copy(Envelope, SendPos, Ini.BufSize);
@@ -246,7 +248,7 @@ begin
     FBfo := 0;
     end;
 
-  Keyer.WpmS := WpmS;
+  Keyer.SetWpm(Self.WpmS, Self.WpmC);
   Keyer.MorseMsg := AMorse;
   Envelope := Keyer.Envelope;
   for i:=0 to High(Envelope) do

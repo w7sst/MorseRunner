@@ -32,7 +32,7 @@ type
     State: TOperatorState;
     function GetSendDelay: integer;
     function GetReplyTimeout: integer;
-    function GetWpm: integer;
+    function GetWpm(out AWpmC : integer) : integer;
     function GetNR: integer;
     function GetName: string;
     procedure MsgReceived(AMsg: TStationMessages);
@@ -65,7 +65,7 @@ begin
     Result := SecondsToBlocks(0.1 + 0.5*Random);
 end;
 
-function TDxOperator.GetWpm: integer;
+function TDxOperator.GetWpm(out AWpmC : integer): integer;
 var
   mean, limit: Single;
 begin
@@ -81,6 +81,16 @@ begin
     end
   else                      { use Random value, [Wpm-Min,Wpm+Max] }
     Result := Round(Ini.Wpm - MinRxWpm + (MinRxWpm + MaxRxWpm) * Random);
+
+  // optionally force all stations to use same speed (debugging and timing)
+  if Ini.AllStationsWpmS > 10 then
+    Result := Ini.AllStationsWpmS;
+
+  // Allow Farnsworth timing for certain contests
+  if Tst.IsFarnsworthAllowed() and (Result < Ini.MinFarnsworthWpmC) then
+    AWpmC := Ini.MinFarnsworthWpmC
+  else
+    AWpmC := Result;
 end;
 
 function TDxOperator.GetNR: integer;

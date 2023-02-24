@@ -20,6 +20,8 @@ type
     procedure SwapFilters;
 
   protected
+    BFarnsworthEnabled : Boolean; // enables Farnsworth timing (e.g. SST Contest)
+
     constructor Create;
     function IsReloadRequired(const AUserCallsign : String) : boolean;
     procedure SetLastLoadCallsign(const AUserCallsign : String);
@@ -48,6 +50,7 @@ type
     function OnSetMyCall(const AUserCallsign : string; out err : string) : boolean; virtual;
     function OnContestPrepareToStart(const AUserCallsign: string;
       const ASentExchange : string) : Boolean; virtual;
+    function IsFarnsworthAllowed : Boolean;
     function GetSentExchTypes(
       const AStationKind : TStationKind;
       const AMyCallsign : string) : TExchTypes;
@@ -108,6 +111,7 @@ begin
   Agc.AgcEnabled := true;
   NoActivityCnt :=0;
   LastLoadCallsign := '';
+  BFarnsworthEnabled := false;
 
   Init;
 end;
@@ -131,6 +135,7 @@ begin
   Stations.Clear;
   BlockNumber := 0;
   LastLoadCallsign := '';
+  BFarnsworthEnabled := false;
 end;
 
 
@@ -151,6 +156,18 @@ procedure TContest.SetLastLoadCallsign(const AUserCallsign : String);
 begin
   LastLoadCallsign := AUserCallsign;
 end;
+
+
+{
+  Farnsworth timing is supported by certain contests only (initially the
+  K1USN SST Contest). Derived contests will set BFarnworthEnabled in their
+  TContest.Create() method.
+}
+function TContest.IsFarnsworthAllowed : Boolean;
+begin
+  Result := BFarnsworthEnabled;
+end;
+
 
 
 {
