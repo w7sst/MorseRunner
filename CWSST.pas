@@ -117,6 +117,8 @@ begin
     inherited Create;
     CWSSTList:= TObjectList<TCWSSTRec>.Create;
     Comparer := TComparer<TCWSSTRec>.Construct(TCWSSTRec.compareCall);
+
+    BFarnsworthEnabled := true;
 end;
 
 destructor TCWSST.Destroy;

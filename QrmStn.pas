@@ -36,6 +36,7 @@ begin
   Amplitude := 5000 + 25000 * Random;
   Pitch := Round(RndGaussLim(0, 300));
   WpmS := 30 + Random(20);
+  WpmC := WpmS;
 
   // DX's sent exchange types depends on kind-of-station and their callsign
   SentExchTypes:= Tst.GetSentExchTypes(skDxStation, MyCall);
