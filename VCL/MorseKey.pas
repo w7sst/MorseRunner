@@ -26,7 +26,7 @@ type
     function BlackmanHarrisStepResponse(Len: integer): TSingleArray;
     procedure SetRiseTime(const Value: Single);
   public
-    Wpm: integer;
+    WpmS: integer;      // sending speed - Ts    (set by UI)
     BufSize: integer;
     Rate: integer;
     MorseMsg: string;
@@ -192,7 +192,7 @@ begin
       end;
 
   //calc buffer size
-  SamplesInUnit := Round(0.1 * Rate * 12 / Wpm);
+  SamplesInUnit := Round(0.1 * Rate * 12 / WpmS);
   TrueEnvelopeLen := UnitCnt * SamplesInUnit + RampLen;
   Len := BufSize * Ceil(TrueEnvelopeLen / BufSize);
   Result := nil;

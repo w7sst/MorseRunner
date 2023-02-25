@@ -54,7 +54,7 @@ type
     function NrAsText: string;
   public
     Amplitude: Single;
-    Wpm: integer;
+    WpmS: integer;          // Words per minute, sending speed (set by UI)
     Envelope: TSingleArray; // this station's digitized Envelope being sent
     State: TStationState;
 
@@ -245,8 +245,8 @@ begin
     SendPos := 0;
     FBfo := 0;
     end;
-    
-  Keyer.Wpm := Wpm;
+
+  Keyer.WpmS := WpmS;
   Keyer.MorseMsg := AMorse;
   Envelope := Keyer.Envelope;
   for i:=0 to High(Envelope) do
