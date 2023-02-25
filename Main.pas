@@ -61,8 +61,9 @@ const
     (C: 'CQ-Zone';    R: '[0-9]*';                         L: 2;  T:Ord(etCqZone)),
     (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
     (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
-    (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4;  T:Ord(etPower)),
-    (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode))
+    (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4; T:Ord(etPower)),
+    (C: 'Number';     R: '([0-9]*)([LMHP])';                  L: 4; T:Ord(etJaPref)),
+    (C: 'Number';     R: '([0-9]*)([LMHP])';                  L: 7; T:Ord(etJaCity))
   );
 
 type
@@ -421,7 +422,7 @@ var
 implementation
 
 uses
-  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, CWSST,
+  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, CWSST, ALLJA, ACAG,
   MorseKey, CallLst,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
   Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
@@ -508,6 +509,8 @@ begin
   scCQWW:       Result := TCqWW.Create;
   scArrlDx:     Result := TArrlDx.Create;
   scSst:        Result := TCWSST.Create;
+  scAllJa:      Result := TALLJA.Create;
+  scAcag:       Result := TACAG.Create;
   else
     assert(false);
   end;
@@ -641,6 +644,12 @@ begin
       begin
         // valid State/Prov characters (e.g. OR or BC)
         if not CharInSet(Key, ['A'..'Z', 'a'..'z', #8]) then
+          Key := #0;
+      end;
+    etJaPref, etJaCity:
+      begin
+        // log what the user types - assuming alpha numeric characters
+        if not CharInSet(Key, ['0'..'9', 'L', 'M', 'H', 'P', 'l', 'm', 'h', 'p', #8]) then
           Key := #0;
       end;
     else
@@ -925,7 +934,7 @@ begin
   // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
   if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst,
-    scCQWW, scArrlDx, scSst]) then
+    scCQWW, scArrlDx, scSst, scAllJa, scAcag]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex :=
@@ -1233,7 +1242,18 @@ begin
       end;
     //etItuZone:
     //etAge:
-    //etJarlOblastCode:
+    etJaPref:
+      begin
+        Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
+    etJaCity:
+      begin
+        Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
     else
       assert(false, Format('Unsupported exchange 2 type: %s.', [ToStr(AExchType)]));
   end;

@@ -540,7 +540,8 @@ var
       //etItuZone:
       //etAge:
       etPower:       Result := Length(text) > 0;
-      //etJarlOblastCode:
+      etJaPref:      Result := Length(text) > 2;
+      etJaCity:      Result := Length(text) > 3;
       else
         assert(false, 'missing case');
     end;
@@ -585,7 +586,8 @@ begin
       //etItuZone:
       //etAge:
       etPower:       Qso.Exch2 := Edit3.Text;
-      //etJarlOblastCode:
+      etJaPref:      Qso.Exch2 := Edit3.Text;
+      etJaCity:      Qso.Exch2 := Edit3.Text;
       else
         assert(false, 'missing case');
     end;
@@ -680,6 +682,16 @@ begin
         , format('%.3d %4s', [Rst, Exch2])
         , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
         , Pfx, Err, format('%.2d', [TrueWpm]));
+    scAllJa:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d %4s', [Rst, Exch2])
+        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
+        , MultStr, Err, format('%.2d', [TrueWpm]));
+    scAcag:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d %4s', [Rst, Exch2])
+        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
+        , MultStr, Err, format('%.2d', [TrueWpm]));
     else
       assert(false, 'missing case');
     end;
@@ -738,7 +750,8 @@ begin
         //etAge:
         etPower: if ReducePowerStr(TrueExch2) <> ReducePowerStr(Exch2) then
                    Err := 'PWR';
-        //etJarlOblastCode:
+        etJaPref: if TrueExch2 <> Exch2 then Err := 'NR ';
+        etJaCity: if TrueExch2 <> Exch2 then Err := 'NR ';
         else
           assert(false, 'missing exchange 2 case');
       end;

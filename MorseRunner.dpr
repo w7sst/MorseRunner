@@ -41,7 +41,9 @@ uses
   CqWW in 'CqWW.pas',
   CqWpx in 'CqWpx.pas',
   ArrlDx in 'ArrlDx.pas',
-  CWSST in 'CWSST.pas';
+  CWSST in 'CWSST.pas',
+  ALLJA in 'ALLJA.pas',
+  ACAG in 'ACAG.pas';
 
 {$R *.RES}
 

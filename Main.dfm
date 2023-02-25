@@ -530,7 +530,7 @@ object MainForm: TMainForm
       TabStop = False
       Align = alBottom
       BorderStyle = bsNone
-      Font.Charset = ANSI_CHARSET
+      Font.Charset = SHIFTJIS_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
       Font.Name = 'Consolas'
