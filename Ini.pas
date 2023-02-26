@@ -184,7 +184,7 @@ var
   CompDuration: integer = 60;
 
   SaveWav: boolean = false;
-  MinFarnsworthWpmC: integer = 0;
+  MinFarnsworthWpmC: integer = 25;
   AllStationsWpmS: integer = 0;      // force all stations to this Wpm
   CallsFromKeyer: boolean = false;
   F8: string = '';
