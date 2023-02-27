@@ -1,3 +1,7 @@
+!!Order!!, Call, Exch1, UserText, 
+# JARL contest support
+# ALL JA contest
+# Last Edit,2023-02-27
 7J3AOZ	27H
 7K1BIB	10M
 7K1DPE	13M

@@ -1,3 +1,7 @@
+!!Order!!, Call, Exch1, UserText, 
+# JARL contest support
+# All Cities All Guns contest
+# Last Edit,2023-02-27
 7J3AOZ	2715H
 7K1BIB	100115M
 7K1CPT	100120M

@@ -64,26 +64,32 @@ begin
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
   tl.StrictDelimiter := True;
+  rec := nil;
 
   try
     CallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'DIC_ALLJA.DAT');
+    slst.LoadFromFile(ParamStr(1) + 'DIC_ALLJA.TXT');
 
     for i:= 0 to slst.Count-1 do begin
+      if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
+      if (slst.Strings[i].StartsWith('#')) then continue;
+
       tl.DelimitedText := slst.Strings[i];
 
       if (tl.Count > 1) then begin
-          if (tl.Strings[0] = '!!Order!!') then continue;
-
+        if rec = nil then begin
           rec := TAllJaCallRec.Create;
-          rec.Call := UpperCase(tl.Strings[0]);
-          rec.Number := UpperCase(tl.Strings[1]);
-          if (tl.Count >= 3) then rec.UserText := tl.Strings[2];
-          if rec.Call = '' then continue;
-          if rec.Number = '' then continue;
+        end;
 
-          CallList.Add(rec);
+        rec.Call := UpperCase(tl.Strings[0]);
+        rec.Number := UpperCase(tl.Strings[1]);
+        if (tl.Count >= 3) then rec.UserText := tl.Strings[2];
+        if rec.Call = '' then continue;
+        if rec.Number = '' then continue;
+
+        CallList.Add(rec);
+        rec := nil;
       end;
     end;
 
