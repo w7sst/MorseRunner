@@ -235,6 +235,7 @@ begin
     try
       // Load SimContest, but do not call SetContest() until UI is initialized.
       V:= ReadInteger(SEC_TST, 'SimContest', Ord(scWpx));
+      if V > Length(ContestDefinitions) then V := 0;
       SimContest := TSimContest(V);
       ActiveContest := @ContestDefinitions[SimContest];
       MainForm.SimContestCombo.ItemIndex :=
