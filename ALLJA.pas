@@ -14,9 +14,9 @@ type
   TAllJaCallRec = class
   public
     Call: string;     // call sign
-    Number: string;   // CQ-Zone
+    Number: string;   // <pref><power>
     UserText: string; // optional UserText (displayed in status bar)
-    function GetString: string; // returns CQ-Zone N (e.g. 'CQ-Zone 3')
+    function GetString: string;
     class function compareCall(const left, right: TAllJaCallRec) : integer; static;
   end;
 
@@ -36,7 +36,7 @@ type
     procedure GetExchange(id : integer; out station : TDxStation); override;
 
     function getExch1(id:integer): string;    // returns RST (e.g. 5NN)
-    function getExch2(id:integer): string;    // returns section info (e.g. 3)
+    function getExch2(id:integer): string;    // return <pref><power> (e.g. 10H)
     function FindCallRec(out fdrec: TAllJaCallRec; const ACall: string): Boolean;
     function GetStationInfo(const ACallsign: string) : string; override;
     function ExtractMultiplier(Qso: PQso) : string; override;
@@ -173,11 +173,17 @@ begin
     end;
 end;
 
-// Exch2
-// <pref><power>
 //
-// <pref> 02-49    2digits prefecture code
-//        101-114  3digits Hokkaido branch office code
+// The extracted multiplier string is simply the <pref> location number from Exchange Field 2.
+// however, exclude <power> string from multiplier string.
+//
+// Exchange number format is follows.
+// Exch1 Exch2
+// 599   <pref><power>
+//
+// <pref> 02-49    2digits, prefecture code
+//        101-114  3digits, Hokkaido promotion bureau code
+//
 // <power> L|M|H|P 1digit
 //
 function TALLJA.ExtractMultiplier(Qso: PQso) : string;
@@ -188,21 +194,21 @@ begin
   S := Qso.Exch2;
   P := S[Length(S)];
   if CharInSet(P, ['L', 'M', 'H', 'P']) then begin
+    // If the last letter is P, L, M, H, the string without them will be the multiplier.
     Result := Copy(S, 1, Length(S) - 1);
   end
   else begin
+    // If the last letter is not P, L, M, H, consider the whole as a multiplier.
     Result := S;
   end;
 
   Qso^.Points := 1;
 end;
 
-
 function TALLJA.getCall(id : integer): string;     // returns station callsign
 begin
   result := CallList.Items[id].Call;
 end;
-
 
 procedure TALLJA.GetExchange(id : integer; out station : TDxStation);
 begin
@@ -210,12 +216,12 @@ begin
   station.Exch2 := getExch2(station.Operid);
 end;
 
-function TALLJA.getExch1(id:integer): string;    // returns RST (e.g. 599)
+function TALLJA.getExch1(id:integer): string; // returns RST (e.g. 599)
 begin
   result := '599';
 end;
 
-function TALLJA.getExch2(id:integer): string;    // returns section info (e.g. 3)
+function TALLJA.getExch2(id:integer): string; // return <pref><power> (e.g. 10H)
 begin
   result := CallList.Items[id].Number;
 end;
@@ -225,7 +231,7 @@ begin
   Result := CompareStr(left.Call, right.Call);
 end;
 
-function TAllJaCallRec.GetString: string; // returns CQ-Zone N (e.g. 'CQ-Zone 3')
+function TAllJaCallRec.GetString: string;
 begin
   Result := Format(' - NR %s', [Number]);
 end;

@@ -14,9 +14,9 @@ type
   TAcagCallRec = class
   public
     Call: string;     // call sign
-    Number: string;   // CQ-Zone
+    Number: string;   // <city|gun|ku><power>
     UserText: string; // optional UserText (displayed in status bar)
-    function GetString: string; // returns CQ-Zone N (e.g. 'CQ-Zone 3')
+    function GetString: string;
     class function compareCall(const left, right: TAcagCallRec) : integer; static;
   end;
 
@@ -36,7 +36,7 @@ type
     procedure GetExchange(id : integer; out station : TDxStation); override;
 
     function getExch1(id:integer): string;    // returns RST (e.g. 5NN)
-    function getExch2(id:integer): string;    // returns section info (e.g. 3)
+    function getExch2(id:integer): string;    // return <city|gun|ku><power> (e.g. 1002H)
     function FindCallRec(out fdrec: TAcagCallRec; const ACall: string): Boolean;
     function GetStationInfo(const ACallsign: string) : string; override;
     function ExtractMultiplier(Qso: PQso) : string; override;
@@ -173,12 +173,18 @@ begin
     end;
 end;
 
-// Exch2
-// <city|gun|ku><power>
+//
+// The extracted multiplier string is simply the <city|gun|ku> location number from Exchange Field 2.
+// however, exclude <power> string from multiplier string.
+//
+// Exchange number format is follows.
+// Exch1 Exch2
+// 599   <city|gun|ku><power>
 //
 // <city> 0102-4715     4digits, city-code
 // <gun>  01001-47005   5digits, gun(country)-code
-// <ku>   010101-430105 6digits, ku-code
+// <ku>   010101-430105 6digits, ku(ward)-code
+//
 // <power> L|M|H|P      1digit
 //
 function TACAG.ExtractMultiplier(Qso: PQso) : string;
@@ -189,34 +195,34 @@ begin
   S := Qso.Exch2;
   P := S[Length(S)];
   if CharInSet(P, ['L', 'M', 'H', 'P']) then begin
+    // If the last letter is P, L, M, H, the string without them will be the multiplier.
     Result := Copy(S, 1, Length(S) - 1);
   end
   else begin
+    // If the last letter is not P, L, M, H, consider the whole as a multiplier.
     Result := S;
   end;
 
   Qso^.Points := 1;
 end;
 
-
-function TACAG.getCall(id : integer): string;     // returns station callsign
+function TACAG.getCall(id : integer): string; // returns station callsign
 begin
   result := CallList.Items[id].Call;
 end;
 
-
 procedure TACAG.GetExchange(id : integer; out station : TDxStation);
 begin
   station.Exch1 := getExch1(station.Operid);  // RST
-  station.Exch2 := getExch2(station.Operid);
+  station.Exch2 := getExch2(station.Operid);  // <city|gun|ku><power>
 end;
 
-function TACAG.getExch1(id:integer): string;    // returns RST (e.g. 599)
+function TACAG.getExch1(id:integer): string;  // returns RST (e.g. 5NN)
 begin
   result := '599';
 end;
 
-function TACAG.getExch2(id:integer): string;    // returns section info (e.g. 3)
+function TACAG.getExch2(id:integer): string;  // return <city|gun|ku><power> (e.g. 1002H)
 begin
   result := CallList.Items[id].Number;
 end;
@@ -226,7 +232,7 @@ begin
   Result := CompareStr(left.Call, right.Call);
 end;
 
-function TAcagCallRec.GetString: string; // returns CQ-Zone N (e.g. 'CQ-Zone 3')
+function TAcagCallRec.GetString: string;
 begin
   Result := Format(' - NR %s', [Number]);
 end;

@@ -648,7 +648,7 @@ begin
       end;
     etJaPref, etJaCity:
       begin
-        // log what the user types - assuming alpha numeric characters
+        // valid Pref/City/Gun/Ku characters(numeric) and power characters (e.g. P|L|M|H)
         if not CharInSet(Key, ['0'..'9', 'L', 'M', 'H', 'P', 'l', 'm', 'h', 'p', #8]) then
           Key := #0;
       end;
