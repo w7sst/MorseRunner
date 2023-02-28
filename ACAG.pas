@@ -49,7 +49,7 @@ uses
 
 function TACAG.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
-  DelimitChar: char = #09;
+  DelimitChar: char = ',';
 var
   slst, tl: TStringList;
   i: integer;
@@ -69,7 +69,7 @@ begin
   try
     CallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'DIC_ACAG.TXT');
+    slst.LoadFromFile(ParamStr(1) + 'JARL_ACAG.TXT');
 
     for i:= 0 to slst.Count-1 do begin
       if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
@@ -97,6 +97,7 @@ begin
   finally
     slst.Free;
     tl.Free;
+    if rec <> nil then rec.Free;
   end;
 end;
 

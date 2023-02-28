@@ -149,19 +149,19 @@ const
      // expecting two strings [Name,QTH] (e.g. BRUCE MA)
      // Contest Exchange: <Name> <State|Prov|DX>
 
-    (Name: '[JA]ALL JA Contest';
+    (Name: 'JARL ALL JA';
      Key: 'ALLJA';
      ExchType1: etRST;
-     ExchType2: etJaPref;  // or etStateProvDx?
+     ExchType2: etJaPref;
      ExchFieldEditable: True;
      ExchDefault: '5NN 10H';
      Msg: '''RST <Pref><Power>'' (e.g. 5NN 10H)';
      T:scAllJa),
 
-    (Name: '[JA]ACAG Contest';
+    (Name: 'JARL ACAG';
      Key: 'ACAG';
      ExchType1: etRST;
-     ExchType2: etJaCity;  // or etStateProvDx?
+     ExchType2: etJaCity;
      ExchFieldEditable: True;
      ExchDefault: '5NN 1002H';
      Msg: '''RST <City|Gun|Ku><Power>'' (e.g. 5NN 1002H)';
