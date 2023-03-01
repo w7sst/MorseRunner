@@ -305,6 +305,8 @@ begin
       Result := Format('%s %s', [Exch1, Exch2]);
     scNaQp, scArrlDx:
       Result := Format('%s %s', [Exch1, Exch2]);
+    scAllJa, scAcag:
+      Result := Format('%s %s', [Exch1, Exch2]);
     else
       Result := Format('%d%.3d', [RST, NR]);
   end;

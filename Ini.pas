@@ -26,7 +26,7 @@ const
 type
   // Adding a contest: Append new TSimContest enum value for each contest.
   TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW, scArrlDx,
-                 scSst);
+                 scSst, scAllJa, scAcag);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
   // Exchange Field #1 types
@@ -34,7 +34,7 @@ type
 
   // Exchange Field #2 Types
   TExchange2Type = (etSerialNr, etGenericField, etArrlSection, etStateProv,
-                    etCqZone, etItuZone, etAge, etPower, etJarlOblastCode);
+                    etCqZone, etItuZone, etAge, etPower, etJaPref, etJaCity);
 
   // Contest definition.
   TContestDefinition = record
@@ -145,9 +145,27 @@ const
      ExchFieldEditable: True;
      ExchDefault: 'Bruce MA';
      Msg: '''<op name> <State|Prov|DX>'' (e.g. BRUCE MA)';
-     T:scSst)
+     T:scSst),
      // expecting two strings [Name,QTH] (e.g. BRUCE MA)
      // Contest Exchange: <Name> <State|Prov|DX>
+
+    (Name: 'JARL ALL JA';
+     Key: 'ALLJA';
+     ExchType1: etRST;
+     ExchType2: etJaPref;
+     ExchFieldEditable: True;
+     ExchDefault: '5NN 10H';
+     Msg: '''RST <Pref><Power>'' (e.g. 5NN 10H)';
+     T:scAllJa),
+
+    (Name: 'JARL ACAG';
+     Key: 'ACAG';
+     ExchType1: etRST;
+     ExchType2: etJaCity;
+     ExchFieldEditable: True;
+     ExchDefault: '5NN 1002H';
+     Msg: '''RST <City|Gun|Ku><Power>'' (e.g. 5NN 1002H)';
+     T:scAcag)
   );
 
 var
@@ -233,6 +251,8 @@ begin
       UserExchangeTbl[scCQWW] := ReadString(SEC_STN, 'CQWWExchange', '5NN 4');
       UserExchangeTbl[scArrlDx] := ReadString(SEC_STN, 'ArrlDxExchange', '5NN ON');
       UserExchangeTbl[scSst] := ReadString(SEC_STN, 'SstExchange', 'BRUCE MA');
+      UserExchangeTbl[scAllJa] := ReadString(SEC_STN, 'AllJaExchange', '5NN 10H');
+      UserExchangeTbl[scAcag] := ReadString(SEC_STN, 'AcagExchange', '5NN 1002H');
 
       ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
       ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'ON');
@@ -318,6 +338,8 @@ begin
       WriteString(SEC_STN, 'CqWWExchange', UserExchangeTbl[scCQWW]);
       WriteString(SEC_STN, 'ArrlDxExchange', UserExchangeTbl[scArrlDx]);
       WriteString(SEC_STN, 'SstExchange', UserExchangeTbl[scSst]);
+      WriteString(SEC_STN, 'AllJaExchange', UserExchangeTbl[scAllJa]);
+      WriteString(SEC_STN, 'AcagExchange', UserExchangeTbl[scAcag]);
 
       WriteString(SEC_STN, 'ArrlClass', ArrlClass);
       WriteString(SEC_STN, 'ArrlSection', ArrlSection);
