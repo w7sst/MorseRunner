@@ -224,7 +224,7 @@ begin
       '-': Inc(UnitCnt, 4);   // 3 unit dash followed by 1 unit spacing
       ' ': Inc(UnitCnt, 2);   // 3U inter-char space (2U + prior 1U)
     { ' ': subsequent space } // 5U inter-word space (2U + prior 3U)
-      '~': Inc(UnitCnt, 3);   // ~5U inter-msg space (3U + prior 1U + loop time)
+      '~': Inc(UnitCnt, 3);   // 4U inter-msg space (3U + prior 1U + loop time)
     end;
 
   //calc buffer size
