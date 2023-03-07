@@ -82,8 +82,8 @@ begin
   if Ini.AllStationsWpmS > 0
     then WpmS := Ini.AllStationsWpmS
     else WpmS := AWpmS;   // set via UI
-  if Tst.IsFarnsworthAllowed() and (Ini.MinFarnsworthWpmC > WpmS)
-    then WpmC := Ini.MinFarnsworthWpmC
+  if Tst.IsFarnsworthAllowed() and (Ini.FarnsworthCharRate > WpmS)
+    then WpmC := Ini.FarnsworthCharRate
     else WpmC := WpmS;
 end;
 
