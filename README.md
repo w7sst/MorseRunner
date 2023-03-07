@@ -52,40 +52,53 @@ Projects we are currently working on...
 
 - [ ] **Add a few more contests** - Implement one or two more popular contests based on community input, including the IARU HF Championship Contest.
 
-- [ ] **Merge selected features and bug fixes** - Identify and integrate features from
-[other MR branches](#morse-runner-release-history) into the main release branch.
-Our initial focus will be F6FVY and N2IC changes, including bandwidth adjustment using mouse wheel and F7-key handling improvements.
+- [ ] **Add K1USN Slow Speed Contest (SST)** - The CWOPS Community has reached out and expressed interest in using MRCE as one of their recommended training tools for their CW classes.
+Farnsworth CW timing support will be implemented for this contest only.
 
-- [ ] **Multi-contest design** - Discuss the design approach for supporting multiple
-contests within Morse Runner based on FD prototype and most recently ARRL DX Contest.
-Look for patterns across multiple contests and propose interface(s) to be used
-to generalize an individual contest.
+- [ ] **Add JARL All Japan and ACAG contests** - These contests are being implemented by JR8PPG. Thank you!
 
-- [ ] **Document git setup** - Document a recommended git setup to avoid issues with CRLF caused by different git
-setups on individual computers and git setups.
-Document this issue so other developers can understand avoid this issue.
+- [ ] **Focus on Quality** - We will try to address some of the quality issues that have been reported.
 
-- [ ] **GUI Enhancements** - The team will evaluate the GUI for ergonomic enhancements.
+- [ ] Target v1.83 release before March 31.
 
 #### Next - Spring 2023 (Apr-June)
 Projects that we'll work on next...
-- [ ] **Multi-contest implementation** - finish the initial implementation of the
-multi-contest codebase. Major interfaces are developed and running. Contests are
-added by extending these interfaces only. Most switch statements in code have been removed.
+- [ ] **ARRL Field Day support announcement** - We would like to figure out how to announce MECE's support for ARRL Field Day. This contest was the main focus from a year ago and we want to be sure that users are aware of this training opportunity in time for FD 2023.
+
+- [ ] **Developer on-boarding** - Help other developers get up to speed with compiling and pushing to the project.
+
+- [ ] **Merge selected features and bug fixes** - Identify and integrate features from
+[other MR branches](#morse-runner-release-history) into the main release branch.
+Our initial focus will be F6FVY and N2IC changes, including bandwidth adjustment using mouse wheel and F7-key handling improvements.
 
 - [ ] **Maintain existing integration with N1MM and DxLog.**
 N2IC has done work to integrate Morse Runner within N1MM and DxLog.
 We want to continue this work to allow Morse Runner to run with these
 popular logging programs.
 
-- [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
-This team will develop and test an individual contest before it is released for general use.
-Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in helping as either an advocate or developer for a given contest.
+- [ ] **GUI Enhancements** - The team will evaluate the GUI for ergonomic enhancements.
 
 - [ ] **Add additional contests** - Based on community input, we will add a few more contests for the fall contesting season.
 
 #### Later - 2nd Half 2023 (July-Dec)
 Projects that we'll work on later...
+- [ ] **Document git setup** - Document a recommended git setup to avoid issues with CRLF caused by different git
+setups on individual computers and git setups.
+Document this issue so other developers can understand avoid this issue.
+
+- [ ] **Multi-contest design** - Discuss the design approach for supporting multiple
+contests within Morse Runner based on FD prototype and most recently ARRL DX Contest.
+Look for patterns across multiple contests and propose interface(s) to be used
+to generalize an individual contest.
+
+- [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
+This team will develop and test an individual contest before it is released for general use.
+Please review Issues pages for contest recommendations and add a comment to your favorite contests. Also mention if you're interested in helping as either an advocate or developer for a given contest.
+
+- [ ] **Multi-contest implementation** - finish the initial implementation of the
+multi-contest codebase. Major interfaces are developed and running. Contests are
+added by extending these interfaces only. Most switch statements in code have been removed.
+
 - [ ] **Add additional contests** - by now, adding a contest should be fairly straight-forward.
 Perhaps adding a contest will need two people, a contest developer and a contest advocate.
 This team can develop and test a contest before releasing to general use.
@@ -159,6 +172,8 @@ Once complete, we will reach out to various user communities
 - [x] **Add CQ WW Contest** - simple contest with RST and CQ-Zone. Release 1.81.
 
 - [x] **Add ARRL DX Contest** - international contest with RST and State/Province (US & Canada) or RST and Power (DX Stations). Release 1.82.
+
+#### Complete - Spring 2023 (Jan-Mar)
 
 # History
 TODO - add a paragraph or two regarding the history of MR.
