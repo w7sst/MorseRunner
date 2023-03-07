@@ -384,7 +384,7 @@ begin
 
       WriteBool(SEC_STN, 'SaveWav', SaveWav);
 
-      WriteInteger(SEC_SET, 'MinFarnsworthWpmC', FarnsworthCharRate);
+      WriteInteger(SEC_SET, 'FarnsworthCharacterRate', FarnsworthCharRate);
     finally
       Free;
     end;
