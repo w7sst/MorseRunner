@@ -9,6 +9,7 @@ uses
   Ini in 'Ini.pas',
   Station in 'Station.pas',
   MorseKey in 'VCL\MorseKey.pas',
+  FarnsKeyer in 'VCL\FarnsKeyer.pas',
   StnColl in 'StnColl.pas',
   DxStn in 'DxStn.pas',
   MyStn in 'MyStn.pas',

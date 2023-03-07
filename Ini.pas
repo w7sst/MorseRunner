@@ -202,6 +202,8 @@ var
   CompDuration: integer = 60;
 
   SaveWav: boolean = false;
+  FarnsworthCharRate: integer = 25;
+  AllStationsWpmS: integer = 0;      // force all stations to this Wpm
   CallsFromKeyer: boolean = false;
   F8: string = '';
 
@@ -309,11 +311,13 @@ begin
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
 
       // [Settings]
+      FarnsworthCharRate := ReadInteger(SEC_SET, 'FarnsworthCharacterRate', FarnsworthCharRate);
 
       // [Debug]
       DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
       DebugCwDecoder := ReadBool(SEC_DBG, 'DebugCwDecoder', DebugCwDecoder);
       DebugGhosting := ReadBool(SEC_DBG, 'DebugGhosting', DebugGhosting);
+      AllStationsWpmS := ReadInteger(SEC_DBG, 'AllStationsWpmS', AllStationsWpmS);
       F8 := ReadString(SEC_DBG, 'F8', F8);
     finally
       Free;
@@ -379,6 +383,8 @@ begin
       WriteInteger(SEC_STN, 'SelfMonVolume', V);
 
       WriteBool(SEC_STN, 'SaveWav', SaveWav);
+
+      WriteInteger(SEC_SET, 'MinFarnsworthWpmC', FarnsworthCharRate);
     finally
       Free;
     end;

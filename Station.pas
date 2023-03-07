@@ -55,6 +55,7 @@ type
   public
     Amplitude: Single;
     WpmS: integer;          // Words per minute, sending speed (set by UI)
+    WpmC: integer;          // Words per minute, character speed (set via .INI)
     Envelope: TSingleArray; // this station's digitized Envelope being sent
     State: TStationState;
 
@@ -89,6 +90,8 @@ type
     procedure SendMsg(AMsg: TStationMessage); virtual;
     procedure SendText(AMsg: string); virtual;
     procedure SendMorse(AMorse: string);
+
+    function WpmAsText : string;
 
     property Pitch: integer read FPitch write SetPitch;
     property Bfo: Single read GetBfo;
@@ -143,6 +146,7 @@ begin
 end;
 
 
+// returns the next block of 512 samples from this station's current Envelope.
 function TStation.GetBlock: TSingleArray;
 begin
   Result := Copy(Envelope, SendPos, Ini.BufSize);
@@ -246,7 +250,7 @@ begin
     FBfo := 0;
     end;
 
-  Keyer.WpmS := WpmS;
+  Keyer.SetWpm(Self.WpmS, Self.WpmC);
   Keyer.MorseMsg := AMorse;
   Envelope := Keyer.Envelope;
   for i:=0 to High(Envelope) do
@@ -346,6 +350,15 @@ begin
     if Random < 0.97
       then Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
     end;
+end;
+
+
+function TStation.WpmAsText : string;
+begin
+  if WpmS < WpmC then
+    Result:= Format('%d/%d', [WpmS, WpmC])
+  else
+    Result:= Format('%3d', [WpmS]);
 end;
 
 end.
