@@ -467,11 +467,11 @@ object MainForm: TMainForm
       Transparent = True
     end
     object Label19: TLabel
-      Left = 44
+      Left = 28
       Top = 234
-      Width = 413
+      Width = 448
       Height = 15
-      Caption = 'Copyright '#169'2022 Morse Runner Community Edition Contributors'
+      Caption = 'Copyright '#169'2022-2023 Morse Runner Community Edition Contributors'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -1514,12 +1514,8 @@ object MainForm: TMainForm
         end
       end
       object Operator1: TMenuItem
-        Caption = 'HST/CWOps Operator'
+        Caption = 'HST Operator'
         OnClick = Operator1Click
-      end
-      object N5: TMenuItem
-        Caption = 'CWOps Number'
-        OnClick = CWOPSNumberClick
       end
       object mnuShowCallsignInfo: TMenuItem
         Caption = 'Show Callsign Info'

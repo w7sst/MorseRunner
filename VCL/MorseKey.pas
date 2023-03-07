@@ -26,7 +26,7 @@ type
     function BlackmanHarrisStepResponse(Len: integer): TSingleArray;
     procedure SetRiseTime(const Value: Single);
   public
-    Wpm: integer;
+    WpmS: integer;      // sending speed - Ts    (set by UI)
     BufSize: integer;
     Rate: integer;
     MorseMsg: string;
@@ -69,6 +69,7 @@ begin
   LoadMorseTable;
   Rate := 11025;
   RiseTime := 0.005;
+  //RiseTime := 1.0 / (2.7 * Rate); // debugging with 1 step rise/fall time
 end;
 
 
@@ -112,6 +113,7 @@ var
   i: integer;
   Scale: Single;
 begin
+  assert(Len > 0);
   SetLength(Result, Len);
   //generate kernel
   for i:=0 to High(Result) do Result[i] := BlackmanHarrisKernel(i/Len);
@@ -146,10 +148,19 @@ begin
     else
         Result := Result + Morse[Txt[i]];
   if Result <> '' then
-    Result[Length(Result)] := '~';
+    Result[Length(Result)] := '~';  // EOM has ~5U spacing
 end;
 
 
+{
+  Returns a TSingleArray containing the samples representing the current
+  MsgText.
+
+  The following articles discuss the timing equations used in this
+  implementation.
+    - https://morsecode.world/international/timing.html
+    - https://www.arrl.org/files/file/Technology/x9004008.pdf
+}
 function TKeyer.GetEnvelope: TSingleArray;
 var
   UnitCnt, Len, i, p: integer;
@@ -175,25 +186,50 @@ var
     Inc(p, Dur * SamplesInUnit - RampLen);
   end;
 
-  procedure AddOff(Dur: integer);
+  {
+    Add 'Dur' units of 0-value (Off) to the output stream.
+    Remember that characters have a trailing ' ' after each character.
+    This ' ' emits an additional 2U spacing after each character, resulting
+    in 3U spacing after each character is sent. This is the standard 3U
+    inter-character spacing.
+    Next, an additional space (' ') is included after each word which causes
+    an additional 2U spacing to be emitted, resulting in the standard 5U
+    inter-word spacing.
+
+    ARampLen is used to subtract the width of the character's trailing
+    RampOff samples (of width RampLen samples).
+    - When adding the remaining Off samples after the RampOff, the RampOff
+      sample width is subtracted.
+    - When adding additional Off samples (not immediately following a RampOff
+      event, the value 0 is passed used.
+
+    Dur - desired duration in units
+    ARampLen - number of samples representing the RampOff length
+  }
+  procedure AddOff(Dur : integer; ARampLen: integer);
   begin
-    Inc(p, Dur * SamplesInUnit - RampLen);
+    Inc(p, Dur * SamplesInUnit - ARampLen);
   end;
 
+
 begin
+  assert(WpmS > 0, 'WpmS not initialized');
+
   //count units
   UnitCnt := 0;
+
   for i:=1 to Length(MorseMsg) do
     case MorseMsg[i] of
-      '.': Inc(UnitCnt, 2);
-      '-': Inc(UnitCnt, 4);
-      ' ': Inc(UnitCnt, 2);
-      '~': Inc(UnitCnt, 1);
-      end;
+      '.': Inc(UnitCnt, 2);   // 1 unit dit followed by 1 unit spacing
+      '-': Inc(UnitCnt, 4);   // 3 unit dash followed by 1 unit spacing
+      ' ': Inc(UnitCnt, 2);   // 3U inter-char space (2U + prior 1U)
+    { ' ': subsequent space } // 5U inter-word space (2U + prior 3U)
+      '~': Inc(UnitCnt, 3);   // 4U inter-msg space (3U + prior 1U + loop time)
+    end;
 
   //calc buffer size
-  SamplesInUnit := Round(0.1 * Rate * 12 / Wpm);
-  TrueEnvelopeLen := UnitCnt * SamplesInUnit + RampLen;
+  SamplesInUnit := Round(60/48 * Rate / WpmS);  // 48U = 1 word w/ 5U inter-word space
+  TrueEnvelopeLen := UnitCnt * SamplesInUnit;
   Len := BufSize * Ceil(TrueEnvelopeLen / BufSize);
   Result := nil;
   SetLength(Result, Len);
@@ -202,11 +238,13 @@ begin
   p := 0;
   for i:=1 to Length(MorseMsg) do
     case MorseMsg[i] of
-      '.': begin AddRampOn; AddOn(1); AddRampOff; AddOff(1); end;
-      '-': begin AddRampOn; AddOn(3); AddRampOff; AddOff(1); end;
-      ' ': AddOff(2);
-      '~': AddOff(1);
+      '.': begin AddRampOn; AddOn(1); AddRampOff; AddOff(1, RampLen); end;
+      '-': begin AddRampOn; AddOn(3); AddRampOff; AddOff(1, RampLen); end;
+      ' ': AddOff(2, 0);      // 3U inter-char spacing (2U + prior 1U)
+    { ' ': subsequent space } // 5U inter-word spacing (2U + prior 3U)
+      '~': AddOff(3, 0);      // 4U inter-msg spacing  (3U + prior 1U)
       end;
+  assert(p = TrueEnvelopeLen);
 end;
 
 

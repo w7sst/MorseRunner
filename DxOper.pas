@@ -8,7 +8,7 @@ unit DxOper;
 interface
 
 uses
-  SysUtils, RndFunc, Station, Ini, Math, Log;
+  Station;
 
 const
   FULL_PATIENCE = 5;
@@ -44,7 +44,7 @@ type
 implementation
 
 uses
-  Contest;
+  SysUtils, Ini, Math, RndFunc, Contest, Log;
 
 { TDxOperator }
 
@@ -60,7 +60,7 @@ begin
   if State = osNeedPrevEnd then
     Result := NEVER
   else if RunMode = rmHst then
-    Result := SecondsToBlocks(0.05 + 0.5*Random * 10/Wpm)
+    Result := SecondsToBlocks(0.05 + 0.5*Random * 10/Ini.Wpm)
   else
     Result := SecondsToBlocks(0.1 + 0.5*Random);
 end;
@@ -106,7 +106,7 @@ end;
 function TDxOperator.GetReplyTimeout: integer;
 begin
   if RunMode = rmHst then
-    Result := SecondsToBlocks(60/Wpm)
+    Result := SecondsToBlocks(60/Ini.Wpm)
   else
     Result := SecondsToBlocks(6-Skills);
   Result := Round(RndGaussLim(Result, Result/2));
@@ -127,7 +127,7 @@ procedure TDxOperator.SetState(AState: TOperatorState);
 begin
   State := AState;
   if AState = osNeedQso
-    then Patience := Round(RndRayleigh(4)) + 99 // mikeb debug
+    then Patience := Round(RndRayleigh(4))
     else Patience := FULL_PATIENCE;
 
   if (AState = osNeedQso) and (not (RunMode in [rmSingle, RmHst])) and (Random < 0.1)

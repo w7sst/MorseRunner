@@ -21,7 +21,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.82';  { Sets version strings in UI panel. }
+  sVersion: String = '1.83';  { Sets version strings in UI panel. }
 
 type
 
@@ -54,20 +54,17 @@ const
   // Exchange Field 2 settings/rules
   Exchange2Settings: array[TExchange2Type] of TFieldDefinition = (
     (C: 'Nr.';        R: '([0-9][0-9]*)|(#)';              L: 4;  T:Ord(etSerialNr)),
-    (C: 'Number';     R: '[1-9][0-9]*';                    L: 10; T:Ord(etCwopsNumber)),
+    (C: 'Exch';       R: '[0-9A-Z]*';                      L: 12; T:Ord(etGenericField)),
     (C: 'Section';    R: '([A-Z][A-Z])|([A-Z][A-Z][A-Z])'; L: 3;  T:Ord(etArrlSection)),
     (C: 'State/Prov'; R: '[ABCDFGHIKLMNOPQRSTUVWY][ABCDEFHIJKLMNORSTUVXYZ]';
                                                            L: 6;  T:Ord(etStateProv)),
     (C: 'CQ-Zone';    R: '[0-9]*';                         L: 2;  T:Ord(etCqZone)),
     (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
     (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
-    (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4;  T:Ord(etPower)),
-    (C: 'Number';     R: '[0-9]*[A-Z]';                    L: 12; T:Ord(etJarlOblastCode)),
-    (C: 'Zone/Soc';   R: '[0-9A-Z]*';                      L: 12; T:Ord(etGenericField))
+    (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4; T:Ord(etPower)),
+    (C: 'Number';     R: '([0-9]*)([LMHP])';                  L: 4; T:Ord(etJaPref)),
+    (C: 'Number';     R: '([0-9]*)([LMHP])';                  L: 7; T:Ord(etJaCity))
   );
-
-  { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
-  BDebugExchSettings: boolean = false;
 
 type
 
@@ -251,7 +248,6 @@ type
     N9: TMenuItem;
     ListView2: TListView;
     sbar: TPanel;
-    N5: TMenuItem;
     mnuShowCallsignInfo: TMenuItem;
     NRDigits1: TMenuItem;
     NRDigitsSet1: TMenuItem;
@@ -342,7 +338,6 @@ type
     procedure Activity1Click(Sender: TObject);
     procedure Duration1Click(Sender: TObject);
     procedure Operator1Click(Sender: TObject);
-    procedure CWOPSNumberClick(Sender: TObject);
     procedure StopMNUClick(Sender: TObject);
     procedure ListView2CustomDrawSubItem(Sender: TCustomListView;
       Item: TListItem; SubItem: Integer; State: TCustomDrawState;
@@ -366,7 +361,7 @@ type
     function ValidateExchField(const FieldDef: PFieldDefinition;
       const Avalue: string) : Boolean;
     procedure ProcessSpace;
-    procedure SendMsg(Msg: TStationMessage);
+    procedure SendMsg(AMsg: TStationMessage);
     procedure ProcessEnter;
     procedure EnableCtl(Ctl: TWinControl; AEnable: boolean);
     procedure WmTbDown(var Msg: TMessage); message WM_TBDOWN;
@@ -411,13 +406,24 @@ type
 function ToStr(const val : TExchange1Type): string; overload;
 function ToStr(const val : TExchange2Type): string; overload;
 
+const
+  CDebugExchSettings: boolean = false;  // compile-time exchange settings debug
+  CDebugCwDecoder: boolean = false;     // compile-time enable for CW Decoder
+  CDebugGhosting : boolean = false;     // compile-time enable for Ghosting debug
+
 var
   MainForm: TMainForm;
+
+  { debug switches - set via .INI file or compile-time switches (above) }
+  BDebugExchSettings: boolean;    // display parsed Exchange field settings
+  BDebugCwDecoder: boolean;       // enables CW stream to status bar
+  BDebugGhosting: boolean;        // enabled DxStation ghosting issues
 
 implementation
 
 uses
-  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, IARUHF,
+  ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, CWSST, ALLJA, ACAG,
+  IARUHF,
   MorseKey, CallLst,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
   Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
@@ -468,6 +474,10 @@ begin
   AlSoundOut1.BufCount := 4;
   FromIni;
 
+  // enable Exchange debugging either locally or via .INI file
+  BDebugExchSettings := CDebugExchSettings or Ini.DebugExchSettings;
+  BDebugCwDecoder := CDebugCwDecoder or Ini.DebugCwDecoder;
+
   MakeKeyer;
   Keyer.Rate := DEFAULTRATE;
   Keyer.BufSize := Ini.BufSize;
@@ -499,6 +509,9 @@ begin
   scNaQp:       Result := TNcjNaQp.Create;
   scCQWW:       Result := TCqWW.Create;
   scArrlDx:     Result := TArrlDx.Create;
+  scSst:        Result := TCWSST.Create;
+  scAllJa:      Result := TALLJA.Create;
+  scAcag:       Result := TACAG.Create;
   scIaruHf:     Result := TIaruHf.Create;
   else
     assert(false);
@@ -523,18 +536,18 @@ begin
 end;
 
 
-procedure TMainForm.SendMsg(Msg: TStationMessage);
+procedure TMainForm.SendMsg(AMsg: TStationMessage);
 begin
-  if Msg = msgHisCall then begin
+  if AMsg = msgHisCall then begin
     // retain current callsign, including ''. if empty, return.
     Tst.Me.HisCall := Edit1.Text;
     CallSent := Edit1.Text <> '';
     if not CallSent then
       Exit;
   end;
-  if Msg = msgNR then
+  if AMsg = msgNR then
     NrSent := true;
-  Tst.Me.SendMsg(Msg);
+  Tst.Me.SendMsg(AMsg);
 end;
 
 
@@ -591,7 +604,7 @@ end;
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
   case RecvExchTypes.Exch2 of
-    etSerialNr, etCwopsNumber, etCqZone, etItuZone, etAge:
+    etSerialNr, etCqZone, etItuZone, etAge:
       begin
         if RunMode <> rmHst then
           case Key of
@@ -601,6 +614,12 @@ begin
           end;
         // valid Zone or NR field characters...
         if not CharInSet(Key, ['0'..'9', #8]) then
+          Key := #0;
+      end;
+    etGenericField:
+      begin
+        // log what the user types - assuming alpha numeric characters
+        if not CharInSet(Key, ['0'..'9', 'A'..'Z', 'a'..'z', #8]) then
           Key := #0;
       end;
     etPower:
@@ -629,12 +648,12 @@ begin
         if not CharInSet(Key, ['A'..'Z', 'a'..'z', #8]) then
           Key := #0;
       end;
-    etGenericField:
+    etJaPref, etJaCity:
       begin
-        // log what the user types - assuming alpha numeric characters
-        if not CharInSet(Key, ['0'..'9', 'A'..'Z', 'a'..'z', #8]) then
+        // valid Pref/City/Gun/Ku characters(numeric) and power characters (e.g. P|L|M|H)
+        if not CharInSet(Key, ['0'..'9', 'L', 'M', 'H', 'P', 'l', 'm', 'h', 'p', #8]) then
           Key := #0;
-      end
+      end;
     else
       assert(false, Format('invalid exchange field 2 type: %s',
         [ToStr(RecvExchTypes.Exch2)]));
@@ -848,7 +867,7 @@ begin
 
   //current state
   C := CallSent;
-  N := NrSent;
+  N := NrSent;    // 'Nr' represents the exchange (<exch1> <exch2>).
   Q := Edit2.Text <> '';
   R := Edit3.Text <> '';
 
@@ -918,7 +937,7 @@ begin
   // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
   if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst,
-    scCQWW, scArrlDx, scIaruHf]) then
+    scCQWW, scArrlDx, scSst, scAllJa, scAcag, scIaruHf]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex :=
@@ -1183,8 +1202,6 @@ end;
 
 procedure TMainForm.SetMyExch2(const AExchType: TExchange2Type;
   const Avalue: string);
-var
-  i: integer;
 begin
   // Adding a contest: setup contest-specific exchange field 2
   case AExchType of
@@ -1198,20 +1215,11 @@ begin
 
         if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
       end;
-    etCwopsNumber:  // e.g. scCwt (123)
+    etGenericField:
       begin
-        {Edit3.Text := sl[1];
-        Ini.CWOPSNum:= sl[1];
-        Tst.Me.CWOPSNR := StrToInt(sl[1]); }
-        // todo - verify this is a number
-        i := StrToIntDef(Avalue, 0);
+        // 'expecting alpha-numeric field'
         Ini.UserExchange2[SimContest] := Avalue;
-        Ini.CWOPSNum:= IntToStr(i);
-        // ExchangeEdit.Text := Avalue;
-        if Avalue <> '' then
-          Tst.Me.CWOPSNR := StrToIntDef(Avalue, 0)
-        else
-          Tst.Me.CWOPSNR := 0;
+        Tst.Me.Exch2 := Avalue;
         if BDebugExchSettings then Edit3.Text := Avalue; // testing only
       end;
     etArrlSection:  // e.g. Field Day (OR)
@@ -1235,7 +1243,7 @@ begin
         Tst.Me.Nr := StrToInt(Avalue);
         if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
       end;
-    etItuZone, etGenericField:
+    etItuZone:
       begin
         // 'expecting Itu-Zone or IARU Society'
         Ini.UserExchange2[SimContest] := Avalue;
@@ -1243,7 +1251,18 @@ begin
         if BDebugExchSettings then Edit3.Text := Avalue; // testing only
       end;
     //etAge:
-    //etJarlOblastCode:
+    etJaPref:
+      begin
+        Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
+    etJaCity:
+      begin
+        Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
     else
       assert(false, Format('Unsupported exchange 2 type: %s.', [ToStr(AExchType)]));
   end;
@@ -1428,7 +1447,7 @@ const
         'CW CONTEST SIMULATOR'#13#13 +
         'Version %s'#13#13 +
         'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13 +
-        'Copyright ©2022 Morse Runner Community Edition Contributors'#13#13 +
+        'Copyright ©2022-2023 Morse Runner Community Edition Contributors'#13#13 +
         'https://www.github.com/w7sst/MorseRunner';
 begin
     Application.MessageBox(PChar(Format(Msg, [sVersion])),
@@ -1448,17 +1467,15 @@ end;
 
 {
   called whenever callsign field (Edit1) changes. Any callsign edit will
-  invalidate the callsign and NR (Exchange) field(s) already sent, so clear
-  the CallSent and NrSent values.
+  invalidate the callsign already sent by clearing the CallSent value.
+  If the Callsign is empty, also crear the NrSent value.
 }
 procedure TMainForm.Edit1Change(Sender: TObject);
 begin
     if Edit1.Text = '' then
         NrSent := false;
-    if not Tst.Me.UpdateCallInMessage(Edit1.Text) then begin
+    if not Tst.Me.UpdateCallInMessage(Edit1.Text) then
         CallSent := false;
-        NrSent := false;
-    end;
 end;
 
 
@@ -1546,6 +1563,11 @@ begin
   BStop := Value = rmStop;
   BCompet := Value in [rmWpx, rmHst];
   RunMode := Value;
+
+  //debug switches
+  BDebugExchSettings := (CDebugExchSettings or Ini.DebugExchSettings) and not BCompet;
+  BDebugCwDecoder := (CDebugCwDecoder or Ini.DebugCwDecoder) and not BCompet;
+  BDebugGhosting := (CDebugGhosting or Ini.DebugGhosting) and not BCompet;
 
   //main ctls
   EnableCtl(SimContestCombo, BStop);
@@ -2014,7 +2036,7 @@ procedure TMainForm.SetWpm(AWpm : integer);
 begin
   Wpm := Max(10, Min(120, AWpm));
   SpinEdit1.Value := Wpm;
-  Tst.Me.Wpm := Wpm;
+  Tst.Me.SetWpm(Wpm);
 end;
 
 
@@ -2168,7 +2190,7 @@ end;
 procedure TMainForm.ListView2SelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
 begin
-    if (mnuShowCallsignInfo.Checked) then
+    if (Selected and mnuShowCallsignInfo.Checked) then
         UpdateSbar(Item.SubItems[0]);
     //Item.Index  @QsoList[High(QsoList)];
 end;
@@ -2189,44 +2211,14 @@ end;
 
 procedure TMainForm.Operator1Click(Sender: TObject);
 begin
-  HamName := InputBox('HST/CWOps Operator', 'Enter operator''s name', HamName);
+  HamName := InputBox('HST Operator', 'Enter operator''s name', HamName);
   HamName := UpperCase(HamName);
-
-  Ini.UserExchangeTbl[scCwt] := Format('%s %s', [HamName, CWOPSNum]);
-  if SimContest = scCwt then
-    SetMyExchange(Ini.UserExchangeTbl[SimContest]);
 
   UpdateTitleBar;
 
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
       WriteString(SEC_STN, 'Name', HamName);
-    finally
-      Free;
-    end;
-end;
-
-
-procedure TMainForm.CWOPSNumberClick(Sender: TObject);
-Var
-buf: string;
-begin
-  buf := InputBox('CWOps Number', 'Enter CWOPS Number', CWOPSNum);
-  if buf = '' then begin
-       exit;
-  end;
-  if not CWOPS.isnum(buf) then begin
-       exit;
-  end;
-    CWOPSNum := buf;
-
-  Ini.UserExchangeTbl[scCwt] := Format('%s %s', [HamName, CWOPSNum]);
-  if SimContest = scCwt then
-    SetMyExchange(Ini.UserExchangeTbl[SimContest]);
-
-  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
-    try
-      WriteString(SEC_STN, 'cwopsnum', CWOPSNum);
     finally
       Free;
     end;

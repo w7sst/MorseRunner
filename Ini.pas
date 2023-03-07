@@ -15,6 +15,8 @@ const
   SEC_BND = 'Band';
   SEC_TST = 'Contest';
   SEC_SYS = 'System';
+  SEC_SET = 'Settings';
+  SEC_DBG = 'Debug';
 
   DEFAULTBUFCOUNT = 8;
   DEFAULTBUFSIZE = 512;
@@ -24,16 +26,15 @@ const
 type
   // Adding a contest: Append new TSimContest enum value for each contest.
   TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW, scArrlDx,
-	         scIaruHf);
+                 scSst, scAllJa, scAcag, scIaruHf);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
   // Exchange Field #1 types
   TExchange1Type = (etRST, etOpName, etFdClass);
 
   // Exchange Field #2 Types
-  TExchange2Type = (etSerialNr, etCwopsNumber, etArrlSection, etStateProv,
-                    etCqZone, etItuZone, etAge, etPower, etJarlOblastCode,
-                    etGenericField);
+  TExchange2Type = (etSerialNr, etGenericField, etArrlSection, etStateProv,
+                    etCqZone, etItuZone, etAge, etPower, etJaPref, etJaCity);
 
   // Contest definition.
   TContestDefinition = record
@@ -41,6 +42,7 @@ type
     Key: PChar;     // Identifying key (used in Ini files)
     ExchType1: TExchange1Type;
     ExchType2: TExchange2Type;
+    ExchCaptions: array[0..1] of String; // exchange field captions
     ExchFieldEditable: Boolean; // whether the Exchange field is editable
     ExchDefault: PChar; // contest-specific Exchange default message
     Msg: PChar;     // Exchange error message
@@ -78,13 +80,14 @@ const
     (Name: 'CWOPS CWT';
      Key: 'Cwt';
      ExchType1: etOpName;
-     ExchType2: etCwopsNumber;
+     ExchType2: etGenericField;
+     ExchCaptions: ('Name', 'Exch');
      ExchFieldEditable: True;
      ExchDefault: 'David 1';
-     Msg: '''<op name> <CWOPS number>'' (e.g. DAVID 123)';
+     Msg: '''<op name> <CWOPS Number|State|Country>'' (e.g. DAVID 123)';
      T:scCwt),
      // expecting two strings [Name,Number] (e.g. David 123)
-     // Contest Exchange: <Name> <CW Ops Num>
+     // Contest Exchange: <Name> <CW Ops Num|State|Country Prefix>
 
     (Name: 'ARRL Field Day';
      Key: 'ArrlFd';
@@ -134,10 +137,41 @@ const
      Msg: '''RST <state|province|power>'' (e.g. 5NN OR)';
      T:scARRLDX),
 
+    (Name: 'K1USN Slow Speed Test';
+     Key: 'K1USNSST';
+     ExchType1: etOpName;
+     ExchType2: etGenericField;  // or etStateProvDx?
+     ExchCaptions: ('Name', 'State/Prov/DX');
+     ExchFieldEditable: True;
+     ExchDefault: 'Bruce MA';
+     Msg: '''<op name> <State|Prov|DX>'' (e.g. BRUCE MA)';
+     T:scSst),
+     // expecting two strings [Name,QTH] (e.g. BRUCE MA)
+     // Contest Exchange: <Name> <State|Prov|DX>
+
+    (Name: 'JARL ALL JA';
+     Key: 'ALLJA';
+     ExchType1: etRST;
+     ExchType2: etJaPref;
+     ExchFieldEditable: True;
+     ExchDefault: '5NN 10H';
+     Msg: '''RST <Pref><Power>'' (e.g. 5NN 10H)';
+     T:scAllJa),
+
+    (Name: 'JARL ACAG';
+     Key: 'ACAG';
+     ExchType1: etRST;
+     ExchType2: etJaCity;
+     ExchFieldEditable: True;
+     ExchDefault: '5NN 1002H';
+     Msg: '''RST <City|Gun|Ku><Power>'' (e.g. 5NN 1002H)';
+     T:scAcag),
+
     (Name: 'IARU HF';
      Key: 'IARUHFCW';
      ExchType1: etRST;
      ExchType2: etGenericField;
+     ExchCaptions: ('RST', 'Zone/Soc');
      ExchFieldEditable: True;
      ExchDefault: '5NN 6';
      Msg: '''RST <Itu-zone|IARU Society>'' (e.g. 5NN 6)';
@@ -147,7 +181,6 @@ const
 var
   Call: string = 'VE3NEA';
   HamName: string = 'Alex';
-  CWOPSNum: string = '1';
   ArrlClass: string = '3A';
   ArrlSection: string = 'GTA';
   Wpm: integer = 25;
@@ -180,6 +213,12 @@ var
 
   SaveWav: boolean = false;
   CallsFromKeyer: boolean = false;
+  F8: string = '';
+
+  { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
+  DebugExchSettings: boolean = false;
+  DebugCwDecoder: boolean = false;  // stream CW to status bar
+  DebugGhosting: boolean = false;   // enable DxStation Ghosting debug
 
   SimContest: TSimContest = scWpx;
   ActiveContest: PContestDefinition = @ContestDefinitions[scWpx];
@@ -206,6 +245,7 @@ begin
     try
       // Load SimContest, but do not call SetContest() until UI is initialized.
       V:= ReadInteger(SEC_TST, 'SimContest', Ord(scWpx));
+      if V > Length(ContestDefinitions) then V := 0;
       SimContest := TSimContest(V);
       ActiveContest := @ContestDefinitions[SimContest];
       MainForm.SimContestCombo.ItemIndex :=
@@ -221,6 +261,9 @@ begin
       UserExchangeTbl[scHst] := ReadString(SEC_STN, 'HSTExchange', '5NN #');
       UserExchangeTbl[scCQWW] := ReadString(SEC_STN, 'CQWWExchange', '5NN 4');
       UserExchangeTbl[scArrlDx] := ReadString(SEC_STN, 'ArrlDxExchange', '5NN ON');
+      UserExchangeTbl[scSst] := ReadString(SEC_STN, 'SstExchange', 'BRUCE MA');
+      UserExchangeTbl[scAllJa] := ReadString(SEC_STN, 'AllJaExchange', '5NN 10H');
+      UserExchangeTbl[scAcag] := ReadString(SEC_STN, 'AcagExchange', '5NN 1002H');
       UserExchangeTbl[scIaruHf] := ReadString(SEC_STN, 'IaruHfExchange', '5NN 6');
 
       ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
@@ -233,7 +276,7 @@ begin
       MainForm.ComboBox2.ItemIndex := ReadInteger(SEC_STN, 'BandWidth', 9);
 
       HamName := ReadString(SEC_STN, 'Name', '');
-      CWOPSNum :=  ReadString(SEC_STN, 'cwopsnum', CWOPSNum);
+      DeleteKey(SEC_STN, 'cwopsnum');  // obsolete at v1.83
 
       MainForm.UpdCWMaxRxSpeed(ReadInteger(SEC_STN, 'CWMaxRxSpeed', MaxRxWpm));
       MainForm.UpdCWMinRxSpeed(ReadInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm));
@@ -275,6 +318,14 @@ begin
       MainForm.VolumeSlider1.Value := V / 80 + 0.75;
 
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
+
+      // [Settings]
+
+      // [Debug]
+      DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
+      DebugCwDecoder := ReadBool(SEC_DBG, 'DebugCwDecoder', DebugCwDecoder);
+      DebugGhosting := ReadBool(SEC_DBG, 'DebugGhosting', DebugGhosting);
+      F8 := ReadString(SEC_DBG, 'F8', F8);
     finally
       Free;
     end;
@@ -298,6 +349,9 @@ begin
       WriteString(SEC_STN, 'HSTExchange', UserExchangeTbl[scHst]);
       WriteString(SEC_STN, 'CqWWExchange', UserExchangeTbl[scCQWW]);
       WriteString(SEC_STN, 'ArrlDxExchange', UserExchangeTbl[scArrlDx]);
+      WriteString(SEC_STN, 'SstExchange', UserExchangeTbl[scSst]);
+      WriteString(SEC_STN, 'AllJaExchange', UserExchangeTbl[scAllJa]);
+      WriteString(SEC_STN, 'AcagExchange', UserExchangeTbl[scAcag]);
       WriteString(SEC_STN, 'IaruHfExchange', UserExchangeTbl[scIaruHf]);
 
       WriteString(SEC_STN, 'ArrlClass', ArrlClass);

@@ -20,6 +20,7 @@ type
     constructor CreateStation;
     destructor Destroy; override;
     procedure Init;
+    procedure SetWpm(const AWpmS : integer);
     procedure ProcessEvent(AEvent: TStationEvent); override;
     procedure AbortSend;
     procedure SendText(AMsg: string); override;
@@ -52,11 +53,13 @@ end;
 
 procedure TMyStation.Init;
 begin
+  inherited Init;
+
   MyCall := Ini.Call;
   NR := 1;
   RST := 599;
   Pitch := Ini.Pitch;
-  Wpm := Ini.Wpm;
+  WpmS := Ini.Wpm;
   Amplitude := 300000;
 
   // invalidate SentExchTypes. Will be set by Tst.OnSetMyCall().
@@ -65,9 +68,17 @@ begin
   // Adding a contest: Initialize Exch1 and Exch2
   // (try to use the generalized Exch1 and Exch2 fields for new contests.)
   OpName := HamName;
-  CWOPSNR := strtoint(CWOPSNum);
   Exch1 := '3A';
   Exch2 := 'OR';
+end;
+
+
+{
+  Called by TMainForm.SetWpm whenever Wpm is updated via UI.
+}
+procedure TMyStation.SetWpm(const AWpmS : integer);
+begin
+  WpmS := AWpmS;   // set via UI
 end;
 
 
@@ -96,12 +107,10 @@ begin
     assert(OpName = HamName, 'HamName doesn''t change; should already be set');
     OpName := HamName;
     end;
-  if SentExchTypes.Exch2 = etCwopsNumber then
-    begin
-    //assert(NR = strtoint(CWOPSNUM), 'CWOPS Num doesn''t change, should be set');
-    NR := strtoint(CWOPSNum);
-    end;
+
+  // Split message around '<his>' token to allow special callsign processing.
   AddToPieces(AMsg);
+
   if State <> stSending then
     begin
     SendNextPiece;
@@ -119,15 +128,17 @@ begin
   p := Pos('<his>', AMsg);
   while p > 0 do
     begin
-    Pieces.Add(Copy(AMsg, 1, p-1));
+    if p > 1 then Pieces.Add(Copy(AMsg, 1, p-1));
     Pieces.Add('@');  //his callsign indicator
     Delete(AMsg, 1, p+4);
     p := Pos('<his>', AMsg);
     end;
-  Pieces.Add(AMsg);
+  if AMsg <> '' then Pieces.Add(AMsg);
 
+  // remove any empty pieces (there shouldn't be any)
+  // todo - this can be removed in the future.
   for i:= Pieces.Count-1 downto 0 do
-    if Pieces[i] = '' then Pieces.Delete(i);
+    if Pieces[i] = '' then begin assert(false); Pieces.Delete(i); end;
 end;
 
 
@@ -175,7 +186,7 @@ begin
   if Result then
     begin
     //create new envelope
-    Keyer.Wpm := Wpm;
+    Keyer.WpmS := Wpm;
     Keyer.MorseMsg := Keyer.Encode(ACall);
     NewEnvelope := Keyer.Envelope;
     for i:=0 to High(NewEnvelope) do

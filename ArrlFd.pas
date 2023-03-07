@@ -7,7 +7,7 @@ unit ARRLFD;
 interface
 
 uses
-  Generics.Defaults, Generics.Collections, Contest, DxStn, Log;
+  Generics.Defaults, Generics.Collections, Contest, Station, DxStn, Log;
 
 type
   TFdCallRec = class
@@ -42,6 +42,7 @@ public
   function getUserText(id:integer): string; // returns optional club name
   //function IsNum(Num: String): Boolean;
   function FindCallRec(out fdrec: TFdCallRec; const ACall: string): Boolean;
+  procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
   function GetStationInfo(const ACallsign: string) : string; override;
   function ExtractMultiplier(Qso: PQso) : string; override;
 end;
@@ -153,6 +154,29 @@ begin
     rec.Free;
   end;
   Result:= fdrec <> nil;
+end;
+
+
+{
+  Overrides TContest.SendMsg() to send contest-specific messages.
+
+  Adding a contest: TContest.SendMsg(AMsg): send contest-specfic messages
+}
+procedure TArrlFieldDay.SendMsg(const AStn: TStation; const AMsg: TStationMessage);
+begin
+  case AMsg of
+    msgCQ: SendText(AStn, 'CQ FD <my>');
+    msgNrQm:
+      case Random(5) of
+        0,1: SendText(AStn, 'NR?');
+        2: SendText(AStn, 'SECT?');
+        3: SendText(AStn, 'CLASS?');
+        4: SendText(AStn, 'CL?');
+      end;
+    msgLongCQ: SendText(AStn, 'CQ CQ FD <my> <my> FD');  // QrmStation only
+    else
+      inherited SendMsg(AStn, AMsg);
+  end;
 end;
 
 

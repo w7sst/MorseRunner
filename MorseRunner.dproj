@@ -158,6 +158,9 @@
         <DCCReference Include="CqWW.pas"/>
         <DCCReference Include="CqWpx.pas"/>
         <DCCReference Include="ArrlDx.pas"/>
+        <DCCReference Include="CWSST.pas"/>
+        <DCCReference Include="ALLJA.pas"/>
+        <DCCReference Include="ACAG.pas"/>
         <DCCReference Include="IaruHf.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

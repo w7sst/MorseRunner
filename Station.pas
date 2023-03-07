@@ -50,11 +50,12 @@ type
     SendPos: integer;
     TimeOut: integer;
     NrWithError: boolean;
+    procedure Init;
     function NrAsText: string;
   public
     Amplitude: Single;
-    Wpm: integer;
-    Envelope: TSingleArray;
+    WpmS: integer;          // Words per minute, sending speed (set by UI)
+    Envelope: TSingleArray; // this station's digitized Envelope being sent
     State: TStationState;
 
     // Sent Exchange field types...
@@ -71,13 +72,13 @@ type
     NR, RST: integer;
     MyCall, HisCall: string;
     OpName: string;
-    CWOPSNR: integer;
     Exch1: string;  // Exchange field 1 (e.g. class, name, etc.)
     Exch2: string;  // Exchange field 2 (e.g. zone, state/prov, section, grid, etc.)
     UserText: string; // club name or description (from fdHistory file)
+    MsgTemp: string;  // hold a portion of the message (randomly generated once)
 
     Msg: TStationMessages;
-    MsgText: string;
+    MsgText: string;  // this station's current message being sent
 
     constructor CreateStation;
 
@@ -102,7 +103,11 @@ const
 implementation
 
 uses
-  SysUtils, Math, MorseKey, Contest;
+  Main,     // for Mainform.sbar.Caption, BDebugCwDecoder
+  QrmStn,   // for TQrmStation.ClassType
+  Contest,  // for Tst (TContest), Tst.Me.OpName
+  StrUtils, // for PosEx
+  SysUtils, Math, MorseKey;
 
 
 { TExchTypes }
@@ -119,7 +124,14 @@ constructor TStation.CreateStation;
 begin
   inherited Create(nil);
 
+  Init;
+end;
+
+
+procedure TStation.Init;
+begin
   SentExchTypes:= ExchTypesUndef;
+  MsgTemp := 'undef';
 end;
 
 
@@ -147,60 +159,45 @@ begin
   if AMsg = msgNone then begin State := stListening; Exit; End;
   Include(Msg, AMsg);
 
-  case AMsg of
-    msgCQ: begin
-      // Adding a contest: TStation.SendMsg(msgCQ): send CQ message (e.g. CQ FD <my>)
-      case SimContest of
-        scCwt: SendText('CQ CWT <my>');
-        scFieldDay: SendText('CQ FD <my>');
-        else SendText('CQ <my> TEST');
-      end;
-    end;
-    msgNR: SendText('<#>');
-    msgTU: SendText('TU');
-    msgMyCall: SendText('<my>');
-    msgHisCall: SendText('<his>');
-    msgB4: SendText('QSO B4');
-    msgQm: SendText('?');
-    msgNil: SendText('NIL');
-    msgR_NR: begin
-      // Adding a contest: TStation.SendMsg(msgR_NR): send 'R <#>' message, where # is exch (e.g. 3A OR)
-      case SimContest of
-        scCwt: SendText('<#>')
-      else
-        SendText('R <#>');
-      end;
-    end;
-    msgR_NR2: begin
-      // Adding a contest: TStation.SendMsg(msgR_NR2): send 'R <#> <#>' message, where # is exch (e.g. 3A OR)
-      case SimContest of
-        scCwt: SendText('<#>')
-      else
-        SendText('R <#> <#>');
-      end;
-    end;
-    msgDeMyCall1: SendText('DE <my>');
-    msgDeMyCall2: SendText('DE <my> <my>');
-    msgDeMyCallNr1: SendText('DE <my> <#>');
-    msgDeMyCallNr2: SendText('DE <my> <my> <#>');
-    msgMyCallNr2: SendText('<my> <my> <#>');
-    msgNrQm: SendText('NR?');
-    msgLongCQ:
-      begin
-        case SimContest of
-          scFieldDay: SendText('CQ CQ FD <my> <my>')
-        else
-          SendText('CQ CQ TEST <my> <my> TEST');
-        end;
-      end;
-    msgQrl: SendText('QRL?');
-    msgQrl2: SendText('QRL?   QRL?');
-    msqQsy: SendText('<his>  QSY QSY');
-    msgAgn: SendText('AGN');
-    end;
+  // during debug, use status bar to show CW stream
+  if (AMsg = msgTU) and BDebugCwDecoder and not (self is TQrmStation) then
+    Mainform.sbar.Caption:= '';
+
+  // Create contest-specific messages...
+  Tst.SendMsg(self, AMsg);
 end;
 
+{
+  Handle station-specific messaging by replacing message tokens with
+  their respective values. The resulting message is then passed to
+  Keyer.Encode() and SendMorse().
+}
 procedure TStation.SendText(AMsg: string);
+var
+  P : integer;
+
+  // Modifies AMsg by replacing AToken at position P with ANewText and
+  // advances the token offset P to the start of the next token.
+  // Successive occurances of the same token are replaced in one call.
+  // Returns true when no additional tokens are available.
+  function ReplaceTokenAt(
+    var AMsg : string;      // in/out: message to be modified
+    var P : integer;        // in/out: current token offset; advanced to next
+    const AToken : string;  // token to be replaced
+    const ANewText : string // NewText to replace token
+    ) : boolean;            // return true when no additional tokens available
+  begin
+    // loop with valid token and look for successive matches of current token
+    while (P > 0) and (PosEx(AToken, AMsg, P) = P) do
+      begin
+        AMsg := StuffString(AMsg, P, AToken.Length, ANewText);
+        P := PosEx('<', AMsg, P);
+      end;
+
+    // return whether no additional tokens are present in string.
+    Result := (P = 0);
+  end;
+
 begin
   if Pos('<#>', AMsg) > 0 then
     begin
@@ -210,7 +207,16 @@ begin
     AMsg := StringReplace(AMsg, '<#>', NrAsText, [rfReplaceAll]);
     end;
 
-  AMsg := StringReplace(AMsg, '<my>', MyCall, [rfReplaceAll]);
+  // replace tokens with actual values
+  P := Pos('<', AMsg);
+  while (P > 0) do
+    begin
+      if ReplaceTokenAt(AMsg, P, '<my>', MyCall) then Break;
+      if ReplaceTokenAt(AMsg, P, '<exch1>', Exch1) then Break;
+      if ReplaceTokenAt(AMsg, P, '<exch2>', Exch2) then Break;
+      if ReplaceTokenAt(AMsg, P, '<HisName>', MainForm.Edit2.Text) then Break;
+      if ReplaceTokenAt(AMsg, P, '<MyName>', Tst.Me.OpName) then Break;
+    end;
 
 {
   if CallsFromKeyer
@@ -221,6 +227,11 @@ begin
   if MsgText <> ''
     then MsgText := MsgText + ' ' + AMsg
     else MsgText := AMsg;
+
+  // during debug, use status bar to show CW stream
+  if BDebugCwDecoder and not (self is TQrmStation) then
+    Mainform.sbar.Caption := (MsgText + '; ' + Mainform.sbar.Caption).Substring(0, 80);
+
   SendMorse(Keyer.Encode(MsgText));
 end;
 
@@ -234,8 +245,8 @@ begin
     SendPos := 0;
     FBfo := 0;
     end;
-    
-  Keyer.Wpm := Wpm;
+
+  Keyer.WpmS := WpmS;
   Keyer.MorseMsg := AMorse;
   Envelope := Keyer.Envelope;
   for i:=0 to High(Envelope) do
@@ -287,10 +298,14 @@ begin
     scCQWW:
       Result := Format('%s %d', [Exch1, NR]);     // <RST> <serial#>
     scCwt:
-      Result := Format('%s  %.d', [OpName, NR]);
+      Result := Format('%s  %s', [Exch1, Exch2]); // <Name> <NR|State|Prov|Prefix>
+    scSst:
+      Result := Format('%s %s', [Exch1, Exch2]); // <Name> <State|Prov|DX>
     scFieldDay:
       Result := Format('%s %s', [Exch1, Exch2]);
     scNaQp, scArrlDx, scIaruHf:
+      Result := Format('%s %s', [Exch1, Exch2]);
+    scAllJa, scAcag:
       Result := Format('%s %s', [Exch1, Exch2]);
     else
       Result := Format('%d%.3d', [RST, NR]);

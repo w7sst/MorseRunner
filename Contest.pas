@@ -59,6 +59,8 @@ type
       const AStationKind : TStationKind;
       const ARequestedMsgType : TRequestedMsgType;
       const ADxCallsign : string) : TExchTypes; virtual;
+    procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
+    procedure SendText(const AStn: TStation; const AMsg: string); virtual;
     function ExtractMultiplier(Qso: PQso) : string; virtual;
     function Minute: Single;
     function GetAudio: TSingleArray;
@@ -200,7 +202,7 @@ end;
   function.
 
   Current behavior is to load the call history file. This action has been
-  defferred until now since some contests use the user's callsign to determine
+  deferred until now since some contests use the user's callsign to determine
   which stations can work other stations in the contest. For example, in the
   ARRL DX Contest, US/CA Stations work DX (non-US/CA) stations.
 
@@ -258,6 +260,54 @@ function TContest.GetExchangeTypes(
 begin
   Result.Exch1 := ActiveContest.ExchType1;
   Result.Exch2 := ActiveContest.ExchType2;
+end;
+
+
+{
+  This virtual procedure allows contest-specific messages to be implemented
+  in derived Contest classes.
+
+  When overridden by derived classes, if a message is not handled then this
+  base-class procedure should be called.
+  Please see ARRLFD.SendMsg for an example.
+}
+procedure TContest.SendMsg(const AStn: TStation; const AMsg: TStationMessage);
+begin
+  case AMsg of
+    msgCQ: SendText(AStn, 'CQ <my> TEST');
+    msgNR: SendText(AStn, '<#>');
+    msgTU: SendText(AStn, 'TU');
+    msgMyCall: SendText(AStn, '<my>');
+    msgHisCall: SendText(AStn, '<his>');
+    msgB4: SendText(AStn, 'QSO B4');
+    msgQm: SendText(AStn, '?');
+    msgNil: if Ini.F8.IsEmpty then SendText(AStn, 'NIL')
+                              else SendText(Astn, Ini.F8);
+    msgR_NR: SendText(AStn, 'R <#>');
+    msgR_NR2: SendText(AStn, 'R <#> <#>');
+    msgDeMyCall1: SendText(AStn, 'DE <my>');
+    msgDeMyCall2: SendText(AStn, 'DE <my> <my>');
+    msgDeMyCallNr1: SendText(AStn, 'DE <my> <#>');
+    msgDeMyCallNr2: SendText(AStn, 'DE <my> <my> <#>');
+    msgMyCallNr2: SendText(AStn, '<my> <my> <#>');
+    msgNrQm: SendText(AStn, 'NR?');
+    msgLongCQ: SendText(AStn, 'CQ CQ TEST <my> <my> TEST');  // QrmStation only
+    msgQrl: SendText(AStn, 'QRL?');
+    msgQrl2: SendText(AStn, 'QRL?   QRL?');
+    msqQsy: SendText(AStn, '<his>  QSY QSY');
+    msgAgn: SendText(AStn, 'AGN');
+  end;
+end;
+
+
+{
+  This virtual procedure is provided to allow a derived contest the ability
+  to perform additional processing on the message, including token replacement,
+  before being passed to the Encoder and Keyer.
+}
+procedure TContest.SendText(const AStn: TStation; const AMsg: string);
+begin
+  AStn.SendText(AMsg);  // virtual
 end;
 
 

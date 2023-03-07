@@ -82,6 +82,8 @@ var
   CallSent: boolean; // msgHisCall has been sent; cleared upon edit.
   NrSent: boolean;   // msgNR has been sent. Seems to imply exchange sent.
   Histo: THisto;
+  LogColWidths : Array[0..6] of integer;  // retain original Log column widths
+  LogColWidthInitialized : boolean;       // initialize LogColWidths on time only
 {$ifdef DEBUG}
   RunUnitTest : boolean;  // run ExtractPrefix unit tests once
 {$endif}
@@ -155,14 +157,32 @@ begin
 end;
 
 procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
+var
+  I: Integer;
+
+  // adjust column with for empty table title strings
+  procedure SetCaption(const I : integer; const ACaption : string);
+  begin
+    MainForm.ListView2.Column[I].Width:= IfThen(ACaption.IsEmpty, 0, LogColWidths[I]);
+    MainForm.ListView2.Column[I].Caption:= ACaption;
+  end;
+
 begin
-  MainForm.ListView2.Column[0].Caption:= ACol1;
-  MainForm.ListView2.Column[1].Caption:= ACol2;
-  MainForm.ListView2.Column[2].Caption:= ACol3;
-  MainForm.ListView2.Column[3].Caption:= ACol4;
-  MainForm.ListView2.Column[4].Caption:= ACol5;
-  MainForm.ListView2.Column[5].Caption:= ACol6;
-  MainForm.ListView2.Column[6].Caption:= ACol7;
+  // retain initial log column widths (used to restore column widths)
+  if not LogColWidthInitialized then
+    begin
+      for I := Low(LogColWidths) to High(LogColWidths) do
+        LogColWidths[I]:= MainForm.ListView2.Column[I].Width;
+      LogColWidthInitialized:= true;
+    end;
+
+  SetCaption(0, ACol1);
+  SetCaption(1, ACol2);
+  SetCaption(2, ACol3);
+  SetCaption(3, ACol4);
+  SetCaption(4, ACol5);
+  SetCaption(5, ACol6);
+  SetCaption(6, ACol7);
 end;
 
 procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
@@ -192,7 +212,11 @@ begin
   // '&' are suppressed in this control; replace with '&&'
   s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
 
-  MainForm.sbar.Caption:= '  ' + s;
+  // during debug, use status bar to show CW stream
+  if not s.IsEmpty and (BDebugCwDecoder or BDebugGhosting) then
+    Mainform.sbar.Caption:= LeftStr(Mainform.sbar.Caption, 40) + ' -- ' + s
+  else
+    MainForm.sbar.Caption:= '  ' + s;
 end;
 
 
@@ -222,7 +246,9 @@ begin
     // Adding a contest: set Score Table titles
     case Ini.SimContest of
       scCwt:
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'NR', 'Pref', 'Chk', 'Wpm');
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', 'Wpm');
+      scSst:
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', 'Wpm');
       scFieldDay:
         ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
       scNaQp:
@@ -231,6 +257,8 @@ begin
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
       scArrlDx:
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
+      scAcag:
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'City', 'Chk', 'Wpm');
       scIaruHf:
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
       else
@@ -509,15 +537,15 @@ var
     Result := false;
     case Mainform.RecvExchTypes.Exch2 of
       etSerialNr:    Result := Length(text) > 0;
-      etCwopsNumber: Result := Length(text) > 0;
+      etGenericField:Result := Length(text) > 0;
       etArrlSection: Result := Length(text) > 1;
       etStateProv:   Result := Length(text) > 1;
       etCqZone:      Result := Length(text) > 0;
       etItuZone:     Result := Length(text) > 0;
       //etAge:
       etPower:       Result := Length(text) > 0;
-      //etJarlOblastCode:
-      etGenericField: Result := Length(text) > 0;
+      etJaPref:      Result := Length(text) > 2;
+      etJaCity:      Result := Length(text) > 3;
       else
         assert(false, 'missing case');
     end;
@@ -555,15 +583,15 @@ begin
     //save Exchange2 (Edit3)
     case Mainform.RecvExchTypes.Exch2 of
       etSerialNr:    Qso.Nr := StrToInt(Edit3.Text);
-      etCwopsNumber: Qso.Nr := StrToInt(Edit3.Text);
+      etGenericField:Qso.Exch2 := Edit3.Text;
       etArrlSection: Qso.Exch2 := Edit3.Text;
       etStateProv:   Qso.Exch2 := Edit3.Text;
       etCqZone:      Qso.NR := StrToInt(Edit3.Text);
       etItuZone:     Qso.Exch2 := Edit3.Text;
       //etAge:
       etPower:       Qso.Exch2 := Edit3.Text;
-      //etJarlOblastCode:
-      etGenericField:Qso.Exch2 := Edit3.Text;
+      etJaPref:      Qso.Exch2 := Edit3.Text;
+      etJaCity:      Qso.Exch2 := Edit3.Text;
       else
         assert(false, 'missing case');
     end;
@@ -628,10 +656,10 @@ begin
   with QsoList[High(QsoList)] do begin
     // Adding a contest: LastQsoToScreen, add last qso to Score Table
     case Ini.SimContest of
-    scCwt:
+    scCwt, scSst:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
-        , format('%.d', [Nr])
+        , Exch2
         , Pfx, Err, format('%.2d', [TrueWpm]));
     scFieldDay:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
@@ -658,6 +686,16 @@ begin
         , format('%.3d %4s', [Rst, Exch2])
         , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
         , Pfx, Err, format('%.2d', [TrueWpm]));
+    scAllJa:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d %4s', [Rst, Exch2])
+        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
+        , MultStr, Err, format('%.2d', [TrueWpm]));
+    scAcag:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d %4s', [Rst, Exch2])
+        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
+        , MultStr, Err, format('%.2d', [TrueWpm]));
     scIaruHf:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d %4s', [Rst, Exch2])
@@ -701,18 +739,15 @@ begin
       // Adding a contest: check for contest-specific exchange field 2 errors
       case Mainform.RecvExchTypes.Exch2 of
         etSerialNr:    if TrueNr <> NR then Err := 'NR ';
-        etCwopsNumber: if TrueNr <> NR then Err := 'NR ';
-        etCqZone:      if TrueNr <> NR then Err := 'ZN ';
-        etArrlSection: if TrueExch2 <> Exch2 then Err := 'SEC';
-        etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';
-        etItuZone:     if TrueExch2 <> Exch2 then Err := 'ZN ';
-        //etAge:
-        etPower: if ReducePowerStr(TrueExch2) <> ReducePowerStr(Exch2) then
-                   Err := 'PWR';
-        //etJarlOblastCode:
         etGenericField:
           // Adding a contest: implement comparison for Generic Field type
           case Ini.SimContest of
+            scCwt:
+              if TrueExch2 <> Exch2 then
+                Err := IfThen(IsNum(TrueExch2), 'NR ', 'QTH');
+            scSst:
+              if TrueExch2 <> Exch2 then
+                Err := 'QTH';
             scIaruHf:
               // need to add ReduceNumeric...
               if TrueExch2 <> Exch2 then
@@ -721,6 +756,15 @@ begin
               if TrueExch2 <> Exch2 then
                 Err := 'ERR';
           end;
+        etCqZone:      if TrueNr <> NR then Err := 'ZN ';
+        etArrlSection: if TrueExch2 <> Exch2 then Err := 'SEC';
+        etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';
+        etItuZone:     if TrueExch2 <> Exch2 then Err := 'ZN ';
+        //etAge:
+        etPower: if ReducePowerStr(TrueExch2) <> ReducePowerStr(Exch2) then
+                   Err := 'PWR';
+        etJaPref: if TrueExch2 <> Exch2 then Err := 'NR ';
+        etJaCity: if TrueExch2 <> Exch2 then Err := 'NR ';
         else
           assert(false, 'missing exchange 2 case');
       end;

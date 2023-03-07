@@ -19,7 +19,6 @@ type
     constructor CreateStation;
     destructor Destroy; override;
     procedure ProcessEvent(AEvent: TStationEvent); override;
-    procedure SendMsg(AMsg: TStationMessage); override;
     procedure DataToLastQso;
     function GetBlock: TSingleArray; override;
   var
@@ -35,6 +34,7 @@ implementation
 
 uses
   SysUtils, Classes, RndFunc, Dialogs,
+  Main,     // for Mainform
   CallLst, Log, Ini, Contest;
 
 { TDxStation }
@@ -42,6 +42,7 @@ uses
 constructor TDxStation.CreateStation;
 begin
   inherited Create(nil);
+  inherited Init;
 
   HisCall := Ini.Call;
 
@@ -55,7 +56,7 @@ begin
   Oper.SetState(osNeedPrevEnd);
   NrWithError := Ini.Lids and (Random < 0.1);
 
-  Wpm := Oper.GetWpm;
+  WpmS := Oper.GetWpm;
 
   // DX's sent exchange types depends on kind-of-station and their callsign
   SentExchTypes := Tst.GetSentExchTypes(skDxStation, MyCall);
@@ -125,7 +126,15 @@ begin
       if State = stListening then
         begin
         Oper.MsgReceived([msgNone]);
-        if Oper.State = osFailed then begin Free; Exit; end;
+        if Oper.State = osFailed then begin
+          // during debug, use status bar to show CW stream
+          if BDebugCwDecoder or BDebugGhosting then
+            Mainform.sbar.Caption :=
+              (Format('[%s-Timeout]',[MyCall]) + '; ' +
+              Mainform.sbar.Caption).Substring(0, 80);
+          Free;
+          Exit;
+          end;
         State := stPreparingToSend;
         end;
       //preparations to send are done, now send
@@ -150,9 +159,18 @@ begin
           end;
 
           //react to the message
-          if Oper.State = osFailed
-            then begin Free; Exit; end         //give up
-            else TimeOut := Oper.GetSendDelay; //reply or switch to standby
+          if Oper.State = osFailed then // give up
+            begin
+              // during debug, use status bar to show CW stream
+              if BDebugCwDecoder or BDebugGhosting then
+                Mainform.sbar.Caption :=
+                  (Format('[%s-Failed]',[MyCall]) + '; ' +
+                  Mainform.sbar.Caption).Substring(0, 80);
+              Free;
+              Exit;
+            end
+          else
+            TimeOut := Oper.GetSendDelay; //reply or switch to standby
           State := stPreparingToSend;
         end;
 
@@ -165,25 +183,6 @@ begin
         TimeOut := NEVER;
       end;
     end;
-end;
-
-
-// override SendMsg to allow Dx Stations to send alternate field day messages
-// (SECT?, CLASS?, CL?) whenever a 'NR?' message (msgNrQm) is sent.
-procedure TDxStation.SendMsg(AMsg: TStationMessage);
-begin
-  if (SimContest = scFieldDay) and
-    (AMsg = msgNrQm) then
-    begin
-      case Random(5) of
-        0,1: SendText('NR?');
-        2: SendText('SECT?');
-        3: SendText('CLASS?');
-        4: SendText('CL?');
-      end;
-    end
-  else
-    inherited SendMsg(AMsg);
 end;
 
 
@@ -206,13 +205,14 @@ begin
     // Adding a contest: copy DxStation's Exch2 qso information into log
     case SentExchTypes.Exch2 of
       etSerialNr: TrueExch2 := IntToStr(Self.NR);
-      etCwopsNumber: TrueExch2 := IntToStr(Self.NR);
+      etGenericField: TrueExch2 := Self.Exch2;
       etCqZone: TrueExch2 := IntToStr(Self.NR);
       etItuZone: TrueExch2 := Self.Exch2;
-      etGenericField: TrueExch2 := Self.Exch2;
       etArrlSection: TrueExch2 := Self.Exch2;
       etStateProv: TrueExch2 := Self.Exch2;
       etPower: TrueExch2 := Self.Exch2;
+      etJaPref: TrueExch2 := Self.Exch2;
+      etJaCity: TrueExch2 := Self.Exch2;
       else
         assert(false);
     end;
