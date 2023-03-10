@@ -216,13 +216,10 @@ begin
         prefix := '';
         if Random < 0.10 then prefix := 'R ';
 
-        // include a presentry greeting 20% of the time
+        // include a pleasantry greeting 20% of the time
         if Random < 0.20 then prefix := prefix + '<greeting> ';
 
-        // repeat exchange in usual order 80% of the time
-        if Random < 0.80
-          then SendText(AStn, prefix + '<#> <#>')
-          else SendText(AStn, prefix + '<exch1> <exch1> <exch2> <exch2>');
+        SendText(AStn, prefix + '<#> <#>');
       end;
     msgLongCQ: SendText(AStn, 'CQ CQ SST <my> <my>');  // QrmStation only
     else
