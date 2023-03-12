@@ -1,8 +1,8 @@
                                 MORSE RUNNER
                               Contest Simulator
                                   freeware
-                                  
-                        Version 1.83 - JARL allja, JARL acag, & K1USN sst
+
+                Version 1.83 - JARL allja, JARL acag, & K1USN sst
             The fourth release of the Morse Runner Community Edition
 
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
@@ -15,11 +15,11 @@
 JOIN OUR COMMUNITY
   You are invited to join our community effort.
   For more information on the Morse Runner Community Edition project,
-  please visit https://github.com/w7sst/MorseRunner#readme.  
-  Feedback can be left in our discussions area. 
+  please visit https://github.com/w7sst/MorseRunner#readme.
+  Feedback can be left in our discussions area.
 
   You can also discuss or leave feedback at https://groups.io/g/MorseRunnerCE.
-  
+
 PLATFORMS
   - Windows XP/7/8/10/11
   - works on Linux systems under WINE (info TNX F8BQQ).
@@ -33,7 +33,7 @@ UNINSTALLATION
   - Delete MorseRunner directory.
 
 CONFIGURATION
-  First time setup instructions can be found within the program under help. 
+  First time setup instructions can be found within the program under help.
 
   Contest Selection
     1) Select the desired contest using the Contest drop-down list.
@@ -57,11 +57,11 @@ CONFIGURATION
       exists, MR overwrites it.
 
   Band Conditions
-     Alex Shovkoplyas, VE3NEA, made the sound as realistic as possible, 
-     and included a few effects based on the mathematical model of the 
-     ionospheric propagation. Also, some of the calling stations exhibit 
-     less than perfect operating skills, again to make the simulation more 
-     realistic. These effects can be turned on and off using the checkboxes 
+     Alex Shovkoplyas, VE3NEA, made the sound as realistic as possible,
+     and included a few effects based on the mathematical model of the
+     ionospheric propagation. Also, some of the calling stations exhibit
+     less than perfect operating skills, again to make the simulation more
+     realistic. These effects can be turned on and off using the checkboxes
      described below.
 
      QRM - interference form other running stations occurs from time to time.
@@ -104,10 +104,10 @@ CONFIGURATION
     Setup/CW Max Rx Speed - Set a speed above the CW Speed. 0 behaves like the original MorseRunner
     Setup/NR Digits       - The number of digits of the DX Station NR
     Setup/CWOps Number    - CWOps ID number used on the CWT Contest
-    
-    Farnsworth: For the K1USN SST contest only. Character wpm speed can be set by 
-    changing the number for "FarnsworthCharacterRate=25" entry in the MorseRunner.ini 
-    file found in the install folder and restarting the program. 
+
+    Farnsworth: For the K1USN SST contest only. Character wpm speed can be set by
+    changing the number for "FarnsworthCharacterRate=25" entry in the MorseRunner.ini
+    file found in the install folder and restarting the program.
 
 STARTING A CONTEST
   The selected contest can be started in one of four modes.
@@ -160,7 +160,7 @@ KEY ASSIGNMENTS
   PgUp/PgDn, Ctrl-F10/Ctrl-F9, Alt-F10/Alt-F9 - keying speed,
     in 5 WPM increments.
 
-STATISTICS AREA 
+STATISTICS AREA
   The bottom right panel shows your current score, both Raw (calculated
   from your log) and Verified (calculated after comparing your log to other
   stations' logs). The histogram shows your raw QSO rate in 5-minute blocks.
@@ -355,14 +355,12 @@ CONTEST INFORMATION
     Exchange: Members: First Name and CWOPS member number.
     Non-members: First Name, and State/Province or DX Country prefix.
     Rules: https://cwops.org/cwops-tests/
-    * Please note: Nonmember exchanges are not supported in MorseRunner 
-    Community Edition v1.82. (See Issue #143 for more info)
-    
+
     JARL ALLJA
     The ALLJA Contest is the largest contest in Japan.
     When: Last weekend in April.
-    How: Contact as many Prefecture or Hokkaido promotion bureau possible. 
-    In JARL contests, a power code is added to the end of the exchange number. 
+    How: Contact as many Prefecture or Hokkaido promotion bureau possible.
+    In JARL contests, a power code is added to the end of the exchange number.
     P is 5W or less(QRP), L is 10W or less, M is 100W or less, H is over 100W.
     Exchange: RST plus Prefecture code/Hokkaido promotion bureau code plus Power code(P/L/M/H)
     Rules: https://www.jarl.org/Japanese/1_Tanoshimo/1-1_Contest/all_ja/all_ja_rule.htm (japanese only)
@@ -370,30 +368,30 @@ CONTEST INFORMATION
     JARL All Cities All Guns(ACAG)
     The ACAG contests have very long exchange numbers.
     When: Two days before the second Monday in October.
-    How: Contact as many City or Gun(Country) or Ku(Ward) possible. 
-    In JARL contests, a power code is added to the end of the exchange number. 
+    How: Contact as many City or Gun(Country) or Ku(Ward) possible.
+    In JARL contests, a power code is added to the end of the exchange number.
     P is 5W or less(QRP), L is 10W or less, M is 100W or less, H is over 100W.
     Exchange: RST plus City code/Gun(Country) code/Ku(Ward) code plus Power code(P/L/M/H)
     Rules: https://www.jarl.org/Japanese/1_Tanoshimo/1-1_Contest/all_cg/allcg_rule.htm (japanese only)
 
     K1USN Slow Speed Test (SST)
-    Members of the K1USN Radio Club, who are also members of the CW Operators’ Club (CWops), 
-    sponsor a one-hour slow speed CW “contest” called the SST. For those who prefer a more 
+    Members of the K1USN Radio Club, who are also members of the CW Operators’ Club (CWops),
+    sponsor a one-hour slow speed CW “contest” called the SST. For those who prefer a more
     leisurely CW pace or are new CW operators or contesters, this just might be what you're looking for!
     When: Fridays 20:00-21:00 UTC & Mondays 00:00-01:00 UTC
-    How: Slower speeds (up to 20 Words Per Minute). Usually sent with 25wpm character speeds. 
-    Many operators prefer slower effective speeds using the “Farnsworth” sending method, 
+    How: Slower speeds (up to 20 Words Per Minute). Usually sent with 25wpm character speeds.
+    Many operators prefer slower effective speeds using the “Farnsworth” sending method,
     sending characters at speeds up to 25WPM.
-    Farnsworth: For this contest only. Character wpm speed can be set by changing the number 
-    for "FarnsworthCharacterRate=25" entry in the MorseRunner.ini file found in the install 
-    folder and restarting the program.  Actual WPM throughput is set by entering a value 
+    Farnsworth: For this contest only. Character wpm speed can be set by changing the number
+    for "FarnsworthCharacterRate=25" entry in the MorseRunner.ini file found in the install
+    folder and restarting the program.  Actual WPM throughput is set by entering a value
     in the CW Speed box.
-    Exchange: suggested first name and state, province, or DX country. It is fairly common 
+    Exchange: suggested first name and state, province, or DX country. It is fairly common
     to send greetings before the exchange.
     Rules, frequencies and sample exchanges can be found at http://www.k1usn.com/sst.html
 
     HST (High Speed Test)
-    When: MorseRunner is a category in the World and IARU Region championships which takes 
+    When: MorseRunner is a category in the World and IARU Region championships which takes
     place every year. A list of winners for MorseRunner is found here:
     http://www.highspeedtelegraphy.com/HST-world-championships/Results-Morse-Runner
     How: Using MorseRunner the test is 10 minutes with two attempts. Activity is set at 4.
