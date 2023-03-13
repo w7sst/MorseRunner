@@ -196,16 +196,14 @@ begin
         4:   SendText(AStn, 'AGN?');
        end;
     msgTU:  // TU message sent by MyStation
-      if Random < 0.9
-        then SendText(AStn, 'TU')
-        else SendText(AStn, 'TU <my>');
+       SendText(AStn, 'TU <my>');
     msgR_NR: // exchange msg sent by remote station in response to my exchange
       begin
         // leading 'R ' 10% of the time
         prefix := '';
         if Random < 0.10 then prefix := 'R ';
 
-        // include a presentry greeting 20% of the time
+        // include a pleasantry greeting 20% of the time
         if Random < 0.20 then prefix := prefix + '<greeting> ';
 
         SendText(AStn, prefix + '<#>');
