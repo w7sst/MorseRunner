@@ -117,6 +117,8 @@ begin
     inherited Create;
     CWSSTList:= TObjectList<TCWSSTRec>.Create;
     Comparer := TComparer<TCWSSTRec>.Construct(TCWSSTRec.compareCall);
+
+    BFarnsworthEnabled := true;
 end;
 
 destructor TCWSST.Destroy;
@@ -181,6 +183,8 @@ end;
   Adding a contest: TContest.SendMsg(AMsg): send contest-specfic messages
 }
 procedure TCWSST.SendMsg(const AStn: TStation; const AMsg: TStationMessage);
+var
+  prefix : String;
 begin
   case AMsg of
     msgCQ: SendText(AStn, 'CQ SST <my>'); // sent by MyStation
@@ -191,27 +195,29 @@ begin
         3:   SendText(AStn, 'ST?');
         4:   SendText(AStn, 'AGN?');
        end;
-    msgTU:  // sent by MyStation
-      case Random(20) of
-        0..9:   SendText(AStn, '73 E E');                   // 50%
-        10..13: SendText(AStn, 'GL <HisName> TU');          // 20%
-        14:     SendText(AStn, 'GL OM 73 E E');             //  5%
-        15:     SendText(AStn, 'FB 73 E E');                //  5%
-        16:     SendText(AStn, 'OK FB TU 73');              //  5%
-        17:     SendText(AStn, 'GL <HisName> TU <my> SST'); //  5%
-        18:     SendText(AStn, 'TU E E');                   //  5%
-        19:     SendText(AStn, '73 DE <my> SST');           //  5%
+    msgTU:  // TU message sent by MyStation
+       SendText(AStn, 'TU <my>');
+    msgR_NR: // exchange msg sent by remote station in response to my exchange
+      begin
+        // leading 'R ' 10% of the time
+        prefix := '';
+        if Random < 0.10 then prefix := 'R ';
+
+        // include a pleasantry greeting 20% of the time
+        if Random < 0.20 then prefix := prefix + '<greeting> ';
+
+        SendText(AStn, prefix + '<#>');
       end;
-    msgR_NR: // sent by calling station (DxStation)
-      if Random < 0.9
-        then SendText(AStn, '<greeting> <#>')
-        else SendText(AStn, 'R <greeting> <#>');
-    msgR_NR2: // sent by calling station (DxStation)
-      case Random(20) of
-        0..8:   SendText(AStn, '<greeting> <#> <#>');
-        9..17:  SendText(AStn, '<greeting> <exch1> <exch1> <exch2> <exch2>');
-        18:     SendText(AStn, 'R <greeting> <#> <#>');
-        19:     SendText(AStn, 'R <greeting> <exch1> <exch1> <exch2> <exch2>');
+    msgR_NR2: // repeated exchange sent by remote station (DxStation)
+      begin
+        // leading 'R ' 10% of the time
+        prefix := '';
+        if Random < 0.10 then prefix := 'R ';
+
+        // include a pleasantry greeting 20% of the time
+        if Random < 0.20 then prefix := prefix + '<greeting> ';
+
+        SendText(AStn, prefix + '<#> <#>');
       end;
     msgLongCQ: SendText(AStn, 'CQ CQ SST <my> <my>');  // QrmStation only
     else

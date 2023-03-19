@@ -424,7 +424,7 @@ implementation
 uses
   ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, CWSST, ALLJA, ACAG,
   IARUHF,
-  MorseKey, CallLst,
+  MorseKey, FarnsKeyer, CallLst,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
   Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
 
@@ -478,9 +478,7 @@ begin
   BDebugExchSettings := CDebugExchSettings or Ini.DebugExchSettings;
   BDebugCwDecoder := CDebugCwDecoder or Ini.DebugCwDecoder;
 
-  MakeKeyer;
-  Keyer.Rate := DEFAULTRATE;
-  Keyer.BufSize := Ini.BufSize;
+  MakeKeyer(DEFAULTRATE, Ini.BufSize);
 
   // create a derived TContest of the appropriate type
   SetContest(Ini.SimContest);
@@ -967,6 +965,13 @@ begin
 
   // create new contest
   Tst := CreateContest(AContestNum);
+
+  // load original or Farnsworth Keyer
+  FreeAndNil(Keyer);
+  if SimContest in [scSST] then
+    Keyer := TFarnsKeyer.Create(DEFAULTRATE, Ini.BufSize)
+  else
+    Keyer := TKeyer.Create(DEFAULTRATE, Ini.BufSize);
 
   // the following will initialize simulation-specific data owned by contest.
   // (moved here from Ini.FromIni)

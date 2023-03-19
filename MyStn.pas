@@ -60,6 +60,7 @@ begin
   RST := 599;
   Pitch := Ini.Pitch;
   WpmS := Ini.Wpm;
+  WpmC := WpmS;
   Amplitude := 300000;
 
   // invalidate SentExchTypes. Will be set by Tst.OnSetMyCall().
@@ -78,7 +79,12 @@ end;
 }
 procedure TMyStation.SetWpm(const AWpmS : integer);
 begin
-  WpmS := AWpmS;   // set via UI
+  if Ini.AllStationsWpmS > 0
+    then WpmS := Ini.AllStationsWpmS
+    else WpmS := AWpmS;   // set via UI
+  if Tst.IsFarnsworthAllowed() and (Ini.FarnsworthCharRate > WpmS)
+    then WpmC := Ini.FarnsworthCharRate
+    else WpmC := WpmS;
 end;
 
 
@@ -186,7 +192,7 @@ begin
   if Result then
     begin
     //create new envelope
-    Keyer.WpmS := Wpm;
+    Keyer.SetWpm(Self.WpmS, Self.WpmC);
     Keyer.MorseMsg := Keyer.Encode(ACall);
     NewEnvelope := Keyer.Envelope;
     for i:=0 to High(NewEnvelope) do

@@ -8,39 +8,44 @@ unit MorseKey;
 interface
 
 uses
-  SysUtils, Classes, SndTypes, MorseTbl, Math; //, Ini
+  SndTypes;
 
 
 type
   TKeyer = class
-  private
+  protected
     Morse: array[Char] of string;
     RampLen: integer;
     RampOn, RampOff: TSingleArray;
     FRiseTime: Single;
 
-    function GetEnvelope: TSingleArray;
+    // Farnsworth speed s/c (e.g. 5/18). specified as (WpmS/WpmC)
+    WpmS: integer;      // sending speed    (set by UI)
+    WpmC: integer;      // character speed  (set via .INI file, default=25wpm)
+
+    function GetEnvelope: TSingleArray; virtual;
     procedure LoadMorseTable;
     procedure MakeRamp;
     function BlackmanHarrisKernel(x: Single): Single;
     function BlackmanHarrisStepResponse(Len: integer): TSingleArray;
     procedure SetRiseTime(const Value: Single);
-  public
-    WpmS: integer;      // sending speed - Ts    (set by UI)
+
+public
     BufSize: integer;
     Rate: integer;
     MorseMsg: string;
     TrueEnvelopeLen: integer;
 
-    constructor Create;
-    function Encode(Txt: string): string;
+    constructor Create(ARate, ABufSize : integer);
+    procedure SetWpm(const AWpmS : integer; const AWpmC : integer = 0);
+    function Encode(Txt: string): string; virtual;
 
     property RiseTime: Single read FRiseTime write SetRiseTime;
     property Envelope: TSingleArray read GetEnvelope;
   end;
 
 
-procedure MakeKeyer;
+procedure MakeKeyer(ARate : integer = 11025; ABufSize : integer = 512);
 procedure DestroyKeyer;
 
 var
@@ -49,27 +54,33 @@ var
 
 implementation
 
-procedure MakeKeyer;
+uses
+  SysUtils, Classes, MorseTbl, Math;
+
+procedure MakeKeyer(ARate, ABufSize : integer);
 begin
-  Keyer := TKeyer.Create;
+  Keyer := TKeyer.Create(ARate, ABufSize);
 end;
 
 
 procedure DestroyKeyer;
 begin
-  Keyer.Free;
+  FreeAndNil(Keyer);
 end;
 
 
 
 { TKeyer }
 
-constructor TKeyer.Create;
+constructor TKeyer.Create(ARate, ABufSize : integer);
 begin
   LoadMorseTable;
-  Rate := 11025;
+  Rate := ARate;
+  BufSize := ABufSize;
   RiseTime := 0.005;
   //RiseTime := 1.0 / (2.7 * Rate); // debugging with 1 step rise/fall time
+  WpmS := 0;
+  WpmC := 0;
 end;
 
 
@@ -77,6 +88,13 @@ procedure TKeyer.SetRiseTime(const Value: Single);
 begin
   FRiseTime := Value;
   MakeRamp;
+end;
+
+
+procedure TKeyer.SetWpm(const AWpmS : integer; const AWpmC : integer = 0);
+begin
+  WpmS := AWpmS;
+  WpmC := AWpmC;
 end;
 
 
@@ -213,7 +231,7 @@ var
 
 
 begin
-  assert(WpmS > 0, 'WpmS not initialized');
+  assert(WpmS > 0, 'must init using SetWpm()');
 
   //count units
   UnitCnt := 0;
