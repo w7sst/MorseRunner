@@ -235,8 +235,10 @@ var
 begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
+      // initial Contest pick will be first item in the Contest Dropdown.
+      V:= Ord(FindContestByName(MainForm.SimContestCombo.Items[0]));
       // Load SimContest, but do not call SetContest() until UI is initialized.
-      V:= ReadInteger(SEC_TST, 'SimContest', Ord(scWpx));
+      V:= ReadInteger(SEC_TST, 'SimContest', V);
       if V > Length(ContestDefinitions) then V := 0;
       SimContest := TSimContest(V);
       ActiveContest := @ContestDefinitions[SimContest];
