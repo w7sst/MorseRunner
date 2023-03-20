@@ -52,14 +52,14 @@ Projects we are currently working on...
 
 - [ ] **Add a few more contests** - Implement one or two more popular contests based on community input, including the IARU HF Championship Contest.
 
-- [ ] **Add K1USN Slow Speed Contest (SST)** - The CWOPS Community has reached out and expressed interest in using MRCE as one of their recommended training tools for their CW classes.
+- [x] **Add K1USN Slow Speed Contest (SST)** - The CWOPS Community has reached out and expressed interest in using MRCE as one of their recommended training tools for their CW classes.
 Farnsworth CW timing support will be implemented for this contest only.
 
-- [ ] **Add JARL All Japan and ACAG contests** - These contests are being implemented by JR8PPG. Thank you!
+- [x] **Add JARL All Japan and ACAG contests** - These contests are being implemented by JR8PPG. Thank you!
 
-- [ ] **Focus on Quality** - We will try to address some of the quality issues that have been reported.
+- [x] **Focus on Quality** - We will try to address some of the quality issues that have been reported.
 
-- [ ] Target v1.83 release before March 31.
+- [x] Target v1.83 release before March 31.
 
 #### Next - Spring 2023 (Apr-June)
 Projects that we'll work on next...
