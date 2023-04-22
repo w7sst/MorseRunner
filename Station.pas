@@ -337,7 +337,8 @@ begin
      Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
      end;
   if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
-    [etSerialNr, etCqZone, etItuZone, etAge, etPower]) then
+    [etSerialNr, etCqZone, etItuZone, etAge, etPower]) and
+    (MyCall <> Ini.Call) then
     begin
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
