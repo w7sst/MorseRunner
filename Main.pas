@@ -62,8 +62,8 @@ const
     (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
     (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
     (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4; T:Ord(etPower)),
-    (C: 'Number';     R: '([0-9]*)([LMHP])';                  L: 4; T:Ord(etJaPref)),
-    (C: 'Number';     R: '([0-9]*)([LMHP])';                  L: 7; T:Ord(etJaCity))
+    (C: 'Number';     R: '([0-9AOTN]*)([LMHP])';           L: 4; T:Ord(etJaPref)),
+    (C: 'Number';     R: '([0-9AOTN]*)([LMHP])';           L: 7; T:Ord(etJaCity))
   );
 
 type
