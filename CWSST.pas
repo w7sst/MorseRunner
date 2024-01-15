@@ -297,7 +297,8 @@ begin
       // return userText. If empty, return DXCC Continent/Entity info.
       userText := cwopsrec.UserText;
       if userText.IsEmpty and
-         gDXCCList.FindRec(dxrec, ACallsign) then
+         gDXCCList.FindRec(dxrec, ACallsign) and
+         (dxrec.Entity <> Me.MyEntity) then
         userText := dxRec.Continent + '/' + dxRec.Entity;
 
       if not userText.IsEmpty then
