@@ -92,7 +92,6 @@ begin
                 if SST.Call='' then continue;
                 if SST.Exch1='' then  continue;
                 if SST.Exch2='' then continue;
-                if SST.UserText='' then continue;
                 if length(SST.Exch1) > 10 then continue;
                 if length(SST.Exch2) > 5 then continue;
 
