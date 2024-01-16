@@ -790,6 +790,7 @@ object MainForm: TMainForm
         TabOrder = 2
         Value = 25
         OnChange = SpinEdit1Change
+        OnExit = SpinEdit1Exit
       end
       object CheckBox1: TCheckBox
         Left = 140
