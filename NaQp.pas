@@ -45,7 +45,7 @@ end;
 implementation
 
 uses
-  StrUtils, SysUtils, Classes, Contnrs, PerlRegEx, pcre,
+  SysUtils, Classes, Contnrs, PerlRegEx, pcre,
   ARRL;
 
 function TNcjNaQp.LoadCallHistory(const AUserCallsign : string) : boolean;
@@ -65,6 +65,7 @@ begin
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
   tl.StrictDelimiter := True;
+  rec := nil;
 
   try
     NaQpCallList.Clear;
@@ -72,23 +73,26 @@ begin
     slst.LoadFromFile(ParamStr(1) + 'NAQPCW.TXT');
 
     for i:= 0 to slst.Count-1 do begin
+      if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
+      if (slst.Strings[i].StartsWith('#')) then continue;
+
       tl.DelimitedText := slst.Strings[i];
 
       if (tl.Count > 2) then begin
-          if (tl.Strings[0] = '!!Order!!') then continue;
-          if (AnsiLeftStr(tl.Strings[0], 1) = '#') then continue;
-
-          rec := TNaQpCallRec.Create;
+          if rec = nil then
+            rec := TNaQpCallRec.Create;
           rec.Call := UpperCase(tl.Strings[0]);
           rec.Name := UpperCase(tl.Strings[1]);
           rec.State := UpperCase(tl.Strings[2]);
-          rec.UserText := IfThen(tl.Count >= 4, Trim(tl.Strings[3]), '');
+          rec.UserText := '';
+          if tl.Count >= 4 then rec.UserText := Trim(tl.Strings[3]);
           if rec.Call='' then continue;
           if rec.Name='' then continue;
           if rec.State='' then continue;
           if length(rec.Name) > 12 then continue;
 
           NaQpCallList.Add(rec);
+          rec := nil;
       end;
     end;
 
@@ -97,6 +101,7 @@ begin
   finally
     slst.Free;
     tl.Free;
+    if rec <> nil then rec.Free;
   end;
 end;
 
