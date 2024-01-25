@@ -17,6 +17,7 @@ type
     procedure AddToPieces(AMsg: string);
     procedure SendNextPiece;
   public
+    MyEntity : String;
     constructor CreateStation;
     destructor Destroy; override;
     procedure Init;
@@ -32,7 +33,7 @@ type
 implementation
 
 uses
-  SysUtils, RndFunc, Ini, MorseKey, Contest, Main;
+  SysUtils, RndFunc, Ini, MorseKey, Contest, Main, ARRL;
 
 { TMyStation }
 
@@ -52,8 +53,12 @@ end;
 
 
 procedure TMyStation.Init;
+var
+  dxrec : TDXCCRec;
 begin
   inherited Init;
+
+  dxrec := nil;
 
   MyCall := Ini.Call;
   NR := 1;
@@ -71,6 +76,11 @@ begin
   OpName := HamName;
   Exch1 := '3A';
   Exch2 := 'OR';
+
+  // load my Entity string; used to filter user-text status messages
+  MyEntity := '';
+  if gDXCCList.FindRec(dxrec, MyCall) then
+    MyEntity := dxrec.Entity;
 end;
 
 

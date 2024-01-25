@@ -72,10 +72,13 @@ begin
         CWOPSList.Clear;
 
         slst.LoadFromFile(ParamStr(1) + 'CWOPS.LIST');
-        slst.Sort;
 
         for i:= 0 to slst.Count-1 do begin
+            if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
+            if (slst.Strings[i].StartsWith('#')) then continue;
+
             self.Delimit(tl, slst.Strings[i]);
+
             if (tl.Count >= 3) then begin
                 if CWO = nil then
                   CWO:= TCWOPSRec.Create;
@@ -84,7 +87,7 @@ begin
                 CWO.Exch1:= UpperCase(tl.Strings[NameInx]);
                 CWO.Exch2:= UpperCase(tl.Strings[ExchInx]);
                 if tl.Count > UserTextInx then
-                  CWO.UserText:= tl.Strings[UserTextInx];
+                  CWO.UserText:= Trim(tl.Strings[UserTextInx]);
                 if CWO.Call='' then continue;
                 if CWO.Exch1='' then  continue;
                 if CWO.Exch2='' then continue;

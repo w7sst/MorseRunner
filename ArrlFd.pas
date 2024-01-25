@@ -70,6 +70,7 @@ begin
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
   tl.StrictDelimiter := True;
+  rec := nil;
 
   try
     FdCallList.Clear;
@@ -77,16 +78,20 @@ begin
     slst.LoadFromFile(ParamStr(1) + 'FD_2022-004.TXT');
 
     for i:= 0 to slst.Count-1 do begin
+      if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
+      if (slst.Strings[i].StartsWith('#')) then continue;
+
       tl.DelimitedText := slst.Strings[i];
 
       if (tl.Count > 2) then begin
-          if (tl.Strings[0] = '!!Order!!') then continue;
-
-          rec := TFdCallRec.Create;
+          if rec = nil then
+            rec := TFdCallRec.Create;
           rec.Call := UpperCase(tl.Strings[0]);
           rec.StnClass := UpperCase(tl.Strings[1]);
           rec.Section := UpperCase(tl.Strings[2]);
-          if (tl.Count >= 4) then rec.UserText := tl.Strings[3];
+          rec.UserText := '';
+          if (tl.Count >= 4) then rec.UserText := Trim(tl.Strings[3]);
+
           if rec.Call='' then continue;
           if rec.StnClass='' then continue;
           if rec.Section='' then continue;
@@ -95,6 +100,7 @@ begin
           //if length(rec.Name) > 12 then continue;
 
           FdCallList.Add(rec);
+          rec := nil;
       end;
     end;
 
@@ -103,6 +109,7 @@ begin
   finally
     slst.Free;
     tl.Free;
+    if rec <> nil then rec.Free;
   end;
 end;
 
