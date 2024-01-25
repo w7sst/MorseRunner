@@ -350,11 +350,13 @@ type
     procedure SimContestComboPopulate;
     procedure ExchangeEditExit(Sender: TObject);
     procedure Edit4Exit(Sender: TObject);
+    procedure SpinEdit1Exit(Sender: TObject);
     procedure Edit3Enter(Sender: TObject);
 
   private
-    MustAdvance: boolean;
+    MustAdvance: boolean;       // Controls when Exchange fields advance
     UserCallsignDirty: boolean; // SetMyCall is called after callsign edits
+    CWSpeedDirty: boolean;      // SetWpm is called after CW Speed edits
     function CreateContest(AContestId : TSimContest) : TContest;
     procedure ConfigureExchangeFields;
     procedure SetMyExch1(const AExchType: TExchange1Type; const Avalue: string);
@@ -533,8 +535,16 @@ begin
 end;
 
 
+{
+  SendMsg() is called whenever MyStation sends a new CW Message.
+}
 procedure TMainForm.SendMsg(AMsg: TStationMessage);
 begin
+  // special case for CW Speed control having focus and user presses
+  // a key or function key (which do not cause a leave-focus event).
+  if SpinEdit1.Focused then
+    SpinEdit1Exit(SpinEdit1);
+
   if AMsg = msgHisCall then begin
     // retain current callsign, including ''. if empty, return.
     Tst.Me.HisCall := Edit1.Text;
@@ -714,9 +724,7 @@ begin
       end;
 
     ' ': // advance to next exchange field
-      if (ActiveControl = Edit1) or
-         (ActiveControl = Edit2) or
-         (ActiveControl = Edit3) then
+      if ActiveControl <> ExchangeEdit then
         ProcessSpace
       else
         Exit;
@@ -795,6 +803,16 @@ begin
 end;
 
 
+{
+  Advance cursor to next exchange field. This procedure is called whenever
+  the Spacebar is pressed. Its purpose is to move the cursor to the next
+  Exchange field.
+
+  If the current contest has an RST field:
+  - the RST field value is set if currently empty
+  - the RST field is skipped (cursor is moved to the third exchange field).
+    Note that TAB key will select the middle digit of the RST field.
+}
 procedure TMainForm.ProcessSpace;
 begin
   MustAdvance := false;
@@ -832,19 +850,38 @@ begin
 end;
 
 
+{
+  Called when the Enter key is pressed.
+  In setup-mode:
+  - passes Enter key to either the Exchange setup field or callsign field.
+  In Run-mode:
+  - moves the cursor between QSO exchange fields following the QSO state.
+  - if either CW Speed and Active Spin Controls are active, cursor is moved
+    to the appropriate QSO exchange field.
+  - for some contests, the status bar is updated with Dx Station information.
+}
 procedure TMainForm.ProcessEnter;
 var
   C, N, R, Q: boolean;
 begin
   if ActiveControl = ExchangeEdit then
     begin
+      // exit Exchange field
       ExchangeEditExit(ActiveControl);
       Exit;
     end;
   if ActiveControl = Edit4 then
     begin
+      // exit callsign field
       Edit4Exit(ActiveControl);
       Exit;
+    end;
+  if ActiveControl = SpinEdit1 then
+    begin
+      // exit CW Speed Control
+      SpinEdit1Exit(ActiveControl);
+      if RunMode = rmStop then
+        Exit;
     end;
   MustAdvance := false;
 
@@ -864,6 +901,11 @@ begin
   if Edit1.Text = '' then
   begin
     SendMsg(msgCq);
+    // special case - Cursor is in either CW Speed or Activity Spin Control
+    // when Enter key is pushed. Move cursor to the next QSO Exchange field.
+    if (RunMode <> rmStop) and
+          ((ActiveControl = SpinEdit1) or (ActiveControl = SpinEdit3)) then
+      MustAdvance := true;
     Exit;
   end;
 
@@ -1355,7 +1397,25 @@ end;
 
 procedure TMainForm.SpinEdit1Change(Sender: TObject);
 begin
-  SetWpm(SpinEdit1.Value);
+  if SpinEdit1.Focused then
+  begin
+    // CW Speed edit has occurred while focus is within the spin edit control.
+    // Mark this value as dirty and defer the call to SetWpm until edit is
+    // completed by user.
+    CWSpeedDirty := True
+  end
+  else
+    SetWpm(SpinEdit1.Value);
+end;
+
+{
+  Called when user leaves CW Speed Control or user presses Enter key.
+}
+procedure TMainForm.SpinEdit1Exit(Sender: TObject);
+begin
+  // call SetWpm if the CW Speed has been edited
+  if CWSpeedDirty then
+    SetWpm(SpinEdit1.Value);
 end;
 
 procedure TMainForm.CheckBox1Click(Sender: TObject);
@@ -1909,7 +1969,8 @@ begin
   if Edit2IsRST and (Edit2.Text = '') then
     Edit2.Text := '599';
 
-  if Pos('?', Edit1.Text) > 0 then
+  if (Edit1.Text = '') or
+     (Pos('?', Edit1.Text) > 0) then
     begin
       { stay in callsign field if callsign has a '?' }
       if ActiveControl = Edit1 then
@@ -2040,6 +2101,8 @@ begin
   Wpm := Max(10, Min(120, AWpm));
   SpinEdit1.Value := Wpm;
   Tst.Me.SetWpm(Wpm);
+
+  CWSpeedDirty := False;
 end;
 
 
