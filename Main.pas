@@ -350,6 +350,7 @@ type
     procedure SimContestComboPopulate;
     procedure ExchangeEditExit(Sender: TObject);
     procedure Edit4Exit(Sender: TObject);
+    procedure Edit3Enter(Sender: TObject);
 
   private
     MustAdvance: boolean;
@@ -587,6 +588,12 @@ begin
       assert(false, Format('invalid exchange field 1 type: %s',
         [ToStr(RecvExchTypes.Exch1)]));
   end;
+end;
+
+procedure TMainForm.Edit3Enter(Sender: TObject);
+begin
+  Edit3.SelStart := 0;
+  Edit3.SelLength := Edit3.GetTextLen;
 end;
 
 {
