@@ -228,6 +228,7 @@ object MainForm: TMainForm
       MaxLength = 4
       ParentFont = False
       TabOrder = 2
+      OnEnter = Edit3Enter
       OnKeyPress = Edit3KeyPress
     end
     object Panel2: TPanel
