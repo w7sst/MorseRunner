@@ -61,7 +61,10 @@ var
   slst, tl: TStringList;
   i: integer;
   rec: TNaQpCallRec;
+{$ifdef DEBUG}
   dxcc: TDxCCRec;
+  DxOnly, HiOnly, AkOnly, NaOnly: boolean;
+{$endif}
 begin
   NaQpCallList.Clear;
 
@@ -70,6 +73,12 @@ begin
   tl.Delimiter := DelimitChar;
   tl.StrictDelimiter := True;
   rec := nil;
+{$ifdef DEBUG}
+  DxOnly := False;
+  HiOnly := False;
+  AkOnly := False;
+  NaOnly := False;
+{$endif}
 
   try
     NaQpCallList.Clear;
@@ -79,6 +88,15 @@ begin
     for i:= 0 to slst.Count-1 do begin
       if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
       if (slst.Strings[i].StartsWith('#')) then continue;
+
+{$ifdef DEBUG}
+      // look for debugging hooks...
+      if (slst.Strings[i].Equals('break')) then break
+      else if (slst.Strings[i].Equals('DxOnly')) then DxOnly := True
+      else if (slst.Strings[i].Equals('HiOnly')) then HiOnly := True
+      else if (slst.Strings[i].Equals('AkOnly')) then AkOnly := True
+      else if (slst.Strings[i].Equals('NaOnly')) then NaOnly := True;
+{$endif}
 
       tl.DelimitedText := slst.Strings[i];
 
@@ -93,6 +111,25 @@ begin
           if rec.Call='' then continue;
           if rec.Name='' then continue;
           if length(rec.Name) > 12 then continue;
+
+{$ifdef DEBUG}
+          // debug hooks provide ability to load subset of call history
+          if DxOnly and (rec.State <> '') then continue
+          else if HiOnly and (not rec.State.Equals('HI')) then continue
+          else if AkOnly and (not rec.State.Equals('AK')) then continue
+          else if NaOnly and not (gDXCCList.FindRec(dxcc, rec.Call) and
+                (dxcc.Entity.Equals('United States of America') or
+                 dxcc.Entity.Equals('Hawaii') or
+                 dxcc.Entity.Equals('Canada') or
+                 dxcc.Entity.Equals('Mexico'))) then
+            continue;
+
+          // 4U1WB is from DC, not DX. DX is flagged as an Invalid Section by N1MM.
+          //if not rec.Call.Equals('4U1WB') then continue;
+
+          // KP2M is from KP2, not VI. Virgin Islands? N1MM logs 'VI' as 'KP2'.
+          //if not rec.Call.Equals('KP2M') then continue;
+{$endif}
 
           NaQpCallList.Add(rec);
           rec := nil;
