@@ -570,6 +570,8 @@ var
       etPower:       Result := Length(text) > 0;
       etJaPref:      Result := Length(text) > 2;
       etJaCity:      Result := Length(text) > 3;
+      etNaQpExch2:   Result := Length(text) > 0;
+      etNaQpNonNaExch2: Result := Length(text) >= 0;
       else
         assert(false, 'missing case');
     end;
@@ -616,6 +618,12 @@ begin
       etPower:       Qso.Exch2 := Edit3.Text;
       etJaPref:      Qso.Exch2 := Edit3.Text;
       etJaCity:      Qso.Exch2 := Edit3.Text;
+      etNaQpExch2:   Qso.Exch2 := Edit3.Text;
+      etNaQpNonNaExch2:
+        if Edit3.Text = '' then
+          Qso.Exch2 := 'DX'
+        else
+          Qso.Exch2 := Edit3.Text;
       else
         assert(false, 'missing case');
     end;
@@ -785,6 +793,12 @@ begin
                    Err := 'PWR';
         etJaPref: if TrueExch2 <> Exch2 then Err := 'NR ';
         etJaCity: if TrueExch2 <> Exch2 then Err := 'NR ';
+        etNaQpExch2:  if TrueExch2 <> Exch2 then Err := 'ST ';
+        etNaQpNonNaExch2:
+          // Non-NA stations do not send a location (typically logged as DX)
+          if not (TrueExch2.Equals(Exch2) or
+                  (Exch2.Equals('DX') and TrueExch2.IsEmpty)) then
+            Err := 'ST ';
         else
           assert(false, 'missing exchange 2 case');
       end;

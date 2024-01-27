@@ -252,7 +252,7 @@ function TContest.GetSentExchTypes(
   const AStationKind : TStationKind;
   const AMyCallsign : string) : TExchTypes;
 begin
-  Result:= Self.GetExchangeTypes(AStationKind, mtSendMsg, {ADxCallsign=}'');
+  Result:= Self.GetExchangeTypes(AStationKind, mtSendMsg, AMyCallsign);
 end;
 
 
@@ -484,7 +484,8 @@ begin
        begin
          MainForm.Edit1.Text := DxStn.LastDxCallsign;
          MainForm.Edit2.Text := DxStn.LastExch1;
-         MainForm.Edit3.Text := DxStn.LastExch2;
+         if (SimContest <> scNaQp) or (DxStn.LastExch2 <> 'DX') then
+           MainForm.Edit3.Text := DxStn.LastExch2;
        end;
   end
   else

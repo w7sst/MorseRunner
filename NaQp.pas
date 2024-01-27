@@ -3,20 +3,21 @@ unit NAQP;
 interface
 
 uses
-  Generics.Defaults, Generics.Collections, Contest, DxStn, Log;
+  Generics.Defaults, Generics.Collections, DualExchContest, DxStn, Log,
+  Station;
 
 type
   TNaQpCallRec = class
   public
     Call: string;     // call sign
-    Name: string;     // operator name (e.g. MIKE)
-    State: string;    // STATE/PROV (e.g. OR)
+    Name: string;     // operator name
+    State: string;    // State/Prov/DXCC Entity
     UserText: string; // optional user text
     function GetString: string; // returns <name> <state> (e.g. MIKE OR)
     class function compareCall(const left, right: TNaQpCallRec) : integer; static;
   end;
 
-TNcjNaQp = class(TContest)
+TNcjNaQp = class(TDualExchContest)
 private
   NaQpCallList: TList<TNaQpCallRec>;
   Comparer: IComparer<TNaQpCallRec>;
@@ -24,13 +25,18 @@ private
 public
   constructor Create;
   destructor Destroy; override;
+  function GetExchangeTypes(
+    const AStationKind : TStationKind;
+    const ARequestedMsgType : TRequestedMsgType;
+    const AStationCallsign : string) : TExchTypes; override;
   function LoadCallHistory(const AUserCallsign : string) : boolean; override;
-
+  function OnSetMyCall(const AUserCallsign : string; out err : string) : boolean; override;
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
   function GetCall(id : integer): string; override; // returns station callsign
   procedure GetExchange(id : integer; out station : TDxStation); override;
   function ExtractMultiplier(Qso: PQso) : string; override;
+  function IsCallLocalToContest(const ACallsign: string) : boolean;
 
   function getExch1(id:integer): string;    // returns station info (e.g. MIKE)
   function getExch2(id:integer): string;    // returns section info (e.g. OR)
@@ -46,7 +52,7 @@ implementation
 
 uses
   SysUtils, Classes, Contnrs, PerlRegEx, pcre,
-  ARRL;
+  Ini, ARRL, Contest;
 
 function TNcjNaQp.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
@@ -55,11 +61,9 @@ var
   slst, tl: TStringList;
   i: integer;
   rec: TNaQpCallRec;
+  dxcc: TDxCCRec;
 begin
-  // reload call history if empty
-  Result := NaQpCallList.Count <> 0;
-  if Result then
-    Exit;
+  NaQpCallList.Clear;
 
   slst:= TStringList.Create;
   tl:= TStringList.Create;
@@ -88,7 +92,6 @@ begin
           if tl.Count >= 4 then rec.UserText := Trim(tl.Strings[3]);
           if rec.Call='' then continue;
           if rec.Name='' then continue;
-          if rec.State='' then continue;
           if length(rec.Name) > 12 then continue;
 
           NaQpCallList.Add(rec);
@@ -106,9 +109,52 @@ begin
 end;
 
 
+{
+  OnSetMyCall is overriden for NCJ NAQP Contest to determine whether user's
+  callsign is within NA or Hawaii. In other words, is the user's station
+  within the home region of this contest?
+
+  Sets TDualExchContest.HomeCallIsLocal.
+}
+function TNcjNaQp.OnSetMyCall(const AUserCallsign : string;
+  out err : string) : boolean;
+var
+  dxcc: TDxCCRec;
+begin
+  Result:= True;
+  err:= '';
+
+  // select calls based on location of user's station.
+  // (NA works everyone, non-NA works only NA)
+  if gDxCCList.FindRec(dxcc, AUserCallsign) then
+    // Is home call local to contest (i.e. a North American (NA) Station)?
+    HomeCallIsLocal := dxcc.Continent.Equals('NA') or dxcc.Entity.Equals('Hawaii')
+  else
+    begin
+      // report an error
+      err := Format('Error: ''%s'' is not recognized as a valid DXCC callsign.',
+        [AUserCallsign]);
+
+      // for the error case, make a best-guess effort to determine US/VE
+      HomeCallIsLocal := AUserCallsign.StartsWith('A') or
+                         AUserCallsign.StartsWith('K') or
+                         AUserCallsign.StartsWith('N') or
+                         AUserCallsign.StartsWith('W') or
+                         AUserCallsign.StartsWith('VE') or
+                         AUserCallsign.StartsWith('XE');
+      Result := False;
+    end;
+
+  // call baseclass to update Me.MyCall and Me.SentExchTypes
+  if not inherited OnSetMyCall(AUserCallsign, err) then
+    Result:= False;
+end;
+
+
 constructor TNcjNaQp.Create;
 begin
-    inherited Create;
+    inherited Create(etOpName, etNaQpExch2,     // NA station exchange
+                     etOpName, etNaQpNonNaExch2); // non-NA station exchange
     NaQpCallList := TList<TNaQpCallRec>.Create;
     Comparer := TComparer<TNaQpCallRec>.Construct(TNaQpCallRec.compareCall);
 end;
@@ -121,9 +167,81 @@ begin
 end;
 
 
-function TNcjNaQp.PickStation(): integer;
+{
+  returns exchange types for this contest and sending station.
+
+  For the NCJ NAQP Contest, the exchange being sent if determined by the
+  sending station's callsign:
+  - NA stations send Name and Location (State, Province or Entity prefix)
+  - Non-NA stations send only Name
+}
+function TNcjNaQp.GetExchangeTypes(
+  const AStationKind : TStationKind;
+  const ARequestedMsgType : TRequestedMsgType;
+  const AStationCallsign : string) : TExchTypes;
 begin
-     result := random(NaQpCallList.Count);
+  // exchange type being sent are determine by sending station's location
+  if (Tst as TNcjNaQp).IsCallLocalToContest(AStationCallsign) then
+    Result := Self.LocalTypes
+  else
+    Result := Self.DxTypes;
+end;
+
+
+{
+  PickStation will randomly pick the next station from NaQpCallList.
+
+  Also performs several filtering actions which have been deferred
+  from LoadCallHistoryFile. This prevents an O(n**2) situation in
+  LoadCallHistoryFile where DXCC lookup would be performed on each callsign
+  being loaded from the file. If a callsign is rejected, it is dropped
+  from NaQpCallList.
+
+  Returns the index of the next station callsign to be used.
+}
+function TNcjNaQp.PickStation(): integer;
+var
+  HomeCallIsDX: Boolean;
+  Keep: Boolean;
+  rec: TNaQpCallRec;
+  dxcc: TDxCCRec;
+begin
+  HomeCallIsDX:= not Self.HomeCallIsLocal;
+
+  result := random(NaQpCallList.Count);
+  while (NaQpCallList.Count > 1) do
+    begin
+      rec := NaQpCallList[result];
+
+      // Keep stations that have a valid DXCC entry
+      Keep := gDXCCList.FindRec(dxcc, rec.Call);
+      if Keep and rec.State.IsEmpty then
+        begin
+          // This record has no State.
+          // Consider whether call is within NAQP contest region
+          if (dxcc.Continent.Equals('NA') or dxcc.Entity.Equals('Hawaii')) then
+            begin
+              // Call is local to NAQP contest. Use dxcc prefix if it is simple
+              // and contains no regular expression syntax; otherwise skip it.
+              // (this occurs when NAQPCW.txt file has missing information)
+              Keep := not dxcc.prefixReg.Contains('()|,[]*+-');
+              if Keep then
+                rec.State := dxcc.prefixReg;
+            end;
+        end;
+
+      // Non-NA stations (their home call is outside of NAQP contest region),
+      // skip all other Non-NA stations since non-NA stations only work NA stations
+      if Keep and HomeCallIsDX and not IsCallLocalToContest(rec.Call) then
+        Keep := False;
+
+      if Keep then
+        break;
+
+      // drop this station and try again
+      DropStation(result);
+      result := random(NaQpCallList.Count);
+    end;
 end;
 
 
@@ -155,7 +273,7 @@ end;
 // return status bar information string from field day call history file.
 // for DX stations, their Entity and Continent is also included.
 // this string is used in MainForm.sbar.Caption (status bar).
-// Format:  '<call> - <user text from fdCallHistoryFile> [- Entity/Continent]'
+// Format:  '<call> - <user text from CallHistoryFile> [- Entity/Continent]'
 function TNcjNaQp.GetStationInfo(const ACallsign: string) : string;
 var
   rec : TNaQpCallRec;
@@ -173,8 +291,8 @@ begin
     begin
     userText:= rec.UserText;
 
-    // if caller is DX station, include its Continent/Entity
-    if (rec.State = 'DX') and
+    // if caller is outside NA Contest, include its Continent/Entity
+    if (rec.State = '') and
         gDXCCList.FindRec(dxrec, ACallsign) then
       dxEntity:= dxRec.Continent + '/' + dxRec.Entity;
     end;
@@ -195,6 +313,7 @@ end;
   Also sets contest-specific Qso.Points for this QSO.
 
   For NCJ NAQP Contest, the State/Prov value is returned;
+  non-NA (DX) stations do not count as a multiplier.
 
   Return the multiplier string used by this contest. This string is accumlated
   in the Log.RawMultList and Log.VerifiedMultList to count the multiplier value.
@@ -202,11 +321,28 @@ end;
 function TNcjNaQp.ExtractMultiplier(Qso: PQso) : string;
 begin
   Qso^.Points := 1;
-  Result := Qso^.Exch2;
+
+  // NA stations use State/Prov as multiplier string; non-NA use ''.
+  if Self.IsCallLocalToContest(Qso.Call) then
+    Result := Qso^.Exch2
+  else
+    Result := '';
 end;
 
 
-function TNcjNaQp.GetCall(id : integer): string;     // returns station callsign
+{
+  Return whether Station is within the NAQP Contest region.
+}
+function TNcjNaQp.IsCallLocalToContest(const ACallsign: string) : boolean;
+var
+  dxrec : TDXCCRec;
+begin
+  Result := gDXCCList.FindRec(dxrec, ACallsign) and
+            (dxrec.Continent.Equals('NA') or dxrec.Entity.Equals('Hawaii'));
+end;
+
+
+function TNcjNaQp.GetCall(id : integer): string;
 begin
   result := NaQpCallList.Items[id].Call;
 end;
@@ -221,31 +357,31 @@ begin
 end;
 
 
-function TNcjNaQp.getExch1(id:integer): string;    // returns station info (e.g. MIKE)
+function TNcjNaQp.getExch1(id:integer): string;
 begin
   result := NaQpCallList.Items[id].Name;
 end;
 
 
-function TNcjNaQp.getExch2(id:integer): string;    // returns section info (e.g. OR)
+function TNcjNaQp.getExch2(id:integer): string;
 begin
   result := NaQpCallList.Items[id].State;
 end;
 
 
-function TNcjNaQp.getName(id:integer): string;  // returns Name (e.g. MIKE)
+function TNcjNaQp.getName(id:integer): string;
 begin
   result := NaQpCallList.Items[id].Name;
 end;
 
 
-function TNcjNaQp.getState(id:integer): string;  // returns state (e.g. OR)
+function TNcjNaQp.getState(id:integer): string;
 begin
   result := NaQpCallList.Items[id].State;
 end;
 
 
-function TNcjNaQp.getUserText(id:integer): string; // returns optional UserText
+function TNcjNaQp.getUserText(id:integer): string;
 begin
   result := NaQpCallList.Items[id].UserText;
 end;
@@ -258,7 +394,7 @@ begin
 end;
 
 
-function TNaQpCallRec.GetString: string; // returns MIKE OR
+function TNaQpCallRec.GetString: string;
 begin
   Result := Format(' - %s %s', [Name, State]);
 end;

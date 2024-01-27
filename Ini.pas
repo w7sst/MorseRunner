@@ -34,7 +34,8 @@ type
 
   // Exchange Field #2 Types
   TExchange2Type = (etSerialNr, etGenericField, etArrlSection, etStateProv,
-                    etCqZone, etItuZone, etAge, etPower, etJaPref, etJaCity);
+                    etCqZone, etItuZone, etAge, etPower, etJaPref, etJaCity,
+                    etNaQpExch2, etNaQpNonNaExch2);
 
   // Contest definition.
   TContestDefinition = record
@@ -102,12 +103,12 @@ const
     (Name: 'NCJ NAQP';
      Key: 'NAQP';
      ExchType1: etOpName;
-     ExchType2: etStateProv;
+     ExchType2: etNaQpExch2;
      ExchFieldEditable: True;
      ExchDefault: 'MIKE OR';
-     Msg: '''<name> <state-prov>'' (e.g. MIKE OR)';
+     Msg: '''<name> [<state|prov|dxcc-entity>]'' (e.g. MIKE OR)';
      T:scNaQp),
-     // expecting two strings [Name,State-Prov] (e.g. MIKE OR)
+     // expecting one or two strings {Name,[State|Prov|DXCC Entity]} (e.g. MIKE OR)
 
     (Name: 'HST (High Speed Test)';
      Key: 'HST';
