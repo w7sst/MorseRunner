@@ -61,7 +61,7 @@ type
     function GetExchangeTypes(
       const AStationKind : TStationKind;
       const ARequestedMsgType : TRequestedMsgType;
-      const ADxCallsign : string) : TExchTypes; virtual;
+      const AStationCallsign : string) : TExchTypes; virtual;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
     function ExtractMultiplier(Qso: PQso) : string; virtual;
@@ -273,7 +273,7 @@ end;
 function TContest.GetExchangeTypes(
   const AStationKind : TStationKind;
   const ARequestedMsgType : TRequestedMsgType;
-  const ADxCallsign : string) : TExchTypes;
+  const AStationCallsign : string) : TExchTypes;
 begin
   Result.Exch1 := ActiveContest.ExchType1;
   Result.Exch2 := ActiveContest.ExchType2;
