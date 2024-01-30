@@ -18,6 +18,11 @@
 # SPRINTNS 
 # SPRINTRTTY 
 # SPRINTSSB 
+#
+# DxOnly
+# HiOnly
+# AkOnly
+# NaOnly
 4U1WB,MASA,DC,
 7L1WII,SAM,,
 8P5A,TOM,,

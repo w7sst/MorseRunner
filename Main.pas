@@ -64,6 +64,10 @@ const
     (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4; T:Ord(etPower)),
     (C: 'Number';     R: '([0-9AOTN]*)([LMHP])';           L: 4; T:Ord(etJaPref)),
     (C: 'Number';     R: '([0-9AOTN]*)([LMHP])';           L: 7; T:Ord(etJaCity))
+    // NAQP Contest: NA Stations send name and (state/prov/dxcc);
+    //           Non-NA stations send name only
+   ,(C: 'State';      R: '([0-9A-Z/]*)';                   L: 6; T:Ord(etNaQpExch2))
+   ,(C: 'State';      R: '()|([0-9A-Z/]*)';                L: 6; T:Ord(etNaQpNonNaExch2))
   );
 
 type
@@ -551,6 +555,10 @@ begin
     CallSent := Edit1.Text <> '';
     if not CallSent then
       Exit;
+
+    // update "received" Exchange field types. Some contests change field
+    // types based on MyCall or dx station's call (current value of Edit1).
+    RecvExchTypes:= Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall, Trim(Edit1.Text));
   end;
   if AMsg = msgNR then
     NrSent := true;
@@ -659,6 +667,12 @@ begin
       begin
         // valid State/Prov characters (e.g. OR or BC)
         if not CharInSet(Key, ['A'..'Z', 'a'..'z', #8]) then
+          Key := #0;
+      end;
+    etNaQPExch2, etNaQpNonNaExch2:
+      begin
+        // valid NAQP Multiplier characters (e.g. OR, BC, or KP4)
+        if not CharInSet(Key, ['0'..'9', 'A'..'Z', 'a'..'z', '/', #8]) then
           Key := #0;
       end;
     etJaPref, etJaCity:
@@ -913,7 +927,8 @@ begin
   C := CallSent;
   N := NrSent;    // 'Nr' represents the exchange (<exch1> <exch2>).
   Q := Edit2.Text <> '';
-  R := Edit3.Text <> '';
+  R := (Edit3.Text <> '') or ((SimContest = scNaQp) and
+                              (RecvExchTypes.Exch2 = etNaQpNonNaExch2));
 
   //send his call if did not send before, or if call changed
   if (not C) or ((not N) and (not R)) then
@@ -1163,6 +1178,9 @@ end;
   - ARRL DX: Exchange 2 changes between etStateProv and etPower.
   - ARRL 10m: Exchange 2 changes between etStateProv10m, etIARU, etSerial,
     depending on sending station's callsign.
+  - NCJ NAQP: Exchange 2 changes between eNaQpExch2 and eNaQpNonNaExch2,
+    depending on sending station's callsign. Non-NA sends only send Name
+    without a location and DX is recorded in the log.
 
   Received exchange field labels and exchange field maximum length are set.
 
@@ -1266,7 +1284,7 @@ begin
 
         if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
       end;
-    etGenericField:
+    etGenericField, etNaQpExch2, etNaQpNonNaExch2:
       begin
         // 'expecting alpha-numeric field'
         Ini.UserExchange2[SimContest] := Avalue;
@@ -1321,6 +1339,14 @@ var
   reg: TPerlRegEx;
   s: string;
 begin
+  if SimContest = scNaQp then begin
+    // special case - I can't figure out how to match an empty string,
+    // so manually check for an optional string.
+    s := FieldDef.R;
+    Result := s.StartsWith('()|(') and Avalue.IsEmpty;
+    if Result then Exit;
+  end;
+
   reg := TPerlRegEx.Create();
   try
     reg.Subject := UTF8Encode(Avalue);

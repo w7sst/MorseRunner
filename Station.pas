@@ -288,7 +288,7 @@ begin
 end;
 
 
-                                                
+
 {
   This function formats the exchange string to be sent by this station
   by combining exchange fields 1 and 2.
@@ -307,7 +307,12 @@ begin
       Result := Format('%s %s', [Exch1, Exch2]); // <Name> <State|Prov|DX>
     scFieldDay:
       Result := Format('%s %s', [Exch1, Exch2]);
-    scNaQp, scArrlDx:
+    scNaQp:
+      if Exch2.IsEmpty then
+        Result := Exch1
+      else
+        Result := Format('%s %s', [Exch1, Exch2]);  // make this virtual?
+    scArrlDx:
       Result := Format('%s %s', [Exch1, Exch2]);
     scAllJa, scAcag:
       Result := Format('%s %s', [Exch1, Exch2]);
