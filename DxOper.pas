@@ -102,7 +102,7 @@ begin
   else begin
        n1 := trunc(power(10,NRDigits));
        n1 := n1-1;
-       Result := Random(n1);
+       Result := Random(n1)+1;  // result is with range [1,99] (w/ NRDigits=2)
   end;
 end;
 
