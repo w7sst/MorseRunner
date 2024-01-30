@@ -75,7 +75,7 @@ begin
   try
     FdCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'FD_2022-004.TXT');
+    slst.LoadFromFile(ParamStr(1) + 'FDGOTA.TXT');
 
     for i:= 0 to slst.Count-1 do begin
       if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
