@@ -266,7 +266,10 @@ function TContest.GetRecvExchTypes(
   const AMyCallsign : string;
   const ADxCallsign : string) : TExchTypes;
 begin
-  Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, ADxCallsign);
+  if AStationKind = skMyStation then
+    Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, AMyCallsign)
+  else
+    Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, ADxCallsign);
 end;
 
 

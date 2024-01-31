@@ -202,8 +202,20 @@ end;
 
 
 function TArrlDx.PickStation(): integer;
+var
+  dxcc: TDxCCRec;
 begin
-     result := random(ArrlDxCallList.Count);
+  result := random(ArrlDxCallList.Count);
+  while (ArrlDxCallList.Count > 1) do
+    begin
+      // Keep stations that have a valid DXCC entry
+      if gDXCCList.FindRec(dxcc, ArrlDxCallList[result].Call) then
+        break;
+
+      // drop this station and try again
+      DropStation(result);
+      result := random(ArrlDxCallList.Count);
+    end;
 end;
 
 
