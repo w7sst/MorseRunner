@@ -143,7 +143,7 @@ FT/X;FT[02458]X;Kerguelen Is.;AF;68;39;131
 FT/Z;FT[0-8]Z;Amsterdam & St. Paul Is.;AF;68;39;010
 FW;[FT]W;Wallis & Futuna Is.;OC;62;32;298
 FY;FY;French Guiana;SA;12;09;063
-G,GX,M;(2E)|(G)|(GX)|(M);England;EU;27;14;223
+G,GX,M;(2E)|(GX)|(G)|(M);England;EU;27;14;223
 GD,GT;(2D)|(G[DT])|(M[DT]);Isle of Man;EU;27;14;114
 GI,GN;(2I)|(G[IN])|(M[IN]);Northern Ireland;EU;27;14;265
 GJ,GH;(2J)|(G[JH])|(M[JH]);Jersey;EU;27;14;122
@@ -176,7 +176,7 @@ J5;J5;Guinea-Bissau;AF;46;35;109
 J6;J6;St. Lucia;NA;11;08;097
 J7;J7;Dominica;NA;11;08;095
 J8;J8;St. Vincent;NA;11;08;098
-JA-JS,7J-7N;(J[A-S])|(7[J-N])|(8[J-N]);Japan;AS;45;25;339
+JA-JS,7J-7N;(J[A-S])|([78][J-N]);Japan;AS;45;25;339
 JD1;JD1;Minami Torishima;OC;90;27;177
 JD1;JD1;Ogasawara;AS;45;27;192
 JT-JV;J[T-V];Mongolia;AS;32,33;23;363
@@ -195,7 +195,7 @@ KH5K;KH5K;Kingman Reef;OC;61;31;134
 KH6;[AKNW]H[6-7];Hawaii;OC;61;31;110
 KH7K;[AKNW]H7K;Kure I.;OC;61;31;138
 KH8;[AKNW]H8;American Samoa;OC;62;32;009
-KH8;KH8;Swains I.;OC;62;32;515
+KH8;KH8S;Swains I.;OC;62;32;515
 KH9;[AKNW]H9;Wake I.;OC;65;31;297
 KL;[KANW]L;Alaska;NA;1,2;1;006
 KP1;[KNW]P1;Navassa I.;NA;11;08;182
@@ -228,9 +228,9 @@ PJ4;PJ4;Bonaire;SA;11;09;520
 PJ5,6;PJ[5-6];Saba & St. Eustatius;NA;11;08;519
 PJ7;PJ[078];St Maarten;NA;11;08;518
 PP-PY;(P[P-Y])|(Z[V-Z]);Brazil;SA;12,13,15;11;108
-PP0-PY0F;(P[P-Y]0[FR])|(P[P-Y]0Z[FR])|(Z[V-Z]0[FR])|(Z[V-X]0Z[FR]);Fernando de Noronha;SA;13;11;056
-PP0-PY0S;(P[P-Y]0S)|(P[P-Y]0ZS)|(Z[V-Z]0S)|(Z[V-Z]0ZS);St. Peter & St. Paul Rocks;SA;13;11;253
-PP0-PY0T;(P[P-Y]0T)|(P[P-Y]0ZT)|(Z[V-Z]0T)|(Z[V-Z]0ZT);Trindade & Martim Vaz Is.;SA;15;11;273
+PP0-PY0F;(P[P-Y]|Z[V-X])0Z?[FR];Fernando de Noronha;SA;13;11;056
+PP0-PY0S;(P[P-Y]|Z[V-Z])0Z?S;St. Peter & St. Paul Rocks;SA;13;11;253
+PP0-PY0T;(P[P-Y]|Z[V-Z])0Z?T;Trindade & Martim Vaz Is.;SA;15;11;273
 PZ;PZ;Suriname;SA;12;09;140
 R1/F;R1;Franz Josef Land;EU;75;40;061
 S0;S0;Western Sahara;AF;46;33;302
@@ -268,9 +268,9 @@ TT;TT;Chad;AF;47;36;410
 TU;TU;Cote d'Ivoire;AF;46;35;428
 TY;TY;Benin;AF;46;35;416
 TZ;TZ;Mali;AF;46;35;442
-UA-UI1-7,RA-RZ;(U[A-I][1-7])|(R[A-Z])|(R);European Russia;EU;19,20,29,30;16;054
+UA-UI1-7,RA-RZ;(U[A-I]?|R[A-Z]?)[1-7];European Russia;EU;19,20,29,30;16;054
 UA2,RA2;[UR]A2;Kaliningrad;EU;29;15;126
-UA-UI8,9,0,RA-RZ;(U[A-I][890])|(R[A-Z]);Asiatic Russia;AS;20-26,30-35,75;16,17,18,19,23;015
+UA-UI8,9,0,RA-RZ;(U[A-I]?|R[A-Z]?)[890];Asiatic Russia;AS;20-26,30-35,75;16,17,18,19,23;015
 UJ-UM;U[J-M];Uzbekistan;AS;30;17;292
 UN-UQ;U[N-Q];Kazakhstan;AS;29,30,31;17;130
 UR-UZ,EM-EO;(U[R-Z])|(E[M-O]);Ukraine;EU;29;16;288
@@ -281,16 +281,16 @@ V5;V5;Namibia;AF;57;38;464
 V6;V6;Micronesia;OC;65;27;173
 V7;V7;Marshall Is.;OC;65;31;168
 V8;V8;Brunei Darussalam;OC;54;28;345
-VA-VG,VO,VY;(C[FGJK])|(V[A-GOY])|(VY9)|(X[LM]);Canada;NA;2,3,4,9,75;1-5;001
+VA-VG,VO,VY;(C[FGJK])|(VY9)|(V[A-GOY])|(X[LM]);Canada;NA;2,3,4,9,75;1-5;001
 VK,AX;(V[I-L])|(AX);Australia;OC;55,58,59;29,30;150
 VK0;VK0;Heard I.;AF;68;39;111
 VK0;VK0;Macquarie I.;OC;60;30;153
+VK9N;(AX9)|(V[IK]9);Norfolk I.;OC;60;32;189
 VK9C;(AS9[CY])|(V[IK]9[CY])|(VK9[FK]C)|(VK9ZY)|(VZ9Y);Cocos(Keeling) Is.;OC;54;29;038
 VK9L;(AX9L)|(VI9L)|(VK9FL)|(VK9L)|(VK9ZL)|(VZ9L);Lord Howe I.;OC;60;30;147
 VK9M;(AS9M)|(V[IKZ]9M);Mellish Reef;OC;56;30;171
-VK9N;(AX9)|(VI9)|(VK9)VK9N;Norfolk I.;OC;60;32;189
 VK9W;(AX9[WZ])|(VI9[WZ])|(VK9FW)|(VK9[WZ])|(VZ9W);Willis I.;OC;55;30;303
-VK9X;(AX9X)|(VI9X)|(VK9FW)|(VK9KX)|(V[KZ]9X);Christmas I.;OC;54;29;035
+VK9X;(AX9X)|(VI9X)|(VK9FX)|(VK9KX)|(V[KZ]9X);Christmas I.;OC;54;29;035
 VP2E;VP2E;Anguilla;NA;11;08;012
 VP2M;VP2M;Montserrat;NA;11;08;096
 VP2V;VP2V;British Virgin Is.;NA;11;08;065
@@ -326,7 +326,7 @@ YO-YR;Y[O-R];Romania;EU;28;20;275
 YS,HU;(YS)|(HU);El Salvador;NA;11;07;074
 YT-YU;Y[T-U];Serbia;EU;28;15;296
 YV-YY,4M;(Y[V-Y])|(4M);Venezuela;SA;12;09;148
-YV0;(4M0)|(Y[V-Y]0);Aves I.;NA;11;08;017
+YV0;(Y[V-Y]0)|(4M0);Aves I.;NA;11;08;017
 Z2;Z2;Zimbabwe;AF;53;38;452
 Z3;Z3;Macedonia;EU;28;15;502
 Z6;Z6;Republic of Kosovo;EU;28;15;522
@@ -339,10 +339,10 @@ ZD8;ZD8;Ascension I.;AF;66;36;205
 ZD9;ZD9;Tristan da Cunha & Gough I.;AF;66;38;274
 ZF;ZF;Cayman Is.;NA;11;08;069
 ZK3;ZK3;Tokelau Is.;OC;62;31;270
-ZL-ZM;(Z[L-M])|(ZL50);New Zealand;OC;60;32;170
+ZL-ZM;(ZL50)|(Z[L-M]);New Zealand;OC;60;32;170
 ZL7;Z[LM]7;Chatham Is.;OC;60;32;034
 ZL8;Z[LM]8;Kermadec Is.;OC;60;32;133
 ZL9;ZL9;Auckland & Campbell Is.;OC;60;32;016
 ZP;ZP;Paraguay;SA;14;11;132
-ZR-ZU;(Z[R-U])|(H5)|(S4)|(S8)|(V9)|(Z[RSTU]);South Africa;AF;57;38;462
+ZR-ZU;(Z[R-U])|(H5)|(S4)|(S8)|(V9);South Africa;AF;57;38;462
 ZS8;Z[RSTU]8;Prince Edward & Marion Is.;AF;57;38;201
