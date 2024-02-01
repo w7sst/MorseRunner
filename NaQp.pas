@@ -63,7 +63,7 @@ var
   rec: TNaQpCallRec;
 {$ifdef DEBUG}
   dxcc: TDxCCRec;
-  DxOnly, HiOnly, AkOnly, NaOnly: boolean;
+  DxOnly, DxccTest, HiOnly, AkOnly, NaOnly: boolean;
 {$endif}
 begin
   NaQpCallList.Clear;
@@ -75,6 +75,7 @@ begin
   rec := nil;
 {$ifdef DEBUG}
   DxOnly := False;
+  DxccTest := False;
   HiOnly := False;
   AkOnly := False;
   NaOnly := False;
@@ -92,6 +93,7 @@ begin
 {$ifdef DEBUG}
       // look for debugging hooks...
       if (slst.Strings[i].Equals('break')) then break
+      else if (slst.Strings[i].Equals('DxccTest')) then DxccTest := True
       else if (slst.Strings[i].Equals('DxOnly')) then DxOnly := True
       else if (slst.Strings[i].Equals('HiOnly')) then HiOnly := True
       else if (slst.Strings[i].Equals('AkOnly')) then AkOnly := True
@@ -113,6 +115,12 @@ begin
           if length(rec.Name) > 12 then continue;
 
 {$ifdef DEBUG}
+          // debug hook to force each call to look up DXCC Record
+          if DxccTest and not gDXCCList.FindRec(dxcc, rec.Call) then begin
+            assert(false);
+            continue;
+          end;
+
           // debug hooks provide ability to load subset of call history
           if DxOnly and (rec.State <> '') then continue
           else if HiOnly and (not rec.State.Equals('HI')) then continue
