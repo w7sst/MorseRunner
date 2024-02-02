@@ -8,7 +8,7 @@
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
                       http://www.dxatlas.com/MorseRunner/
 
-        Copyright (C) 2022-2023 Morse Runner Community Edition Contributors
+        Copyright (C) 2022-2024 Morse Runner Community Edition Contributors
                    https://www.github.com/w7sst/MorseRunner/
 
 
@@ -213,7 +213,7 @@ SUBMITTING YOUR SCORE
 
 VERSION HISTORY
 
- Version 1.83 (March 2023)
+Version 1.83 (March 2023)
   - Added K1USN Slow Speed Test (Coded by W7SST)
   - Added JARL All Japan Contest (Coded by JR8PPG)
   - Added JARL All Cities All Guns (ACAG) Contest (Coded by JR8PPG)
