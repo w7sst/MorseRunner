@@ -2,8 +2,8 @@
                               Contest Simulator
                                   freeware
 
-                Version 1.83 - JARL allja, JARL acag, & K1USN sst
-            The fourth release of the Morse Runner Community Edition
+                Version 1.83.1 - JARL allja, JARL acag, & K1USN sst
+            The fifth release of the Morse Runner Community Edition
 
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
                       http://www.dxatlas.com/MorseRunner/
@@ -212,6 +212,21 @@ SUBMITTING YOUR SCORE
   File -> View Score menu command.
 
 VERSION HISTORY
+
+Version 1.83.1 (February 2024)
+  - bug fix release
+  - update call history files for ARRL DX, ARRL FD, CQ WW, CWOPS CWT, K1USN SST and NCJ NAQP Contests
+  - improve pattern matching for DXCC entities (used in status bar) (Coded by W7SST)
+  - CQ WPX - Dx Stations will occasionally send a serial number of zero (Coded by W7SST)
+  - ARRL DX - incorrect handling of KH6/KL7 stations using AH6/AL7, NH6/NL7, WH6/WL7 (Coded by W7SST)
+  - NAQP - Exchange field does not allow numbers (e.g. KH6 or KL7) (Coded by W7SST)
+  - All Contests - WPM keyboard entry incorrect behavior for Spin Box (up down control) (Coded by W7SST)
+  - CWOPS CWT - Contest Parser Reading First Line of File (Coded by W7SST)
+  - All Contests - spacebar or Tab will now select both exchange fields (Coded by W7SST)
+  - All Contests - Hide Dx Station's Entity status string if same as user's Entity (Coded by W7SST)
+  - K1USN SST - user test field in call history file should be optional (Coded by W7SST)
+  - DX station will send an abbreviated exchange number in the JARL ALLJA and ACAG contests (Coded by JR8PPG)
+  - User's exchange number is not abbreviated (not convert 100 to 1TT) (Coded by JR8PPG)
 
 Version 1.83 (March 2023)
   - Added K1USN Slow Speed Test (Coded by W7SST)
