@@ -3511,13 +3511,14 @@ ZL2AGY,60,
 ZL4TT,60,
 ZM4T,60,
 ZS1C,57,
+# Below is contents of IARU_2023-005.txt; added by W7SST
 !!Order!!,Call,Sect,UserText
 #
 # IARU
 # WRTC
 # IARU WRTC HF contest
-# Generated 2022-07-05 18:47:40 UTC
-# LastEdit,2022-07-08
+# Generated 2023-07-04 03:36:10 UTC
+# Last Edit,2023-07-07
 # Send updates to Joe, OZ0J, contest@oz0j.dk
 3V8CB,ARAT,
 4K7Z,FRS,
@@ -3531,10 +3532,10 @@ ZS1C,57,
 7X2HQ,ARA,
 8N1HQ,JARL,
 8N2HQ,JARL,
+8N3HQ,JARL,
 8N6HQ,JARL,
 8N7HQ,JARL,
 8N8HQ,JARL,
-8N9HQ,JARL,
 9A0HQ,HRS,
 9H1MRL,MARL,
 9K9HQ,KARS,
@@ -3547,11 +3548,9 @@ A25HQ,BARS,
 A47RS,ROARS,
 A71HQ,QARS,
 AT1HQ,ARSI,
-B1HQ,CRAC,
-B2HQ,CRAC,
-B4HQ,CRAC,
-B6HQ,CRAC,
-B7HQ,CRAC,
+B0HQ,CRAC,
+B8HQ,CRAC,
+B9HQ,CRAC,
 BV0HQ,CTARL,
 C4HQ,CARS,
 C91HQ,LREM,
@@ -3562,7 +3561,7 @@ DA0HQ,DARC,
 DJ3HW,R1,
 DX0HQ,PARA,
 E2HQ,RAST,
-E7HQ,BA,
+E7HQ,ARABH,
 EF4HQ,URE,
 EI0HQ,IRTS,
 EK0HQ,FRRA,
@@ -3580,38 +3579,34 @@ HB9HQ,USKA,
 HB9JOE,R1,
 HC0T,GRC,
 HG0HQ,MRASZ,
-HI3RCD,RCD,
+HI0RCD,RCD,
 HK3LR,LCRA,
 HL0HQ,KARL,
 HP0HQ,LPRA,
 HQ2W,RCH,
 HS1FVL,R3,
 HU0YS,CRAS,
-IO1HQ,ARI,
-IO2HQ,ARI,
-IO5HQ,ARI,
-IO6HQ,ARI,
-IO8HQ,ARI,
-IO9HQ,ARI,
+HZ0HQ,SARS,
+II9HQ,ARI,
 IV3KKW,R1,
 J73Z,DARCI,
 J87HQ,SVGRS,
 JA1CJP,R3,
 JH1NBN,R3,
-JT1KAA,MRSF,
-L21RCA,RCA,
+JU1HQ,MRSF,
 LA2RR,AC,
 LN2HQ,NRRL,
+LT4RCA,RCA,
 LU1BCE,R2,
 LX8HQ,RL,
 LY0HQ,LRMD,
 LZ0HQ,BFRA,
-NU1AW/5,IARU,
+NU1AW,IARU,
 OA4O,RCP,
 OE0HQ,OV,
 OH0HQ,SRAL,
 OH2HQ,SRAL,
-OM8HQ,SARA,
+OM3HQ,SARA,
 OP0HQ,UBA,
 OY1CT,FRA,
 OZ1HQ,EDR,
@@ -3631,11 +3626,12 @@ S77SARA,SARA,
 SK9HQ,SSA,
 SM6EAN,R1,
 SN0HQ,PZK,
+ST0HQ,SARU,
 SU1SK,ERASD,
 SX0HQ,RAAG,
 T40HQ,FRC,
 T70HQ,ARRSM,
-TC3HQ,TRAC,
+TC60HQ,TRAC,
 TF3HQ,IRA,
 TG0AA,CRAG,
 TI0HQ,RCCR,
@@ -3644,16 +3640,24 @@ TU2CI,ARAI,
 UN1HQ,KFRR,
 V31HQ,BARC,
 V55HQ,NARL,
-V8FEO,BDARA,
-VA2RAC,RAC,
+V85AFH,BDARA,
+V85AHV,BDARA,
+V85RH,BDARA,
+V85T,BDARA,
 VE3YV,R2,
-VE6SH/7,AC,
+VE6RAC,RAC,
+VE6SH,AC,
+VE7RAC,RAC,
+VE8RAC,RAC,
+VK1WIA,WIA,
 VK3TX,R3,
 VP2M,MARS,
 VP2V,BVIRL,
 VP9HQ,RSB,
 VR2HK,HARTS,
-W1AW/3,ARRL,
+VY0RAC,RAC,
+VY1RAC,RAC,
+W1AW/KH6,ARRL,
 W5ZN,AC,
 W6ROD,R2,
 XE1KK,R2,
@@ -3676,10 +3680,77 @@ ZF1A,CARS,
 ZL2TLL,R3,
 ZL6HQ,NZART,
 ZP5AA,RCP,
-ZS4BS,R1,
 ZS9HQ,SARL,
-IR2M,,VA2WA  VA2EW  testing WRTC setup in Italia
-K0MP,6,
-W0NF,6,
-LZ22WRTC,,Testing WRTC antenna setup at LZ5R
-LZ5R,,Testing WRTC antenna setup
+# 
+I41A,,WRTC 2022 Official competitors callsigns
+I41D,,WRTC 2022 Official competitors callsigns
+I41K,,WRTC 2022 Official competitors callsigns
+I41M,,WRTC 2022 Official competitors callsigns
+I41N,,WRTC 2022 Official competitors callsigns
+I41R,,WRTC 2022 Official competitors callsigns
+I41U,,WRTC 2022 Official competitors callsigns
+I42A,,WRTC 2022 Official competitors callsigns
+I42B,,WRTC 2022 Official competitors callsigns
+I42D,,WRTC 2022 Official competitors callsigns
+I42F,,WRTC 2022 Official competitors callsigns
+I42G,,WRTC 2022 Official competitors callsigns
+I42K,,WRTC 2022 Official competitors callsigns
+I42L,,WRTC 2022 Official competitors callsigns
+I42M,,WRTC 2022 Official competitors callsigns
+I42N,,WRTC 2022 Official competitors callsigns
+I42R,,WRTC 2022 Official competitors callsigns
+I42V,,WRTC 2022 Official competitors callsigns
+I42W,,WRTC 2022 Official competitors callsigns
+I43B,,WRTC 2022 Official competitors callsigns
+I43C,,WRTC 2022 Official competitors callsigns
+I43D,,WRTC 2022 Official competitors callsigns
+I43G,,WRTC 2022 Official competitors callsigns
+I43K,,WRTC 2022 Official competitors callsigns
+I43L,,WRTC 2022 Official competitors callsigns
+I43O,,WRTC 2022 Official competitors callsigns
+I43P,,WRTC 2022 Official competitors callsigns
+I43R,,WRTC 2022 Official competitors callsigns
+I43U,,WRTC 2022 Official competitors callsigns
+I43V,,WRTC 2022 Official competitors callsigns
+I43X,,WRTC 2022 Official competitors callsigns
+I43Z,,WRTC 2022 Official competitors callsigns
+I44B,,WRTC 2022 Official competitors callsigns
+I44C,,WRTC 2022 Official competitors callsigns
+I44G,,WRTC 2022 Official competitors callsigns
+I44J,,WRTC 2022 Official competitors callsigns
+I44O,,WRTC 2022 Official competitors callsigns
+I44P,,WRTC 2022 Official competitors callsigns
+I44Q,,WRTC 2022 Official competitors callsigns
+I44W,,WRTC 2022 Official competitors callsigns
+I44X,,WRTC 2022 Official competitors callsigns
+I44Y,,WRTC 2022 Official competitors callsigns
+I44Z,,WRTC 2022 Official competitors callsigns
+I46C,,WRTC 2022 Official competitors callsigns
+I46F,,WRTC 2022 Official competitors callsigns
+I46J,,WRTC 2022 Official competitors callsigns
+I46O,,WRTC 2022 Official competitors callsigns
+I46P,,WRTC 2022 Official competitors callsigns
+I46Q,,WRTC 2022 Official competitors callsigns
+I46V,,WRTC 2022 Official competitors callsigns
+I46W,,WRTC 2022 Official competitors callsigns
+I46Y,,WRTC 2022 Official competitors callsigns
+I47B,,WRTC 2022 Official competitors callsigns
+I47C,,WRTC 2022 Official competitors callsigns
+I47G,,WRTC 2022 Official competitors callsigns
+I47K,,WRTC 2022 Official competitors callsigns
+I47L,,WRTC 2022 Official competitors callsigns
+I47M,,WRTC 2022 Official competitors callsigns
+I47O,,WRTC 2022 Official competitors callsigns
+I47P,,WRTC 2022 Official competitors callsigns
+I47U,,WRTC 2022 Official competitors callsigns
+I47V,,WRTC 2022 Official competitors callsigns
+I47W,,WRTC 2022 Official competitors callsigns
+I49A,,WRTC 2022 Official competitors callsigns
+I49D,,WRTC 2022 Official competitors callsigns
+I49K,,WRTC 2022 Official competitors callsigns
+I49M,,WRTC 2022 Official competitors callsigns
+I49N,,WRTC 2022 Official competitors callsigns
+I49R,,WRTC 2022 Official competitors callsigns
+I49U,,WRTC 2022 Official competitors callsigns
+ 
+
