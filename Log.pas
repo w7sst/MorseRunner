@@ -224,11 +224,15 @@ procedure UpdateSbar(const ACallsign: string);
 var
   s: string;
 begin
-  // Adding a contest: UpdateSbar - update status bar with station info (e.g. FD shows UserText)
-  s := Tst.GetStationInfo(ACallsign);
+  s:= '';
+  if not ACallsign.IsEmpty then
+  begin
+    // Adding a contest: UpdateSbar - update status bar with station info (e.g. FD shows UserText)
+    s := Tst.GetStationInfo(ACallsign);
 
-  // '&' are suppressed in this control; replace with '&&'
-  s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
+    // '&' are suppressed in this control; replace with '&&'
+    s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
+  end;
 
   // during debug, use status bar to show CW stream
   if not s.IsEmpty and (BDebugCwDecoder or BDebugGhosting) then
