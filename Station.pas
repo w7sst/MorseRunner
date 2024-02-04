@@ -288,7 +288,7 @@ begin
 end;
 
 
-                                                
+
 {
   This function formats the exchange string to be sent by this station
   by combining exchange fields 1 and 2.
@@ -307,7 +307,12 @@ begin
       Result := Format('%s %s', [Exch1, Exch2]); // <Name> <State|Prov|DX>
     scFieldDay:
       Result := Format('%s %s', [Exch1, Exch2]);
-    scNaQp, scArrlDx, scIaruHf:
+    scNaQp:
+      if Exch2.IsEmpty then
+        Result := Exch1
+      else
+        Result := Format('%s %s', [Exch1, Exch2]);  // make this virtual?
+    scArrlDx, scIaruHf:
       Result := Format('%s %s', [Exch1, Exch2]);
     scAllJa, scAcag:
       Result := Format('%s %s', [Exch1, Exch2]);
@@ -337,7 +342,8 @@ begin
      Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
      end;
   if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
-    [etSerialNr, etCqZone, etItuZone, etAge, etPower]) then
+    [etSerialNr, etCqZone, etItuZone, etAge, etPower]) and
+    (MyCall <> Ini.Call) then
     begin
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
@@ -348,6 +354,23 @@ begin
       then Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
 
     if Random < 0.97
+      then Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
+    end;
+
+  // for JARL ALLJA, ACAG contest
+  // The probability is adjusted to the domestic CW situation
+  if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
+    [etJaPref, etJaCity]) and
+    (MyCall <> Ini.Call) then
+    begin
+    if Random < 0.4 then begin
+      Result := StringReplace(Result, '0', 'O', [rfReplaceAll]);
+      Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
+    end
+    else if Random < 0.8
+      then Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
+
+    if Random < 0.1
       then Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
     end;
 end;

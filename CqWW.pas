@@ -68,6 +68,7 @@ begin
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
   tl.StrictDelimiter := True;
+  rec := nil;
 
   try
     CqWwCallList.Clear;
@@ -75,20 +76,24 @@ begin
     slst.LoadFromFile(ParamStr(1) + 'CQWWCW.TXT');
 
     for i:= 0 to slst.Count-1 do begin
+      if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
+      if (slst.Strings[i].StartsWith('#')) then continue;
+
       tl.DelimitedText := slst.Strings[i];
 
       if (tl.Count > 2) then begin
-          if (tl.Strings[0] = '!!Order!!') then continue;
-
-          rec := TCqWwCallRec.Create;
+          if rec = nil then
+            rec := TCqWwCallRec.Create;
           rec.Call := UpperCase(tl.Strings[0]);
           rec.CQZone := UpperCase(tl.Strings[1]);
-          if (tl.Count >= 3) then rec.UserText := tl.Strings[2];
+          rec.UserText := '';
+          if tl.Count >= 3 then rec.UserText := Trim(tl.Strings[2]);
           if rec.Call='' then continue;
           if rec.CQZone='' then continue;
           if IsNum(rec.CQZone) = False then continue;
 
           CqWwCallList.Add(rec);
+          rec := nil;
       end;
     end;
 
@@ -104,6 +109,7 @@ begin
   finally
     slst.Free;
     tl.Free;
+    if rec <> nil then rec.Free;
   end;
 end;
 

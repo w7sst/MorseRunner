@@ -61,7 +61,7 @@ type
     function GetExchangeTypes(
       const AStationKind : TStationKind;
       const ARequestedMsgType : TRequestedMsgType;
-      const ADxCallsign : string) : TExchTypes; virtual;
+      const AStationCallsign : string) : TExchTypes; virtual;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
     function ExtractMultiplier(Qso: PQso) : string; virtual;
@@ -252,7 +252,7 @@ function TContest.GetSentExchTypes(
   const AStationKind : TStationKind;
   const AMyCallsign : string) : TExchTypes;
 begin
-  Result:= Self.GetExchangeTypes(AStationKind, mtSendMsg, {ADxCallsign=}'');
+  Result:= Self.GetExchangeTypes(AStationKind, mtSendMsg, AMyCallsign);
 end;
 
 
@@ -266,14 +266,17 @@ function TContest.GetRecvExchTypes(
   const AMyCallsign : string;
   const ADxCallsign : string) : TExchTypes;
 begin
-  Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, ADxCallsign);
+  if AStationKind = skMyStation then
+    Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, AMyCallsign)
+  else
+    Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, ADxCallsign);
 end;
 
 
 function TContest.GetExchangeTypes(
   const AStationKind : TStationKind;
   const ARequestedMsgType : TRequestedMsgType;
-  const ADxCallsign : string) : TExchTypes;
+  const AStationCallsign : string) : TExchTypes;
 begin
   Result.Exch1 := ActiveContest.ExchType1;
   Result.Exch2 := ActiveContest.ExchType2;
@@ -484,7 +487,8 @@ begin
        begin
          MainForm.Edit1.Text := DxStn.LastDxCallsign;
          MainForm.Edit2.Text := DxStn.LastExch1;
-         MainForm.Edit3.Text := DxStn.LastExch2;
+         if (SimContest <> scNaQp) or (DxStn.LastExch2 <> 'DX') then
+           MainForm.Edit3.Text := DxStn.LastExch2;
        end;
   end
   else

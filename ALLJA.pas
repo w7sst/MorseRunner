@@ -84,7 +84,8 @@ begin
 
         rec.Call := UpperCase(tl.Strings[0]);
         rec.Number := UpperCase(tl.Strings[1]);
-        if (tl.Count >= 3) then rec.UserText := tl.Strings[2];
+        rec.UserText := '';
+        if (tl.Count >= 3) then rec.UserText := Trim(tl.Strings[2]);
         if rec.Call = '' then continue;
         if rec.Number = '' then continue;
 

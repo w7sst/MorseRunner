@@ -214,6 +214,7 @@ begin
       etPower: TrueExch2 := Self.Exch2;
       etJaPref: TrueExch2 := Self.Exch2;
       etJaCity: TrueExch2 := Self.Exch2;
+      etNaQpExch2, etNaQpNonNaExch2: TrueExch2 := Self.Exch2;
       else
         assert(false);
     end;
