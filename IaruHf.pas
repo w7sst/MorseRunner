@@ -109,6 +109,7 @@ begin
 
     for i:= 0 to slst.Count-1 do begin
       tl.DelimitedText := slst.Strings[i];
+      if tl.Count = 0 then continue;
 
       if tl.Strings[0].StartsWith('#') or (tl.Count < 3) then continue;
       if (tl.Strings[0] = '!!Order!!') then
