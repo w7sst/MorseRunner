@@ -111,6 +111,7 @@ begin
           if rec.Call='' then continue;
           if rec.Name='' then continue;
           if length(rec.Name) > 12 then continue;
+          if rec.State='' then continue;
 
 {$ifdef DEBUG}
           // debug hooks provide ability to load subset of call history
