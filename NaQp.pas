@@ -113,6 +113,7 @@ begin
           if rec.Call='' then continue;
           if rec.Name='' then continue;
           if length(rec.Name) > 12 then continue;
+          if rec.State='' then continue;
 
 {$ifdef DEBUG}
           // debug hook to force each call to look up DXCC Record
