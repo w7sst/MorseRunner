@@ -2,7 +2,7 @@
                               Contest Simulator
                                   freeware
 
-                Version 1.83.1 - JARL allja, JARL acag, & K1USN sst
+                Version 1.84 - IARU HF World Championship Contest
             The fifth release of the Morse Runner Community Edition
 
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
@@ -213,8 +213,8 @@ SUBMITTING YOUR SCORE
 
 VERSION HISTORY
 
-Version 1.83.1 (February 2024)
-  - bug fix release
+Version 1.84 (February 2024)
+  - Added IARU HF World Championship Contest (Coded by W7SST)
   - update call history files for ARRL DX, ARRL FD, CQ WW, CWOPS CWT, K1USN SST and NCJ NAQP Contests
   - improve pattern matching for DXCC entities (used in status bar) (Coded by W7SST)
   - CQ WPX - Dx Stations will occasionally send a serial number of zero (Coded by W7SST)
