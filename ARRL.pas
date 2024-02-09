@@ -48,10 +48,14 @@ begin
     try
         DXCCList:= TList.Create;
         slst.LoadFromFile(ParamStr(1) + 'ARRL.LIST');
-        slst.Sort;
+
+        // The search algorithm walks this list in reverse order.
         for i:= 0 to slst.Count-1 do begin
+            if slst.Strings[i].StartsWith('#') then continue;
             self.Delimit(tl, slst.Strings[i]);
             if (tl.Count = 7) then begin
+                // some expressions are ignored because they mask other entities
+                if tl.Strings[1].StartsWith('!ignore') then continue;
                 AR:= TDXCCRec.Create;
                 AR.prefixReg:= tl.Strings[1];
                 AR.Entity:= tl.Strings[2];
@@ -107,8 +111,23 @@ begin
 
   // Use full call when extracting prefix, not user's call.
   // Example: F6/W7SST should return 'F6' not 'W7' (station located within F6)
-  sP:= ExtractPrefix(ACallsign);
-  Result:= SearchPrefix(index, sP);
+  // Also, do not delete trailing letters of call or prefix to allow
+  // regular expressions to match correctly (e.g. RC2F, Kaliningrad).
+  sP:= ExtractPrefix(ACallsign, {DeleteTrailingLetters=} False);
+
+  // special case for KG4 prefix...
+  // 2x1 and 2x3 callsigns are US; 2x2 calls assumed to be Guantanamo Bay.
+  // (Special thanks to F6FVY for a code example on how to solve this.)
+  if     ACallsign.StartsWith('KG4') and
+     not ACallsign.StartsWith('KG44') and
+    ((Length(ACallsign) = 6) or (Length(ACallsign) = 4)) then
+    begin
+      // KG4abc problem ... this is hard coded
+      Result:= SearchPrefix(index, 'K');
+    end
+  else
+    Result:= SearchPrefix(index, sP);
+
   if Result then
     dxrec:= TDXCCRec(DXCCList.Items[index]);
 end;
