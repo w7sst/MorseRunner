@@ -25,8 +25,8 @@ Updated January 2024 by W7SST - added additional regular expression info from:
 4L;4L;Georgia;AS;29;21;075
 4O;4O;Montenegro;EU;28;15;514
 4S;4[PQRS];Sri Lanka;AS;41;22;315
-4U_ITU;4U[0-9];ITU HQ;EU;28;14;117
-4U_UN;4U_UN;United Nations HQ;NA;08;05;289
+4U_ITU;4U[0-9]ITU;ITU HQ;EU;28;14;117
+4U_UN;4U[0-9]UN;United Nations HQ;NA;08;05;289
 4W;4W;Timor - Leste;OC;54;28;511
 4X;4[XZ];Israel;AS;39;20;336
 5A;5A;Libya;AF;38;34;436
@@ -122,22 +122,22 @@ EX;EX;Kyrgyzstan;AS;30,31;17;135
 EY;EY;Tajikistan;AS;30;17;262
 EZ;EZ;Turkmenistan;AS;30;17;280
 F;(F)|(H[WXY])|(T[HMOPQVX]);France;EU;27;14;227
-FG,TO;(FG)|(TO);Guadeloupe;NA;11;08;079
-FH,TO;(FH)|(TO);Mayotte;AF;53;39;169
-FJ,TO;(FJ)|(TO);Saint Barthelemy;NA;11;08;516
-FK,TX;(FK)|(TX);New Caledonia;OC;56;32;162
-FK,TX;(FK)|(TX);Chesterfield Is.;OC;56;30;512
-FM,TO;(FM)|(TO);Martinique;NA;11;08;084
-FO,TO;(FO)|(TO);Austral I.;OC;63;32;508
-FO,TX;(FO)|(TX);Clipperton I.;NA;10;07;036
-FO,TX;(FO)|(TX);French Polynesia;OC;63;32;175
-FO,TX;(FO)|(TX);Marquesas Is.;OC;63;31;509
+FG,TO;(FG);Guadeloupe;NA;11;08;079
+FH,TO;(FH);Mayotte;AF;53;39;169
+FJ,TO;(FJ);Saint Barthelemy;NA;11;08;516
+FK,TX;(FK);New Caledonia;OC;56;32;162
+FK,TX;!ignore - FK hides New Caledonia;Chesterfield Is.;OC;56;30;512
+FM,TO;(FM);Martinique;NA;11;08;084
+FO,TO;!ignore - TO hides Guadeloupe;Austral I.;OC;63;32;508
+FO,TX;!ignore - TX hides France;Clipperton I.;NA;10;07;036
+FO,TX;(FO);French Polynesia;OC;63;32;175
+FO,TX;!ignore - FO hides French Polynesia & New Caledonia;Marquesas Is.;OC;63;31;509
 FP;FP;St. Pierre & Miquelon;NA;09;05;277
-FR,TO;(FR)|(TO);Reunion I.;AF;53;39;453
-FT/G,TO;(FT[0-9]G)|(TO);Glorioso Is.;AF;53;39;099
-FT/J,E,TO;(FT[0-46-9][JE])|(TO);Juan de Nova,Europa;AF;53;39;124
-FT/T,TO;(FT[0-9]T)|(TO);Tromelin I.;AF;53;39;276
-FS,TO;(FS)|(TO);Saint Martin;NA;11;08;213
+FR,TO;FR;Reunion I.;AF;53;39;453
+FT/G,TO;(FT[0-9]G);Glorioso Is.;AF;53;39;099
+FT/J,E,TO;(FT[0-46-9][JE]);Juan de Nova,Europa;AF;53;39;124
+FT/T,TO;FT[0-9]T;Tromelin I.;AF;53;39;276
+FS,TO;FS;Saint Martin;NA;11;08;213
 FT/W;FT[0458]W;Crozet I.;AF;68;39;041
 FT/X;FT[02458]X;Kerguelen Is.;AF;68;39;131
 FT/Z;FT[0-8]Z;Amsterdam & St. Paul Is.;AF;68;39;010
@@ -168,7 +168,7 @@ HQ-HR;H[Q-R];Honduras;NA;11;07;080
 HS,E2;(HS)|(E2);Thailand;AS;49;26;387
 HV;HV;Vatican;EU;28;15;295
 HZ;[78H]Z;Saudi Arabia;AS;39;21;378
-I;(4V)|(I);Italy;EU;28,33;15;248
+I;(4U)|(I);Italy;EU;28,33;15;248
 IS0,IM0;(I[SM]0)|(IW0[U-Z]);Sardinia;EU;28;15;225
 J2;J2;Djibouti;AF;48;37;382
 J3;J3;Grenada;NA;11;08;077
@@ -217,7 +217,7 @@ OK-OL;O[K-L];Czech Republic;EU;28;15;503
 OM;OM;Slovak Republic;EU;28;15;504
 ON-OT;O[N-T];Belgium;EU;27;14;209
 OU-OW,OZ;(5[PQ])|(O[U-WZ]);Denmark;EU;18;14;221
-OX;O[XP];Greenland;NA;5,75;40;237
+OX;(OX)|(XP);Greenland;NA;5,75;40;237
 OY;OY;Faroe Is.;EU;18;14;222
 P2;P2;Papua New Guinea;OC;51;28;163
 P4;P4;Aruba;SA;11;09;091
@@ -243,7 +243,7 @@ SN-SR;(3Z)|(HF)|(S[N-R]);Poland;EU;28;15;269
 ST;(6[TU])|(ST);Sudan;AF;47,48;34;466
 SU;(6[AB])|(S[SU]);Egypt;AF;38;34;478
 SV-SZ,J4;(S[V-Z])|(J4);Greece;EU;28;20;236
-SV/A;SV;Mount Athos;EU;28;20;180
+SV/A;!ignore - hides Greece;Mount Athos;EU;28;20;180
 SV5,J45;(S[V-Z]5)|(J45);Dodecanese;EU;28;20;045
 SV9,J49;(S[V-Z]9)|(J49);Crete;EU;28;20;040
 T2;T2;Tuvalu;OC;65;31;282
@@ -269,8 +269,8 @@ TU;TU;Cote d'Ivoire;AF;46;35;428
 TY;TY;Benin;AF;46;35;416
 TZ;TZ;Mali;AF;46;35;442
 UA-UI1-7,RA-RZ;(U[A-I]?|R[A-Z]?)[1-7];European Russia;EU;19,20,29,30;16;054
-UA2,RA2;[UR]A2;Kaliningrad;EU;29;15;126
 UA-UI8,9,0,RA-RZ;(U[A-I]?|R[A-Z]?)[890];Asiatic Russia;AS;20-26,30-35,75;16,17,18,19,23;015
+UA2,RA2;(U2[FK])|(U[A-I]2)|(RA2)|(R2[FK])|(R[C-GJ-OQT-Z]2[FK]);Kaliningrad;EU;29;15;126
 UJ-UM;U[J-M];Uzbekistan;AS;30;17;292
 UN-UQ;U[N-Q];Kazakhstan;AS;29,30,31;17;130
 UR-UZ,EM-EO;(U[R-Z])|(E[M-O]);Ukraine;EU;29;16;288
@@ -298,11 +298,11 @@ VP5;V[PQ]5;Turks & Caicos Is.;NA;11;08;089
 VP6;VP6;Pitcairn I.;OC;63;32;172
 VP6;VP6;Ducie I.;OC;63;32;513
 VP8;VP8;Falkland Is.;SA;16;13;141
-VP8,LU;(VP8)|(LU);South Georgia I.;SA;73;13;235
-VP8,LU;(VP8)|(LU);South Orkney Is.;SA;73;13;238
-VP8,LU;(VP8)|(LU);South Sandwich Is.;SA;73;13;240
-VP8,LU,CE9,HF0,4K1;(VP8)|(LU)|(CE9)|(HF0)|(4K1)|(XR9);South Shetland Is.;SA;73;13;241
-VP9;BP9;Bermuda;NA;11;05;064
+VP8,LU;!ignore - VP8 hides Falkland Is.;South Georgia I.;SA;73;13;235
+VP8,LU;!ignore - VP8 hides Falkland Is.;South Orkney Is.;SA;73;13;238
+VP8,LU;!ignore - VP8 hides Falkland Is.;South Sandwich Is.;SA;73;13;240
+VP8,LU,CE9,HF0,4K1;(CE9)|(HF0)|(4K1)|(XR9);South Shetland Is.;SA;73;13;241
+VP9;VP9;Bermuda;NA;11;05;064
 VQ9;VQ9;Chagos Is.;AF;41;39;033
 VR;VR;Hong Kong,China;AS;44;24;321
 VU;(8[T-Y])|(A[T-W])|(V[T-W]);India;AS;41;22;324

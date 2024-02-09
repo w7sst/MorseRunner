@@ -25,7 +25,7 @@ procedure ScoreTableUpdateCheck;
 function FormatScore(const AScore: integer):string;
 procedure UpdateSbar(const ACallsign: string);
 function ExtractCallsign(Call: string): string;
-function ExtractPrefix(Call: string): string;
+function ExtractPrefix(Call: string; DeleteTrailingLetters: boolean = True): string;
 {$ifdef DEBUG}
 function ExtractPrefix0(Call: string): string;
 {$endif}
@@ -439,7 +439,7 @@ end;
 {$endif}
 
 
-function ExtractPrefix(Call: string): string;
+function ExtractPrefix(Call: string; DeleteTrailingLetters: boolean): string;
 const
   DIGITS = ['0'..'9'];
   LETTERS = ['A'..'Z'];
@@ -515,6 +515,13 @@ begin
     Result := '';
     Exit;
   end;
+
+  // when ARRL.pas (DXCC support) is extracting the prefix, the trailing letters
+  // are NOT removed. This allows longer prefixes to be recognized.
+  // (e.g. The call RC2FX has a prefix RC2F, which is Kaliningrad.
+  // if the trailing 'F' is removed, the prefix matches European Russia)
+  if not DeleteTrailingLetters then
+    Exit;
 
   //delete trailing letters, retain at least 2 chars
   for p:= Length(Result) downto 3 do
