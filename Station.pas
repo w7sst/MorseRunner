@@ -335,7 +335,7 @@ begin
     NrWithError := false;
     end;
 
-  if SentExchTypes.Exch1 = etRST then
+  if (SentExchTypes.Exch1 = etRST) and (MyCall <> Ini.Call) then
      begin
      if (Ini.RunMode <> rmHST) and (Random < 0.05) then
        Result := StringReplace(Result, '599', 'ENN', [rfReplaceAll]);
