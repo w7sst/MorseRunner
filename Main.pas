@@ -21,7 +21,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.83.1-pr1';  { Sets version strings in UI panel. }
+  sVersion: String = '1.84-pr1';  { Sets version strings in UI panel. }
 
 type
 
@@ -29,7 +29,7 @@ type
     Defines the characteristics and behaviors of an exchange field.
     Used to declare various exchange field behaviors. Field Definitions
     are indexed by a contest definition (e.g. ARRL FD uses etFdClass and
-    etStateProc). As new contests are added, new field definition
+    etStateProv). As new contests are added, new field definition
     may be required. When adding a new exchange field definition,
     search for existing code usages to find areas that will require changes.
   }
