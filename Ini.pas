@@ -26,7 +26,7 @@ const
 type
   // Adding a contest: Append new TSimContest enum value for each contest.
   TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW, scArrlDx,
-                 scSst, scAllJa, scAcag);
+                 scSst, scAllJa, scAcag, scIaruHf);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
   // Exchange Field #1 types
@@ -166,7 +166,17 @@ const
      ExchFieldEditable: True;
      ExchDefault: '5NN 1002H';
      Msg: '''RST <City|Gun|Ku><Power>'' (e.g. 5NN 1002H)';
-     T:scAcag)
+     T:scAcag),
+
+    (Name: 'IARU HF';
+     Key: 'IARUHFCW';
+     ExchType1: etRST;
+     ExchType2: etGenericField;
+     ExchCaptions: ('RST', 'Zone/Soc');
+     ExchFieldEditable: True;
+     ExchDefault: '5NN 6';
+     Msg: '''RST <Itu-zone|IARU Society>'' (e.g. 5NN 6)';
+     T:scIaruHf)
   );
 
 var
@@ -259,6 +269,7 @@ begin
       UserExchangeTbl[scSst] := ReadString(SEC_STN, 'SstExchange', 'BRUCE MA');
       UserExchangeTbl[scAllJa] := ReadString(SEC_STN, 'AllJaExchange', '5NN 10H');
       UserExchangeTbl[scAcag] := ReadString(SEC_STN, 'AcagExchange', '5NN 1002H');
+      UserExchangeTbl[scIaruHf] := ReadString(SEC_STN, 'IaruHfExchange', '5NN 6');
 
       ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
       ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'ON');
@@ -348,6 +359,7 @@ begin
       WriteString(SEC_STN, 'SstExchange', UserExchangeTbl[scSst]);
       WriteString(SEC_STN, 'AllJaExchange', UserExchangeTbl[scAllJa]);
       WriteString(SEC_STN, 'AcagExchange', UserExchangeTbl[scAcag]);
+      WriteString(SEC_STN, 'IaruHfExchange', UserExchangeTbl[scIaruHf]);
 
       WriteString(SEC_STN, 'ArrlClass', ArrlClass);
       WriteString(SEC_STN, 'ArrlSection', ArrlSection);

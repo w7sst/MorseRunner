@@ -224,11 +224,15 @@ procedure UpdateSbar(const ACallsign: string);
 var
   s: string;
 begin
-  // Adding a contest: UpdateSbar - update status bar with station info (e.g. FD shows UserText)
-  s := Tst.GetStationInfo(ACallsign);
+  s:= '';
+  if not ACallsign.IsEmpty then
+  begin
+    // Adding a contest: UpdateSbar - update status bar with station info (e.g. FD shows UserText)
+    s := Tst.GetStationInfo(ACallsign);
 
-  // '&' are suppressed in this control; replace with '&&'
-  s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
+    // '&' are suppressed in this control; replace with '&&'
+    s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
+  end;
 
   // during debug, use status bar to show CW stream
   if not s.IsEmpty and (BDebugCwDecoder or BDebugGhosting) then
@@ -285,6 +289,8 @@ begin
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'City', 'Chk', 'Wpm');
         ScoreTableScaleWidth(4, 1.2);   // expand City column for wide numbers
         end;
+      scIaruHf:
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
       else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
     end;
@@ -572,7 +578,7 @@ var
       etArrlSection: Result := Length(text) > 1;
       etStateProv:   Result := Length(text) > 1;
       etCqZone:      Result := Length(text) > 0;
-      //etItuZone:
+      etItuZone:     Result := Length(text) > 0;
       //etAge:
       etPower:       Result := Length(text) > 0;
       etJaPref:      Result := Length(text) > 2;
@@ -620,7 +626,7 @@ begin
       etArrlSection: Qso.Exch2 := Edit3.Text;
       etStateProv:   Qso.Exch2 := Edit3.Text;
       etCqZone:      Qso.NR := StrToInt(Edit3.Text);
-      //etItuZone:
+      etItuZone:     Qso.Exch2 := Edit3.Text;
       //etAge:
       etPower:       Qso.Exch2 := Edit3.Text;
       etJaPref:      Qso.Exch2 := Edit3.Text;
@@ -740,6 +746,11 @@ begin
         , format('%.3d %4s', [Rst, Exch2])
         , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
         , MultStr, Err, format('%3s', [TrueWpm]));
+    scIaruHf:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d %4s', [Rst, Exch2])
+        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
+        , MultStr, Err, format('%3s', [TrueWpm]));
     else
       assert(false, 'missing case');
     end;
@@ -787,6 +798,10 @@ begin
             scSst:
               if TrueExch2 <> Exch2 then
                 Err := 'QTH';
+            scIaruHf:
+              // need to add ReduceNumeric...
+              if TrueExch2 <> Exch2 then
+                Err := IfThen(IsNum(TrueExch2), 'ZN ', 'Soc');
             else
               if TrueExch2 <> Exch2 then
                 Err := 'ERR';
@@ -794,7 +809,7 @@ begin
         etCqZone:      if TrueNr <> NR then Err := 'ZN ';
         etArrlSection: if TrueExch2 <> Exch2 then Err := 'SEC';
         etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';
-        //etItuZone:
+        etItuZone:     if TrueExch2 <> Exch2 then Err := 'ZN ';
         //etAge:
         etPower: if ReducePowerStr(TrueExch2) <> ReducePowerStr(Exch2) then
                    Err := 'PWR';

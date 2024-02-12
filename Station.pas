@@ -312,7 +312,7 @@ begin
         Result := Exch1
       else
         Result := Format('%s %s', [Exch1, Exch2]);  // make this virtual?
-    scArrlDx:
+    scArrlDx, scIaruHf:
       Result := Format('%s %s', [Exch1, Exch2]);
     scAllJa, scAcag:
       Result := Format('%s %s', [Exch1, Exch2]);
@@ -341,6 +341,7 @@ begin
        Result := StringReplace(Result, '599', 'ENN', [rfReplaceAll]);
      Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
      end;
+
   if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
     [etSerialNr, etCqZone, etItuZone, etAge, etPower]) and
     (MyCall <> Ini.Call) then

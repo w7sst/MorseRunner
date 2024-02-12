@@ -430,6 +430,7 @@ implementation
 
 uses
   ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, CWSST, ALLJA, ACAG,
+  IARUHF,
   MorseKey, FarnsKeyer, CallLst,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
   Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
@@ -516,6 +517,7 @@ begin
   scSst:        Result := TCWSST.Create;
   scAllJa:      Result := TALLJA.Create;
   scAcag:       Result := TACAG.Create;
+  scIaruHf:     Result := TIaruHf.Create;
   else
     assert(false);
   end;
@@ -906,9 +908,10 @@ begin
   end;
 
   // Adding a contest: update status bar w/ station info.
+  // This status message occurs when user presses the Enter key.
   // remember not to give a hint if exchange entry is affected by this info.
   // for certain contests (e.g. ARRL Field Day), update update status bar
-  if SimContest in [scCwt, scFieldDay, scCQWW, scArrlDx] then
+  if SimContest in [scCwt, scFieldDay, scCQWW, scArrlDx, scIaruHf] then
     UpdateSbar(Edit1.Text);
 
   //no QSO in progress, send CQ
@@ -996,7 +999,7 @@ begin
   // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
   if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst,
-    scCQWW, scArrlDx, scSst, scAllJa, scAcag]) then
+    scCQWW, scArrlDx, scSst, scAllJa, scAcag, scIaruHf]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex :=
@@ -1312,7 +1315,13 @@ begin
         Tst.Me.Nr := StrToInt(Avalue);
         if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
       end;
-    //etItuZone:
+    etItuZone:
+      begin
+        // 'expecting Itu-Zone or IARU Society'
+        Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
     //etAge:
     etJaPref:
       begin
