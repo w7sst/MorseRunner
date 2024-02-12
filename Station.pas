@@ -335,12 +335,13 @@ begin
     NrWithError := false;
     end;
 
-  if (SentExchTypes.Exch1 = etRST) and (MyCall <> Ini.Call) then
+  if SentExchTypes.Exch1 = etRST then
      begin
      if (Ini.RunMode <> rmHST) and (Random < 0.05) then
        Result := StringReplace(Result, '599', 'ENN', [rfReplaceAll]);
      Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
      end;
+
   if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
     [etSerialNr, etCqZone, etItuZone, etAge, etPower]) and
     (MyCall <> Ini.Call) then
