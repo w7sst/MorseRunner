@@ -911,7 +911,7 @@ begin
   // This status message occurs when user presses the Enter key.
   // remember not to give a hint if exchange entry is affected by this info.
   // for certain contests (e.g. ARRL Field Day), update update status bar
-  if SimContest in [scCwt, scFieldDay, scCQWW, scArrlDx, scIaruHf] then
+  if SimContest in [scCwt, scFieldDay, scWpx, scCQWW, scArrlDx, scIaruHf] then
     UpdateSbar(Edit1.Text);
 
   //no QSO in progress, send CQ
