@@ -551,14 +551,18 @@ procedure TContest.OnMeFinishedSending;
 var
   i: integer;
   z: integer;
+  Dx : integer;
 begin
   //the stations heard my CQ and want to call
-  if (not (RunMode in [rmSingle, {rmFieldDay,???} RmHst])) then
+  if (not (RunMode in [rmSingle, RmHst])) then
     if (msgCQ in Me.Msg) or
        ((QsoList <> nil) and ((msgTU in Me.Msg) or (msgMyCall in Me.Msg))) then
        begin
           z := 0;
-          for i:=1 to RndPoisson(Activity / 2) - DxCount do
+          Dx := DxCount;
+          if not (msgCQ in Me.Msg) then
+             if Dx > 0 then Dec(Dx);  // The just finished Q has to be deducted
+          for i:=1 to RndPoisson(Activity / 2) - Dx do
              begin
                  Stations.AddCaller;
                  z := 1;
