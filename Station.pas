@@ -296,6 +296,7 @@ end;
 function TStation.NrAsText: string;
 var
   Idx: integer;
+  IsDxStation: boolean;
 begin
   // Adding a contest: TStation.NrAsText(), converts <#> to exchange (usually '<exch1> <exch2>'). Inject LID errors.
   case SimContest of
@@ -335,21 +336,26 @@ begin
     NrWithError := false;
     end;
 
+  IsDxStation := MyCall <> Ini.Call;
   if SentExchTypes.Exch1 = etRST then
      begin
-     if (Ini.RunMode <> rmHST) and (Random < 0.05) then
+     if (Ini.RunMode <> rmHST) and IsDxStation and (Random < 0.05) then
        Result := StringReplace(Result, '599', 'ENN', [rfReplaceAll]);
      Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
      end;
 
   if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
-    [etSerialNr, etCqZone, etItuZone, etAge, etPower]) and
-    (MyCall <> Ini.Call) then
+    [etSerialNr, etCqZone, etItuZone, etAge, etPower]) then
     begin
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
 
-    if Random < 0.4
+    // the user's station will always send abbreviated numeric fields
+    if not IsDxStation then begin
+      Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
+      Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
+    end
+    else if Random < 0.4
       then Result := StringReplace(Result, '0', 'O', [rfReplaceAll])
     else if Random < 0.97
       then Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
@@ -361,8 +367,7 @@ begin
   // for JARL ALLJA, ACAG contest
   // The probability is adjusted to the domestic CW situation
   if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
-    [etJaPref, etJaCity]) and
-    (MyCall <> Ini.Call) then
+    [etJaPref, etJaCity]) and IsDxStation then
     begin
     if Random < 0.4 then begin
       Result := StringReplace(Result, '0', 'O', [rfReplaceAll]);
