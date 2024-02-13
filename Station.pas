@@ -358,8 +358,8 @@ begin
     (MyCall <> Ini.Call) then
     begin
     if Random < 0.4 then begin
-      Result := StringReplace(Result, '0', 'O', [rfReplaceAll]);
       Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
+      Result := StringReplace(Result, '0', 'O', [rfReplaceAll]);
     end
     else if Random < 0.8
       then Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
