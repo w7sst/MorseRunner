@@ -84,7 +84,7 @@ const
      ExchType2: etGenericField;
      ExchCaptions: ('Name', 'Exch');
      ExchFieldEditable: True;
-     ExchDefault: 'DAVID 1';
+     ExchDefault: 'DAVID 123';
      Msg: '''<op name> <CWOPS Number|State|Country>'' (e.g. DAVID 123)';
      T:scCwt),
      // expecting two strings [Name,Number] (e.g. David 123)
