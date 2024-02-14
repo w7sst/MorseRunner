@@ -91,6 +91,15 @@ begin
           if rec.Call='' then continue;
           if rec.CQZone='' then continue;
           if IsNum(rec.CQZone) = False then continue;
+//{$define CutNumberTesting}
+{$ifdef CutNumberTesting}
+          case rec.CQZone.ToInteger of
+          9,10,19,20,29,30:
+            ;
+          else
+            continue;
+          end;
+{$endif}
 
           CqWwCallList.Add(rec);
           rec := nil;

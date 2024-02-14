@@ -301,7 +301,7 @@ begin
   // Adding a contest: TStation.NrAsText(), converts <#> to exchange (usually '<exch1> <exch2>'). Inject LID errors.
   case SimContest of
     scCQWW:
-      Result := Format('%s %d', [Exch1, NR]);     // <RST> <serial#>
+      Result := Format('%s %d', [Exch1, NR]);     // <RST> <CQ-Zone>
     scCwt:
       Result := Format('%s  %s', [Exch1, Exch2]); // <Name> <NR|State|Prov|Prefix>
     scSst:
@@ -347,10 +347,11 @@ begin
   if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
     [etSerialNr, etCqZone, etItuZone, etAge, etPower]) then
     begin
+    // replace leading zeros
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
 
-    // the user's station will always send abbreviated numeric fields
+    // the user's station will always send cut numeric fields
     if not IsDxStation then begin
       Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
       Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
@@ -370,8 +371,8 @@ begin
     [etJaPref, etJaCity]) and IsDxStation then
     begin
     if Random < 0.4 then begin
-      Result := StringReplace(Result, '0', 'O', [rfReplaceAll]);
       Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
+      Result := StringReplace(Result, '0', 'O', [rfReplaceAll]);
     end
     else if Random < 0.8
       then Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
