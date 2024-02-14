@@ -1,5 +1,5 @@
 # Morse Runner Community Edition
-
+> Click [here](https://github.com/w7sst/MorseRunner/releases/latest) to install the latest release.
 ## Welcome
 For many years, hams have been using Morse Runner as an effective practice tool
 for improving their CW copying and pileup handling skills. All along, users

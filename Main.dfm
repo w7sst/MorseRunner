@@ -228,6 +228,7 @@ object MainForm: TMainForm
       MaxLength = 4
       ParentFont = False
       TabOrder = 2
+      OnEnter = Edit3Enter
       OnKeyPress = Edit3KeyPress
     end
     object Panel2: TPanel
@@ -471,7 +472,7 @@ object MainForm: TMainForm
       Top = 234
       Width = 448
       Height = 15
-      Caption = 'Copyright '#169'2022-2023 Morse Runner Community Edition Contributors'
+      Caption = 'Copyright '#169'2022-2024 Morse Runner Community Edition Contributors'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -790,6 +791,7 @@ object MainForm: TMainForm
         TabOrder = 2
         Value = 25
         OnChange = SpinEdit1Change
+        OnExit = SpinEdit1Exit
       end
       object CheckBox1: TCheckBox
         Left = 140

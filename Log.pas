@@ -25,7 +25,7 @@ procedure ScoreTableUpdateCheck;
 function FormatScore(const AScore: integer):string;
 procedure UpdateSbar(const ACallsign: string);
 function ExtractCallsign(Call: string): string;
-function ExtractPrefix(Call: string): string;
+function ExtractPrefix(Call: string; DeleteTrailingLetters: boolean = True): string;
 {$ifdef DEBUG}
 function ExtractPrefix0(Call: string): string;
 {$endif}
@@ -224,11 +224,15 @@ procedure UpdateSbar(const ACallsign: string);
 var
   s: string;
 begin
-  // Adding a contest: UpdateSbar - update status bar with station info (e.g. FD shows UserText)
-  s := Tst.GetStationInfo(ACallsign);
+  s:= '';
+  if not ACallsign.IsEmpty then
+  begin
+    // Adding a contest: UpdateSbar - update status bar with station info (e.g. FD shows UserText)
+    s := Tst.GetStationInfo(ACallsign);
 
-  // '&' are suppressed in this control; replace with '&&'
-  s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
+    // '&' are suppressed in this control; replace with '&&'
+    s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
+  end;
 
   // during debug, use status bar to show CW stream
   if not s.IsEmpty and (BDebugCwDecoder or BDebugGhosting) then
@@ -285,6 +289,8 @@ begin
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'City', 'Chk', 'Wpm');
         ScoreTableScaleWidth(4, 1.2);   // expand City column for wide numbers
         end;
+      scIaruHf:
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
       else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
     end;
@@ -439,7 +445,7 @@ end;
 {$endif}
 
 
-function ExtractPrefix(Call: string): string;
+function ExtractPrefix(Call: string; DeleteTrailingLetters: boolean): string;
 const
   DIGITS = ['0'..'9'];
   LETTERS = ['A'..'Z'];
@@ -516,6 +522,13 @@ begin
     Exit;
   end;
 
+  // when ARRL.pas (DXCC support) is extracting the prefix, the trailing letters
+  // are NOT removed. This allows longer prefixes to be recognized.
+  // (e.g. The call RC2FX has a prefix RC2F, which is Kaliningrad.
+  // if the trailing 'F' is removed, the prefix matches European Russia)
+  if not DeleteTrailingLetters then
+    Exit;
+
   //delete trailing letters, retain at least 2 chars
   for p:= Length(Result) downto 3 do
 //    if Result[p] in DIGITS then
@@ -565,11 +578,13 @@ var
       etArrlSection: Result := Length(text) > 1;
       etStateProv:   Result := Length(text) > 1;
       etCqZone:      Result := Length(text) > 0;
-      //etItuZone:
+      etItuZone:     Result := Length(text) > 0;
       //etAge:
       etPower:       Result := Length(text) > 0;
       etJaPref:      Result := Length(text) > 2;
       etJaCity:      Result := Length(text) > 3;
+      etNaQpExch2:   Result := Length(text) > 0;
+      etNaQpNonNaExch2: Result := Length(text) >= 0;
       else
         assert(false, 'missing case');
     end;
@@ -611,11 +626,17 @@ begin
       etArrlSection: Qso.Exch2 := Edit3.Text;
       etStateProv:   Qso.Exch2 := Edit3.Text;
       etCqZone:      Qso.NR := StrToInt(Edit3.Text);
-      //etItuZone:
+      etItuZone:     Qso.Exch2 := Edit3.Text;
       //etAge:
       etPower:       Qso.Exch2 := Edit3.Text;
       etJaPref:      Qso.Exch2 := Edit3.Text;
       etJaCity:      Qso.Exch2 := Edit3.Text;
+      etNaQpExch2:   Qso.Exch2 := Edit3.Text;
+      etNaQpNonNaExch2:
+        if Edit3.Text = '' then
+          Qso.Exch2 := 'DX'
+        else
+          Qso.Exch2 := Edit3.Text;
       else
         assert(false, 'missing case');
     end;
@@ -725,6 +746,11 @@ begin
         , format('%.3d %4s', [Rst, Exch2])
         , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
         , MultStr, Err, format('%3s', [TrueWpm]));
+    scIaruHf:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d %4s', [Rst, Exch2])
+        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
+        , MultStr, Err, format('%3s', [TrueWpm]));
     else
       assert(false, 'missing case');
     end;
@@ -772,6 +798,10 @@ begin
             scSst:
               if TrueExch2 <> Exch2 then
                 Err := 'QTH';
+            scIaruHf:
+              // need to add ReduceNumeric...
+              if TrueExch2 <> Exch2 then
+                Err := IfThen(IsNum(TrueExch2), 'ZN ', 'Soc');
             else
               if TrueExch2 <> Exch2 then
                 Err := 'ERR';
@@ -779,12 +809,18 @@ begin
         etCqZone:      if TrueNr <> NR then Err := 'ZN ';
         etArrlSection: if TrueExch2 <> Exch2 then Err := 'SEC';
         etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';
-        //etItuZone:
+        etItuZone:     if TrueExch2 <> Exch2 then Err := 'ZN ';
         //etAge:
         etPower: if ReducePowerStr(TrueExch2) <> ReducePowerStr(Exch2) then
                    Err := 'PWR';
         etJaPref: if TrueExch2 <> Exch2 then Err := 'NR ';
         etJaCity: if TrueExch2 <> Exch2 then Err := 'NR ';
+        etNaQpExch2:  if TrueExch2 <> Exch2 then Err := 'ST ';
+        etNaQpNonNaExch2:
+          // Non-NA stations do not send a location (typically logged as DX)
+          if not (TrueExch2.Equals(Exch2) or
+                  (Exch2.Equals('DX') and TrueExch2.IsEmpty)) then
+            Err := 'ST ';
         else
           assert(false, 'missing exchange 2 case');
       end;

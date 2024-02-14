@@ -21,7 +21,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.83';  { Sets version strings in UI panel. }
+  sVersion: String = '1.84-pr2';  { Sets version strings in UI panel. }
 
 type
 
@@ -29,7 +29,7 @@ type
     Defines the characteristics and behaviors of an exchange field.
     Used to declare various exchange field behaviors. Field Definitions
     are indexed by a contest definition (e.g. ARRL FD uses etFdClass and
-    etStateProc). As new contests are added, new field definition
+    etStateProv). As new contests are added, new field definition
     may be required. When adding a new exchange field definition,
     search for existing code usages to find areas that will require changes.
   }
@@ -62,8 +62,12 @@ const
     (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
     (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
     (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4; T:Ord(etPower)),
-    (C: 'Number';     R: '([0-9]*)([LMHP])';                  L: 4; T:Ord(etJaPref)),
-    (C: 'Number';     R: '([0-9]*)([LMHP])';                  L: 7; T:Ord(etJaCity))
+    (C: 'Number';     R: '([0-9AOTN]*)([LMHP])';           L: 4; T:Ord(etJaPref)),
+    (C: 'Number';     R: '([0-9AOTN]*)([LMHP])';           L: 7; T:Ord(etJaCity))
+    // NAQP Contest: NA Stations send name and (state/prov/dxcc);
+    //           Non-NA stations send name only
+   ,(C: 'State';      R: '([0-9A-Z/]*)';                   L: 6; T:Ord(etNaQpExch2))
+   ,(C: 'State';      R: '()|([0-9A-Z/]*)';                L: 6; T:Ord(etNaQpNonNaExch2))
   );
 
 type
@@ -350,10 +354,13 @@ type
     procedure SimContestComboPopulate;
     procedure ExchangeEditExit(Sender: TObject);
     procedure Edit4Exit(Sender: TObject);
+    procedure SpinEdit1Exit(Sender: TObject);
+    procedure Edit3Enter(Sender: TObject);
 
   private
-    MustAdvance: boolean;
+    MustAdvance: boolean;       // Controls when Exchange fields advance
     UserCallsignDirty: boolean; // SetMyCall is called after callsign edits
+    CWSpeedDirty: boolean;      // SetWpm is called after CW Speed edits
     function CreateContest(AContestId : TSimContest) : TContest;
     procedure ConfigureExchangeFields;
     procedure SetMyExch1(const AExchType: TExchange1Type; const Avalue: string);
@@ -423,6 +430,7 @@ implementation
 
 uses
   ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, CWSST, ALLJA, ACAG,
+  IARUHF,
   MorseKey, FarnsKeyer, CallLst,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
   Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
@@ -509,6 +517,7 @@ begin
   scSst:        Result := TCWSST.Create;
   scAllJa:      Result := TALLJA.Create;
   scAcag:       Result := TACAG.Create;
+  scIaruHf:     Result := TIaruHf.Create;
   else
     assert(false);
   end;
@@ -532,14 +541,26 @@ begin
 end;
 
 
+{
+  SendMsg() is called whenever MyStation sends a new CW Message.
+}
 procedure TMainForm.SendMsg(AMsg: TStationMessage);
 begin
+  // special case for CW Speed control having focus and user presses
+  // a key or function key (which do not cause a leave-focus event).
+  if SpinEdit1.Focused then
+    SpinEdit1Exit(SpinEdit1);
+
   if AMsg = msgHisCall then begin
     // retain current callsign, including ''. if empty, return.
     Tst.Me.HisCall := Edit1.Text;
     CallSent := Edit1.Text <> '';
     if not CallSent then
       Exit;
+
+    // update "received" Exchange field types. Some contests change field
+    // types based on MyCall or dx station's call (current value of Edit1).
+    RecvExchTypes:= Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall, Trim(Edit1.Text));
   end;
   if AMsg = msgNR then
     NrSent := true;
@@ -587,6 +608,12 @@ begin
       assert(false, Format('invalid exchange field 1 type: %s',
         [ToStr(RecvExchTypes.Exch1)]));
   end;
+end;
+
+procedure TMainForm.Edit3Enter(Sender: TObject);
+begin
+  Edit3.SelStart := 0;
+  Edit3.SelLength := Edit3.GetTextLen;
 end;
 
 {
@@ -642,6 +669,12 @@ begin
       begin
         // valid State/Prov characters (e.g. OR or BC)
         if not CharInSet(Key, ['A'..'Z', 'a'..'z', #8]) then
+          Key := #0;
+      end;
+    etNaQPExch2, etNaQpNonNaExch2:
+      begin
+        // valid NAQP Multiplier characters (e.g. OR, BC, or KP4)
+        if not CharInSet(Key, ['0'..'9', 'A'..'Z', 'a'..'z', '/', #8]) then
           Key := #0;
       end;
     etJaPref, etJaCity:
@@ -707,9 +740,7 @@ begin
       end;
 
     ' ': // advance to next exchange field
-      if (ActiveControl = Edit1) or
-         (ActiveControl = Edit2) or
-         (ActiveControl = Edit3) then
+      if ActiveControl <> ExchangeEdit then
         ProcessSpace
       else
         Exit;
@@ -788,6 +819,16 @@ begin
 end;
 
 
+{
+  Advance cursor to next exchange field. This procedure is called whenever
+  the Spacebar is pressed. Its purpose is to move the cursor to the next
+  Exchange field.
+
+  If the current contest has an RST field:
+  - the RST field value is set if currently empty
+  - the RST field is skipped (cursor is moved to the third exchange field).
+    Note that TAB key will select the middle digit of the RST field.
+}
 procedure TMainForm.ProcessSpace;
 begin
   MustAdvance := false;
@@ -825,19 +866,38 @@ begin
 end;
 
 
+{
+  Called when the Enter key is pressed.
+  In setup-mode:
+  - passes Enter key to either the Exchange setup field or callsign field.
+  In Run-mode:
+  - moves the cursor between QSO exchange fields following the QSO state.
+  - if either CW Speed and Active Spin Controls are active, cursor is moved
+    to the appropriate QSO exchange field.
+  - for some contests, the status bar is updated with Dx Station information.
+}
 procedure TMainForm.ProcessEnter;
 var
   C, N, R, Q: boolean;
 begin
   if ActiveControl = ExchangeEdit then
     begin
+      // exit Exchange field
       ExchangeEditExit(ActiveControl);
       Exit;
     end;
   if ActiveControl = Edit4 then
     begin
+      // exit callsign field
       Edit4Exit(ActiveControl);
       Exit;
+    end;
+  if ActiveControl = SpinEdit1 then
+    begin
+      // exit CW Speed Control
+      SpinEdit1Exit(ActiveControl);
+      if RunMode = rmStop then
+        Exit;
     end;
   MustAdvance := false;
 
@@ -848,15 +908,21 @@ begin
   end;
 
   // Adding a contest: update status bar w/ station info.
+  // This status message occurs when user presses the Enter key.
   // remember not to give a hint if exchange entry is affected by this info.
   // for certain contests (e.g. ARRL Field Day), update update status bar
-  if SimContest in [scCwt, scFieldDay, scCQWW, scArrlDx] then
+  if SimContest in [scCwt, scFieldDay, scWpx, scCQWW, scArrlDx, scIaruHf] then
     UpdateSbar(Edit1.Text);
 
   //no QSO in progress, send CQ
   if Edit1.Text = '' then
   begin
     SendMsg(msgCq);
+    // special case - Cursor is in either CW Speed or Activity Spin Control
+    // when Enter key is pushed. Move cursor to the next QSO Exchange field.
+    if (RunMode <> rmStop) and
+          ((ActiveControl = SpinEdit1) or (ActiveControl = SpinEdit3)) then
+      MustAdvance := true;
     Exit;
   end;
 
@@ -864,7 +930,8 @@ begin
   C := CallSent;
   N := NrSent;    // 'Nr' represents the exchange (<exch1> <exch2>).
   Q := Edit2.Text <> '';
-  R := Edit3.Text <> '';
+  R := (Edit3.Text <> '') or ((SimContest = scNaQp) and
+                              (RecvExchTypes.Exch2 = etNaQpNonNaExch2));
 
   //send his call if did not send before, or if call changed
   if (not C) or ((not N) and (not R)) then
@@ -932,7 +999,7 @@ begin
   // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
   if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst,
-    scCQWW, scArrlDx, scSst, scAllJa, scAcag]) then
+    scCQWW, scArrlDx, scSst, scAllJa, scAcag, scIaruHf]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex :=
@@ -1114,6 +1181,9 @@ end;
   - ARRL DX: Exchange 2 changes between etStateProv and etPower.
   - ARRL 10m: Exchange 2 changes between etStateProv10m, etIARU, etSerial,
     depending on sending station's callsign.
+  - NCJ NAQP: Exchange 2 changes between eNaQpExch2 and eNaQpNonNaExch2,
+    depending on sending station's callsign. Non-NA sends only send Name
+    without a location and DX is recorded in the log.
 
   Received exchange field labels and exchange field maximum length are set.
 
@@ -1217,7 +1287,7 @@ begin
 
         if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
       end;
-    etGenericField:
+    etGenericField, etNaQpExch2, etNaQpNonNaExch2:
       begin
         // 'expecting alpha-numeric field'
         Ini.UserExchange2[SimContest] := Avalue;
@@ -1245,7 +1315,13 @@ begin
         Tst.Me.Nr := StrToInt(Avalue);
         if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
       end;
-    //etItuZone:
+    etItuZone:
+      begin
+        // 'expecting Itu-Zone or IARU Society'
+        Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
     //etAge:
     etJaPref:
       begin
@@ -1272,6 +1348,14 @@ var
   reg: TPerlRegEx;
   s: string;
 begin
+  if SimContest = scNaQp then begin
+    // special case - I can't figure out how to match an empty string,
+    // so manually check for an optional string.
+    s := FieldDef.R;
+    Result := s.StartsWith('()|(') and Avalue.IsEmpty;
+    if Result then Exit;
+  end;
+
   reg := TPerlRegEx.Create();
   try
     reg.Subject := UTF8Encode(Avalue);
@@ -1348,7 +1432,25 @@ end;
 
 procedure TMainForm.SpinEdit1Change(Sender: TObject);
 begin
-  SetWpm(SpinEdit1.Value);
+  if SpinEdit1.Focused then
+  begin
+    // CW Speed edit has occurred while focus is within the spin edit control.
+    // Mark this value as dirty and defer the call to SetWpm until edit is
+    // completed by user.
+    CWSpeedDirty := True
+  end
+  else
+    SetWpm(SpinEdit1.Value);
+end;
+
+{
+  Called when user leaves CW Speed Control or user presses Enter key.
+}
+procedure TMainForm.SpinEdit1Exit(Sender: TObject);
+begin
+  // call SetWpm if the CW Speed has been edited
+  if CWSpeedDirty then
+    SetWpm(SpinEdit1.Value);
 end;
 
 procedure TMainForm.CheckBox1Click(Sender: TObject);
@@ -1443,13 +1545,13 @@ const
         'CW CONTEST SIMULATOR'#13#13 +
         'Version %s'#13#13 +
         'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13 +
-        'Copyright ©2022-2023 Morse Runner Community Edition Contributors'#13#13 +
+        'Copyright ©2022-2024 Morse Runner Community Edition Contributors'#13#13 +
         'https://www.github.com/w7sst/MorseRunner';
 begin
     Application.MessageBox(PChar(Format(Msg, [sVersion])),
       'About Morse Runner - Community Edition',
       MB_OK or MB_ICONINFORMATION);
-end;          
+end;
 
 
 procedure TMainForm.Readme1Click(Sender: TObject);
@@ -1902,7 +2004,8 @@ begin
   if Edit2IsRST and (Edit2.Text = '') then
     Edit2.Text := '599';
 
-  if Pos('?', Edit1.Text) > 0 then
+  if (Edit1.Text = '') or
+     (Pos('?', Edit1.Text) > 0) then
     begin
       { stay in callsign field if callsign has a '?' }
       if ActiveControl = Edit1 then
@@ -2033,6 +2136,8 @@ begin
   Wpm := Max(10, Min(120, AWpm));
   SpinEdit1.Value := Wpm;
   Tst.Me.SetWpm(Wpm);
+
+  CWSpeedDirty := False;
 end;
 
 

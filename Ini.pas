@@ -26,7 +26,7 @@ const
 type
   // Adding a contest: Append new TSimContest enum value for each contest.
   TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW, scArrlDx,
-                 scSst, scAllJa, scAcag);
+                 scSst, scAllJa, scAcag, scIaruHf);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
   // Exchange Field #1 types
@@ -34,7 +34,8 @@ type
 
   // Exchange Field #2 Types
   TExchange2Type = (etSerialNr, etGenericField, etArrlSection, etStateProv,
-                    etCqZone, etItuZone, etAge, etPower, etJaPref, etJaCity);
+                    etCqZone, etItuZone, etAge, etPower, etJaPref, etJaCity,
+                    etNaQpExch2, etNaQpNonNaExch2);
 
   // Contest definition.
   TContestDefinition = record
@@ -102,12 +103,12 @@ const
     (Name: 'NCJ NAQP';
      Key: 'NAQP';
      ExchType1: etOpName;
-     ExchType2: etStateProv;
+     ExchType2: etNaQpExch2;
      ExchFieldEditable: True;
      ExchDefault: 'MIKE OR';
-     Msg: '''<name> <state-prov>'' (e.g. MIKE OR)';
+     Msg: '''<name> [<state|prov|dxcc-entity>]'' (e.g. MIKE OR)';
      T:scNaQp),
-     // expecting two strings [Name,State-Prov] (e.g. MIKE OR)
+     // expecting one or two strings {Name,[State|Prov|DXCC Entity]} (e.g. MIKE OR)
 
     (Name: 'HST (High Speed Test)';
      Key: 'HST';
@@ -165,14 +166,24 @@ const
      ExchFieldEditable: True;
      ExchDefault: '5NN 1002H';
      Msg: '''RST <City|Gun|Ku><Power>'' (e.g. 5NN 1002H)';
-     T:scAcag)
+     T:scAcag),
+
+    (Name: 'IARU HF';
+     Key: 'IARUHFCW';
+     ExchType1: etRST;
+     ExchType2: etGenericField;
+     ExchCaptions: ('RST', 'Zone/Soc');
+     ExchFieldEditable: True;
+     ExchDefault: '5NN 6';
+     Msg: '''RST <Itu-zone|IARU Society>'' (e.g. 5NN 6)';
+     T:scIaruHf)
   );
 
 var
   Call: string = 'VE3NEA';
   HamName: string = 'Alex';
   ArrlClass: string = '3A';
-  ArrlSection: string = 'GTA';
+  ArrlSection: string = 'GH';
   Wpm: integer = 25;
   MaxRxWpm: integer = 0;
   MinRxWpm: integer = 0;
@@ -250,14 +261,15 @@ begin
       UserExchangeTbl[scWpx] := ReadString(SEC_STN, 'CqWpxExchange', '5NN #');
       UserExchangeTbl[scCwt] := ReadString(SEC_STN, 'CwtExchange',
         Format('%s 1234', [HamName]));
-      UserExchangeTbl[scFieldDay] := ReadString(SEC_STN, 'ArrlFdExchange', '3A GTA');
-      UserExchangeTbl[scNaQp] := ReadString(SEC_STN, 'NAQPExchange', 'ALEX ON');
+      UserExchangeTbl[scFieldDay] := ReadString(SEC_STN, 'ArrlFdExchange', '3A GH');
+      UserExchangeTbl[scNaQp] := ReadString(SEC_STN, 'NAQPExchange', 'ALEX GH');
       UserExchangeTbl[scHst] := ReadString(SEC_STN, 'HSTExchange', '5NN #');
       UserExchangeTbl[scCQWW] := ReadString(SEC_STN, 'CQWWExchange', '5NN 4');
-      UserExchangeTbl[scArrlDx] := ReadString(SEC_STN, 'ArrlDxExchange', '5NN ON');
+      UserExchangeTbl[scArrlDx] := ReadString(SEC_STN, 'ArrlDxExchange', '5NN GH');
       UserExchangeTbl[scSst] := ReadString(SEC_STN, 'SstExchange', 'BRUCE MA');
       UserExchangeTbl[scAllJa] := ReadString(SEC_STN, 'AllJaExchange', '5NN 10H');
       UserExchangeTbl[scAcag] := ReadString(SEC_STN, 'AcagExchange', '5NN 1002H');
+      UserExchangeTbl[scIaruHf] := ReadString(SEC_STN, 'IaruHfExchange', '5NN 6');
 
       ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
       ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'ON');
@@ -347,6 +359,7 @@ begin
       WriteString(SEC_STN, 'SstExchange', UserExchangeTbl[scSst]);
       WriteString(SEC_STN, 'AllJaExchange', UserExchangeTbl[scAllJa]);
       WriteString(SEC_STN, 'AcagExchange', UserExchangeTbl[scAcag]);
+      WriteString(SEC_STN, 'IaruHfExchange', UserExchangeTbl[scIaruHf]);
 
       WriteString(SEC_STN, 'ArrlClass', ArrlClass);
       WriteString(SEC_STN, 'ArrlSection', ArrlSection);

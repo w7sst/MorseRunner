@@ -208,11 +208,13 @@ begin
       etSerialNr: TrueExch2 := IntToStr(Self.NR);
       etGenericField: TrueExch2 := Self.Exch2;
       etCqZone: TrueExch2 := IntToStr(Self.NR);
+      etItuZone: TrueExch2 := Self.Exch2;
       etArrlSection: TrueExch2 := Self.Exch2;
       etStateProv: TrueExch2 := Self.Exch2;
       etPower: TrueExch2 := Self.Exch2;
       etJaPref: TrueExch2 := Self.Exch2;
       etJaCity: TrueExch2 := Self.Exch2;
+      etNaQpExch2, etNaQpNonNaExch2: TrueExch2 := Self.Exch2;
       else
         assert(false);
     end;
