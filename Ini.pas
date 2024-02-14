@@ -185,6 +185,7 @@ var
   ArrlClass: string = '3A';
   ArrlSection: string = 'GH';
   Wpm: integer = 25;
+  WpmStepRate: integer = 2;
   MaxRxWpm: integer = 0;
   MinRxWpm: integer = 0;
   NRDigits: integer = 1;
@@ -288,6 +289,7 @@ begin
       MainForm.UpdNRDigits(ReadInteger(SEC_STN, 'NRDigits', NRDigits));
 
       Wpm := ReadInteger(SEC_STN, 'Wpm', Wpm);
+      WpmStepRate := Max(1, Min(20, ReadInteger(SEC_STN, 'WpmStepRate', WpmStepRate)));
       Qsk := ReadBool(SEC_STN, 'Qsk', Qsk);
       CallsFromKeyer := ReadBool(SEC_STN, 'CallsFromKeyer', CallsFromKeyer);
       GetWpmUsesGaussian := ReadBool(SEC_STN, 'GetWpmUsesGaussian', GetWpmUsesGaussian);
@@ -368,6 +370,7 @@ begin
       WriteInteger(SEC_STN, 'Pitch', MainForm.ComboBox1.ItemIndex);
       WriteInteger(SEC_STN, 'BandWidth', MainForm.ComboBox2.ItemIndex);
       WriteInteger(SEC_STN, 'Wpm', Wpm);
+      WriteInteger(SEC_STN, 'WpmStepRate', WpmStepRate);
       WriteBool(SEC_STN, 'Qsk', Qsk);
 
       {
