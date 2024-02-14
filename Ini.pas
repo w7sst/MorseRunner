@@ -84,7 +84,7 @@ const
      ExchType2: etGenericField;
      ExchCaptions: ('Name', 'Exch');
      ExchFieldEditable: True;
-     ExchDefault: 'David 1';
+     ExchDefault: 'DAVID 1';
      Msg: '''<op name> <CWOPS Number|State|Country>'' (e.g. DAVID 123)';
      T:scCwt),
      // expecting two strings [Name,Number] (e.g. David 123)
@@ -105,7 +105,7 @@ const
      ExchType1: etOpName;
      ExchType2: etNaQpExch2;
      ExchFieldEditable: True;
-     ExchDefault: 'Alex GH';
+     ExchDefault: 'ALEX GH';
      Msg: '''<name> [<state|prov|dxcc-entity>]'' (e.g. ALEX GH)';
      T:scNaQp),
      // expecting one or two strings {Name,[State|Prov|DXCC Entity]} (e.g. MIKE OR)
@@ -144,7 +144,7 @@ const
      ExchType2: etGenericField;  // or etStateProvDx?
      ExchCaptions: ('Name', 'State/Prov/DX');
      ExchFieldEditable: True;
-     ExchDefault: 'Bruce MA';
+     ExchDefault: 'BRUCE MA';
      Msg: '''<op name> <State|Prov|DX>'' (e.g. BRUCE MA)';
      T:scSst),
      // expecting two strings [Name,QTH] (e.g. BRUCE MA)
