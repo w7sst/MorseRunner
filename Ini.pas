@@ -73,7 +73,7 @@ const
      ExchType1: etRST;
      ExchType2: etSerialNr;
      ExchFieldEditable: False;
-     ExchDefault: '5NN <#>';
+     ExchDefault: '5NN #';
      Msg: '''RST <serial>'' (e.g. 5NN #|123)';
      T:scWpx),
      // 'expecting RST (e.g. 5NN)'
@@ -84,7 +84,7 @@ const
      ExchType2: etGenericField;
      ExchCaptions: ('Name', 'Exch');
      ExchFieldEditable: True;
-     ExchDefault: 'David 1';
+     ExchDefault: 'DAVID 123';
      Msg: '''<op name> <CWOPS Number|State|Country>'' (e.g. DAVID 123)';
      T:scCwt),
      // expecting two strings [Name,Number] (e.g. David 123)
@@ -105,8 +105,8 @@ const
      ExchType1: etOpName;
      ExchType2: etNaQpExch2;
      ExchFieldEditable: True;
-     ExchDefault: 'MIKE OR';
-     Msg: '''<name> [<state|prov|dxcc-entity>]'' (e.g. MIKE OR)';
+     ExchDefault: 'ALEX ON';
+     Msg: '''<name> [<state|prov|dxcc-entity>]'' (e.g. ALEX ON)';
      T:scNaQp),
      // expecting one or two strings {Name,[State|Prov|DXCC Entity]} (e.g. MIKE OR)
 
@@ -115,7 +115,7 @@ const
      ExchType1: etRST;
      ExchType2: etSerialNr;
      ExchFieldEditable: False;
-     ExchDefault: '';
+     ExchDefault: '5NN #';
      Msg: '''RST <serial>'' (e.g. 5NN #)';
      T:scHst),
      // expecting RST (e.g. 5NN)
@@ -130,28 +130,28 @@ const
      T:scCQWW),
 
     (Name: 'ARRL DX';
-     Key: 'ARRLDXCW';
+     Key: 'ArrlDx';
      ExchType1: etRST;
      ExchType2: etStateProv;  // or etPower
      ExchFieldEditable: True;
-     ExchDefault: '5NN OR';   // or '5NN KW'
-     Msg: '''RST <state|province|power>'' (e.g. 5NN OR)';
+     ExchDefault: '5NN ON';   // or '5NN KW'
+     Msg: '''RST <state|province|power>'' (e.g. 5NN ON)';
      T:scARRLDX),
 
     (Name: 'K1USN Slow Speed Test';
-     Key: 'K1USNSST';
+     Key: 'Sst';
      ExchType1: etOpName;
      ExchType2: etGenericField;  // or etStateProvDx?
      ExchCaptions: ('Name', 'State/Prov/DX');
      ExchFieldEditable: True;
-     ExchDefault: 'Bruce MA';
+     ExchDefault: 'BRUCE MA';
      Msg: '''<op name> <State|Prov|DX>'' (e.g. BRUCE MA)';
      T:scSst),
      // expecting two strings [Name,QTH] (e.g. BRUCE MA)
      // Contest Exchange: <Name> <State|Prov|DX>
 
     (Name: 'JARL ALL JA';
-     Key: 'ALLJA';
+     Key: 'AllJa';
      ExchType1: etRST;
      ExchType2: etJaPref;
      ExchFieldEditable: True;
@@ -160,7 +160,7 @@ const
      T:scAllJa),
 
     (Name: 'JARL ACAG';
-     Key: 'ACAG';
+     Key: 'Acag';
      ExchType1: etRST;
      ExchType2: etJaCity;
      ExchFieldEditable: True;
@@ -169,7 +169,7 @@ const
      T:scAcag),
 
     (Name: 'IARU HF';
-     Key: 'IARUHFCW';
+     Key: 'IaruHf';
      ExchType1: etRST;
      ExchType2: etGenericField;
      ExchCaptions: ('RST', 'Zone/Soc');
@@ -243,6 +243,9 @@ uses
 procedure FromIni;
 var
   V: integer;
+  C: PContestDefinition;
+  SC: TSimContest;
+  KeyName: String;
 begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
@@ -256,20 +259,13 @@ begin
       MainForm.SimContestCombo.ItemIndex :=
         MainForm.SimContestCombo.Items.IndexOf(ActiveContest.Name);
 
-      // Adding a contest: read contest-specfic Exchange Strings from .INI file.
-      // load contest-specific Exchange Strings
-      UserExchangeTbl[scWpx] := ReadString(SEC_STN, 'CqWpxExchange', '5NN #');
-      UserExchangeTbl[scCwt] := ReadString(SEC_STN, 'CwtExchange',
-        Format('%s 1234', [HamName]));
-      UserExchangeTbl[scFieldDay] := ReadString(SEC_STN, 'ArrlFdExchange', '3A GH');
-      UserExchangeTbl[scNaQp] := ReadString(SEC_STN, 'NAQPExchange', 'ALEX GH');
-      UserExchangeTbl[scHst] := ReadString(SEC_STN, 'HSTExchange', '5NN #');
-      UserExchangeTbl[scCQWW] := ReadString(SEC_STN, 'CQWWExchange', '5NN 4');
-      UserExchangeTbl[scArrlDx] := ReadString(SEC_STN, 'ArrlDxExchange', '5NN GH');
-      UserExchangeTbl[scSst] := ReadString(SEC_STN, 'SstExchange', 'BRUCE MA');
-      UserExchangeTbl[scAllJa] := ReadString(SEC_STN, 'AllJaExchange', '5NN 10H');
-      UserExchangeTbl[scAcag] := ReadString(SEC_STN, 'AcagExchange', '5NN 1002H');
-      UserExchangeTbl[scIaruHf] := ReadString(SEC_STN, 'IaruHfExchange', '5NN 6');
+      // load contest-specific Exchange Strings from .INI file.
+      for SC := Low(ContestDefinitions) to High(ContestDefinitions) do begin
+        C := @ContestDefinitions[SC];
+        assert(C.T = SC);
+        KeyName := Format('%sExchange', [C.Key]);
+        UserExchangeTbl[SC] := ReadString(SEC_STN, KeyName, C.ExchDefault);
+      end;
 
       ArrlClass := ReadString(SEC_STN, 'ArrlClass', '3A');
       ArrlSection := ReadString(SEC_STN, 'ArrlSection', 'ON');
@@ -342,24 +338,20 @@ end;
 procedure ToIni;
 var
   V: integer;
+  SC: TSimContest;
+  KeyName: String;
 begin
   with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
     try
       WriteBool(SEC_SYS, 'ShowCallsignInfo', MainForm.mnuShowCallsignInfo.Checked);
 
-      // Adding a contest: write contest-specfic Exchange Strings to .INI file.
+      // write contest-specfic Exchange Strings to .INI file.
       WriteInteger(SEC_TST, 'SimContest', Ord(SimContest));
-      WriteString(SEC_STN, 'CqWpxExchange', UserExchangeTbl[scWpx]);
-      WriteString(SEC_STN, 'CwtExchange', UserExchangeTbl[scCwt]);
-      WriteString(SEC_STN, 'ArrlFdExchange', UserExchangeTbl[scFieldDay]);
-      WriteString(SEC_STN, 'NAQPExchange', UserExchangeTbl[scNaQp]);
-      WriteString(SEC_STN, 'HSTExchange', UserExchangeTbl[scHst]);
-      WriteString(SEC_STN, 'CqWWExchange', UserExchangeTbl[scCQWW]);
-      WriteString(SEC_STN, 'ArrlDxExchange', UserExchangeTbl[scArrlDx]);
-      WriteString(SEC_STN, 'SstExchange', UserExchangeTbl[scSst]);
-      WriteString(SEC_STN, 'AllJaExchange', UserExchangeTbl[scAllJa]);
-      WriteString(SEC_STN, 'AcagExchange', UserExchangeTbl[scAcag]);
-      WriteString(SEC_STN, 'IaruHfExchange', UserExchangeTbl[scIaruHf]);
+      for SC := Low(ContestDefinitions) to High(ContestDefinitions) do begin
+        assert(ContestDefinitions[SC].T = SC);
+        KeyName := Format('%sExchange', [ContestDefinitions[SC].Key]);
+        WriteString(SEC_STN, KeyName, UserExchangeTbl[SC]);
+      end;
 
       WriteString(SEC_STN, 'ArrlClass', ArrlClass);
       WriteString(SEC_STN, 'ArrlSection', ArrlSection);
