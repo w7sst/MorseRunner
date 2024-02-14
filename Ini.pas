@@ -105,8 +105,8 @@ const
      ExchType1: etOpName;
      ExchType2: etNaQpExch2;
      ExchFieldEditable: True;
-     ExchDefault: 'ALEX GH';
-     Msg: '''<name> [<state|prov|dxcc-entity>]'' (e.g. ALEX GH)';
+     ExchDefault: 'ALEX ON';
+     Msg: '''<name> [<state|prov|dxcc-entity>]'' (e.g. ALEX ON)';
      T:scNaQp),
      // expecting one or two strings {Name,[State|Prov|DXCC Entity]} (e.g. MIKE OR)
 
