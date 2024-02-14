@@ -368,8 +368,7 @@ begin
   // for JARL ALLJA, ACAG contest
   // The probability is adjusted to the domestic CW situation
   if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
-    [etJaPref, etJaCity]) and
-    (MyCall <> Ini.Call) then
+    [etJaPref, etJaCity]) and IsDxStation then
     begin
     if Random < 0.4 then begin
       Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
