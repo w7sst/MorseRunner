@@ -1,4 +1,4 @@
-                                MORSE RUNNER
+﻿                                MORSE RUNNER
                               Contest Simulator
                                   freeware
 
@@ -158,7 +158,12 @@ KEY ASSIGNMENTS
   Ctrl-Up/Ctrl-Down arrows - bandwidth;
 
   PgUp/PgDn, Ctrl-F10/Ctrl-F9, Alt-F10/Alt-F9 - keying speed,
-    in 5 WPM increments.
+    in 2 WPM increments. HST Competition uses 5 WPM increments.
+    The default WPM Step rate is 2. Valid values range between 1 and 20.
+    You can override this value by changing the WpmStepRate entry in the
+    MorseRunner.ini file, e.g.:
+            [Station]
+            WpmStepRate=2
 
 STATISTICS AREA
   The bottom right panel shows your current score, both Raw (calculated

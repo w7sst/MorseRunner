@@ -966,13 +966,19 @@ end;
 
 procedure TMainForm.IncSpeed;
 begin
-  SetWpm(Trunc(Wpm / 5) * 5 + 5);
+  if RunMode = rmHST then
+    SetWpm(Trunc(Wpm / 5) * 5 + 5)
+  else
+    SetWpm(Wpm + Ini.WpmStepRate);
 end;
 
 
 procedure TMainForm.DecSpeed;
 begin
-  SetWpm(Ceil(Wpm / 5) * 5 - 5);
+  if RunMode = rmHST then
+    SetWpm(Ceil(Wpm / 5) * 5 - 5)
+  else
+    SetWpm(Wpm - Ini.WpmStepRate);
 end;
 
 
