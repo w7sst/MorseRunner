@@ -153,9 +153,21 @@ KEY ASSIGNMENTS
 
   Enter - sends various messages, depending on the state of the QSO;
 
-  Up/Down arrows, mouse wheel - RIT;
+  Up/Down arrows, mouse wheel - RIT adjustment.
+    The Up/Down arrow keys or the mouse wheel can be used to adjust the
+    receive RIT value. RIT can be adjusted between -500 and 500 Hz.
+    The default RIT increment is 50Hz/Step. You can modify the RIT step
+    increment using the RitStepIncr entry in the MorseRunner.ini file, e.g.:
+            [Settings]
+            RitStepIncr=50
 
-  Ctrl-Up/Ctrl-Down arrows, Cntl-key with mouse wheel - bandwidth;
+    Valid values range between -500 and 500. Useful values include 100, 125,
+    167 and 250 will provide 5, 4, 3 or 2 steps respectively in both directions.
+    Negative values can be used to change the direction of Up/Down arrow keys
+    or mouse movement. Note that a zero value will disable this feature.
+    HST Competition mode will ignore this setting and is set to 50Hz/Step.
+
+  Ctrl-Up/Ctrl-Down arrows, Cntl-key with mouse wheel - Bandwidth adjustment.
 
   PgUp/PgDn, Ctrl-F10/Ctrl-F9, Alt-F10/Alt-F9 - keying speed,
     in 2 WPM increments. HST Competition uses 5 WPM increments.

@@ -363,6 +363,7 @@ type
     MustAdvance: boolean;       // Controls when Exchange fields advance
     UserCallsignDirty: boolean; // SetMyCall is called after callsign edits
     CWSpeedDirty: boolean;      // SetWpm is called after CW Speed edits
+    RitLocal: integer;          // tracks incremented RIT Value
     function CreateContest(AContestId : TSimContest) : TContest;
     procedure ConfigureExchangeFields;
     procedure SetMyExch1(const AExchType: TExchange1Type; const Avalue: string);
@@ -1979,16 +1980,26 @@ end;
 
 
 procedure TMainForm.IncRit(dF: integer);
+var
+  RitStepIncr : integer;
 begin
-  case dF of
-   -2: Inc(Ini.Rit, -5);
-   -1: Inc(Ini.Rit, -50);
-    0: Ini.Rit := 0;
-    1: Inc(Ini.Rit, 50);
-    2: Inc(Ini.Rit, 5);
+  RitStepIncr := IfThen(RunMode = rmHST, 50, Ini.RitStepIncr);
+
+  // A negative RitStepInc will change direction of arrow/wheel movement
+  if RitStepIncr < 0 then begin
+    dF := -dF;
+    RitStepIncr := -RitStepIncr;
   end;
 
-  Ini.Rit := Min(500, Max(-500, Ini.Rit));
+  case dF of
+   -2: if Ini.Rit > -500 then Inc(RitLocal, -5);
+   -1: if Ini.Rit > -500 then Inc(RitLocal, -RitStepIncr);
+    0: RitLocal := 0;
+    1: if Ini.Rit < 500 then Inc(RitLocal, RitStepIncr);
+    2: if Ini.Rit < 500 then Inc(RitLocal, 5);
+  end;
+
+  Ini.Rit := Min(500, Max(-500, RitLocal));
   UpdateRitIndicator;
 end;
 
