@@ -971,6 +971,7 @@ procedure TMainForm.FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
 begin
   if GetKeyState(VK_CONTROL) >= 0  then IncRit(1)
   else if RunMode <> rmHst then SetBw(ComboBox2.ItemIndex-1);
+  Handled := true;  // set Handled to prevent being called 3 times
 end;
 
 procedure TMainForm.FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
@@ -978,6 +979,7 @@ procedure TMainForm.FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
 begin
   if GetKeyState(VK_CONTROL) >= 0 then IncRit(-1)
   else if RunMode <> rmHst then SetBw(ComboBox2.ItemIndex+1);
+  Handled := true;  // set Handled to prevent being called 3 times
 end;
 
 
