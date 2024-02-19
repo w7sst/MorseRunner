@@ -597,7 +597,7 @@ begin
       not ValidateExchField1(Edit2.Text) or
       not ValidateExchField2(Edit3.Text) then
       begin
-        Beep;
+        {Beep;}
         Exit;
       end;
 
