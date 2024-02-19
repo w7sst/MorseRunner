@@ -153,9 +153,9 @@ KEY ASSIGNMENTS
 
   Enter - sends various messages, depending on the state of the QSO;
 
-  Up/Down arrows - RIT;
+  Up/Down arrows, mouse wheel - RIT;
 
-  Ctrl-Up/Ctrl-Down arrows - bandwidth;
+  Ctrl-Up/Ctrl-Down arrows, Cntl-key with mouse wheel - bandwidth;
 
   PgUp/PgDn, Ctrl-F10/Ctrl-F9, Alt-F10/Alt-F9 - keying speed,
     in 2 WPM increments. HST Competition uses 5 WPM increments.
@@ -230,6 +230,8 @@ Version 1.84 (February 2024)
   - All Contests - spacebar or Tab will now select both exchange fields (Coded by W7SST)
   - All Contests - Hide Dx Station's Entity status string if same as user's Entity (Coded by W7SST)
   - K1USN SST - user test field in call history file should be optional (Coded by W7SST)
+  - Improve RIT adjustment using mouse wheel (F6FVY, W7SST)
+  - Add receive Bandwidth adjustment using Cntl-key and mouse wheel (F6FVY, W7SST)
   - DX station will send an abbreviated exchange number in the JARL ALLJA and ACAG contests (Coded by JR8PPG)
   - User's exchange number is not abbreviated (not convert 100 to 1TT) (Coded by JR8PPG)
 
