@@ -161,13 +161,14 @@ KEY ASSIGNMENTS
             [Settings]
             RitStepIncr=50
 
-    Valid values range between -500 and 500. Useful values include 100, 125,
-    167 and 250 will provide 5, 4, 3 or 2 steps respectively in both directions.
-    Negative values can be used to change the direction of Up/Down arrow keys
-    or mouse movement. Note that a zero value will disable this feature.
-    HST Competition mode will ignore this setting and is set to 50Hz/Step.
+    Valid values range between -500 and 500. Negative values can be used to
+    change the direction of Up/Down arrow keys or mouse movement. Note that a
+    zero value will disable this feature. HST Competition mode will ignore this
+    setting and is set to 50Hz/Step.
 
   Ctrl-Up/Ctrl-Down arrows, Cntl-key with mouse wheel - Bandwidth adjustment.
+    Pressing the Ctrl-key while using the Up/Down arrows or moving the mouse
+    wheel will adjust the receive bandwidth.
 
   PgUp/PgDn, Ctrl-F10/Ctrl-F9, Alt-F10/Alt-F9 - keying speed,
     in 2 WPM increments. HST Competition uses 5 WPM increments.
