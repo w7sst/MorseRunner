@@ -193,6 +193,7 @@ var
   Pitch: integer = 600;
   Qsk: boolean = false;
   Rit: integer = 0;
+  RitStepIncr: integer = 50;
   BufSize: integer = DEFAULTBUFSIZE;
   WebServer: string = '';
   SubmitHiScoreURL: string= '';
@@ -324,6 +325,8 @@ begin
 
       // [Settings]
       FarnsworthCharRate := ReadInteger(SEC_SET, 'FarnsworthCharacterRate', FarnsworthCharRate);
+      RitStepIncr := ReadInteger(SEC_SET, 'RitStepIncr', RitStepIncr);
+      RitStepIncr := Max(-500, Min(500, RitStepIncr));
 
       // [Debug]
       DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
@@ -395,6 +398,7 @@ begin
       WriteBool(SEC_STN, 'SaveWav', SaveWav);
 
       WriteInteger(SEC_SET, 'FarnsworthCharacterRate', FarnsworthCharRate);
+      WriteInteger(SEC_SET, 'RitStepIncr', RitStepIncr);
     finally
       Free;
     end;
