@@ -175,7 +175,7 @@ KEY ASSIGNMENTS
     The default WPM Step rate is 2. Valid values range between 1 and 20.
     You can override this value by changing the WpmStepRate entry in the
     MorseRunner.ini file, e.g.:
-            [Station]
+            [Settings]
             WpmStepRate=2
 
 STATISTICS AREA
