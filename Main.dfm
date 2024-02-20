@@ -57,7 +57,8 @@ object MainForm: TMainForm
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
-  OnMouseWheel = FormMouseWheel
+  OnMouseWheelDown = FormMouseWheelDown
+  OnMouseWheelUp = FormMouseWheelUp
   PixelsPerInch = 96
   TextHeight = 15
   object Bevel1: TBevel
@@ -296,7 +297,7 @@ object MainForm: TMainForm
       Width = 225
       Height = 10
       Cursor = crHandPoint
-      Hint = 'RIT'
+      Hint = 'RIT -- Use Up/Down keys or Mouse Wheel; Hold Control key for BW.'
       BevelOuter = bvLowered
       ParentShowHint = False
       ShowHint = True

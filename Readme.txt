@@ -219,13 +219,29 @@ KEY ASSIGNMENTS
   The Enter key sends various messages depending on the state of the QSO. 
 
   The RIT is controlled by the up and down arrows on the keyboard as well 
-    as the mouse scroll wheel.
+    as the mouse scroll wheel. RIT can be adjusted between -500 and 500 Hz.
+    The default RIT increment is 50Hz/Step. You can modify the RIT step
+    increment using the RitStepIncr entry in the MorseRunner.ini file, e.g.:
+            [Settings]
+            RitStepIncr=50
 
   The RX Bandwidth is adjusted with the right and left arrows, 
     Ctrl + the up/down arrows and the Ctrl and the mouse scroll wheel. 
 
-  The keying speed is adjusted with the PgUp/PgDn keys and Ctrl-F10/Ctrl-F9 keys.
+    Valid values range between -500 and 500. Negative values can be used to
+    change the direction of Up/Down arrow keys or mouse movement. Note that a
+    zero value will disable this feature. HST Competition mode will ignore this
+    setting and is set to 50Hz/Step.
 
+  The keying speed is adjusted with the PgUp/PgDn keys, Ctrl-F10/Ctrl-F9 keys
+  and Alt-F10/Alt-F9 keys.
+    Keying speed is adjusted in in 2 WPM increments. HST Competition uses 5 WPM
+    increments.
+    The default WPM Step rate is 2. Valid values range between 1 and 20.
+    You can override this value by changing the WpmStepRate entry in the
+    MorseRunner.ini file, e.g.:
+            [Settings]
+            WpmStepRate=2
 
 STATISTICS AREA
   The bottom right panel shows your current score, both Raw (calculated
@@ -296,6 +312,8 @@ Version 1.84 (February 2024)
   - All Contests - spacebar or Tab will now select both exchange fields (Coded by W7SST)
   - All Contests - Hide Dx Station's Entity status string if same as user's Entity (Coded by W7SST)
   - K1USN SST - user test field in call history file should be optional (Coded by W7SST)
+  - Improve RIT adjustment using mouse wheel (F6FVY, W7SST)
+  - Add receive Bandwidth adjustment using Cntl-key and mouse wheel (F6FVY, W7SST)
   - DX station will send an abbreviated exchange number in the JARL ALLJA and ACAG contests (Coded by JR8PPG)
   - User's exchange number is not abbreviated (not convert 100 to 1TT) (Coded by JR8PPG)
 
@@ -341,6 +359,9 @@ Version 1.80 (Oct 2022)
   - Add "Hi-Score web page" server in MorseRunner.ini.
   - Change default Font to Cleartype 'segoe ui', 'Consolar';
   - Change string to Unicode, Building with Delphi 2010 sp3.
+
+1.68.4+
+  - The mouse wheel now acts as RIT. (F6FVY)
 
 1.68 (VE3NEA) 2016
   - TU + MyCall after the QSO is now equivalent to CQ
