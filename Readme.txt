@@ -82,8 +82,9 @@ CONFIGURATION
        reply to your CQ.
 
 	 The Run button starts and stops the competition/contest. The drop-down
-	   menu will allow you to select a single call mode for the contest
-	   selected, or allow you to select the the WPX or HST competitions. 
+	   menu will allow you to select a single call or pile up mode 
+           for the contest selected, or allow you to select the 
+           WPX or HST competitions. 
 
 	 Competition duration
 	   The default duration of a competition session is 60 minutes. You can 
