@@ -286,7 +286,6 @@ begin
       MainForm.UpdNRDigits(ReadInteger(SEC_STN, 'NRDigits', NRDigits));
 
       Wpm := ReadInteger(SEC_STN, 'Wpm', Wpm);
-      WpmStepRate := Max(1, Min(20, ReadInteger(SEC_STN, 'WpmStepRate', WpmStepRate)));
       Qsk := ReadBool(SEC_STN, 'Qsk', Qsk);
       CallsFromKeyer := ReadBool(SEC_STN, 'CallsFromKeyer', CallsFromKeyer);
       GetWpmUsesGaussian := ReadBool(SEC_STN, 'GetWpmUsesGaussian', GetWpmUsesGaussian);
@@ -325,6 +324,7 @@ begin
 
       // [Settings]
       FarnsworthCharRate := ReadInteger(SEC_SET, 'FarnsworthCharacterRate', FarnsworthCharRate);
+      WpmStepRate := Max(1, Min(20, ReadInteger(SEC_SET, 'WpmStepRate', WpmStepRate)));
       RitStepIncr := ReadInteger(SEC_SET, 'RitStepIncr', RitStepIncr);
       RitStepIncr := Max(-500, Min(500, RitStepIncr));
 
@@ -365,7 +365,6 @@ begin
       WriteInteger(SEC_STN, 'Pitch', MainForm.ComboBox1.ItemIndex);
       WriteInteger(SEC_STN, 'BandWidth', MainForm.ComboBox2.ItemIndex);
       WriteInteger(SEC_STN, 'Wpm', Wpm);
-      WriteInteger(SEC_STN, 'WpmStepRate', WpmStepRate);
       WriteBool(SEC_STN, 'Qsk', Qsk);
 
       {
@@ -397,8 +396,11 @@ begin
 
       WriteBool(SEC_STN, 'SaveWav', SaveWav);
 
+      // [Settings]
       WriteInteger(SEC_SET, 'FarnsworthCharacterRate', FarnsworthCharRate);
+      WriteInteger(SEC_SET, 'WpmStepRate', WpmStepRate);
       WriteInteger(SEC_SET, 'RitStepIncr', RitStepIncr);
+
     finally
       Free;
     end;
