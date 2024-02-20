@@ -241,7 +241,11 @@ LOG WINDOW
   CL    - incorrect Arrl Field Day Classification in your log.
   NAME  - incorrect Name in your log.
   SEC   - incorrect ARRL Section in your log.
-  ST    - incorrect State in your log.
+  ST    - incorrect State/Provence in your log.
+  QTH   - incorrect location information.
+  ZN    - incorrect CQ-Zone or ITU-Zone information.
+  SOC   - incorrect Society information (JARL)
+  SEC   - incorrect ARRL section information
 
 SUBMITTING YOUR SCORE
   If you complete a full 60-minute session in the WPX Competition mode, Morse Runner
