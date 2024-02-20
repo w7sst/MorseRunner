@@ -40,9 +40,9 @@ CONFIGURATION
     1) Select the desired contest using the Contest drop-down list.
     2) Enter the Contest Exchange in the Exchange field;
        any error messages will be displayed in the status area.
-	  (please keep in mind that the IARU HST Competition mode might ignore 
-	   some settings so as to behave like the original program.)
-	  
+       (please keep in mind that the IARU HST Competition mode might ignore 
+        some settings so as to behave like the original program.)
+       
     More contest information is at the bottom of this document.
 
   Station
@@ -52,14 +52,14 @@ CONFIGURATION
       what you are missing.
     CW Speed - select the CW speed, in WPM (PARIS system) that matches your
       skills. The calling stations will call you at about the same speed.
-	  There are more speed controls under the settings menu. 
+       There are more speed controls under the settings menu. 
     CW Pitch - pitch in Hz.
     RX Bandwidth - the receiver bandwidth. 
-	    There are four ways to adjust this: 
-		    1. The "RX Bandwidth" drop-down. 
-		    2. Keyboard right and left arrows.
-		    3. Keyboard Ctrl + the up/down arrows
-		    4. Keyboard Ctrl and the mouse scroll wheel. 
+         There are four ways to adjust this: 
+              1. The "RX Bandwidth" drop-down. 
+              2. Keyboard right and left arrows.
+              3. Keyboard Ctrl + the up/down arrows
+              4. Keyboard Ctrl and the mouse scroll wheel. 
 
   Band Conditions
      Alex Shovkoplyas, VE3NEA, made the sound as realistic as possible,
@@ -76,42 +76,42 @@ CONFIGURATION
      LIDS - some stations call you when you are working another station,
        make mistakes when they send code, copy your messages incorrectly,
        and send RST other than 599. They might even ask for info over and 
-	     over.
+          over.
 
      Activity - band activity, determines how many stations on average
        reply to your CQ.
 
-	 The Run button starts and stops the competition/contest. The drop-down
-	   menu will allow you to select a single call or pile up mode 
+      The Run button starts and stops the competition/contest. The drop-down
+        menu will allow you to select a single call or pile up mode 
            for the contest selected, or allow you to select the 
            WPX or HST competitions. 
 
-	 Competition duration
-	   The default duration of a competition session is 60 minutes. You can 
-	   change this setting to any time desired. To set a new default 
-	   with the CompetitionDuration entry in the MorseRunner.ini file, e.g.:
-		   [Contest]
-		   CompetitionDuration=15
+      Competition duration
+        The default duration of a competition session is 60 minutes. You can 
+        change this setting to any time desired. To set a new default 
+        with the CompetitionDuration entry in the MorseRunner.ini file, e.g.:
+             [Contest]
+             CompetitionDuration=15
 
   Additional Settings
 
-	RIT - Many never noticed that the original program has an RIT function
-	  in the receiver. It is the unmarked teal bar at the very bottom of 
-	  the screen. If you can't hear someone calling you, or if they are off 
-	  frequency this is why. This is controlled by the up and down arrows on 
-	  the keyboard as well as the mouse scroll wheel. This is handy to 
-	  focus on a particular responder.
+     RIT - Many never noticed that the original program has an RIT function
+       in the receiver. It is the unmarked teal bar at the very bottom of 
+       the screen. If you can't hear someone calling you, or if they are off 
+       frequency this is why. This is controlled by the up and down arrows on 
+       the keyboard as well as the mouse scroll wheel. This is handy to 
+       focus on a particular responder.
     The RIT is adjusted between -500 and 500 Hz incremented in 50Hz Steps. 
-	  You can modify the RIT step increment in the MorseRunner.ini file, e.g.:
+       You can modify the RIT step increment in the MorseRunner.ini file, e.g.:
             [Settings]
             RitStepIncr=50
     Valid values range between -500 and 500. Negative values can be used to
     change the direction of Up/Down arrow keys or mouse wheel movement. Note 
-	  that a zero value will disable this feature and is not recommended. 
-	  HST Competition mode ignores this setting and defaults to 50Hz/Step.	  
-	
+       that a zero value will disable this feature and is not recommended. 
+       HST Competition mode ignores this setting and defaults to 50Hz/Step.       
+     
     Audio Recording Enabled - You can record yourself under "File" menu 
-	  "Audio Recording Enabled". When this menu option is checked, MR saves
+       "Audio Recording Enabled". When this menu option is checked, MR saves
       the audio as "MorseRunner.wav" in the same folder. If this file already
       exists, MR overwrites it.
 
@@ -132,33 +132,33 @@ CONFIGURATION
       has no effect in the WPX and HST competition modes.
 
     CW speed controls
-	    CW Min and Max settings
-	      Under the Settings menu the CW Min Rx Speed and CW Max RX Speed can 
-		    establish a variable amount of speeds to respond to. Setting this to 
-		    0 will have the program behave like the original MorseRunner 1.68. 
+         CW Min and Max settings
+           Under the Settings menu the CW Min Rx Speed and CW Max RX Speed can 
+              establish a variable amount of speeds to respond to. Setting this to 
+              0 will have the program behave like the original MorseRunner 1.68. 
       Farnsworth: For the K1USN SST contest only. Character wpm speed can be 
-		    set by changing the number for "FarnsworthCharacterRate=25" entry in the 
-		    MorseRunner.ini file found in the install folder and restarting the program.
-	    CW Speed increment
-		    This is changed in 2 WPM increments except the HST Competition which is locked
-		    at 5 WPM increments. The default WPM Step rate can be changed with values 
-		    between 1 and 20 with the WpmStepRate entry in the MorseRunner.ini file, e.g.:
+              set by changing the number for "FarnsworthCharacterRate=25" entry in the 
+              MorseRunner.ini file found in the install folder and restarting the program.
+         CW Speed increment
+              This is changed in 2 WPM increments except the HST Competition which is locked
+              at 5 WPM increments. The default WPM Step rate can be changed with values 
+              between 1 and 20 with the WpmStepRate entry in the MorseRunner.ini file, e.g.:
           [Station]
           WpmStepRate=2
-	    Suggestions
-	      Try selecting a speed higher than your proficiency to improve. Keep in mind
-		    the CWops CW Academy (free classes) start with 18 WPM, 20 WPM and 25 WPM 
-		    character speeds for each level of classes. 
-	  
+         Suggestions
+           Try selecting a speed higher than your proficiency to improve. Keep in mind
+              the CWops CW Academy (free classes) start with 18 WPM, 20 WPM and 25 WPM 
+              character speeds for each level of classes. 
+       
     NR Digits
-	    The number of digits the responding station will send. 
+         The number of digits the responding station will send. 
 
 
 STARTING A CONTEST
   To start a contest, set the duration in the minutes box 
   and click on the desired mode for the contest (single call or pile up).
   You may have to hit enter to send a CQ to start. 
-	The WPX and HST competitions are also available in the run menu button. 
+     The WPX and HST competitions are also available in the run menu button. 
 
     Pile-Up mode: a random number of stations calls you after you send a CQ. Good
     for improving copying skills.
@@ -175,21 +175,21 @@ STARTING A CONTEST
 
   Responses
     There are five basic responses that you can receive
-	  1. nothing 
-	    If calling CQ, no one heard you call CQ again. 
-	    If you responded to someone and you got silence, the call sent was incorrect. 
-		  Send F8 NIL (Not In Log) to have them respond again and/or restart the pile-up.
-	  2. Corrected Call
-	    If you sent a partial call or if you were off a little they may respond with 
-		  "de" (from) and their call or just their call again. Sometimes just the call
-		  is repeated and sometimes with the exchange.
+       1. nothing 
+         If calling CQ, no one heard you call CQ again. 
+         If you responded to someone and you got silence, the call sent was incorrect. 
+            Send F8 NIL (Not In Log) to have them respond again and/or restart the pile-up.
+       2. Corrected Call
+         If you sent a partial call or if you were off a little they may respond with 
+            "de" (from) and their call or just their call again. Sometimes just the call
+            is repeated and sometimes with the exchange.
     3. They may respond with "NR?" 
-	    You will have to send your exchange again (Hit f2).
+         You will have to send your exchange again (Hit f2).
     4. They may respond with "AGN" 
-	    You will have to send your exchange again (Hit f2).
+         You will have to send your exchange again (Hit f2).
     5. "R" with their exchange. 
-	    When you get the exchange hit enter to log it. 
-	  Please note that occasionally you will get "NR?" and "AGN" multiple times. Respond with
+         When you get the exchange hit enter to log it. 
+       Please note that occasionally you will get "NR?" and "AGN" multiple times. Respond with
       F2 until you get that "R" (Roger) and the exchange. 
 
 KEY ASSIGNMENTS
@@ -252,7 +252,7 @@ LOG WINDOW
   The log window marks incorrect entries in your log as follows:
   DUP   - duplicate QSO.
   NIL   - not in other station's log: you made a mistake in the call sign, 
-		      or waited to long to save the information. 
+                or waited to long to save the information. 
   RST   - incorrect RST in your log.
   NR    - incorrect exchange number in your log.
   CL    - incorrect Arrl Field Day Classification in your log.
@@ -473,16 +473,16 @@ CONTEST INFORMATION
     Exchange: RST plus serial number starting with 001
     Rules: https://www.iaru-r1.org/about-us/committees-and-working-groups/hst/hst-rules/
 
-	IARU HF World Championship
-	Focused on contacting amateurs around the world especially IARU member
-	society headquarters stations using the 160, 80, 40, 20, 15 and 10 meter bands.
-	When: The second full weekend of July Beginning at 1200 UTC Saturday and runs through 
-	1159 UTC Sunday. Both Single and Multioperator stations operate the 24-hour period.
-	How: Contact as many as possible. 
-	Exchange: IARU member society stations, council and committees send signal report and 
-	abbreviations such as AC, R1, R2, or R3. All others send signal report and ITU Zone.  
-	Rules: https://contests.arrl.org/ContestRules/IARU-HF-Rules.pdf
-	
+     IARU HF World Championship
+     Focused on contacting amateurs around the world especially IARU member
+     society headquarters stations using the 160, 80, 40, 20, 15 and 10 meter bands.
+     When: The second full weekend of July Beginning at 1200 UTC Saturday and runs through 
+     1159 UTC Sunday. Both Single and Multioperator stations operate the 24-hour period.
+     How: Contact as many as possible. 
+     Exchange: IARU member society stations, council and committees send signal report and 
+     abbreviations such as AC, R1, R2, or R3. All others send signal report and ITU Zone.  
+     Rules: https://contests.arrl.org/ContestRules/IARU-HF-Rules.pdf
+     
     JARL All Cities All Guns(ACAG)
     The ACAG contests have very long exchange numbers.
     When: Two days before the second Monday in October.
