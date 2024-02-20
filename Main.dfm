@@ -297,7 +297,7 @@ object MainForm: TMainForm
       Width = 225
       Height = 10
       Cursor = crHandPoint
-      Hint = 'RIT'
+      Hint = 'RIT -- Use Up/Down keys or Mouse Wheel; Hold Control key for BW.'
       BevelOuter = bvLowered
       ParentShowHint = False
       ShowHint = True
