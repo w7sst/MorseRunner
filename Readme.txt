@@ -153,9 +153,22 @@ KEY ASSIGNMENTS
 
   Enter - sends various messages, depending on the state of the QSO;
 
-  Up/Down arrows - RIT;
+  Up/Down arrows, mouse wheel - RIT adjustment.
+    The Up/Down arrow keys or the mouse wheel can be used to adjust the
+    receive RIT value. RIT can be adjusted between -500 and 500 Hz.
+    The default RIT increment is 50Hz/Step. You can modify the RIT step
+    increment using the RitStepIncr entry in the MorseRunner.ini file, e.g.:
+            [Settings]
+            RitStepIncr=50
 
-  Ctrl-Up/Ctrl-Down arrows - bandwidth;
+    Valid values range between -500 and 500. Negative values can be used to
+    change the direction of Up/Down arrow keys or mouse movement. Note that a
+    zero value will disable this feature. HST Competition mode will ignore this
+    setting and is set to 50Hz/Step.
+
+  Ctrl-Up/Ctrl-Down arrows, Cntl-key with mouse wheel - Bandwidth adjustment.
+    Pressing the Ctrl-key while using the Up/Down arrows or moving the mouse
+    wheel will adjust the receive bandwidth.
 
   PgUp/PgDn, Ctrl-F10/Ctrl-F9, Alt-F10/Alt-F9 - keying speed,
     in 2 WPM increments. HST Competition uses 5 WPM increments.
@@ -230,6 +243,8 @@ Version 1.84 (February 2024)
   - All Contests - spacebar or Tab will now select both exchange fields (Coded by W7SST)
   - All Contests - Hide Dx Station's Entity status string if same as user's Entity (Coded by W7SST)
   - K1USN SST - user test field in call history file should be optional (Coded by W7SST)
+  - Improve RIT adjustment using mouse wheel (F6FVY, W7SST)
+  - Add receive Bandwidth adjustment using Cntl-key and mouse wheel (F6FVY, W7SST)
   - DX station will send an abbreviated exchange number in the JARL ALLJA and ACAG contests (Coded by JR8PPG)
   - User's exchange number is not abbreviated (not convert 100 to 1TT) (Coded by JR8PPG)
 
@@ -275,6 +290,9 @@ Version 1.80 (Oct 2022)
   - Add "Hi-Score web page" server in MorseRunner.ini.
   - Change default Font to Cleartype 'segoe ui', 'Consolar';
   - Change string to Unicode, Building with Delphi 2010 sp3.
+
+1.68.4+
+  - The mouse wheel now acts as RIT. (F6FVY)
 
 1.68 (VE3NEA) 2016
   - TU + MyCall after the QSO is now equivalent to CQ
