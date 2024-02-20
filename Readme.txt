@@ -1,4 +1,4 @@
-﻿                                MORSE RUNNER
+                                MORSE RUNNER
                               Contest Simulator
                                   freeware
 
@@ -25,9 +25,10 @@ PLATFORMS
   - works on Linux systems under WINE (info TNX F8BQQ).
 
 INSTALLATION
-  Open the zip file, extract the folder to your desktop, and run
-  MorseRunner.exe in that folder. (Please do not add these files to
-  a previous folder.)
+  Open the zip file, extract the folder to your DESKTOP, and run
+  MorseRunner.exe within this folder. Do not add these files to
+  a previous release folder, or place in a windows program directory 
+  as this causes errors. 
 
 UNINSTALLATION
   - Delete MorseRunner directory.
@@ -39,8 +40,9 @@ CONFIGURATION
     1) Select the desired contest using the Contest drop-down list.
     2) Enter the Contest Exchange in the Exchange field;
        any error messages will be displayed in the status area.
-       * Cut Numbers in sending exchanges coming soon.
-
+	  (please keep in mind that the IARU HST Competition mode might ignore 
+	   some settings so as to behave like the original program.)
+	  
     More contest information is at the bottom of this document.
 
   Station
@@ -50,11 +52,14 @@ CONFIGURATION
       what you are missing.
     CW Speed - select the CW speed, in WPM (PARIS system) that matches your
       skills. The calling stations will call you at about the same speed.
+	  There are more speed controls under the settings menu. 
     CW Pitch - pitch in Hz.
-    RX Bandwidth - the receiver bandwidth, in Hz.
-    Audio Recording Enabled - when this menu option is checked, MR saves
-      the audio in the MorseRunner.wav file. If this file already
-      exists, MR overwrites it.
+    RX Bandwidth - the receiver bandwidth. 
+	    There are four ways to adjust this: 
+		    1. The "RX Bandwidth" drop-down. 
+		    2. Keyboard right and left arrows.
+		    3. Keyboard Ctrl + the up/down arrows
+		    4. Keyboard Ctrl and the mouse scroll wheel. 
 
   Band Conditions
      Alex Shovkoplyas, VE3NEA, made the sound as realistic as possible,
@@ -70,47 +75,89 @@ CONFIGURATION
      Flutter - some stations have "auroral" sound.
      LIDS - some stations call you when you are working another station,
        make mistakes when they send code, copy your messages incorrectly,
-       and send RST other than 599.
+       and send RST other than 599. They might even ask for info over and 
+	     over.
 
      Activity - band activity, determines how many stations on average
        reply to your CQ.
 
-  Audio buffer size
-    You can adjust the audio buffer size by changing the BufSize value in the
-    MorseRunner.ini file. Acceptable values are 1 through 5, the default is 3.
-    Increase the buffer size for smooth audio without clicks and interruptions;
-    decrease the size for faster response to keyboard commands.
+	 The Run button starts and stops the competition/contest. The drop-down
+	   menu will allow you to select a single call mode for the contest
+	   selected, or allow you to select the the WPX or HST competitions. 
 
-  Competition duration
-    The default duration of a competition session is 60 minutes. You can set it
-    to a smaller value by changing the CompetitionDuration entry in the
-    MorseRunner.ini file, e.g.:
-            [Contest]
-            CompetitionDuration=15
+	 Competition duration
+	   The default duration of a competition session is 60 minutes. You can 
+	   change this setting to any time desired. To set a new default 
+	   with the CompetitionDuration entry in the MorseRunner.ini file, e.g.:
+		   [Contest]
+		   CompetitionDuration=15
 
-  Calls From Keyer
-    If you have an electronic keyer that simulates a keyboard - that is, sends
-    all transmitted characters to the PC as if they were entered from a keyboard,
-    you can add the following to the INI file:
-            [Station]
-            CallsFromKeyer=1
+  Additional Settings
 
-    With this option enabled, the callsign entered into the CALL field is not
-    transmitted by the computer when the corresponding key is pressed. This option
-    has no effect in the WPX and HST competition modes.
+	RIT - Many never noticed that the original program has an RIT function
+	  in the receiver. It is the unmarked teal bar at the very bottom of 
+	  the screen. If you can't hear someone calling you, or if they are off 
+	  frequency this is why. This is controlled by the up and down arrows on 
+	  the keyboard as well as the mouse scroll wheel. This is handy to 
+	  focus on a particular responder.
+    The RIT is adjusted between -500 and 500 Hz incremented in 50Hz Steps. 
+	  You can modify the RIT step increment in the MorseRunner.ini file, e.g.:
+            [Settings]
+            RitStepIncr=50
+    Valid values range between -500 and 500. Negative values can be used to
+    change the direction of Up/Down arrow keys or mouse wheel movement. Note 
+	  that a zero value will disable this feature and is not recommended. 
+	  HST Competition mode ignores this setting and defaults to 50Hz/Step.	  
+	
+    Audio Recording Enabled - You can record yourself under "File" menu 
+	  "Audio Recording Enabled". When this menu option is checked, MR saves
+      the audio as "MorseRunner.wav" in the same folder. If this file already
+      exists, MR overwrites it.
 
-  Additional simulator settings
-    Setup/CW Min Rx Speed - Set a speed below the CW Speed. 0 behaves like the original MorseRunner
-    Setup/CW Max Rx Speed - Set a speed above the CW Speed. 0 behaves like the original MorseRunner
-    Setup/NR Digits       - The number of digits of the DX Station NR
-    Setup/CWOps Number    - CWOps ID number used on the CWT Contest
+    Audio buffer size
+      You can adjust the audio buffer size by changing the BufSize value in the
+      MorseRunner.ini file. Acceptable values are 1 through 5, the default is 3.
+      Increase the buffer size for smooth audio without clicks and interruptions;
+      decrease the size for faster response to keyboard commands.
 
-    Farnsworth: For the K1USN SST contest only. Character wpm speed can be set by
-    changing the number for "FarnsworthCharacterRate=25" entry in the MorseRunner.ini
-    file found in the install folder and restarting the program.
+    Calls from a keyer
+      If you have an electronic keyer that simulates a keyboard - that is, sends
+      all transmitted characters to the PC as if they were entered from a keyboard,
+      you can add the following to the INI file:
+        [Station]
+        CallsFromKeyer=1
+      With this option enabled, the call sign entered into the CALL field is not
+      transmitted by the computer when the corresponding key is pressed. This option
+      has no effect in the WPX and HST competition modes.
+
+    CW speed controls
+	    CW Min and Max settings
+	      Under the Settings menu the CW Min Rx Speed and CW Max RX Speed can 
+		    establish a variable amount of speeds to respond to. Setting this to 
+		    0 will have the program behave like the original MorseRunner 1.68. 
+      Farnsworth: For the K1USN SST contest only. Character wpm speed can be 
+		    set by changing the number for "FarnsworthCharacterRate=25" entry in the 
+		    MorseRunner.ini file found in the install folder and restarting the program.
+	    CW Speed increment
+		    This is changed in 2 WPM increments except the HST Competition which is locked
+		    at 5 WPM increments. The default WPM Step rate can be changed with values 
+		    between 1 and 20 with the WpmStepRate entry in the MorseRunner.ini file, e.g.:
+          [Station]
+          WpmStepRate=2
+	    Suggestions
+	      Try selecting a speed higher than your proficiency to improve. Keep in mind
+		    the CWops CW Academy (free classes) start with 18 WPM, 20 WPM and 25 WPM 
+		    character speeds for each level of classes. 
+	  
+    NR Digits
+	    The number of digits the responding station will send. 
+
 
 STARTING A CONTEST
-  The selected contest can be started in one of four modes.
+  To start a contest, set the duration in the minutes box 
+  and click on the desired mode for the contest (single call or pile up).
+  You may have to hit enter to send a CQ to start. 
+	The WPX and HST competitions are also available in the run menu button. 
 
     Pile-Up mode: a random number of stations calls you after you send a CQ. Good
     for improving copying skills.
@@ -125,45 +172,59 @@ STARTING A CONTEST
     HST Competition mode: all settings conform to the IARU High Speed Telegraphy
     competition rules.
 
-  To start a contest, set the duration of the exercise in the Run for NN Minutes
-  box (only for Pile-Up and Single Calls modes), and click on the desired mode
-  in the Run button's menu. In the Pile-Up and Competition mode, hit F1 or Enter
-  to send a CQ.
+  Responses
+    There are five basic responses that you can receive
+	  1. nothing 
+	    If calling CQ, no one heard you call CQ again. 
+	    If you responded to someone and you got silence, the call sent was incorrect. 
+		  Send F8 NIL (Not In Log) to have them respond again and/or restart the pile-up.
+	  2. Corrected Call
+	    If you sent a partial call or if you were off a little they may respond with 
+		  "de" (from) and their call or just their call again. Sometimes just the call
+		  is repeated and sometimes with the exchange.
+    3. They may respond with "NR?" 
+	    You will have to send your exchange again (Hit f2).
+    4. They may respond with "AGN" 
+	    You will have to send your exchange again (Hit f2).
+    5. "R" with their exchange. 
+	    When you get the exchange hit enter to log it. 
+	  Please note that occasionally you will get "NR?" and "AGN" multiple times. Respond with
+      F2 until you get that "R" (Roger) and the exchange. 
 
 KEY ASSIGNMENTS
   F1-F8 - sends one of the pre-defined messages. The buttons under the input
     fields have the same functions as these keys, and the captions
     of the buttons show what each key sends.
 
-  "\" - equivalent to F1.(*Above 1.70 disable this key)
+  To stop sending press Esc.
+  
+  To wipe the input fields press F11 or Ctrl-W. 
+    Alt-W works too but responds with a Windows chime. 
 
-  Esc - stop sending.
+  To save a QSO without sending anything press Shift-Enter or Ctrl-Enter. 
+    Alt-Enter works too but responds with a Windows chime. 
 
-  Alt-W, Ctrl-W, F11 - wipe the input fields.
+  To auto complete the input (especially the RST) use the space bar 
+    The space bar will also allow you to jump between the input fields.
 
-  Alt-Enter, Shift-Enter, Ctrl-Enter - save QSO.
+  The Tab key (and Shift-<Tab>) can move to the next/previous field.
+    Tab goes to Call, RST, CQ-Zone, Station Call, Your exchange unless blanked out.
 
-  <Space> - auto-complete input, jump between the input fields.
+  To send your full exchange hit F2, ";" (semicolon) or the Insert key.  
 
-  <Tab>, Shift-<Tab> - move to the next/previous field.
+  To send their call with "TU" (Thank You), and save the QSO, press the F3 key.
+    Also the plus sign, period, comma and open bracket ("[") does the same. 
 
-  ";", <Ins> - equivalent to F5 + F2.
+  The Enter key sends various messages depending on the state of the QSO. 
 
-  "+", ".", ",", "[" - equivalent to F3 + Save.
+  The RIT is controlled by the up and down arrows on the keyboard as well 
+    as the mouse scroll wheel.
 
-  Enter - sends various messages, depending on the state of the QSO;
+  The RX Bandwidth is adjusted with the right and left arrows, 
+    Ctrl + the up/down arrows and the Ctrl and the mouse scroll wheel. 
 
-  Up/Down arrows - RIT;
+  The keying speed is adjusted with the PgUp/PgDn keys and Ctrl-F10/Ctrl-F9 keys.
 
-  Ctrl-Up/Ctrl-Down arrows - bandwidth;
-
-  PgUp/PgDn, Ctrl-F10/Ctrl-F9, Alt-F10/Alt-F9 - keying speed,
-    in 2 WPM increments. HST Competition uses 5 WPM increments.
-    The default WPM Step rate is 2. Valid values range between 1 and 20.
-    You can override this value by changing the WpmStepRate entry in the
-    MorseRunner.ini file, e.g.:
-            [Station]
-            WpmStepRate=2
 
 STATISTICS AREA
   The bottom right panel shows your current score, both Raw (calculated
@@ -172,15 +233,15 @@ STATISTICS AREA
 
 LOG WINDOW
   The log window marks incorrect entries in your log as follows:
-  DUP - duplicate QSO.
-  NIL - not in other station's log: you made a mistake in the callsign, or forgot
-        to send the corrected call to the station.
-  RST - incorrect RST in your log.
-  NR - incorrect exchange number in your log.
-  CL - incorrect Arrl Field Day Classification in your log.
-  NAME - incorrect Name in your log.
-  SEC - incorrect ARRL Section in your log.
-  ST - incorrect State in your log.
+  DUP   - duplicate QSO.
+  NIL   - not in other station's log: you made a mistake in the call sign, 
+		      or waited to long to save the information. 
+  RST   - incorrect RST in your log.
+  NR    - incorrect exchange number in your log.
+  CL    - incorrect Arrl Field Day Classification in your log.
+  NAME  - incorrect Name in your log.
+  SEC   - incorrect ARRL Section in your log.
+  ST    - incorrect State in your log.
 
 SUBMITTING YOUR SCORE
   If you complete a full 60-minute session in the WPX Competition mode, Morse Runner
@@ -376,15 +437,26 @@ CONTEST INFORMATION
     Non-members: First Name, and State/Province or DX Country prefix.
     Rules: https://cwops.org/cwops-tests/
 
-    JARL ALLJA
-    The ALLJA Contest is the largest contest in Japan.
-    When: Last weekend in April.
-    How: Contact as many Prefecture or Hokkaido promotion bureau possible.
-    In JARL contests, a power code is added to the end of the exchange number.
-    P is 5W or less(QRP), L is 10W or less, M is 100W or less, H is over 100W.
-    Exchange: RST plus Prefecture code/Hokkaido promotion bureau code plus Power code(P/L/M/H)
-    Rules: https://www.jarl.org/Japanese/1_Tanoshimo/1-1_Contest/all_ja/all_ja_rule.htm (japanese only)
+    HST (High Speed Test)
+    When: MorseRunner is a category in the World and IARU Region championships which takes
+    place every year. A list of winners for MorseRunner is found here:
+    http://www.highspeedtelegraphy.com/HST-world-championships/Results-Morse-Runner
+    How: Using MorseRunner the test is 10 minutes with two attempts. Activity is set at 4.
+    The competitor can change the speed during the contest. Currently the rules state the
+    settings and the version of MorseRunner to be used (1.67).
+    Exchange: RST plus serial number starting with 001
+    Rules: https://www.iaru-r1.org/about-us/committees-and-working-groups/hst/hst-rules/
 
+	IARU HF World Championship
+	Focused on contacting amateurs around the world especially IARU member
+	society headquarters stations using the 160, 80, 40, 20, 15 and 10 meter bands.
+	When: The second full weekend of July Beginning at 1200 UTC Saturday and runs through 
+	1159 UTC Sunday. Both Single and Multioperator stations operate the 24-hour period.
+	How: Contact as many as possible. 
+	Exchange: IARU member society stations, council and committees send signal report and 
+	abbreviations such as AC, R1, R2, or R3. All others send signal report and ITU Zone.  
+	Rules: https://contests.arrl.org/ContestRules/IARU-HF-Rules.pdf
+	
     JARL All Cities All Guns(ACAG)
     The ACAG contests have very long exchange numbers.
     When: Two days before the second Monday in October.
@@ -393,6 +465,15 @@ CONTEST INFORMATION
     P is 5W or less(QRP), L is 10W or less, M is 100W or less, H is over 100W.
     Exchange: RST plus City code/Gun(Country) code/Ku(Ward) code plus Power code(P/L/M/H)
     Rules: https://www.jarl.org/Japanese/1_Tanoshimo/1-1_Contest/all_cg/allcg_rule.htm (japanese only)
+
+    JARL ALL JA
+    The ALLJA Contest is the largest contest in Japan.
+    When: Last weekend in April.
+    How: Contact as many Prefecture or Hokkaido promotion bureau possible.
+    In JARL contests, a power code is added to the end of the exchange number.
+    P is 5W or less(QRP), L is 10W or less, M is 100W or less, H is over 100W.
+    Exchange: RST plus Prefecture code/Hokkaido promotion bureau code plus Power code(P/L/M/H)
+    Rules: https://www.jarl.org/Japanese/1_Tanoshimo/1-1_Contest/all_ja/all_ja_rule.htm (japanese only)
 
     K1USN Slow Speed Test (SST)
     Members of the K1USN Radio Club, who are also members of the CW Operators’ Club (CWops),
@@ -409,16 +490,6 @@ CONTEST INFORMATION
     Exchange: suggested first name and state, province, or DX country. It is fairly common
     to send greetings before the exchange.
     Rules, frequencies and sample exchanges can be found at http://www.k1usn.com/sst.html
-
-    HST (High Speed Test)
-    When: MorseRunner is a category in the World and IARU Region championships which takes
-    place every year. A list of winners for MorseRunner is found here:
-    http://www.highspeedtelegraphy.com/HST-world-championships/Results-Morse-Runner
-    How: Using MorseRunner the test is 10 minutes with two attempts. Activity is set at 4.
-    The competitor can change the speed during the contest. Currently the rules state the
-    settings and the version of MorseRunner to be used (1.67).
-    Exchange: RST plus serial number starting with 001
-    Rules: https://www.iaru-r1.org/about-us/committees-and-working-groups/hst/hst-rules/
 
     NCJ NAQP
     The National Contest Journal North American QSO Party
