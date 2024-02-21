@@ -303,6 +303,16 @@ VERSION HISTORY
 Version 1.84 (February 2024)
   - Added IARU HF World Championship Contest (Coded by W7SST)
   - update call history files for ARRL DX, ARRL FD, CQ WW, CWOPS CWT, K1USN SST and NCJ NAQP Contests
+  - After a CQ, if nothing is caught or if what you caught is wrong, you can use
+    F7 ('?') to instruct the callers to call again. (F6FVY)
+  - New callers can be added when a QSO is done. (F6FVY)
+  - When F1 was hit several times in a row, the number of callers was
+    increasing without respect to the activity setting. (F6FVY)
+  - The "reply or not" algorithm has been modified to allow callers with long
+    callsigns to reply, even if only few letters are caught. (F6FVY)
+  - Receive Bandwidth adjustment using Cntl-key and mouse wheel (F6FVY, W7SST)
+  - Speed increments / decrements modified (2 WPM instead of 5). (F6FVY, W7SST)
+  - Improve RIT adjustment using mouse wheel (W7SST)
   - improve pattern matching for DXCC entities (used in status bar) (Coded by W7SST)
   - CQ WPX - Dx Stations will occasionally send a serial number of zero (Coded by W7SST)
   - ARRL DX - incorrect handling of KH6/KL7 stations using AH6/AL7, NH6/NL7, WH6/WL7 (Coded by W7SST)
@@ -312,8 +322,6 @@ Version 1.84 (February 2024)
   - All Contests - spacebar or Tab will now select both exchange fields (Coded by W7SST)
   - All Contests - Hide Dx Station's Entity status string if same as user's Entity (Coded by W7SST)
   - K1USN SST - user test field in call history file should be optional (Coded by W7SST)
-  - Improve RIT adjustment using mouse wheel (F6FVY, W7SST)
-  - Add receive Bandwidth adjustment using Cntl-key and mouse wheel (F6FVY, W7SST)
   - DX station will send an abbreviated exchange number in the JARL ALLJA and ACAG contests (Coded by JR8PPG)
   - User's exchange number is not abbreviated (not convert 100 to 1TT) (Coded by JR8PPG)
 
@@ -360,8 +368,20 @@ Version 1.80 (Oct 2022)
   - Change default Font to Cleartype 'segoe ui', 'Consolar';
   - Change string to Unicode, Building with Delphi 2010 sp3.
 
-1.68.4+
+1.68.4+ (F6FVY) 2018
   - The mouse wheel now acts as RIT. (F6FVY)
+
+1.68.3+ (F6FVY) 2018
+  - After a CQ, if nothing is caught or if what you caught is wrong, you can use
+    F7 ('?') to instruct the callers to call again. (F6FVY)
+
+1.68.2+ (F6FVY) 2018
+  - New callers can be added when a QSO is done. (F6FVY)
+  - Bugfix : When F1 was hit several times in a row, the number of callers was
+    increasing without respect to the activity setting. (F6FVY)
+  - The "reply or not" algorithm has been modified to allow callers with long
+    callsigns to reply, even if only few letters are caught (experimental). (F6FVY)
+  - Speed increments / decrements modified (2 WPM instead of 5). (F6FVY)
 
 1.68 (VE3NEA) 2016
   - TU + MyCall after the QSO is now equivalent to CQ
