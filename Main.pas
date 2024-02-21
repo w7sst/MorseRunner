@@ -21,7 +21,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.84-f6fvy';  { Sets version strings in UI panel. }
+  sVersion: String = '1.84-rc1';  { Sets version strings in UI panel. }
 
 type
 
