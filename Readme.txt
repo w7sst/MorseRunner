@@ -84,7 +84,7 @@ CONFIGURATION
       To start the contest that is selected in the contest drop down,
       set the duration in the minutes box and use the run drop down 
       to select the desired mode for the contest (single call or pile up).
-      You may have to hit Enter to start sending CQ. 
+      You may have to hit F1 (or Enter) to start sending CQ. 
 
     Starting a Competition - 
       To start a Competition, select either the WPX and HST competitions found
