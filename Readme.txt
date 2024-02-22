@@ -98,19 +98,19 @@ CONFIGURATION
 
   Additional Settings
     RIT - Many never noticed that the original program has an RIT function
-          in the receiver. It is the unmarked teal bar at the very bottom of 
-          the screen. If you can't hear someone calling you, or if they are off 
-          frequency this is why. This is controlled by the up and down arrows on 
-          the keyboard as well as the mouse scroll wheel. This is handy to 
+          in the receiver. It is the unmarked teal bar at the very bottom of
+          the screen. If you can't hear someone calling you, or if they are off
+          frequency this is why. This is controlled by the up and down arrows on
+          the keyboard as well as the mouse scroll wheel. This is handy to
           focus on a particular responder.
-          The RIT is adjusted between -500 and 500 Hz incremented in 50Hz Steps. 
+          The RIT is adjusted between -500 and 500 Hz incremented in 50Hz Steps.
           You can modify the RIT step increment in the MorseRunner.ini file, e.g.:
             [Settings]
             RitStepIncr=50
           Valid values range between -500 and 500. Negative values can be used to
-          change the direction of Up/Down arrow keys or mouse wheel movement. Note 
-          that a zero value will disable this feature and is not recommended. 
-          HST Competition mode ignores this setting and defaults to 50Hz/Step.   
+          change the direction of Up/Down arrow keys or mouse wheel movement. Note
+          that a zero value will disable this feature and is not recommended.
+          HST Competition mode ignores this setting and defaults to 50Hz/Step.
 
     Audio Recording Enabled - You can record yourself under "File" menu 
       "Audio Recording Enabled". When this menu option is checked, MR saves
@@ -153,10 +153,16 @@ CONFIGURATION
         character speeds for each level of classes. 
        
     NR Digits
-      The number of digits the responding station will send.  
+      The number of digits the responding station will send.
+        There are four possible settings:
+          1 - generates random serial numbers starting near 1 and increasing as
+	      the contest runs. Matches default behavior found in version 1.68.
+          2 - 2 digits are sent, randomly generated between 1 and 99.
+          3 - 3 digits are sent, randomly generated between 1 and 999.
+          4 - 4 digits are sent, randomly generated between 1 and 9999.
 
   Responses
-    There are five basic responses that you can receive
+    There are five basic responses that you can receive:
        1. nothing 
           If calling CQ, no one heard you call CQ again. 
           If you responded to someone and you got silence, the call sent was incorrect. 
@@ -177,40 +183,45 @@ CONFIGURATION
 KEY ASSIGNMENTS
   F1               - Send CQ (sounds like seek you)
   F2               - Sends your full exchange
-  semicolon        - Sends your full exchange
-  insert key       - Sends your full exchange
   F3               - Send TU (thank you)
-  plus key (+)     - Send TU (thank you)
-  period (.)       - Send TU (thank you)
-  bracket ([)      - Send TU (thank you)
   F4               - Sends your call sign
   F5               - Sends responder's call sign
   F6               - Send B4 
   F7               - Sends the question mark (?)
   F8               - Sends NIL (not in log)
-  Escape key       - Stops your sending
   F11              - Wipes the input fields 
+  F12              - sends NR? (request their exchange to be repeated)
+
+  Enter Key        - Enter Sends Message (msg sent depends on state of QSO)
+  Space Bar        - auto completes and jumps between input fields
+  Escape key       - Stops your sending
+
+  Semicolon        - Sends your full exchange
+  Insert key       - Sends your full exchange
+  Plus key (+)     - Send TU (thank you) and saves QSO
+  Period (.)       - Send TU (thank you) and saves QSO
+  Bracket ([)      - Send TU (thank you) and saves QSO
+  Comma (,)        - Send TU (thank you) and saves QSO
+
   Ctrl-W           - Wipes the input fields
   Alt-W            - Wipes the input fields (with Windows chime)
   Shift-Enter      - Saves the QSO without sending anything
   Ctrl-Enter       - Saves the QSO without sending anything
   Alt-Enter        - Saves the QSO without sending anything (with Windows Chime)  
-  Space Bar        - auto completes and jumps between input fields
   Tab Key          - moves to Call, RST, CQ-Zone, Station Call, and your exchange
   Shift Tab        - moves to Call, RST, CQ-Zone, Station Call, and your exchange
-  Enter Key        - Sends various messages depending on the state of the QSO. 
   Up arrow         - moves the RIT right (reversible in settings)
   Down arrow       - moves the RIT left (reversible in settings)
-  Mouse wheel      - moves the RIT 
+  Mouse wheel      - moves the RIT
   Left arrow       - adjusts the RX Bandwidth
-  Right arrow      - adjusts the RX Bandwidth  
-  Ctrl-up arrow    - adjusts the RX Bandwidth  
-  Ctrl-down arrow  - adjusts the RX Bandwidth  
-  Ctrl-mouse wheel - adjusts the RX Bandwidth  
-  Page up key      - adjusts the keying speed up    
-  Ctrl-F10         - adjusts the keying speed up
+  Right arrow      - adjusts the RX Bandwidth
+  Ctrl-up arrow    - adjusts the RX Bandwidth
+  Ctrl-down arrow  - adjusts the RX Bandwidth
+  Ctrl-mouse wheel - adjusts the RX Bandwidth
   Page down key    - adjusts the keying speed down
+  Page up key      - adjusts the keying speed up
   Ctrl-F9          - adjusts the keying speed down
+  Ctrl-F10         - adjusts the keying speed up
 
 STATISTICS AREA
   The bottom right panel shows your current score, both Raw (calculated
