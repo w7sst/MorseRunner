@@ -78,7 +78,10 @@ begin
     Qsb.Bandwidth := 3 + Random * 30;
 
   Amplitude := 9000 + 18000 * (1 + RndUShaped);
-  Pitch := Round(RndGaussLim(0, 300));
+  if RunMode = rmSingle then
+    Pitch := Round(RndGaussLim(0, 50))
+  else
+    Pitch := Round(RndGaussLim(0, 300));
 
   if Ini.RunMode = rmHst then
     begin
