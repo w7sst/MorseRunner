@@ -55,7 +55,7 @@ CONFIGURATION
                There are more speed controls under the settings menu.
     CW Pitch - pitch in Hz.
     RX Bandwidth - there are several ways to adjust this. See the key
-                   the key assignments below.
+                   assignments below.
 
 
   Band Conditions
@@ -172,9 +172,9 @@ CONFIGURATION
           "de" (from) and their call or just their call again. Sometimes just the call
           is repeated and sometimes with the exchange.
        3. They may respond with "NR?"
-          You will have to send your exchange again (Hit f2).
+          You will have to send your exchange again (Hit F2).
        4. They may respond with "AGN"
-          You will have to send your exchange again (Hit f2).
+          You will have to send your exchange again (Hit F2).
        5. "R" with their exchange.
           When you get the exchange hit enter to log it.
           Please note that occasionally you will get "NR?" and "AGN" multiple times. Respond with
