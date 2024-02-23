@@ -152,14 +152,23 @@ CONFIGURATION
         the CWops CW Academy (free classes) start with 18 WPM, 20 WPM and 25 WPM
         character speeds for each level of classes.
 
-    NR Digits
-      The number of digits the responding station will send.
-        There are four possible settings:
-          1 - generates random serial numbers starting near 1 and increasing as
-              the contest runs. Matches default behavior found in version 1.68.
-          2 - 2 digits are sent, randomly generated between 1 and 99.
-          3 - 3 digits are sent, randomly generated between 1 and 999.
-          4 - 4 digits are sent, randomly generated between 1 and 9999.
+    Serial NR
+      Serial numbers sent by the responding station can be adjusted with the
+      following settings:
+        - Start of Contest (Default)
+            Generates random serial numbers starting near 1 and increasing as
+            the contest runs. Matches default behavior found in version 1.68.
+            Used during HST Simulation.
+        - Mid-Contest (50-500)
+            Sends 2 and 3-digit numbers, randomly generated between 50 and 500.
+            Numbers will generated using a similar distribution as CQ WPX 2023.
+        - End of Contest (500-5000)
+            Sends 3 and 4-digit numbers, randomly generated between 500 and 5000.
+            Numbers will generated using a similar distribution as CQ WPX 2023.
+        - Custom Range (01-99)...
+            This option allows a user-entered range string of the form "<min>-<max>".
+            An optional leading zero can be specified for generating serial numbers
+            with leading zeros (e.g. 001-200).
 
   Responses
     There are five basic responses that you can receive:
@@ -297,6 +306,7 @@ Version 1.84 (February 2024)
   - Improve RIT adjustment using mouse wheel (W7SST)
   - Improve pattern matching for DXCC entities (used in status bar) (Coded by W7SST)
   - CQ WPX - Dx Stations will occasionally send a serial number of zero (Coded by W7SST)
+  - CQ WPX - Improved Serial Number generation (Coded by W7SST)
   - ARRL DX - incorrect handling of KH6/KL7 stations using AH6/AL7, NH6/NL7, WH6/WL7 (Coded by W7SST)
   - NAQP - Exchange field does not allow numbers (e.g. KH6 or KL7) (Coded by W7SST)
   - All Contests - WPM keyboard entry incorrect behavior for Spin Box (up down control) (Coded by W7SST)

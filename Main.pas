@@ -254,10 +254,10 @@ type
     sbar: TPanel;
     mnuShowCallsignInfo: TMenuItem;
     NRDigits1: TMenuItem;
-    NRDigitsSet1: TMenuItem;
-    NRDigitsSet2: TMenuItem;
-    NRDigitsSet3: TMenuItem;
-    NRDigitsSet4: TMenuItem;
+    SerialNRSet1: TMenuItem;
+    SerialNRSet2: TMenuItem;
+    SerialNRSet3: TMenuItem;
+    SerialNRCustomRange: TMenuItem;
     CWMaxRxSpeed1: TMenuItem;
     CWMinRxSpeed1: TMenuItem;
     CWMinRxSpeedSet1: TMenuItem;
@@ -341,6 +341,7 @@ type
     procedure CWMaxRxSpeedClick(Sender: TObject);
     procedure CWMinRxSpeedClick(Sender: TObject);
     procedure NRDigitsClick(Sender: TObject);
+    procedure SerialNRCustomRangeClick(Sender: TObject);
     procedure Activity1Click(Sender: TObject);
     procedure Duration1Click(Sender: TObject);
     procedure Operator1Click(Sender: TObject);
@@ -405,7 +406,8 @@ type
     procedure ReadCheckboxes;
     procedure UpdateTitleBar;
     procedure PostHiScore(const sScore: string);
-    procedure UpdNRDigits(nrd: integer);
+    procedure UpdSerialNR(V: integer {TSerialNRTypes});
+    procedure UpdSerialNRCustomRange(const ARange: string);
     procedure UpdCWMinRxSpeed(minspd: integer);
     procedure UpdCWMaxRxSpeed(Maxspd: integer);
     procedure ClientHTTP1Redirect(Sender: TObject; var dest: string;
@@ -482,7 +484,14 @@ begin
   Histo:= THisto.Create(PaintBox1);
 
   AlSoundOut1.BufCount := 4;
-  FromIni;
+  FromIni(
+    procedure (const aMsg : string)
+    begin
+      Application.MessageBox(PChar(aMsg),
+        'Error',
+        MB_OK or MB_ICONERROR);
+    end
+  );
 
   // enable Exchange debugging either locally or via .INI file
   BDebugExchSettings := CDebugExchSettings or Ini.DebugExchSettings;
@@ -2274,21 +2283,83 @@ end;
 
 procedure TMainForm.NRDigitsClick(Sender: TObject);
 Var
-  nrd:integer;
+  snt: integer;
 begin
-  nrd := (Sender as TMenuItem).Tag;
+  snt := (Sender as TMenuItem).Tag;
 
-  UpdNRDigits(nrd);
+  UpdSerialNR(snt);
 end;
 
 
-procedure TMainForm.UpdNRDigits(nrd: integer);
+procedure TMainForm.SerialNRCustomRangeClick(Sender: TObject);
+Var
+  snt:integer;
+  RangeStr: string;
+  ClickedOK, Done: boolean;
+  tempRange : TSerialNRSettings;
+  Err: string;
 begin
-  Ini.NRDigits := nrd;
-  NRDigitsSet1.Checked := nrd = 1;
-  NRDigitsSet2.Checked := nrd = 2;
-  NRDigitsSet3.Checked := nrd = 3;
-  NRDigitsSet4.Checked := nrd = 4;
+  snt := (Sender as TMenuItem).Tag;
+
+  tempRange := Ini.SerialNRSettings[snCustomRange];
+  RangeStr := tempRange.RangeStr;
+  Done := False;
+  repeat
+    begin
+      ClickedOK := Dialogs.InputQuery('Enter Custom Serial Number Range',
+        'Enter min-max values (e.g. 01-99):',
+        RangeStr);
+      if not ClickedOK then break;
+
+      // split into two strings [Min, Max)
+      tempRange.ParseSerialNR(RangeStr, Err);
+
+      if Err <> '' then
+        begin
+          // report error and try again
+          Err := Format('Error: ''%s'': %s', [RangeStr, Err]);
+          MessageDlg(Err, mtError, [mbOK], 0);
+        end
+      else
+        begin
+          Ini.SerialNRSettings[snCustomRange] := tempRange;
+          UpdSerialNRCustomRange(tempRange.RangeStr);
+          UpdSerialNR(snt);
+          Done := true;
+        end;
+    end;
+  until (Done);
+end;
+
+
+procedure TMainForm.UpdSerialNR(V: integer);
+begin
+  assert(Ord(snStartContest) = SerialNRSet1.Tag);
+  assert(Ord(snMidContest) = SerialNRSet2.Tag);
+  assert(Ord(snEndContest) = SerialNRSet3.Tag);
+  assert(Ord(snCustomRange) = SerialNRCustomRange.Tag);
+
+  var snt : TSerialNrTypes := TSerialNrTypes(V);
+
+  // validate custom serial number range; if invalid, set to Start of Contest
+  if not Ini.SerialNRSettings[snt].IsValid then
+    snt := snStartContest;
+
+  //Ini.NRDigits := nrd;
+  Ini.SerialNR := snt;
+  SerialNRSet1.Checked := snt = snStartContest;
+  SerialNRSet2.Checked := snt = snMidContest;
+  SerialNRSet3.Checked := snt = snEndContest;
+  SerialNRCustomRange.Checked := snt = snCustomRange;
+end;
+
+
+procedure TMainForm.UpdSerialNRCustomRange(const ARange: string);
+begin
+  if Ini.SerialNRSettings[snCustomRange].IsValid then
+    SerialNRCustomRange.Caption := Format('Custom Range (%s)...', [ARange])
+  else
+    SerialNRCustomRange.Caption := 'Custom Range...';
 end;
 
 

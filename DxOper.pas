@@ -94,16 +94,9 @@ begin
 end;
 
 function TDxOperator.GetNR: integer;
-Var
- n1: integer;
 begin
-  if NRDigits = 1 then
-      Result := 1 + Round(Random * Tst.Minute * Skills)
-  else begin
-       n1 := trunc(power(10,NRDigits));
-       n1 := n1-1;
-       Result := Random(n1)+1;  // result is with range [1,99] (w/ NRDigits=2)
-  end;
+  assert((RunMode = rmHST) or (Ini.SerialNR = snStartContest));
+  Result := 1 + Round(Random * Tst.Minute * Skills)
 end;
 
 
