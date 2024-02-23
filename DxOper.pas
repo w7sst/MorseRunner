@@ -44,7 +44,7 @@ type
 implementation
 
 uses
-  SysUtils, Ini, Math, RndFunc, Contest, Log;
+  SysUtils, Ini, Math, RndFunc, Contest, Log, Main;
 
 { TDxOperator }
 
@@ -148,12 +148,14 @@ end;
 
 function TDxOperator.IsMyCall: TCallCheckResult;
 const
-  W_X = 2; W_Y = 2; W_D = 2;
+  W_X = 1; W_Y = 1; W_D = 1;
 var
   C, C0: string;
   M: array of array of integer;
   x, y: integer;
   T, L, D: integer;
+
+  P: integer;
 begin
   C0 := Call;
   C := Tst.Me.HisCall;
@@ -187,13 +189,15 @@ begin
       M[x,y] := MinIntValue([T,D,L]);
     end;
 
-  //classify by penalty
-  case M[High(M), High(M[0])] of
-    0:   Result := mcYes;
-    1,2: Result := mcAlmost;             
-    else Result := mcNo;
-  end;
+  P := M[High(M), High(M[0])];
 
+  if (P = 0) then
+    Result := mcYes
+  else if (((Length(C0) <= 4) and (Length(C0) - P >= 3)) or
+       ((Length(C0) > 4) and (Length(C0) - P >= 4))) then
+    Result := mcAlmost
+  else
+    Result := mcNo;
 
   //callsign-specific corrections
 
@@ -218,6 +222,7 @@ end;
 
 procedure TDxOperator.MsgReceived(AMsg: TStationMessages);
 begin
+
   //if CQ received, we can call no matter what else was sent
   if msgCQ in AMsg then
     begin
@@ -240,7 +245,6 @@ begin
     Exit;
     end;  
 
-
   if msgHisCall in AMsg then
     case IsMyCall of
       mcYes:
@@ -259,14 +263,12 @@ begin
         else if State = osNeedEnd then State := osDone;
       end;
 
-
   if msgB4 in AMsg then
     case State of
       osNeedPrevEnd, osNeedQso: SetState(osNeedQso);
       osNeedNr, osNeedEnd: State := osFailed;
       osNeedCall, osNeedCallNr: ; //same state: correct the call
       end;
-
 
   if msgNR in AMsg then
     case State of
@@ -289,6 +291,10 @@ begin
       osNeedCallNr: ;
       osNeedEnd: State := osDone;
       end;
+
+  if msgQm in AMsg then
+    if (State = osNeedPrevEnd) and (Mainform.Edit1.Text = '') then
+      SetState(osNeedQso);
 
   if (not Ini.Lids) and (AMsg = [msgGarbage]) then State := osNeedPrevEnd;
 
