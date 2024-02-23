@@ -472,15 +472,15 @@ CONTEST INFORMATION
     Exchange: RST plus serial number starting with 001
     Rules: https://www.iaru-r1.org/about-us/committees-and-working-groups/hst/hst-rules/
 
-     IARU HF World Championship
-     Focused on contacting amateurs around the world especially IARU member
-     society headquarters stations using the 160, 80, 40, 20, 15 and 10 meter bands.
-     When: The second full weekend of July Beginning at 1200 UTC Saturday and runs through
-     1159 UTC Sunday. Both Single and Multioperator stations operate the 24-hour period.
-     How: Contact as many as possible.
-     Exchange: IARU member society stations, council and committees send signal report and
-     abbreviations such as AC, R1, R2, or R3. All others send signal report and ITU Zone.
-     Rules: https://contests.arrl.org/ContestRules/IARU-HF-Rules.pdf
+    IARU HF World Championship
+    Focused on contacting amateurs around the world especially IARU member
+    society headquarters stations using the 160, 80, 40, 20, 15 and 10 meter bands.
+    When: The second full weekend of July Beginning at 1200 UTC Saturday and runs through
+    1159 UTC Sunday. Both Single and Multioperator stations operate the 24-hour period.
+    How: Contact as many as possible.
+    Exchange: IARU member society stations, council and committees send signal report and
+    abbreviations such as AC, R1, R2, or R3. All others send signal report and ITU Zone.
+    Rules: https://contests.arrl.org/ContestRules/IARU-HF-Rules.pdf
 
     JARL All Cities All Guns(ACAG)
     The ACAG contests have very long exchange numbers.
