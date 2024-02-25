@@ -222,6 +222,8 @@ KEY ASSIGNMENTS
   Page up key      - adjusts the keying speed up
   Ctrl-F9          - adjusts the keying speed down
   Ctrl-F10         - adjusts the keying speed up
+  Alt-F9           - adjusts the keying speed down
+  Alt-F10          - adjusts the keying speed up
 
 STATISTICS AREA
   The bottom right panel shows your current score, both Raw (calculated
