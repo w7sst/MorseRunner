@@ -190,10 +190,10 @@ KEY ASSIGNMENTS
   F7               - Sends the question mark (?)
   F8               - Sends NIL (not in log)
   F11              - Wipes the input fields
-  F12              - sends NR? (request their exchange to be repeated)
+  F12              - Sends NR? (request their exchange to be repeated)
 
   Enter Key        - Enter Sends Message (msg sent depends on state of QSO)
-  Space Bar        - auto completes and jumps between input fields
+  Space Bar        - Auto completes and jumps between input fields
   Escape key       - Stops your sending
 
   Semicolon        - Sends your full exchange
@@ -208,22 +208,22 @@ KEY ASSIGNMENTS
   Shift-Enter      - Saves the QSO without sending anything
   Ctrl-Enter       - Saves the QSO without sending anything
   Alt-Enter        - Saves the QSO without sending anything (with Windows Chime)
-  Tab Key          - moves to Call, RST, CQ-Zone, Station Call, and your exchange
-  Shift Tab        - moves to Call, RST, CQ-Zone, Station Call, and your exchange
-  Up arrow         - moves the RIT right (reversible in settings)
-  Down arrow       - moves the RIT left (reversible in settings)
-  Mouse wheel      - moves the RIT
-  Left arrow       - adjusts the RX Bandwidth
-  Right arrow      - adjusts the RX Bandwidth
-  Ctrl-up arrow    - adjusts the RX Bandwidth
-  Ctrl-down arrow  - adjusts the RX Bandwidth
-  Ctrl-mouse wheel - adjusts the RX Bandwidth
-  Page down key    - adjusts the keying speed down
-  Page up key      - adjusts the keying speed up
-  Ctrl-F9          - adjusts the keying speed down
-  Ctrl-F10         - adjusts the keying speed up
-  Alt-F9           - adjusts the keying speed down
-  Alt-F10          - adjusts the keying speed up
+  Tab Key          - Moves to Call, RST, CQ-Zone, Station Call, and your exchange
+  Shift Tab        - Moves to Call, RST, CQ-Zone, Station Call, and your exchange
+  Up arrow         - Moves the RIT right (reversible in settings)
+  Down arrow       - Moves the RIT left (reversible in settings)
+  Mouse wheel      - Moves the RIT
+  Left arrow       - Adjusts the RX Bandwidth
+  Right arrow      - Adjusts the RX Bandwidth
+  Ctrl-up arrow    - Adjusts the RX Bandwidth
+  Ctrl-down arrow  - Adjusts the RX Bandwidth
+  Ctrl-mouse wheel - Adjusts the RX Bandwidth
+  Page down key    - Adjusts the keying speed down
+  Page up key      - Adjusts the keying speed up
+  Ctrl-F9          - Adjusts the keying speed down
+  Ctrl-F10         - Adjusts the keying speed up
+  Alt-F9           - Adjusts the keying speed down
+  Alt-F10          - Adjusts the keying speed up
 
 STATISTICS AREA
   The bottom right panel shows your current score, both Raw (calculated
@@ -283,7 +283,7 @@ VERSION HISTORY
 
 Version 1.84 (February 2024)
   - Added IARU HF World Championship Contest (Coded by W7SST)
-  - update call history files for ARRL DX, ARRL FD, CQ WW, CWOPS CWT, K1USN SST and NCJ NAQP Contests
+  - Update call history files for ARRL DX, ARRL FD, CQ WW, CWOPS CWT, K1USN SST and NCJ NAQP Contests
   - After a CQ, if nothing is caught or if what you caught is wrong, you can use
     F7 ('?') to instruct the callers to call again. (F6FVY)
   - New callers can be added when a QSO is done. (F6FVY)
@@ -294,7 +294,7 @@ Version 1.84 (February 2024)
   - Receive Bandwidth adjustment using Cntl-key and mouse wheel (F6FVY, W7SST)
   - Speed increments / decrements modified (2 WPM instead of 5). (F6FVY, W7SST)
   - Improve RIT adjustment using mouse wheel (W7SST)
-  - improve pattern matching for DXCC entities (used in status bar) (Coded by W7SST)
+  - Improve pattern matching for DXCC entities (used in status bar) (Coded by W7SST)
   - CQ WPX - Dx Stations will occasionally send a serial number of zero (Coded by W7SST)
   - ARRL DX - incorrect handling of KH6/KL7 stations using AH6/AL7, NH6/NL7, WH6/WL7 (Coded by W7SST)
   - NAQP - Exchange field does not allow numbers (e.g. KH6 or KL7) (Coded by W7SST)
@@ -319,7 +319,7 @@ Version 1.82 (Dec 2022)
   - Rename the F2 button to exchange (Coded by tekenny)
   - Add 'Help | First Time Setup' (Written by KD4SIR & W7SST)
   - Add cut numbers (e.g. 5NN = 599) in exchanges received (Coded by W7SST)
-  - bug fixes
+  - Bug fixes
 
 Version 1.81 (Oct 2022)
   - Fix bad CWOPS CWT Exchange message (Coded by W7SST)
