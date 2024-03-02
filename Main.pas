@@ -1534,34 +1534,36 @@ begin
   CallSent := false;
   NrSent := false;
 end;
-                                   
+
 
 procedure TMainForm.FirstTime1Click(Sender: TObject);
 const
-    Msg='First Time?'#13 +
-        'Welcome! This is the first time setup:'#13 +
+    Msg='                       First Time?'#13 +
+        'Welcome to Morse Runner Community Edition'#13 +
         ''#13 +
+        'Initial Setup:'#13 +
         '1) Select the Contest you wish to operate.'#13 +
         '2) Type the exchange you wish to send.'#13 +
         '3) In the station section replace VE3NEA with your call.'#13 +
         '4) Select your CW Speed, Tone, and Bandwidth.'#13 +
-        '5) Set Min/Max CW Receive speed using Settings menu.'#13 +
-        '6) Under band conditions you can select any realistic hardships.'#13 +
-        '7) Activity is the average amount of responses you want per CQ.'#13 +
+        '5) Turn on Band Conditions for realistic hardships.'#13 +
+        '6) Activity is the average amount of responses you want per CQ.'#13 +
         '    So if no one responds, you might get twice the number the'#13 +
-        '    following time. This is a pile up trainer after all - have fun.'#13 +
-        '8) Select the time limit you want to run the contest.'#13 +
-        '9) The Run button has a drop down.'#13 +
-        '    - Pile up - Hit Enter or F1 to call CQ to start. Get ready for pileups!'#13 +
+        '    following time. This is a pile up trainer after all.'#13 +
+        '7) Select the time limit.'#13 +
+        '8) The Run button has a drop down.'#13 +
+        '    - Pile up - Hit F1 to call CQ. Get ready for pileups!'#13 +
         '    - Single Calls - Work one station at a time with no pileups.'#13 +
+        'More detailed help is in the readme, but this gets you started.'#13 +
+        'Have Fun!'#13 +
         ''#13 +
         'Please visit us or provide feedback at either:'#13 +
-        '    - www.github.com/w7sst/MorseRunner/#readme'#13 +
+        '    - https://www.github.com/w7sst/MorseRunner/#readme'#13 +
         '    - https://groups.io/g/MorseRunnerCE';
 begin
     Application.MessageBox(PChar(Msg),
       'First Time Setup',
-      MB_OK or MB_ICONINFORMATION);
+      MB_OK);
 end;
 
 
@@ -1572,11 +1574,12 @@ const
         'Version %s'#13#13 +
         'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13 +
         'Copyright ©2022-2024 Morse Runner Community Edition Contributors'#13#13 +
-        'https://www.github.com/w7sst/MorseRunner';
+        'https://www.github.com/w7sst/MorseRunner/#readme'#13 +
+        'https://groups.io/g/MorseRunnerCE';
 begin
     Application.MessageBox(PChar(Format(Msg, [sVersion])),
       'About Morse Runner - Community Edition',
-      MB_OK or MB_ICONINFORMATION);
+      MB_OK);
 end;
 
 
