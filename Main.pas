@@ -2317,7 +2317,6 @@ begin
       if Err <> '' then
         begin
           // report error and try again
-          Err := Format('Error: ''%s'': %s', [RangeStr, Err]);
           MessageDlg(Err, mtError, [mbOK], 0);
         end
       else

@@ -303,7 +303,8 @@ var
       begin
         Err := Format(
           'Error while reading MorseRunner.ini file.'#13 +
-          'Invalid Keyword Value: ''%s=%s'': %s.'#13 +
+          'Invalid Keyword Value: ''%s=%s'':'#13 +
+          '%s'#13 +
           'Please correct this keyword or remove the MorseRunner.ini file.',
           [pRange.Key, pRange.RangeStr, Err]);
         cb(Err);
@@ -528,12 +529,23 @@ begin
     ExtractStrings(['-'], [], PChar(ValueStr), sl);
     Err := '';
     if (sl.Count <> 2) or
+       (ValueStr.CountChar('-') <> 1) or
        not TryStrToInt(sl[0], Self.MinVal) or
        not TryStrToInt(sl[1], Self.MaxVal) then
-      Err := 'Invalid range. Expecting min-max (e.g. 100-300)'
+      Err := Format(
+        'Error: ''%s'' is an invalid range.'#13 +
+        'Expecting min-max values with up to 4-digits each (e.g. 100-300).',
+        [ValueStr])
+    else if (Self.MinVal > 9999) or (Self.MaxVal > 9999) then
+      Err := Format(
+        'Error: ''%s'' is an invalid range.'#13 +
+        'Expecting range values to be less than or equal to 9999.',
+        [ValueStr])
     else if (Self.MinVal > Self.MaxVal) then
-      Err := 'Invalid range.'#13 +
-             'Expecting Min value to be less than Max value.';
+      Err := Format(
+        'Error: ''%s'' is an invalid range.'#13 +
+        'Expecting Min value to be less than Max value.',
+        [ValueStr]);
     if Err = '' then
       begin
         Self.MinDigits := sl[0].Length;
