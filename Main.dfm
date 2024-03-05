@@ -1008,6 +1008,7 @@ object MainForm: TMainForm
       object SingleCalls1: TMenuItem
         Tag = 2
         Caption = 'Single Calls'
+        ShortCut = 8312
         OnClick = RunMNUClick
       end
       object Competition1: TMenuItem
