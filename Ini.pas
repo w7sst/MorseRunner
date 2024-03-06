@@ -57,6 +57,7 @@ type
     procedure Init(const Range: string; AMin, AMax: integer);
     function IsValid : boolean;
     function ParseSerialNR(const ValueStr : string; var Err : string) : Boolean;
+    function GetNR : integer;
   end;
 
   PSerialNRSettings = ^TSerialNRSettings;
@@ -511,6 +512,16 @@ end;
 function TSerialNRSettings.IsValid: Boolean;
 begin
   Result := (MinVal > 0) and (MinVal <= MaxVal);
+end;
+
+
+function TSerialNRSettings.GetNR : integer;
+begin
+  assert(IsValid);
+  if IsValid then
+    Result := MinVal + Random(MaxVal - MinVal)
+  else
+    Result := 1;
 end;
 
 

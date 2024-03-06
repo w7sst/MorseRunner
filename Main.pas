@@ -398,6 +398,7 @@ type
     procedure Advance;
     procedure SetContest(AContestNum: TSimContest);
     procedure SetMyExchange(const AExchange: string);
+    procedure SetMySerialNR;
     procedure SetQsk(Value: boolean);
     procedure SetWpm(AWpm : integer);
     procedure SetMyCall(ACall: string);
@@ -1181,6 +1182,13 @@ begin
 end;
 
 
+procedure TMainForm.SetMySerialNR;
+begin
+  assert(Tst.Me.SentExchTypes.Exch2 = etSerialNr);
+  SetMyExch2(Tst.Me.SentExchTypes.Exch2, Ini.UserExchange2[SimContest]);
+end;
+
+
 procedure TMainForm.SetMyCall(ACall: string);
 var
   err : string;
@@ -1310,16 +1318,23 @@ end;
 procedure TMainForm.SetMyExch2(const AExchType: TExchange2Type;
   const Avalue: string);
 begin
+  assert(RunMode = rmStop);
   // Adding a contest: setup contest-specific exchange field 2
   case AExchType of
     etSerialNr:
       begin
+        var S : String := Avalue.Replace('T', '0', [rfReplaceAll])
+                                .Replace('O', '0', [rfReplaceAll])
+                                .Replace('N', '9', [rfReplaceAll]);
         Ini.UserExchange2[SimContest] := Avalue;
-        if not IsNum(Avalue) or (RunMode = rmHst) then
-          Tst.Me.Nr := 1
+        if SimContest = scHST then
+          Tst.Me.NR := 1
+        else if S.Contains('#') and (SerialNR in [snMidContest, snEndContest]) then
+          Tst.Me.NR := 1 + (Tst.GetRandomSerialNR div 10) * 10
+        else if IsNum(S) then
+          Tst.Me.Nr := S.ToInteger
         else
-          Tst.Me.Nr := StrToInt(Avalue);
-
+          Tst.Me.Nr := 1;
         if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
       end;
     etGenericField, etNaQpExch2, etNaQpNonNaExch2:
@@ -2344,12 +2359,15 @@ begin
   if not Ini.SerialNRSettings[snt].IsValid then
     snt := snStartContest;
 
-  //Ini.NRDigits := nrd;
   Ini.SerialNR := snt;
   SerialNRSet1.Checked := snt = snStartContest;
   SerialNRSet2.Checked := snt = snMidContest;
   SerialNRSet3.Checked := snt = snEndContest;
   SerialNRCustomRange.Checked := snt = snCustomRange;
+
+  // update contest-specific settings/caches (e.g. SerialNR Generator for CQ Wpx)
+  if not (RunMode in [rmStop, rmHST]) then
+    Tst.SerialNrModeChanged;
 end;
 
 

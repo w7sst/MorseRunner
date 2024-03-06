@@ -20,7 +20,6 @@ private
   PrevSerialNRType : TSerialNRTypes;
   PrevRangeStr : String;
 
-  procedure InitSerialNRGen;
   function GetNR(const station : TDxStation) : integer;
 
 public
@@ -30,17 +29,17 @@ public
   function OnContestPrepareToStart(const AUserCallsign: string;
     const ASentExchange : string) : Boolean; override;
   function LoadCallHistory(const AUserCallsign : string) : boolean; override;
+  procedure SerialNrModeChanged; override;
+  procedure InitSerialNRGen;
 
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
   function GetCall(id:integer): string; override;     // returns station callsign
   procedure GetExchange(id : integer; out station : TDxStation); override;
+  function GetRandomSerialNR: Integer; override;
 
   function getExch1(id:integer): string;    // returns RST (e.g. 5NN)
   function getExch2(id:integer): string;    // returns section info (e.g. 3)
-  {function getZone(id:integer): string;     // returns CQZone (e.g. 3)
-  function FindCallRec(out fdrec: TCqWpxCallRec; const ACall: string): Boolean;
-  }
   function GetStationInfo(const ACallsign: string) : string; override;
   function ExtractMultiplier(Qso: PQso) : string; override;
 end;
@@ -48,14 +47,40 @@ end;
 implementation
 
 uses
-  SysUtils, Generics.Defaults, System.Math, {Ini,} Classes, ARRL;
+  SysUtils, Generics.Defaults, System.Math,
+  Main,           // for SetMySerialNR
+  Classes, ARRL;
 
 function TCqWpx.OnContestPrepareToStart(const AUserCallsign: string;
   const ASentExchange : string) : Boolean;
 begin
+  // Refresh Serial NR Generator before calling OnContestPrepareToStart
   InitSerialNRGen;
 
   Result := inherited OnContestPrepareToStart(AUserCallsign, ASentExchange);
+
+  // reload My Serial Number at start of contest. This allows Mid-Contest and
+  // End of Contest modes to set Tst.Me.NR with a realistic random number.
+  if Result then
+    MainForm.SetMySerialNR;
+end;
+
+
+{
+  Overriden for the CQ WPX Contest to allow regeneration of the SerialNRGen
+  tables (based on new Ini.SerialNR setting).
+
+  Called after
+  - 'Setup | Serial NR' menu pick
+  - 'Setup | Serial NR | Custom Range...' menu pick/modification
+
+  This can be called during a Run if the user selects a different
+  Serial NR distribution (e.g. Mid-Contest, End of Contest, etc.).
+}
+procedure TCqWpx.SerialNrModeChanged;
+begin
+  assert(RunMode <> rmStop);
+  InitSerialNRGen;
 end;
 
 
@@ -77,6 +102,8 @@ begin
   inherited Create;
   CallLst := TCallList.Create;
   SerialNRGen := TSerialNRGen.Create;
+
+  InitSerialNRGen;
 end;
 
 
@@ -228,6 +255,12 @@ begin
 end;
 
 
+function TCqWpx.GetRandomSerialNR: Integer;
+begin
+  Result := Self.SerialNRGen.GetNR;
+end;
+
+
 // return status bar information string from DXCC data file.
 // the callsign, Entity and Continent are returned.
 // this string is used in MainForm.sbar.Caption (status bar).
@@ -271,12 +304,19 @@ begin
 end;
 
 
+{
+  Returns the serial number for a DX Station being worked.
+  For HST or Start-of-Contest serial NR modes, the serial number is based
+  on elapsed time and operator skill. For Mid-Contest and End-of-Contest
+  modes, the serial number returned will follow a distribution similar to
+  the a WPX Contest. See SerNRGen for more information.
+}
 function TCqWpx.GetNR(const station : TDxStation) : integer;
 begin
   if (RunMode = rmHST) or (Ini.SerialNR = snStartContest) then
     Result := station.Oper.GetNR  // Result = f(elapsed time, operator skill)
   else
-    Result := SerialNRGen.GetNR;
+    Result := GetRandomSerialNR;  // follows WPX distribution of serial NRs
 end;
 
 
@@ -290,6 +330,7 @@ function TCqWpx.getExch2(id:integer): string;    // returns serial number (e.g. 
 begin
   Result := '1';
 end;
+
 
 end.
 
