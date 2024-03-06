@@ -103,7 +103,7 @@ const
      Key: 'CqWpx';
      ExchType1: etRST;
      ExchType2: etSerialNr;
-     ExchFieldEditable: False;
+     ExchFieldEditable: True;
      ExchDefault: '5NN #';
      Msg: '''RST <serial>'' (e.g. 5NN #|123)';
      T:scWpx),
