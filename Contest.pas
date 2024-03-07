@@ -44,12 +44,14 @@ type
     procedure DropStation(id : integer); virtual; abstract;
     function GetCall(id : integer) : string; virtual; abstract;
     procedure GetExchange(id : integer; out station : TDxStation); virtual; abstract;
+    function GetRandomSerialNR: Integer; virtual;
     function GetStationInfo(const ACallsign : string) : string; virtual;
     function PickCallOnly : string;
 
     function OnSetMyCall(const AUserCallsign : string; out err : string) : boolean; virtual;
     function OnContestPrepareToStart(const AUserCallsign: string;
       const ASentExchange : string) : Boolean; virtual;
+    procedure SerialNrModeChanged; virtual;
     function IsFarnsworthAllowed : Boolean;
     function GetSentExchTypes(
       const AStationKind : TStationKind;
@@ -169,6 +171,15 @@ begin
 end;
 
 
+{
+  Return a random serial number for the currently selected Serial NR mode
+  (a menu pick).
+}
+function TContest.GetRandomSerialNR: Integer;
+begin
+  Result := Ini.SerialNRSettings[Ini.SerialNR].GetNR;
+end;
+
 
 {
   GetStationInfo() returns station's DXCC information.
@@ -240,6 +251,20 @@ begin
     end
   else
     Result:= True;
+end;
+
+
+{
+  Called after
+  - 'Setup | Serial NR' menu pick
+  - 'Setup | Serial NR | Custom Range...' menu pick/modification
+
+  The base class implementation does nothing. Other derived classes can
+  update cached information based on the serial NR menu pick (e.g. CQ WPX).
+}
+procedure TContest.SerialNrModeChanged;
+begin
+  assert(RunMode <> rmStop);
 end;
 
 

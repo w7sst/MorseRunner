@@ -45,7 +45,8 @@ uses
   CWSST in 'CWSST.pas',
   ALLJA in 'ALLJA.pas',
   ACAG in 'ACAG.pas',
-  IaruHf in 'IaruHf.pas';
+  IaruHf in 'IaruHf.pas',
+  SerNRGen in 'SerNRGen.pas';
 
 {$R *.RES}
 

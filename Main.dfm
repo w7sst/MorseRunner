@@ -1383,26 +1383,26 @@ object MainForm: TMainForm
       end
       object NRDigits1: TMenuItem
         Tag = 3
-        Caption = 'NR Digits'
-        object NRDigitsSet1: TMenuItem
+        Caption = 'Serial NR'
+        object SerialNRSet1: TMenuItem
+          Caption = 'Start of Contest (Default)'
+          Checked = True
+          OnClick = NRDigitsClick
+        end
+        object SerialNRSet2: TMenuItem
           Tag = 1
-          Caption = '1'
+          Caption = 'Mid-Contest (50-500)'
           OnClick = NRDigitsClick
         end
-        object NRDigitsSet2: TMenuItem
+        object SerialNRSet3: TMenuItem
           Tag = 2
-          Caption = '2'
+          Caption = 'End of Contest (500-5000)'
           OnClick = NRDigitsClick
         end
-        object NRDigitsSet3: TMenuItem
+        object SerialNRCustomRange: TMenuItem
           Tag = 3
-          Caption = '3'
-          OnClick = NRDigitsClick
-        end
-        object NRDigitsSet4: TMenuItem
-          Tag = 4
-          Caption = '4'
-          OnClick = NRDigitsClick
+          Caption = 'Custom Range (01-99)...'
+          OnClick = SerialNRCustomRangeClick
         end
       end
       object N6: TMenuItem

@@ -50,6 +50,7 @@ type
     SendPos: integer;
     TimeOut: integer;
     NrWithError: boolean;
+    R1 : Single;    // holds a Random number; used in NrAsText
     procedure Init;
     function NrAsText: string;
   public
@@ -135,6 +136,7 @@ procedure TStation.Init;
 begin
   SentExchTypes:= ExchTypesUndef;
   MsgTemp := 'undef';
+  R1 := Random;
 end;
 
 
@@ -296,6 +298,7 @@ end;
 function TStation.NrAsText: string;
 var
   Idx: integer;
+  digits : integer;
   IsDxStation: boolean;
 begin
   // Adding a contest: TStation.NrAsText(), converts <#> to exchange (usually '<exch1> <exch2>'). Inject LID errors.
@@ -318,7 +321,30 @@ begin
     scAllJa, scAcag:
       Result := Format('%s %s', [Exch1, Exch2]);
     else
-      Result := Format('%d%.3d', [RST, NR]);
+      if Call = MyCall then
+        Result := Format('%d%.3d', [RST, NR])
+      else begin
+        var pRange : PSerialNRSettings := @Ini.SerialNRSettings[Ini.SerialNR];
+        // R1 is a random number assigned when this station was created.
+        // It provides a consistent result since this function is called
+        // mutliple times.
+        if R1 < 0.5 then // add leading zeros
+          digits := pRange.minDigits
+        else
+          digits := Floor(Log10(pRange.MinVal) + 1);
+        case Ini.SerialNR of
+        snStartContest: // HST, Default (1-N)
+          Result := Format('%d%.3d', [RST, NR]);
+        snMidContest:   // Mid-Contest (50-500)
+          Result := Format('%d%.*d', [RST, digits, NR]);
+        snEndContest:   // End of Contest (500-5000)
+          Result := Format('%d%.*d', [RST, digits, NR]);
+        snCustomRange:  // Custom Range (01 to 99)
+          Result := Format('%d%.*d', [RST, digits, NR]);
+        else
+          assert(false);
+        end;
+      end;
   end;
 
   if NrWithError and (SentExchTypes.Exch2 = etSerialNr) then
@@ -350,6 +376,8 @@ begin
     // replace leading zeros
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
+    if (SentExchTypes.Exch2 = etSerialNr) and (Random < 0.98) then
+      Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
 
     // the user's station will always send cut numeric fields
     if not IsDxStation then begin

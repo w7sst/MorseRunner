@@ -8,7 +8,7 @@ unit Ini;
 interface
 
 uses
-  SysUtils, IniFiles, SndTypes, Math;
+  IniFiles;
 
 const
   SEC_STN = 'Station';
@@ -37,6 +37,31 @@ type
                     etCqZone, etItuZone, etAge, etPower, etJaPref, etJaCity,
                     etNaQpExch2, etNaQpNonNaExch2);
 
+  // Serial NR types
+  TSerialNRTypes = (snStartContest, snMidContest, snEndContest, snCustomRange);
+
+  // Serial Number Settings.
+  // Defines parameters used to generate various serial numbers.
+  // Used by SerialNRGenerator. Stored in .ini file.
+  TSerialNRSettings = record
+    Key: PChar;         // .INI file keyword
+    RangeStr: string;   // Range specification of the form: 01-99 (stored in .ini)
+    MinVal: integer;    // range starting value
+    MaxVal: integer;    // range ending value
+
+    // MinDigits/MaxDigits below are used for formatting leading zeros:
+    // (e.g. Format('%*d', [digits, NR]
+    MinDigits: integer; // number of digits in MinVal
+    MaxDigits: integer; // number of digits in max value
+
+    procedure Init(const Range: string; AMin, AMax: integer);
+    function IsValid : boolean;
+    function ParseSerialNR(const ValueStr : string; var Err : string) : Boolean;
+    function GetNR : integer;
+  end;
+
+  PSerialNRSettings = ^TSerialNRSettings;
+
   // Contest definition.
   TContestDefinition = record
     Name: PChar;    // Contest Name. Used in SimContestCombo dropdown box.
@@ -52,9 +77,15 @@ type
 
   PContestDefinition = ^TContestDefinition;
 
+  TErrMessageCallback = reference to procedure(const aMsg : string);
+
 const
   UndefExchType1 : TExchange1Type = TExchange1Type(-1);
   UndefExchType2 : TExchange2Type = TExchange2Type(-1);
+
+  SerialNrMidContestDef : string = '50-500';
+  SerialNrEndContestDef : string = '500-5000';
+  SerialNrCustomRangeDef : string = '01-99';
 
   {
     Each contest is declared here. Long-term, this will be a generalized
@@ -189,6 +220,13 @@ var
   MaxRxWpm: integer = 0;
   MinRxWpm: integer = 0;
   NRDigits: integer = 1;
+  SerialNRSettings: array[TSerialNRTypes] of TSerialNRSettings = (
+    (Key:'SerialNrStartContest'; RangeStr:'Default';  MinVal:1;   MaxVal:176;  minDigits:1; maxDigits:3),
+    (Key:'SerialNrMidContest';   RangeStr:'50-500';   MinVal:50;  MaxVal:500;  minDigits:2; maxDigits:3),
+    (Key:'SerialNrEndContest';   RangeStr:'500-5000'; MinVal:500; MaxVal:5000; minDigits:3; maxDigits:4),
+    (Key:'SerialNrCustomRange';  RangeStr:'01-99';    MinVal:1;   MaxVal:99;   minDigits:2; maxDigits:2)
+  );
+  SerialNR: TSerialNRTypes = snStartContest;
   BandWidth: integer = 500;
   Pitch: integer = 600;
   Qsk: boolean = false;
@@ -231,7 +269,7 @@ var
   UserExchange1: array[TSimContest] of string;
   UserExchange2: array[TSimContest] of string;
 
-procedure FromIni;
+procedure FromIni(cb : TErrMessageCallback);
 procedure ToIni;
 function IsNum(Num: String): Boolean;
 function FindContestByName(const AContestName : String) : TSimContest;
@@ -240,16 +278,43 @@ function FindContestByName(const AContestName : String) : TSimContest;
 implementation
 
 uses
+  Classes,        // for TStringList
+  Math,           // for Min, Max
+  SysUtils,       // for Format(),
   Main, Contest;
 
-procedure FromIni;
+procedure FromIni(cb : TErrMessageCallback);
 var
   V: integer;
   C: PContestDefinition;
   SC: TSimContest;
   KeyName: String;
+
+  procedure ReadSerialNRSetting(
+    IniFile: TCustomIniFile;
+    snt: TSerialNRTypes;
+    const DefaultVal : string);
+  var
+    Err : string;
+    ValueStr : string;
+  begin
+    var pRange : PSerialNRSettings := @Ini.SerialNRSettings[snt];
+    ValueStr := IniFile.ReadString(SEC_STN, pRange.Key, DefaultVal);
+    if not pRange.ParseSerialNR(ValueStr, Err) then
+      begin
+        Err := Format(
+          'Error while reading MorseRunner.ini file.'#13 +
+          'Invalid Keyword Value: ''%s=%s'':'#13 +
+          '%s'#13 +
+          'Please correct this keyword or remove the MorseRunner.ini file.',
+          [pRange.Key, pRange.RangeStr, Err]);
+        cb(Err);
+      end;
+  end;
+
 begin
-  with TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini')) do
+  var IniFile: TCustomIniFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
+  with IniFile do
     try
       // initial Contest pick will be first item in the Contest Dropdown.
       V:= Ord(FindContestByName(MainForm.SimContestCombo.Items[0]));
@@ -283,7 +348,27 @@ begin
 
       MainForm.UpdCWMaxRxSpeed(ReadInteger(SEC_STN, 'CWMaxRxSpeed', MaxRxWpm));
       MainForm.UpdCWMinRxSpeed(ReadInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm));
-      MainForm.UpdNRDigits(ReadInteger(SEC_STN, 'NRDigits', NRDigits));
+
+      // convert older NRDigits (pre-V1.84) to new SerialNR (v1.84)
+      if ValueExists(SEC_STN, 'NRDigits') then begin
+        NRDigits := ReadInteger(SEC_STN, 'NRDigits', NRDigits);
+        case NRDigits of
+          1: SerialNR := snStartContest;
+          2: SerialNR := snCustomRange;
+          3: SerialNR := snMidContest;
+          4: SerialNR := snEndContest;
+          else SerialNR := snStartContest;
+        end;
+        DeleteKey(SEC_STN, 'NRDigits');
+        WriteInteger(SEC_STN, 'SerialNR', Ord(SerialNR));
+        NRDigits := 0;
+      end;
+
+      ReadSerialNRSetting(IniFile, snMidContest, SerialNrMidContestDef);
+      ReadSerialNRSetting(IniFile, snEndContest, SerialNrEndContestDef);
+      ReadSerialNRSetting(IniFile, snCustomRange, SerialNrCustomRangeDef);
+      MainForm.UpdSerialNRCustomRange(SerialNRSettings[snCustomRange].RangeStr);
+      MainForm.UpdSerialNR(ReadInteger(SEC_STN, 'SerialNR', Ord(SerialNR)));
 
       Wpm := ReadInteger(SEC_STN, 'Wpm', Wpm);
       Qsk := ReadBool(SEC_STN, 'Qsk', Qsk);
@@ -378,7 +463,15 @@ begin
       }
       WriteInteger(SEC_STN, 'CWMaxRxSpeed', MaxRxWpm);
       WriteInteger(SEC_STN, 'CWMinRxSpeed', MinRxWpm);
-      WriteInteger(SEC_STN, 'NRDigits', NRDigits);
+      WriteInteger(SEC_STN, 'SerialNR', Ord(SerialNR));
+{ future...
+      WriteString(SEC_STN, Ini.SerialNRSettings[snMidContest].Key,
+                           Ini.SerialNRSettings[snMidContest].RangeStr);
+      WriteString(SEC_STN, Ini.SerialNRSettings[snEndContest].Key,
+                           Ini.SerialNRSettings[snEndContest].RangeStr);
+}
+      WriteString(SEC_STN, Ini.SerialNRSettings[snCustomRange].Key,
+                           Ini.SerialNRSettings[snCustomRange].RangeStr);
 
       WriteInteger(SEC_BND, 'Activity', Activity);
       WriteBool(SEC_BND, 'Qrn', Qrn);
@@ -404,6 +497,81 @@ begin
     finally
       Free;
     end;
+end;
+
+
+{ TSerialNRSettings methods...}
+procedure TSerialNRSettings.Init(const Range: string; AMin, AMax: integer);
+begin
+  Self.RangeStr := Range;
+  Self.MinVal := AMin;
+  Self.MaxVal := AMax;
+end;
+
+
+function TSerialNRSettings.IsValid: Boolean;
+begin
+  Result := (MinVal > 0) and (MinVal <= MaxVal);
+end;
+
+
+function TSerialNRSettings.GetNR : integer;
+begin
+  assert(IsValid);
+  if IsValid then
+    Result := MinVal + Random(MaxVal - MinVal)
+  else
+    Result := 1;
+end;
+
+
+function TSerialNRSettings.ParseSerialNR(
+  const ValueStr : string;
+  var Err : string) : Boolean;
+var
+  sl : TStringList;
+begin
+  sl := TStringList.Create;
+  try
+    Self.RangeStr := ValueStr;
+
+    // split Range into two strings [Min, Max)
+    sl.Clear;
+    ExtractStrings(['-'], [], PChar(ValueStr), sl);
+    Err := '';
+    if (sl.Count <> 2) or
+       (ValueStr.CountChar('-') <> 1) or
+       not TryStrToInt(sl[0], Self.MinVal) or
+       not TryStrToInt(sl[1], Self.MaxVal) then
+      Err := Format(
+        'Error: ''%s'' is an invalid range.'#13 +
+        'Expecting min-max values with up to 4-digits each (e.g. 100-300).',
+        [ValueStr])
+    else if (Self.MinVal > 9999) or (Self.MaxVal > 9999) then
+      Err := Format(
+        'Error: ''%s'' is an invalid range.'#13 +
+        'Expecting range values to be less than or equal to 9999.',
+        [ValueStr])
+    else if (Self.MinVal > Self.MaxVal) then
+      Err := Format(
+        'Error: ''%s'' is an invalid range.'#13 +
+        'Expecting Min value to be less than Max value.',
+        [ValueStr]);
+    if Err = '' then
+      begin
+        Self.MinDigits := sl[0].Length;
+        Self.MaxDigits := sl[1].Length;
+      end
+    else
+      begin
+        Self.MinDigits := 0;
+        Self.MaxDigits := 0;
+      end;
+    Result := Err = '';
+
+  finally
+    sl.Free;
+  end;
 end;
 
 
