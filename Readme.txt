@@ -306,6 +306,7 @@ Version 1.84 (February 2024)
   - K1USN SST - user test field in call history file should be optional (Coded by W7SST)
   - DX station will send an abbreviated exchange number in the JARL ALLJA and ACAG contests (Coded by JR8PPG)
   - User's exchange number is not abbreviated (not convert 100 to 1TT) (Coded by JR8PPG)
+  - All Contests - Shift-F9 added as shortcut to start Single Call mode (Coded by W7SST)
 
 Version 1.83 (March 2023)
   - Added K1USN Slow Speed Test (Coded by W7SST)
