@@ -1726,6 +1726,22 @@ begin
        if not SetMyExchange(Trim(ExchangeEdit.Text)) then
          Exit;
 
+    // if requesting an HST run, verify the correct contest and serial NR
+    // mode is selected.
+    if (Value = rmHst) and
+       ((SimContest <> scHst) or (Ini.SerialNR <> snStartContest)) then
+    begin
+      var S : string :=
+        'Error: HST Competition mode requires the following settings:'#13 +
+        '  1. ''HST (High Speed Test)'' in the Contest dropdown.'#13 +
+        '  2. ''Start of Contest'' in the ''Settings | Serial NR'' menu.'#13 +
+        'Please correct these settings and try again.';
+      Application.MessageBox(PChar(S),
+        'Error',
+        MB_OK or MB_ICONERROR);
+      Exit;
+    end;
+
     // load call history and other contest-specific setup before starting
     if not Tst.OnContestPrepareToStart(Ini.Call, ExchangeEdit.Text) then
       Exit;
@@ -1743,7 +1759,7 @@ begin
   //main ctls
   EnableCtl(SimContestCombo, BStop);
   EnableCtl(Edit4,  BStop);
-  EnableCtl(ExchangeEdit, BStop);
+  EnableCtl(ExchangeEdit, BStop and ActiveContest.ExchFieldEditable);
   EnableCtl(SpinEdit2, BStop);
   SetToolbuttonDown(ToolButton1, not BStop);
 
@@ -1795,10 +1811,12 @@ begin
   Flutter1.Enabled := not BCompet;
   Lids1.Enabled := not BCompet;
 
-
   //hst specific
   Activity1.Enabled := Value <> rmHst;
   CWBandwidth2.Enabled := Value <> rmHst;
+  CWMinRxSpeed1.Enabled := Value <> rmHst;
+  CWMaxRxSpeed1.Enabled := Value <> rmHst;
+  NRDigits1.Enabled := Value <> rmHst;
 
   EnableCtl(SpinEdit3, RunMode <> rmHst);
   if RunMode = rmHst then SpinEdit3.Value := 4;
