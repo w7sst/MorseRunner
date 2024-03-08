@@ -46,14 +46,14 @@ const
   // Adding a contest: define contest-specific field types
   // Exchange Field 1 settings/rules
   Exchange1Settings: array[TExchange1Type] of TFieldDefinition = (
-    (C: 'RST';   R: '[5E][9N][9N]';     L: 3;  T:Ord(etRST)),
+    (C: 'RST';   R: '[1-5E][1-9N][1-9N]'; L: 3;  T:Ord(etRST)),
     (C: 'Name';  R: '[A-Z][A-Z]*';      L: 10; T:Ord(etOpName)),
     (C: 'Class'; R: '[1-9][0-9]*[A-F]'; L: 3;  T:Ord(etFdClass))
   );
 
   // Exchange Field 2 settings/rules
   Exchange2Settings: array[TExchange2Type] of TFieldDefinition = (
-    (C: 'Nr.';        R: '([0-9][0-9]*)|(#)';              L: 4;  T:Ord(etSerialNr)),
+    (C: 'Nr.';        R: '([0-9OTN]+)|(#)';                L: 4;  T:Ord(etSerialNr)),
     (C: 'Exch';       R: '[0-9A-Z]*';                      L: 12; T:Ord(etGenericField)),
     (C: 'Section';    R: '([A-Z][A-Z])|([A-Z][A-Z][A-Z])'; L: 3;  T:Ord(etArrlSection)),
     (C: 'State/Prov'; R: '[ABCDFGHIKLMNOPQRSTUVWY][ABCDEFHIJKLMNORSTUVXYZ]';
@@ -355,6 +355,7 @@ type
     procedure mnuShowCallsignInfoClick(Sender: TObject);
     procedure SimContestComboChange(Sender: TObject);
     procedure SimContestComboPopulate;
+    procedure ExchangeEditChange(Sender: TObject);
     procedure ExchangeEditExit(Sender: TObject);
     procedure Edit4Exit(Sender: TObject);
     procedure SpinEdit1Exit(Sender: TObject);
@@ -363,6 +364,7 @@ type
   private
     MustAdvance: boolean;       // Controls when Exchange fields advance
     UserCallsignDirty: boolean; // SetMyCall is called after callsign edits
+    UserExchangeDirty: boolean; // SetMyExchange is called after exchange edits
     CWSpeedDirty: boolean;      // SetWpm is called after CW Speed edits
     RitLocal: integer;          // tracks incremented RIT Value
     function CreateContest(AContestId : TSimContest) : TContest;
@@ -397,11 +399,11 @@ type
     procedure PopupScoreHst;
     procedure Advance;
     procedure SetContest(AContestNum: TSimContest);
-    procedure SetMyExchange(const AExchange: string);
+    function SetMyExchange(const AExchange: string) : Boolean;
     procedure SetMySerialNR;
     procedure SetQsk(Value: boolean);
     procedure SetWpm(AWpm : integer);
-    procedure SetMyCall(ACall: string);
+    function SetMyCall(ACall: string) : Boolean;
     procedure SetPitch(PitchNo: integer);
     procedure SetBw(BwNo: integer);
     procedure ReadCheckboxes;
@@ -475,6 +477,9 @@ begin
   Label14.Caption:= Label12.Caption;
   ListView2.Visible:= False;
   ListView2.Clear;
+
+  UserCallsignDirty := False;
+  UserExchangeDirty := False;
 
   // populate and sort SimContestCombo
   SimContestComboPopulate;
@@ -1025,9 +1030,16 @@ begin
     SetMyCall(Trim(Edit4.Text));
 end;
 
+procedure TMainForm.ExchangeEditChange(Sender: TObject);
+begin
+  // exchange edit callsign edit has occurred; allows SetMyCall to be called.
+  UserExchangeDirty := True;
+end;
+
 procedure TMainForm.ExchangeEditExit(Sender: TObject);
 begin
-  SetMyExchange(Trim(ExchangeEdit.Text));
+  if UserExchangeDirty then
+    SetMyExchange(Trim(ExchangeEdit.Text));
 end;
 
 procedure TMainForm.SetContest(AContestNum: TSimContest);
@@ -1110,7 +1122,7 @@ end;}
   My "sent" exchange types (Tst.Me.SentExchTypes) have been previously set by
   SetMyCall().
 }
-procedure TMainForm.SetMyExchange(const AExchange: string);
+function TMainForm.SetMyExchange(const AExchange: string) : Boolean;
 var
   sl: TStringList;
   SentExchTypes : TExchTypes;
@@ -1136,6 +1148,7 @@ begin
     if not ValidateExchField(Field1Def, sl[0]) or
        not ValidateExchField(Field2Def, sl[1]) then
       begin
+        Result := False;
         sbar.Caption := Format('Invalid exchange: ''%s'' - expecting %s.',
           [AExchange, ActiveContest.Msg]);
 
@@ -1150,6 +1163,7 @@ begin
       end
     else
       begin
+        Result := True;
         sbar.Visible := mnuShowCallsignInfo.Checked;
         sbar.Font.Color := clDefault;
         sbar.Caption := '';
@@ -1167,6 +1181,7 @@ begin
     // update application's title bar
     UpdateTitleBar;
 
+    UserExchangeDirty := False;
   finally
     sl.Free;
   end;
@@ -1189,7 +1204,7 @@ begin
 end;
 
 
-procedure TMainForm.SetMyCall(ACall: string);
+function TMainForm.SetMyCall(ACall: string) : Boolean;
 var
   err : string;
 begin
@@ -1202,6 +1217,7 @@ begin
   if not Tst.OnSetMyCall(ACall, err) then
   begin
     MessageDlg(err, mtError, [mbOK], 0);
+    Result := False;
     Exit;
   end;
   assert(Tst.Me.SentExchTypes = Tst.GetSentExchTypes(skMyStation, ACall));
@@ -1209,7 +1225,7 @@ begin
   // update my "sent" exchange information.
   // depends on: contest, my call, sent exchange (ExchangeEdit).
   // SetMyExchange() may report an error in the status field.
-  SetMyExchange(Trim(ExchangeEdit.Text));
+  Result := SetMyExchange(Trim(ExchangeEdit.Text));
 
   // update "received" Exchange field types, labels and length settings
   // (e.g. RST, Nr.). depends on: contest, my call and dx station's call.
@@ -1704,7 +1720,11 @@ begin
       to check the accuracy of the entered QSO.
     }
     if UserCallsignDirty then
-       SetMyCall(Trim(Edit4.Text));
+       if not SetMyCall(Trim(Edit4.Text)) then
+         Exit;
+    if UserExchangeDirty then
+       if not SetMyExchange(Trim(ExchangeEdit.Text)) then
+         Exit;
 
     // load call history and other contest-specific setup before starting
     if not Tst.OnContestPrepareToStart(Ini.Call, ExchangeEdit.Text) then

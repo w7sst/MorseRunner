@@ -950,6 +950,7 @@ object MainForm: TMainForm
         CharCase = ecUpperCase
         TabOrder = 1
         Text = '3A ON'
+        OnChange = ExchangeEditChange
         OnExit = ExchangeEditExit
       end
     end
