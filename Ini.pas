@@ -249,6 +249,7 @@ var
 
   Duration: integer = 30;
   RunMode: TRunMode = rmStop;
+  DefaultRunMode: TRunMode = rmPileUp;
   HiScore: integer;
   CompDuration: integer = 60;
 
@@ -385,6 +386,8 @@ begin
       MainForm.CheckBox6.Checked := ReadBool(SEC_BND, 'Lids', Lids);
       MainForm.ReadCheckBoxes;
 
+      V := ReadInteger(SEC_TST, 'DefaultRunMode', Ord(DefaultRunMode));
+      MainForm.SetDefaultRunMode(Max(Ord(rmPileUp), Min(Ord(rmHst), V)));
       Duration := ReadInteger(SEC_TST, 'Duration', Duration);
       MainForm.SpinEdit2.Value := Duration;
       HiScore := ReadInteger(SEC_TST, 'HiScore', HiScore);
@@ -480,6 +483,7 @@ begin
       WriteBool(SEC_BND, 'Flutter', Flutter);
       WriteBool(SEC_BND, 'Lids', Lids);
 
+      WriteInteger(SEC_TST, 'DefaultRunMode', Ord(DefaultRunMode));
       WriteInteger(SEC_TST, 'Duration', Duration);
       WriteInteger(SEC_TST, 'HiScore', HiScore);
       WriteInteger(SEC_TST, 'CompetitionDuration', CompDuration);

@@ -400,6 +400,7 @@ type
     procedure Advance;
     procedure SetContest(AContestNum: TSimContest);
     function SetMyExchange(const AExchange: string) : Boolean;
+    procedure SetDefaultRunMode(V : Integer);
     procedure SetMySerialNR;
     procedure SetQsk(Value: boolean);
     procedure SetWpm(AWpm : integer);
@@ -1197,6 +1198,21 @@ begin
 end;
 
 
+procedure TMainForm.SetDefaultRunMode(V : Integer);
+begin
+  if (V >= Ord(rmPileUp)) and (V <= Ord(rmHst)) then
+    DefaultRunMode := TRunMode(V)
+  else
+    DefaultRunMode := rmPileUp;
+
+  assert(PopupMenu1.Items[0].Tag = Ord(rmPileUp));
+  assert(PopupMenu1.Items[1].Tag = Ord(rmSingle));
+  assert(PopupMenu1.Items[2].Tag = Ord(rmWpx));
+  assert(PopupMenu1.Items[3].Tag = Ord(rmHst));
+  PopupMenu1.Items[Ord(DefaultRunMode)-1].Default := True;
+end;
+
+
 procedure TMainForm.SetMySerialNR;
 begin
   assert(Tst.Me.SentExchTypes.Exch2 = etSerialNr);
@@ -1648,7 +1664,8 @@ end;
 
 procedure TMainForm.RunMNUClick(Sender: TObject);
 begin
-  Run(TRunMode((Sender as TComponent).Tag));
+  SetDefaultRunMode((Sender as TComponent).Tag);
+  Run(DefaultRunMode);
 end;
 
 
@@ -1762,6 +1779,8 @@ begin
   EnableCtl(ExchangeEdit, BStop and ActiveContest.ExchFieldEditable);
   EnableCtl(SpinEdit2, BStop);
   SetToolbuttonDown(ToolButton1, not BStop);
+  ToolButton1.Caption := IfThen(BStop, 'Run', 'Stop');
+  ToolButton1.ImageIndex := IfThen(BStop, 0, 10);
 
   //condition checkboxes
   EnableCtl(CheckBox2, not BCompet);
@@ -1881,7 +1900,7 @@ end;
 procedure TMainForm.RunBtnClick(Sender: TObject);
 begin
   if RunMode = rmStop then
-    Run(rmPileUp)
+    Run(DefaultRunMode)
   else
     Tst.FStopPressed := true;
 end;
