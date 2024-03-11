@@ -95,9 +95,22 @@ begin
           if rec.Call='' then continue;
           if rec.StnClass='' then continue;
           if rec.Section='' then continue;
-          //if IsNum(rec.Number) = False then  continue;
-          //if length(rec.Name) > 10 then continue;
-          //if length(rec.Name) > 12 then continue;
+
+          // In 2020, Covid resulted in FD rule changes allowing home stations
+          // to be used and contribute to the operator's club score. This
+          // resulted in an above average number of home stations since these
+          // stations were connected to the clubs score.
+          //
+          // Skip home (D/E) and portable (B) stations with a club name by
+          // assuming they are associated with a club. This is not 100%
+          // accurate since many clubs operated as a portable station without
+          // a corresponding club call operating under Class A (Club).
+          // Note - this algorithm will be revised after v1.84 release.
+          var S : String := rec.StnClass.substring(1);
+          var HomeStn : Boolean := S.Equals('D') or S.Equals('E');
+          var PortableStn : Boolean := S.Equals('B');
+          if (HomeStn or PortableStn) and not rec.UserText.IsEmpty then
+            continue;
 
           FdCallList.Add(rec);
           rec := nil;
