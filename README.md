@@ -24,7 +24,7 @@ a common vision of improving and supporting the Morse Runner Contest Simulator.
 - Incorporate enhancements and bug fixes from [other Morse Runner versions](#morse-runner-release-history).
 - Maintain embedded operation with select logging programs (e.g. N1MM and DxLog).
 - Integrate a recent Linux port.
-- Perhaps develop training materials, including club presentations and perhaps end-user training.
+- Perhaps develop training materials, including club presentations and end-user training.
 
 ## How can I help?
 Anyway you want...
@@ -44,44 +44,54 @@ information and build instructions.
 ## Roadmap
 Below is a high-level overview of project activities over the next year.
 
+> *Note - My involvement will be limited over the next 6-9 months due to ongoing family commitments. I will keep up on discussions and encourage others to continue development as they can. If bugs are found, I'll work to get them fixed and released. Thank you, Mike W7SST.*
+
 ### Roadmap - Now, Next, and Future
 
-#### Now - Winter 2023 (Jan-Mar)
+#### Now - Winter 2024 (Jan-Mar)
 Projects we are currently working on...
-- [ ] **Developer on-boarding** - Help other developers get up to speed with compiling and pushing to the project.
+- [x] Add IARU HF Contest
+- [x] Improve CQ WPX Contest
+- [x] Focus on quality
+- [ ] Wrap up the 1.84 release by the end of March 2024.
 
-- [x] **Add a few more contests** - Implement one or two more popular contests based on community input, including the IARU HF Championship Contest.
+#### Next - Spring 2024 (Apr-Jun)
+Projects that we'll work on next (as time permits...)
 
-- [x] **Add K1USN Slow Speed Contest (SST)** - The CWOPS Community has reached out and expressed interest in using MRCE as one of their recommended training tools for their CW classes.
-Farnsworth CW timing support will be implemented for this contest only.
+- [ ] **Redefine our strategy moving forward** - Originally, we had hoped additional developers would step forward and join actual coding efforts.
+We currently have a core group of advocates that are providing awesome project direction and insight and we appreciate their involvement and efforts.
+However, we do need to slow down and consider what the next steps will be given limited developer resources.
+There has been some preliminary work on a GUI redesign and several contests have been suggested.
+We will start discussions amoungst the core development group on how to proceed.
 
-- [x] **Add JARL All Japan and ACAG contests** - These contests are being implemented by JR8PPG. Thank you!
+- [ ] **ARRL Field Day support announcement** - We would like to figure out how to announce MRCE's support for ARRL Field Day.
+This contest was the main focus from two years ago and we want to be sure that users are aware of this training opportunity in time for FD 2024.
 
-- [x] **Focus on Quality** - We will try to address some of the quality issues that have been reported.
+- [ ] **Focus on Quality** - Address important quality issues as they are reported.
 
-- [x] Target v1.83 release before March 31.
+- [ ] **GUI Enhancement Discussions** - The team will evaluate the GUI for ergonomic enhancements.
 
-#### Next - Spring 2023 (Apr-June)
-Projects that we'll work on next...
-- [ ] **ARRL Field Day support announcement** - We would like to figure out how to announce MRCE's support for ARRL Field Day. This contest was the main focus from a year ago and we want to be sure that users are aware of this training opportunity in time for FD 2023.
+#### Next - 2nd half 2024
+Projects that we'll work on next (as time permits)...
+- [ ] **Developer on-boarding** - Help new developers get up to speed with compiling and pushing to the project.
 
-- [ ] **Developer on-boarding** - Help other developers get up to speed with compiling and pushing to the project.
-
-- [ ] **Merge selected features and bug fixes** - Identify and integrate features from
+- [ ] **Merge selected features and bug fixes** - (As time permits...) Identify and integrate features from
 [other MR branches](#morse-runner-release-history) into the main release branch.
-Our initial focus will be F6FVY and N2IC changes, including bandwidth adjustment using mouse wheel and F7-key handling improvements.
+
+- [ ] **ARRL Sweepstakes Contest development** - As time permits, continue development work on ARRL Sweepstakes CW Contest.
+This contest has a complex exchange, so the implementation is taking longer than expected.
 
 - [ ] **Maintain existing integration with N1MM and DxLog.**
 N2IC has done work to integrate Morse Runner within N1MM and DxLog.
 We want to continue this work to allow Morse Runner to run with these
 popular logging programs.
 
-- [ ] **GUI Enhancements** - The team will evaluate the GUI for ergonomic enhancements.
+- [ ] **Additional contests** - Based on community input, we will consider adding a few more contests for the fall contesting season.
 
-- [ ] **Add additional contests** - Based on community input, we will add a few more contests for the fall contesting season.
-
-#### Later - 2nd Half 2023 (July-Dec)
+#### Future
 Projects that we'll work on later...
+- [ ] **Developer on-boarding** - Help other developers get up to speed with compiling and pushing to the project.
+
 - [ ] **Document git setup** - Document a recommended git setup to avoid issues with CRLF caused by different git
 setups on individual computers and git setups.
 Document this issue so other developers can understand avoid this issue.
@@ -103,7 +113,6 @@ added by extending these interfaces only. Most switch statements in code have be
 Perhaps adding a contest will need two people, a contest developer and a contest advocate.
 This team can develop and test a contest before releasing to general use.
 
-#### Future
 - [ ] **Project Wiki** - Explore idea of developing a project wiki containing additional
 project details, including recommended setups (both developer and user),
 design discussions, compile instructions, coding standards, release criteria, etc.
@@ -173,7 +182,20 @@ Once complete, we will reach out to various user communities
 
 - [x] **Add ARRL DX Contest** - international contest with RST and State/Province (US & Canada) or RST and Power (DX Stations). Release 1.82.
 
-#### Complete - Spring 2023 (Jan-Mar)
+#### Complete - Winter 2023 (Jan-Mar)
+Release 1.83...
+- [x] **Add K1USN Slow Speed Contest (SST)** - The CWOPS Community has reached out and expressed interest in using MRCE as one of their recommended training tools for their CW classes.
+Farnsworth CW timing support will be implemented for this contest only.
+
+- [x] **Add JARL All Japan and ACAG contests** - These contests are being implemented by JR8PPG. Thank you!
+
+#### Complete - April 2023 - March 2024
+Release 1.84...
+- [x] **Add IARU HF Championship Contest** - Implement support for the upcoming IARU HF Championship Contest.
+
+- [x] **Improve CQ WPX Contest** - Improved serial number generation and replaced the NR Digits menu with Serial NR menu.
+
+- [x] **Merge F6FVY improvements** - This includes improvements to add new callers are added after qso, F1 improvements, speed increment/decrement, remove beep after qso, F7 improvements to cause Dx stations to call again, and mouse wheel controls RIT.
 
 # History
 TODO - add a paragraph or two regarding the history of MR.
@@ -212,7 +234,9 @@ Feb 2022       | JR8PPG   | [JA-1.68.2](https://github.com/jr8ppg/MorseRunner/co
 June 2022      | zmetzing | [1.68z](https://github.com/zmetzing/MorseRunner/commits/master) | Linux port of VE3NEA's 1.68 codebase.
 Summer 2022    | W7SST    | [1.80](https://github.com/w7sst/MorseRunner/releases/tag/v1.80)   | FD prototype with CQ WPX, CWOPS CWT, ARRL FD, and NCJ NAQP.
 October 2022   | W7SST    | [1.81](https://github.com/w7sst/MorseRunner/releases/tag/v1.81)   | First general release, adds CQ WW.
-December 2022  | W7SST    | [1.82](https://github.com/w7sst/MorseRunner/releases/tag/v1.82)   | Add ARRL DX Contest, CE Announcement release.
+December 2022  | W7SST    | [1.82](https://github.com/w7sst/MorseRunner/releases/tag/v1.82)   | - Add ARRL DX Contest<br>- MRCE Announcement release.
+March 2023     | W7SST, JR8PPG | [1.83](https://github.com/w7sst/MorseRunner/releases/tag/v1.83)  | - Add K1USN Slow Speed Contest (SST),<br>- Add JARL All Japan and ACAG Contests
+March 2024     | W7SST, F6FVY | [1.84](https://github.com/w7sst/MorseRunner/releases/tag/v1.83)  | - Add IARU HF Championship Contest<br>- Improve CQ WPX Contest<br>- Merge F6FVY improvements
 
 # To Do
 - [x] Update MR History section
