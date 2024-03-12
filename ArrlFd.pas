@@ -59,6 +59,8 @@ const
 var
   slst, tl: TStringList;
   i: integer;
+  S : String;
+  HomeStn, PortableStn : Boolean;
   rec: TFdCallRec;
 begin
   // reload call history if empty
@@ -106,9 +108,9 @@ begin
           // accurate since many clubs operated as a portable station without
           // a corresponding club call operating under Class A (Club).
           // Note - this algorithm will be revised after v1.84 release.
-          var S : String := rec.StnClass.substring(1);
-          var HomeStn : Boolean := S.Equals('D') or S.Equals('E');
-          var PortableStn : Boolean := S.Equals('B');
+          S := rec.StnClass.Substring(rec.StnClass.Length-1);
+          HomeStn := S.Equals('D') or S.Equals('E');
+          PortableStn := S.Equals('B');
           if (HomeStn or PortableStn) and not rec.UserText.IsEmpty then
             continue;
 
