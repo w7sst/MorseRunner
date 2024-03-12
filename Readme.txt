@@ -90,6 +90,12 @@ CONFIGURATION
       To start a Competition, select either the WPX and HST competitions found
       in the run drop down. Many settings are locked for the competitions but
       The keying speed and activity are still under your control.
+      
+      WPX Competition mode forces all Band Conditions (QRM, QRN, QRB, Flutter, LIDs).
+      HST Competition mode settings conform to the IARU High Speed Telegraphy
+      competition rules and forces off all Band Conditions 
+      (QRM, QRN, QRB, Flutter, LIDs).
+
       The default duration of a competition session is 60 minutes. You can
       change this setting to any time desired. To set a new default
       use the CompetitionDuration entry in the MorseRunner.ini file, e.g.:
