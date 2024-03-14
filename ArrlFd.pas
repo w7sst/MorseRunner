@@ -11,6 +11,8 @@ uses
 
 type
   TFdCallRec = class
+  private
+    function GetTxCnt : integer;
   public
     Call: string;     // call sign
     StnClass: string; // station classification (e.g. 3A)
@@ -18,6 +20,36 @@ type
     UserText: string; // club name
     function GetString: string; // returns 3A OR [club name]
     class function compareCall(const left, right: TFdCallRec) : integer; static;
+    property TxCnt : integer read GetTxCnt;
+  end;
+
+  TPendingCall = record
+    TxCnt: UInt16;    // transmitter count (sorting in descending order)
+    Index: UInt16;    // index into original slst
+
+    constructor Create(txcnt : Integer; inx : Integer);
+    class function comparePendingCall(const left, right : TPendingCall) : integer; static;
+  end;
+
+  { Holds stations for a given club name, sort by TxCnt }
+  TPendingClubCalls = class(TList<TPendingCall>)
+  private
+    Sorted: Boolean;
+  public
+    constructor Create(PendingCallComparer : IComparer<TPendingCall>);
+    destructor Destroy; override;
+
+    procedure AddCall(I: Integer; const rec: TFdCallRec);
+    function PickPendingCallIdx : Integer;
+  end;
+
+  TPendingStations = class(TObjectDictionary<String, TPendingClubCalls>)
+    PendingCallComparer: IComparer<TPendingCall>;
+
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure AddPendingCall(const ClubName : String; const rec: TFdCallRec; I: Integer);
   end;
 
 TArrlFieldDay = class(TContest)
@@ -40,18 +72,121 @@ public
   function getClass(id:integer): string;    // returns station class (e.g. 3A)
   function getSection(id:integer): string;  // returns section (e.g. OR)
   function getUserText(id:integer): string; // returns optional club name
-  //function IsNum(Num: String): Boolean;
   function FindCallRec(out fdrec: TFdCallRec; const ACall: string): Boolean;
   procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
   function GetStationInfo(const ACallsign: string) : string; override;
   function ExtractMultiplier(Qso: PQso) : string; override;
-end;
 
+//{$define DISTRIBUTION_REPORT}
+{$ifdef DISTRIBUTION_REPORT}
+  function GetDistributionReport : string;
+{$endif}
+end;
 
 implementation
 
 uses
-  SysUtils, Classes, PerlRegEx, pcre, ARRL;
+  SysUtils, Classes, PerlRegEx, pcre,
+  Ini,
+  System.Generics.Collections,
+{$ifdef DISTRIBUTION_REPORT}
+  Dialogs,      // for ShowMessage
+  Vcl.Clipbrd,  // for TClipBoard
+{$endif}
+  ARRL;
+
+var
+  IntegerComparer: IComparer<Integer>;
+
+{ TPendingCall }
+
+constructor TPendingCall.Create(txcnt : Integer; inx : Integer);
+begin
+  Self.TxCnt := UInt16(txcnt);
+  Self.Index := UInt16(inx);
+end;
+
+class function TPendingCall.comparePendingCall(const left, right : TPendingCall) : integer;
+begin
+  Result := IntegerComparer.Compare(right.TxCnt, left.TxCnt);
+end;
+
+{ TPendingClubCalls }
+
+constructor TPendingClubCalls.Create(PendingCallComparer : IComparer<TPendingCall>);
+begin
+  inherited Create(PendingCallComparer);
+  Sorted := False;
+end;
+
+destructor TPendingClubCalls.Destroy;
+begin
+end;
+
+procedure TPendingClubCalls.AddCall(I: Integer; const rec: TFdCallRec);
+begin
+  Self.Add(TPendingCall.Create(rec.TxCnt, I));
+  Sorted := False;
+end;
+
+function TPendingClubCalls.PickPendingCallIdx : Integer;
+const
+  BeginIdx : Integer = 0;
+var
+  EndIdx, Idx : Integer;
+  Item : TPendingCall;
+begin
+  // sort PendingCall record by decreasing TxCnt
+  if not Sorted then
+  begin
+    Sort;
+    Sorted := True;
+  end;
+
+  if First.TxCnt = Last.TxCnt then
+    EndIdx := Count
+  else begin
+    Item.TxCnt := First.TxCnt;
+    EndIdx := LastIndexOf(Item)+1;
+  end;
+  if (EndIdx - BeginIdx) > 1 then
+    Idx := BeginIdx + Random(EndIdx - BeginIdx)
+  else
+    Idx := BeginIdx;
+  Result := Items[Idx].Index;
+end;
+
+{ TPendingStations }
+
+constructor TPendingStations.Create;
+begin
+  inherited Create([doOwnsValues]);
+  PendingCallComparer := TComparer<TPendingCall>.Construct(TPendingCall.comparePendingCall);
+end;
+
+destructor TPendingStations.Destroy;
+begin
+  inherited Destroy;
+end;
+
+procedure TPendingStations.AddPendingCall(
+  const ClubName : String;
+  const rec: TFdCallRec;
+  I: Integer);
+var
+  pending: TPendingClubCalls;
+begin
+  if not TryGetValue(ClubName, pending) then begin
+    pending := TPendingClubCalls.Create(Self.PendingCallComparer);
+    Add(ClubName, pending);
+  end;
+
+  pending.AddCall(I, rec);
+  pending := nil;
+end;
+
+
+{ TArrlFieldDay }
 
 function TArrlFieldDay.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
@@ -60,8 +195,13 @@ var
   slst, tl: TStringList;
   i: integer;
   S : String;
+  ClubNames : TDictionary<String, TFdCallRec>;
+  PendingStations: TPendingStations;
+  PendingCalls : TPendingClubCalls;
+  Pair : TPair<String, TPendingClubCalls>;
   HomeStn, PortableStn : Boolean;
   rec: TFdCallRec;
+  existing: TFdCallRec;
 begin
   // reload call history if empty
   Result := FdCallList.Count <> 0;
@@ -70,22 +210,29 @@ begin
 
   slst:= TStringList.Create;
   tl:= TStringList.Create;
+  ClubNames := TDictionary<String, TFdCallRec>.Create;
+  PendingStations := TPendingStations.Create;
   tl.Delimiter := DelimitChar;
   tl.StrictDelimiter := True;
   rec := nil;
+  existing := nil;
 
   try
     FdCallList.Clear;
 
     slst.LoadFromFile(ParamStr(1) + 'FDGOTA.TXT');
 
-    for i:= 0 to slst.Count-1 do begin
+    // Pass 1 - find and process all club stations (class A, C or F).
+    //        - deffer all home/portable stations w/ a club name to Pass 2.
+    for i:= 0 to slst.Count-1 do
+    begin
       if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
       if (slst.Strings[i].StartsWith('#')) then continue;
 
       tl.DelimitedText := slst.Strings[i];
 
-      if (tl.Count > 2) then begin
+      if (tl.Count > 2) then
+      begin
           if rec = nil then
             rec := TFdCallRec.Create;
           rec.Call := UpperCase(tl.Strings[0]);
@@ -104,26 +251,112 @@ begin
           // stations were connected to the clubs score.
           //
           // Skip home (D/E) and portable (B) stations with a club name by
-          // assuming they are associated with a club. This is not 100%
-          // accurate since many clubs operated as a portable station without
-          // a corresponding club call operating under Class A (Club).
-          // Note - this algorithm will be revised after v1.84 release.
+          // assuming they are associated with a club.
           S := rec.StnClass.Substring(rec.StnClass.Length-1);
           HomeStn := S.Equals('D') or S.Equals('E');
           PortableStn := S.Equals('B');
-          if (HomeStn or PortableStn) and not rec.UserText.IsEmpty then
+          if HomeStn or PortableStn then
+          begin
+            if rec.UserText.IsEmpty then
+            begin
+              if Random < 0.25 then
+              begin
+                // home/portable stations w/o club name can be added
+                FdCallList.Add(rec);
+                rec := nil;
+              end;
+              continue
+            end
+            else
+            begin
+              // retain this call and club name to see if it is part of a club.
+              PendingStations.AddPendingCall(rec.UserText, rec, I);
+            end;
             continue;
+          end
+          else
+          begin
+            // this is a club station (A, C, or F)
+            if not rec.UserText.IsEmpty then
+            begin
+              // have we seen this club name before?
+              if ClubNames.TryGetValue(rec.UserText, existing) then
+              begin
+                // keep the station with the higher transmitter count
+                if rec.TxCnt > existing.TxCnt then
+                begin
+                  FdCallList.Delete(FdCallList.IndexOf(existing));
+                  existing := nil;
+                  FdCallList.Add(rec);
+                  ClubNames.Items[rec.UserText] := rec;
+                  rec := nil;
+                end;
+                continue;
+              end;
 
-          FdCallList.Add(rec);
-          rec := nil;
+              ClubNames.Add(rec.UserText, rec);
+            end;
+
+            FdCallList.Add(rec);
+            rec := nil;
+          end;
       end;
     end;
+
+    // Pass 2 - add any portable/home (B, D, E) stations not associated
+    //          with a named club station from pass 1 above.
+    for Pair in PendingStations do
+    begin
+      // does this group of home/portable stations have an associated club name?
+      if ClubNames.TryGetValue(Pair.Key, existing) then
+        continue;
+
+      // this group of pending stations is not associated with a club.
+      // pick a call from this group.
+      i := Pair.Value.PickPendingCallIdx;
+      tl.DelimitedText := slst.Strings[i];
+
+      if (tl.Count > 2) then
+      begin
+        if rec = nil then
+          rec := TFdCallRec.Create;
+        rec.Call := UpperCase(tl.Strings[0]);
+        rec.StnClass := UpperCase(tl.Strings[1]);
+        rec.Section := UpperCase(tl.Strings[2]);
+        rec.UserText := '';
+        if (tl.Count >= 4) then rec.UserText := Trim(tl.Strings[3]);
+
+        if rec.Call='' then continue;
+        if rec.StnClass='' then continue;
+        if rec.Section='' then continue;
+
+        assert(Pair.Key.Equals(rec.UserText));
+
+        // keep all portable stations and 25% of the home stations
+        if rec.StnClass.EndsWith('B') or (Random < 0.25) then
+        begin
+          FdCallList.Add(rec);
+          ClubNames.Add(rec.UserText, rec);
+          rec := nil;
+        end;
+      end;
+    end; // end for pair in PendingStations
+
+    FdCallList.Sort;
+
+{$ifdef DISTRIBUTION_REPORT}
+    S := GetDistributionReport;
+    ShowMessage(S);
+    ClipBoard.AsText := S;
+{$endif}
 
     Result := True;
 
   finally
     slst.Free;
     tl.Free;
+    ClubNames.Free;
+    PendingStations.Free;
     if rec <> nil then rec.Free;
   end;
 end;
@@ -132,8 +365,8 @@ end;
 constructor TArrlFieldDay.Create;
 begin
     inherited Create;
-    FdCallList:= TObjectList<TFdCallRec>.Create;
     Comparer := TComparer<TFdCallRec>.Construct(TFdCallRec.compareCall);
+    FdCallList:= TObjectList<TFdCallRec>.Create(Comparer);
 end;
 
 
@@ -296,6 +529,69 @@ begin
 end;
 
 
+{$ifdef DISTRIBUTION_REPORT}
+function TArrlFieldDay.GetDistributionReport : string;
+const
+  CallsPerDot : Integer = 20;
+var
+  dist : TDictionary<String, Integer>;
+  summary : TList<String>;
+  Value : Integer;
+  Comparison: TComparison<String>;
+begin
+  dist := TDictionary<String, Integer>.Create;
+  summary := TList<String>.Create;
+
+  try
+    // count calls by classification
+    for var rec : TFdCallRec in FdCallList do
+    begin
+      if not dist.TryGetValue(rec.StnClass, Value) then
+        dist.Add(rec.StnClass, 0);
+      dist[rec.StnClass] := Value + 1;
+    end;
+
+    // format summary lines
+    for var item : TPair<String, Integer> in dist do
+    begin
+      var Len : integer := (item.Value div CallsPerDot);
+      var Str : String := StringOfChar('*', Len);
+      if Ini.IsNum(item.Key.Substring(0,2)) then
+        summary.Add(Format('%3s: %4d %s',
+          [item.Key, item.Value, Str]))
+      else
+        summary.Add(Format('0%2s: %4d %s',
+          [item.Key, item.Value, Str]));
+    end;
+
+    // sort summary by station class, then by transmitter count
+    Comparison :=
+      function(const Left, Right: String): Integer
+      begin
+        Result := CompareText(Left.Substring(2,1), Right.Substring(2,1));
+        if Result = 0 then
+          Result := CompareText(Left.Substring(0,2), Right.Substring(0,2));
+      end;
+    summary.Sort(TComparer<String>.Construct(Comparison));
+
+    // format summary report
+    Result := Format(
+      'ARRL FD - Call History Distribution by Classification (%d calls/dot)' +
+      sLineBreak, [CallsPerDot]);
+    for var S : String in summary do
+      if S.StartsWith('0') then
+        Result := Result + S.Replace('0', ' ', []) + sLineBreak
+      else
+        Result := Result + S + sLineBreak;
+
+  finally
+    dist.Free;
+    summary.Free;
+  end;
+end;
+{$endif}
+
+
 class function TFdCallRec.compareCall(const left, right: TFdCallRec) : integer;
 begin
   Result := CompareStr(left.Call, right.Call);
@@ -306,6 +602,20 @@ function TFdCallRec.GetString: string; // returns 3A OR [club name]
 begin
   Result := Format(' - %s %s %s', [StnClass, Section, UserText]);
 end;
+
+
+function TFdCallRec.GetTxCnt : integer;
+var
+  L : integer;
+begin
+  for L := 1 to length(Self.StnClass) do
+    if Pos(copy(StnClass,L,1),'0123456789') = 0 then break;
+  Result := StnClass.Substring(0, L-1).ToInteger;
+end;
+
+
+initialization
+  IntegerComparer := TComparer<Integer>.Default;
 
 
 end.
