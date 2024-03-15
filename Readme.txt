@@ -23,7 +23,7 @@ JOIN OUR COMMUNITY
 PLATFORMS
   - Windows XP/7/8/10/11
   - Works on Linux systems under WINE (info TNX F8BQQ).
-  - Works on Mac systems under WINE (use Win7 bottle) or Crossover
+  - Works on Mac systems under WINE (use Win7 bottle) or Crossover (info TNX N3RTW).
 
 INSTALLATION
   Open the zip file, extract the folder to your DESKTOP, and run
