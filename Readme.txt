@@ -22,7 +22,8 @@ JOIN OUR COMMUNITY
 
 PLATFORMS
   - Windows XP/7/8/10/11
-  - works on Linux systems under WINE (info TNX F8BQQ).
+  - Works on Linux systems under WINE (info TNX F8BQQ).
+  - Works on Mac systems under WINE (use Win7 bottle) or Crossover (info TNX N3RTW).
 
 INSTALLATION
   Open the zip file, extract the folder to your DESKTOP, and run
@@ -90,6 +91,12 @@ CONFIGURATION
       To start a Competition, select either the WPX and HST competitions found
       in the run drop down. Many settings are locked for the competitions but
       The keying speed and activity are still under your control.
+      
+      WPX Competition mode forces all Band Conditions (QRM, QRN, QRB, Flutter, LIDs).
+      HST Competition mode settings conform to the IARU High Speed Telegraphy
+      competition rules and forces off all Band Conditions 
+      (QRM, QRN, QRB, Flutter, LIDs).
+
       The default duration of a competition session is 60 minutes. You can
       change this setting to any time desired. To set a new default
       use the CompetitionDuration entry in the MorseRunner.ini file, e.g.:
@@ -172,7 +179,7 @@ CONFIGURATION
 
   Responses
     There are five basic responses that you can receive:
-       1. nothing
+       1. Nothing
           If calling CQ, no one heard you call CQ again.
           If you responded to someone and you got silence, the call sent was incorrect.
           Send F8 NIL (Not In Log) to have them respond again and/or restart the pile-up.
@@ -290,9 +297,26 @@ SUBMITTING YOUR SCORE
 
 VERSION HISTORY
 
-Version 1.84 (February 2024)
-  - Added IARU HF World Championship Contest (Coded by W7SST)
+Version 1.84 (March 2024)
+  - Added IARU HF World Championship Contest (W7SST)
+  - CQ WPX improvements, including editable exchange and improved serial NR generation (W7SST)
   - Update call history files for ARRL DX, ARRL FD, CQ WW, CWOPS CWT, K1USN SST and NCJ NAQP Contests
+
+  Contest-specific improvements...
+  - ARRL DX - Incorrect handling of KH6/KL7 stations using AH6/AL7, NH6/NL7, WH6/WL7 (Coded by W7SST)
+  - ARRL FD - Reduce high number of home/portable club stations (W7SST)
+  - CQ WPX - Editable exchange field with starting number or '#' (W7SST)
+  - CQ WPX - Improved Serial Number generation; NR Digits menu renamed to Serial NR (Coded by W7SST)
+  - CQ WPX - Dx stations will occasionally send a serial number of zero (Coded by W7SST)
+  - CWOPS CWT - Contest Parser Reading First Line of File (Coded by W7SST)
+  - JARL - DX station will send an abbreviated exchange number in the JARL ALLJA and ACAG contests (Coded by JR8PPG)
+  - JARL - User's exchange number is not abbreviated (not convert 100 to 1TT) (Coded by JR8PPG)
+  - K1USN SST - User test field in call history file should be optional (Coded by W7SST)
+  - NAQP - Exchange field does not allow numbers (e.g. KH6 or KL7) (Coded by W7SST)
+
+  General bug fixes and improvements...
+  - Improve Run button with default Run Mode and Stop icon (W7SST)
+  - No RIT needed for Single Call Modes (W7SST)
   - After a CQ, if nothing is caught or if what you caught is wrong, you can use
     F7 ('?') to instruct the callers to call again. (F6FVY)
   - New callers can be added when a QSO is done. (F6FVY)
@@ -300,23 +324,14 @@ Version 1.84 (February 2024)
     increasing without respect to the activity setting. (F6FVY)
   - The "reply or not" algorithm has been modified to allow callers with long
     callsigns to reply, even if only few letters are caught. (F6FVY)
-  - Improve pattern matching for DXCC entities (used in status bar) (Coded by W7SST)
   - Receive Bandwidth adjustment using Cntl-key and mouse wheel (F6FVY, W7SST)
   - Speed increments / decrements modified (2 WPM instead of 5). (F6FVY, W7SST)
   - Improve RIT adjustment using mouse wheel (W7SST)
   - Improve pattern matching for DXCC entities (used in status bar) (Coded by W7SST)
-  - CQ WPX - Dx Stations will occasionally send a serial number of zero (Coded by W7SST)
-  - CQ WPX - Improved Serial Number generation (Coded by W7SST)
-  - ARRL DX - incorrect handling of KH6/KL7 stations using AH6/AL7, NH6/NL7, WH6/WL7 (Coded by W7SST)
-  - NAQP - Exchange field does not allow numbers (e.g. KH6 or KL7) (Coded by W7SST)
-  - All Contests - WPM keyboard entry incorrect behavior for Spin Box (up down control) (Coded by W7SST)
-  - CWOPS CWT - Contest Parser Reading First Line of File (Coded by W7SST)
-  - All Contests - spacebar or Tab will now select both exchange fields (Coded by W7SST)
-  - All Contests - Hide Dx Station's Entity status string if same as user's Entity (Coded by W7SST)
-  - K1USN SST - user test field in call history file should be optional (Coded by W7SST)
-  - DX station will send an abbreviated exchange number in the JARL ALLJA and ACAG contests (Coded by JR8PPG)
-  - User's exchange number is not abbreviated (not convert 100 to 1TT) (Coded by JR8PPG)
-  - All Contests - Shift-F9 added as shortcut to start Single Call mode (Coded by W7SST)
+  - WPM keyboard entry incorrect behavior for Spin Box (up down control) (Coded by W7SST)
+  - Spacebar or Tab will now select both exchange fields (Coded by W7SST)
+  - Hide Dx Station's Entity status string if same as user's Entity (Coded by W7SST)
+  - Shift-F9 added as shortcut to start Single Call mode (Coded by W7SST)
 
 Version 1.83 (March 2023)
   - Added K1USN Slow Speed Test (Coded by W7SST)
