@@ -48,17 +48,13 @@ Below is a high-level overview of project activities over the next year.
 
 ### Roadmap - Now, Next, and Future
 
-#### Now - Winter 2024 (Jan-Mar)
+#### Now - Spring 2024 (Apr-Jun)
 Projects we are currently working on...
-- [x] Add IARU HF Contest
-- [x] Improve CQ WPX Contest
-- [x] Focus on quality
-- [ ] Wrap up the 1.84 release by the end of March 2024.
 
-#### Next - Spring 2024 (Apr-Jun)
-Projects that we'll work on next (as time permits...)
+- [ ] **GUI Enhancement Discussions** - The team will evaluate the GUI for ergonomic enhancements.
+Perhaps build a prototype to collect useability feedback from project advocates and users.
 
-- [ ] **Redefine our strategy moving forward** - Originally, we had hoped additional developers would step forward and join actual coding efforts.
+- [ ] **Redefine our strategy moving forward** - Originally, we had hoped additional developers would step forward and join our coding efforts.
 We currently have a core group of advocates that are providing awesome project direction and insight and we appreciate their involvement and efforts.
 However, we do need to slow down and consider what the next steps will be given limited developer resources.
 There has been some preliminary work on a GUI redesign and several contests have been suggested.
@@ -68,8 +64,6 @@ We will start discussions amoungst the core development group on how to proceed.
 This contest was the main focus from two years ago and we want to be sure that users are aware of this training opportunity in time for FD 2024.
 
 - [ ] **Focus on Quality** - Address important quality issues as they are reported.
-
-- [ ] **GUI Enhancement Discussions** - The team will evaluate the GUI for ergonomic enhancements.
 
 #### Next - 2nd half 2024
 Projects that we'll work on next (as time permits)...
@@ -100,6 +94,9 @@ Document this issue so other developers can understand avoid this issue.
 contests within Morse Runner based on FD prototype and most recently ARRL DX Contest.
 Look for patterns across multiple contests and propose interface(s) to be used
 to generalize an individual contest.
+
+- [ ] **SO2R Investigation** -
+Investigate whether it is possible to support SO2R using MRCE. Perhaps build a prototype for evaluation and user feedback and requirements.
 
 - [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
 This team will develop and test an individual contest before it is released for general use.
@@ -189,13 +186,15 @@ Farnsworth CW timing support will be implemented for this contest only.
 
 - [x] **Add JARL All Japan and ACAG contests** - These contests are being implemented by JR8PPG. Thank you!
 
-#### Complete - April 2023 - March 2024
+#### Complete - Winter 2024 (Apr '23 - Mar '24)
 Release 1.84...
 - [x] **Add IARU HF Championship Contest** - Implement support for the upcoming IARU HF Championship Contest.
 
 - [x] **Improve CQ WPX Contest** - Improved serial number generation and replaced the NR Digits menu with Serial NR menu.
 
 - [x] **Merge F6FVY improvements** - This includes improvements to add new callers are added after qso, F1 improvements, speed increment/decrement, remove beep after qso, F7 improvements to cause Dx stations to call again, and mouse wheel controls RIT.
+
+- [x] Quality improvements.
 
 # History
 TODO - add a paragraph or two regarding the history of MR.
