@@ -8,6 +8,7 @@ unit Log;
 interface
 
 uses
+  Graphics,     // for TColor
   Classes, Controls, ExtCtrls;
 
 procedure SaveQso;
@@ -52,9 +53,13 @@ type
     Exch1Error: TLogError;      // Exchange 1 qso error code
     Exch2Error: TLogError;      // Exchange 2 qso error code
     Err: string;                // Qso error string (e.g. corrections)
+    CallColumnColor: TColor;    // Callsign field color (clBlack or clRed)
+    Exch1ColumnColor: TColor;   // Exchange 1 field color (clBlack or clRed)
+    Exch2ColumnColor: TColor;   // Exchange 2 field color (clBlack or clRed)
+    CorrectionsColumnColor: TColor; // Corrections field color (clBlack or clRed)
 
-    procedure CheckExch1;
-    procedure CheckExch2;
+    procedure CheckExch1(var ACorrections: TStringList);
+    procedure CheckExch2(var ACorrections: TStringList);
   end;
 
   THisto= class(TObject)
@@ -92,6 +97,7 @@ var
   VerifiedPoints:   integer;   // accumulated verified QSO points total
   CallSent: boolean; // msgHisCall has been sent; cleared upon edit.
   NrSent: boolean;   // msgNR has been sent. Seems to imply exchange sent.
+  ShowCorrections: boolean;    // show exchange correction column.
   Histo: THisto;
   LogColWidths : Array[0..6] of integer;  // retain original Log column widths
   LogColWidthInitialized : boolean;       // initialize LogColWidths on time only
@@ -103,7 +109,7 @@ var
 implementation
 
 uses
-  Windows, SysUtils, Graphics, RndFunc, Math,
+  Windows, SysUtils, RndFunc, Math,
   StdCtrls, PerlRegEx, pcre, StrUtils,
   Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
 
@@ -254,8 +260,10 @@ end;
 
 procedure ScoreTableUpdateCheck;
 begin
+  // https://stackoverflow.com/questions/34239493/how-to-color-specific-list-view-item-in-delphi
   with MainForm.ListView2 do begin
-    Items[Items.Count-1].SubItems[4]:= QsoList[High(QsoList)].Err;
+    Items[Items.Count-1].SubItems[4] := QsoList[High(QsoList)].Err;
+    Items[Items.Count-1].Update;
   end;
 end;
 
@@ -268,6 +276,9 @@ begin
   VerifiedMultList.Clear;
   RawPoints := 0;
   VerifiedPoints := 0;
+
+  ShowCorrections := SimContest in [scFieldDay];
+
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
   MainForm.RichEdit1.DefAttributes.Name:= 'Consolas';
@@ -287,7 +298,15 @@ begin
         ScoreTableScaleWidth(6, 1.4);   // expand Wpm column for 22/25 Farnsworth
         end;
       scFieldDay:
-        ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
+        if ShowCorrections then
+          begin
+          ScoreTableSetTitle('UTC', 'Call', 'Class', 'Sect', '', 'Corrections', 'Wpm');
+          ScoreTableScaleWidth(2, 0.75);// shrink Class column for expanded Err
+          ScoreTableScaleWidth(3, 0.75);// shrink Section column for expanded Err
+          ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+          end
+        else
+          ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
       scNaQp:
         ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Chk', 'Wpm');
       scCQWW:
@@ -774,7 +793,7 @@ begin
 end;
 
 
-procedure TQso.CheckExch1;
+procedure TQso.CheckExch1(var ACorrections: TStringList);
 begin
   Exch1Error := leNONE;
 
@@ -786,10 +805,17 @@ begin
     else
       assert(false, 'missing exchange 1 case');
   end;
+
+  case Exch1Error of
+    leNONE: ;
+    leRST: ACorrections.Add(Format('%d', [Rst]));
+    else
+      ACorrections.Add(TrueExch1);
+  end;
 end;
 
 
-procedure TQso.CheckExch2;
+procedure TQso.CheckExch2(var ACorrections: TStringList);
 
   // Reduce Power characters (T, O, A, N) to (0, 0, 1, 9) respectively.
   function ReducePowerStr(const text: string): string;
@@ -848,6 +874,13 @@ begin
     else
       assert(false, 'missing exchange 2 case');
   end;
+
+  case Exch2Error of
+    leNONE: ;
+    leNR: ACorrections.Add(TrueExch2);
+    else
+      ACorrections.Add(TrueExch2);
+  end;
 end;
 
 
@@ -857,7 +890,11 @@ const
     '',     'NIL', 'DUP', 'CALL', 'RST',
     'NAME', 'CL',  'NR',  'SEC',  'QTH',
     'ZN',   'SOC', 'ST',  'PWR',  'ERR');
+var
+  Corrections: TStringList;
 begin
+  Corrections := TStringList.Create;
+  try
     with QsoList[High(QsoList)] do begin
       // form the legacy Err String (e.g. RST, NR, CL, SEC, etc)
       if TrueCall = '' then
@@ -865,21 +902,38 @@ begin
       else if TrueCall <> Call then
       begin
         ExchError := leCALL;
+        Corrections.Add(TrueCall);
       end
-      else if Dupe then
-        ExchError := leDUP  // todo - list this in column, but not as error
+      else if Dupe and not Log.ShowCorrections then
+        ExchError := leDUP
       else
       begin
         ExchError := leNONE;
 
         // find exchange errors for the current Qso
-        Tst.FindQsoErrors(QsoList[High(QsoList)]);
+        Tst.FindQsoErrors(QsoList[High(QsoList)], Corrections);
       end;
+
+      CallColumnColor := clBlack;
+      Exch1ColumnColor := clBlack;
+      Exch2ColumnColor := clBlack;
+      CorrectionsColumnColor := clBlack;
 
       // NIL or DUP errors have priority over showing corrected exchange
       if ExchError in [leNIL, leDUP] then
       begin
         Err := ErrorStrs[ExchError];
+        if ExchError <> leDUP then CorrectionsColumnColor := clRed;
+      end
+      else if ShowCorrections then
+      begin
+        if Dupe then
+          Corrections.Insert(0, ErrorStrs[leDUP]);
+        Corrections.Delimiter := ' ';
+        Err := Corrections.DelimitedText;  // Join(' ');
+        if ExchError  <> leNONE then CallColumnColor := clRed;
+        if Exch1Error <> leNONE then Exch1ColumnColor := clRed;
+        if Exch2Error <> leNONE then Exch2ColumnColor := clRed;
       end
       else
       begin
@@ -889,11 +943,16 @@ begin
           Err := ErrorStrs[Exch2Error]
         else
           Err := '';
+        CorrectionsColumnColor := clRed;
       end;
 
       if Err.IsEmpty then
         Err := '   ';
     end; // end with QsoList[High(QsoList)]
+
+  finally
+    Corrections.Free;
+  end;
 end;
 
 {

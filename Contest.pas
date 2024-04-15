@@ -66,7 +66,7 @@ type
       const AStationCallsign : string) : TExchTypes; virtual;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
-    procedure FindQsoErrors(var Qso: TQso);
+    procedure FindQsoErrors(var Qso: TQso; var ACorrections: TStringList);
     function ExtractMultiplier(Qso: PQso) : string; virtual;
     function Minute: Single;
     function GetAudio: TSingleArray;
@@ -365,11 +365,12 @@ end;
 
   Side Effects:
   - sets Qso.Exch1Error and Qso.Exch2Error
+  - add exchange corrections to ACorrection
 }
-procedure TContest.FindQsoErrors(var Qso: TQso);
+procedure TContest.FindQsoErrors(var Qso: TQso; var ACorrections: TStringList);
 begin
-  Qso.CheckExch1;
-  Qso.CheckExch2;
+  Qso.CheckExch1(ACorrections);
+  Qso.CheckExch2(ACorrections);
 end;
 
 

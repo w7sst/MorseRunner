@@ -190,7 +190,7 @@ begin
 end;
 
 
-// copies data from this DxStation to top of QsoList[].
+// copies data from this DxStation to the last QSO (top of QsoList[]).
 // removes Self from Stations[] container array.
 procedure TDxStation.DataToLastQso;
 begin
