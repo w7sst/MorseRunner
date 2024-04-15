@@ -277,7 +277,7 @@ begin
   RawPoints := 0;
   VerifiedPoints := 0;
 
-  ShowCorrections := SimContest in [scFieldDay];
+  ShowCorrections := SimContest in [scFieldDay, scIaruHF];
 
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
@@ -319,7 +319,13 @@ begin
         ScoreTableScaleWidth(4, 1.2);   // expand City column for wide numbers
         end;
       scIaruHf:
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
+        begin
+        ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Mult', 'Corrections', 'Wpm');
+        ScoreTableScaleWidth(2, 0.5);   // shrink RST column
+        ScoreTableScaleWidth(3, 0.75);  // shrink Exch2 column
+        ScoreTableScaleWidth(4, 0.00);  // shrink Mult column
+        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+        end
       else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
     end;
@@ -783,8 +789,8 @@ begin
         , MultStr, Err, format('%3s', [TrueWpm]));
     scIaruHf:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-        , format('%.3d %4s', [Rst, Exch2])
-        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
+        , format('%.3d', [Rst])
+        , Exch2
         , MultStr, Err, format('%3s', [TrueWpm]));
     else
       assert(false, 'missing case');
@@ -808,7 +814,7 @@ begin
 
   case Exch1Error of
     leNONE: ;
-    leRST: ACorrections.Add(Format('%d', [Rst]));
+    leRST: ACorrections.Add(Format('%d', [TrueRst]));
     else
       ACorrections.Add(TrueExch1);
   end;
