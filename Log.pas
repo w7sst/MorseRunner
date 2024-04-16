@@ -277,7 +277,7 @@ begin
   RawPoints := 0;
   VerifiedPoints := 0;
 
-  ShowCorrections := SimContest in [scFieldDay, scArrlDx, scAllJa, scAcag, scIaruHF];
+  ShowCorrections := SimContest in [scCwt, scSst, scFieldDay, scArrlDx, scAllJa, scAcag, scIaruHF];
 
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
@@ -289,24 +289,25 @@ begin
     // Adding a contest: set Score Table titles
     case Ini.SimContest of
       scCwt:
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', 'Wpm');
+        begin
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Corrections', 'Wpm');
+        ScoreTableScaleWidth(3, 0.75);  // shrink Exch2 (NR or QTH) column
+        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+        end;
       scSst:
         begin
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', ' Wpm');
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Corrections', ' Wpm');
         ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
-        ScoreTableScaleWidth(5, 1.2);   // expand Chk column for 'NAME' error
+        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
         ScoreTableScaleWidth(6, 1.4);   // expand Wpm column for 22/25 Farnsworth
         end;
       scFieldDay:
-        if ShowCorrections then
-          begin
-          ScoreTableSetTitle('UTC', 'Call', 'Class', 'Sect', '', 'Corrections', 'Wpm');
-          ScoreTableScaleWidth(2, 0.75);// shrink Class column for expanded Err
-          ScoreTableScaleWidth(3, 0.75);// shrink Section column for expanded Err
-          ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-          end
-        else
-          ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
+        begin
+        ScoreTableSetTitle('UTC', 'Call', 'Class', 'Sect', '', 'Corrections', 'Wpm');
+        ScoreTableScaleWidth(2, 0.75);  // shrink Class column
+        ScoreTableScaleWidth(3, 0.75);  // shrink Section column
+        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+        end;
       scNaQp:
         ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Chk', 'Wpm');
       scCQWW:
@@ -760,12 +761,12 @@ begin
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
-        , Pfx, Err, format('%3s', [TrueWpm]));
+        , '', Err, format('%3s', [TrueWpm]));
     scSst:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
-        , Pfx, Err, format('%5s', [TrueWpm]));
+        , '', Err, format('%5s', [TrueWpm]));
     scFieldDay:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
