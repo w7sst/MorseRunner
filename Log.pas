@@ -277,7 +277,7 @@ begin
   RawPoints := 0;
   VerifiedPoints := 0;
 
-  ShowCorrections := SimContest in [scFieldDay, scAllJa, scAcag, scIaruHF];
+  ShowCorrections := SimContest in [scFieldDay, scArrlDx, scAllJa, scAcag, scIaruHF];
 
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
@@ -312,7 +312,12 @@ begin
       scCQWW:
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
       scArrlDx:
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
+        begin
+        ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
+        ScoreTableScaleWidth(2, 0.50);  // shrink RST column
+        ScoreTableScaleWidth(3, 0.75);  // Exch2 (<pref><power>) column
+        ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
+        end;
       scAllJa:
         begin
         ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
@@ -783,9 +788,9 @@ begin
         , Pfx, Err, format('%3s', [TrueWpm]));
     scArrlDx:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-        , format('%.3d %4s', [Rst, Exch2])
-        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
-        , Pfx, Err, format('%3s', [TrueWpm]));
+        , format('%.3d', [Rst])
+        , Exch2
+        , '', Err, format('%3s', [TrueWpm]));
     scAllJa:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
