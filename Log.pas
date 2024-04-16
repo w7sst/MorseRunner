@@ -277,7 +277,7 @@ begin
   RawPoints := 0;
   VerifiedPoints := 0;
 
-  ShowCorrections := SimContest in [scCwt, scSst, scFieldDay, scArrlDx, scAllJa, scAcag, scIaruHF];
+  ShowCorrections := SimContest in [scCwt, scSst, scNaQp, scFieldDay, scArrlDx, scAllJa, scAcag, scIaruHF];
 
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
@@ -309,7 +309,12 @@ begin
         ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
         end;
       scNaQp:
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Chk', 'Wpm');
+        begin
+        ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Corrections', 'Wpm');
+        ScoreTableScaleWidth(1, 0.8);   // shrink Call column
+        ScoreTableScaleWidth(3, 0.6);   // shrink State/Prov column
+        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+        end;
       scCQWW:
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
       scArrlDx:
