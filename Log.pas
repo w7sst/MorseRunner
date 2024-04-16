@@ -277,7 +277,7 @@ begin
   RawPoints := 0;
   VerifiedPoints := 0;
 
-  ShowCorrections := SimContest in [scCwt, scSst, scNaQp, scFieldDay, scArrlDx, scAllJa, scAcag, scIaruHF];
+  ShowCorrections := SimContest in [scWpx, scCwt, scSst, scNaQp, scCQWW, scFieldDay, scArrlDx, scAllJa, scAcag, scIaruHF];
 
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
@@ -316,7 +316,13 @@ begin
         ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
         end;
       scCQWW:
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
+        begin
+        ScoreTableSetTitle('UTC', 'Call', 'RST', 'CQ-Zone', 'Pref', 'Corrections', 'Wpm');
+        ScoreTableScaleWidth(2, 0.50);  // shrink RST column
+        ScoreTableScaleWidth(3, 0.80);  // CQ-Zone column
+        ScoreTableScaleWidth(4, 0.00);  // shrink Pref column
+        ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
+        end;
       scArrlDx:
         begin
         ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
@@ -344,6 +350,14 @@ begin
         ScoreTableScaleWidth(2, 0.5);   // shrink RST column
         ScoreTableScaleWidth(3, 0.75);  // shrink Exch2 column
         ScoreTableScaleWidth(4, 0.00);  // shrink Mult column
+        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+        end;
+      scWpx:
+        begin
+        ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Pref', 'Corrections', 'Wpm');
+        ScoreTableScaleWidth(2, 0.5);   // shrink RST column
+        ScoreTableScaleWidth(3, 0.75);  // shrink NR column
+        ScoreTableScaleWidth(4, 0.00);  // hide Pref column
         ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
         end
       else
@@ -782,15 +796,20 @@ begin
         , Exch1
         , Exch2
         , Pfx, Err, format('%3s', [TrueWpm]));
-    scWpx, scHst:
+    scWpx:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d', [Rst])
+        , format('%4d', [NR])
+        , Pfx, Err, format('%3s', [TrueWpm]));
+    scHst:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d %.4d', [Rst, Nr])
         , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
         , Pfx, Err, format('%3s', [TrueWpm]));
     scCQWW:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-        , format('%.3d %4d', [Rst, NR])
-        , format('%.3s %4d', [Tst.Me.Exch1, Tst.Me.NR])     // log my sent RST
+        , format('%.3d', [Rst])
+        , format('%4d', [NR])
         , Pfx, Err, format('%3s', [TrueWpm]));
     scArrlDx:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
