@@ -66,6 +66,7 @@ type
       const AStationCallsign : string) : TExchTypes; virtual;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
+    procedure FindQsoErrors(var Qso: TQso);
     function ExtractMultiplier(Qso: PQso) : string; virtual;
     function Minute: Single;
     function GetAudio: TSingleArray;
@@ -357,6 +358,22 @@ end;
 
 
 {
+  Find exchange errors in the current Qso.
+  Called at end of each Qso during Qso validaiton.
+  This virtual procedure can be overriden to perform special exchange
+  validation behaviors.
+
+  Side Effects:
+  - sets Qso.Exch1Error and Qso.Exch2Error
+}
+procedure TContest.FindQsoErrors(var Qso: TQso);
+begin
+  Qso.CheckExch1;
+  Qso.CheckExch2;
+end;
+
+
+{
   Extract multiplier string for a given contest. Default behavior will
   return the QSO.Pfx string (which implies this method must be called
   after ExtractPrefix.
@@ -485,12 +502,13 @@ begin
       if Stations[i] is TDxStation then
         with Stations[i] as TDxStation do
           if (Oper.State = osDone) and (QsoList <> nil) and (MyCall = QsoList[High(QsoList)].Call) then begin
+              // grab Qso's "True" data (e.g. TrueCall, TrueExch1, TrueExch2)
               DataToLastQso; // deletes this TDxStation from Stations[]
-              //with MainForm.RichEdit1.Lines do Delete(Count-1);
-              //  Delete(Count-1);
-              //Log.LastQsoToScreen;
+
+              // rerun error check and update Err string on screen log
               Log.CheckErr;
               Log.ScoreTableUpdateCheck;
+
               { TODO -omikeb -cfeature : Clean up status bar code. }
               if Ini.RunMode = RmHst then
                 Log.UpdateStatsHst

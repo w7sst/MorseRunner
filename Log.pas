@@ -31,6 +31,10 @@ function ExtractPrefix0(Call: string): string;
 {$endif}
 
 type
+  TLogError = (leNONE, leNIL,   leDUP, leCALL, leRST,
+               leNAME, leCLASS, leNR,  leSEC,  leQTH,
+               leZN,   leSOC,   leST,  lePWR,  leERR);
+
   PQso = ^TQso;
   TQso = record
     T: TDateTime;
@@ -43,8 +47,14 @@ type
     Pfx: string;                // extracted call prefix
     MultStr: string;            // contest-specific multiplier (e.g. Pfx, dxcc)
     Points: integer;            // points for this QSO
-    Dupe: boolean;
-    Err: string;
+    Dupe: boolean;              // this qso is a DUP.
+    ExchError: TLogError;       // Callsign error code
+    Exch1Error: TLogError;      // Exchange 1 qso error code
+    Exch2Error: TLogError;      // Exchange 2 qso error code
+    Err: string;                // Qso error string (e.g. corrections)
+
+    procedure CheckExch1;
+    procedure CheckExch2;
   end;
 
   THisto= class(TObject)
@@ -673,7 +683,7 @@ begin
         with Tst.Stations[i] as TDxStation do
           if (Oper.State = osDone) and (MyCall = Qso.Call) then
             begin
-              DataToLastQso; //deletes this dx station!
+              DataToLastQso; //grab "True" data and delete this dx station!
               Break;
             end;
 
@@ -696,6 +706,12 @@ begin
 end;
 
 
+{
+  Adds last Qso to log as displayed on the screen. The Error information
+  is not yet complete, so the Err column is not rendered at this time.
+  The error will be updated by DataToLastQso after the DxStation has been
+  confirmed and removed by TContest.GetAudio().
+}
 procedure LastQsoToScreen;
 begin
   with QsoList[High(QsoList)] do begin
@@ -758,7 +774,23 @@ begin
 end;
 
 
-procedure CheckErr;
+procedure TQso.CheckExch1;
+begin
+  Exch1Error := leNONE;
+
+  // Adding a contest: check for contest-specific exchange field 1 errors
+  case Mainform.RecvExchTypes.Exch1 of
+    etRST:     if TrueRst   <> Rst   then Exch1Error := leRST;
+    etOpName:  if TrueExch1 <> Exch1 then Exch1Error := leNAME;
+    etFdClass: if TrueExch1 <> Exch1 then Exch1Error := leCLASS;
+    else
+      assert(false, 'missing exchange 1 case');
+  end;
+end;
+
+
+procedure TQso.CheckExch2;
+
   // Reduce Power characters (T, O, A, N) to (0, 0, 1, 9) respectively.
   function ReducePowerStr(const text: string): string;
   begin
@@ -770,63 +802,98 @@ procedure CheckErr;
   end;
 
 begin
-  with QsoList[High(QsoList)] do begin
-    Err := '';
-    if TrueCall = '' then
-      Err := 'NIL';
-    if Err.IsEmpty and Dupe then
-      Err := 'DUP';
-    if Err.IsEmpty then
-      // Adding a contest: check for contest-specific exchange field 1 errors
-      case Mainform.RecvExchTypes.Exch1 of
-        etRST:     if TrueRst <> Rst then Err := 'RST';
-        etOpName:  if TrueExch1 <> Exch1 then Err := 'NAME';
-        etFdClass: if TrueExch1 <> Exch1 then Err := 'CL ';
-        else
-          assert(false, 'missing exchange 1 case');
-      end;
-    if Err.IsEmpty then
-      // Adding a contest: check for contest-specific exchange field 2 errors
-      case Mainform.RecvExchTypes.Exch2 of
-        etSerialNr:    if TrueNr <> NR then Err := 'NR ';
-        etGenericField:
-          // Adding a contest: implement comparison for Generic Field type
-          case Ini.SimContest of
-            scCwt:
-              if TrueExch2 <> Exch2 then
-                Err := IfThen(IsNum(TrueExch2), 'NR ', 'QTH');
-            scSst:
-              if TrueExch2 <> Exch2 then
-                Err := 'QTH';
-            scIaruHf:
-              // need to add ReduceNumeric...
-              if TrueExch2 <> Exch2 then
-                Err := IfThen(IsNum(TrueExch2), 'ZN ', 'Soc');
+  Exch2Error := leNONE;
+
+  // Adding a contest: check for contest-specific exchange field 2 errors
+  case Mainform.RecvExchTypes.Exch2 of
+    etSerialNr:    if TrueNr <> NR then Exch2Error := leNR;
+    etGenericField:
+      // Adding a contest: implement comparison for Generic Field type
+      case Ini.SimContest of
+        scCwt:
+          if TrueExch2 <> Exch2 then
+            if IsNum(TrueExch2) then
+              Exch2Error := leNR
             else
-              if TrueExch2 <> Exch2 then
-                Err := 'ERR';
-          end;
-        etCqZone:      if TrueNr <> NR then Err := 'ZN ';
-        etArrlSection: if TrueExch2 <> Exch2 then Err := 'SEC';
-        etStateProv:   if TrueExch2 <> Exch2 then Err := 'ST ';
-        etItuZone:     if TrueExch2 <> Exch2 then Err := 'ZN ';
-        //etAge:
-        etPower: if ReducePowerStr(TrueExch2) <> ReducePowerStr(Exch2) then
-                   Err := 'PWR';
-        etJaPref: if TrueExch2 <> Exch2 then Err := 'NR ';
-        etJaCity: if TrueExch2 <> Exch2 then Err := 'NR ';
-        etNaQpExch2:  if TrueExch2 <> Exch2 then Err := 'ST ';
-        etNaQpNonNaExch2:
-          // Non-NA stations do not send a location (typically logged as DX)
-          if not (TrueExch2.Equals(Exch2) or
-                  (Exch2.Equals('DX') and TrueExch2.IsEmpty)) then
-            Err := 'ST ';
+              Exch2Error := leQTH;
+        scSst:
+          if TrueExch2 <> Exch2 then
+            Exch2Error := leQTH;
+        scIaruHf:
+          // need to add ReduceNumeric...
+          if TrueExch2 <> Exch2 then
+            if IsNum(TrueExch2) then
+              Exch2Error := leZN
+            else
+              Exch2Error := leSOC;
         else
-          assert(false, 'missing exchange 2 case');
+          if TrueExch2 <> Exch2 then
+            Exch2Error := leERR;
       end;
-    if Err.IsEmpty then
-      Err := '   ';
+    etCqZone:      if TrueNr    <> NR    then Exch2Error := leZN;
+    etArrlSection: if TrueExch2 <> Exch2 then Exch2Error := leSEC;
+    etStateProv:   if TrueExch2 <> Exch2 then Exch2Error := leST;
+    etItuZone:     if TrueExch2 <> Exch2 then Exch2Error := leZN;
+    //etAge:
+    etPower: if ReducePowerStr(TrueExch2) <> ReducePowerStr(Exch2) then
+               Exch2Error := lePWR;
+    etJaPref: if TrueExch2 <> Exch2 then Exch2Error := leNR;
+    etJaCity: if TrueExch2 <> Exch2 then Exch2Error := leNR;
+    etNaQpExch2: if TrueExch2 <> Exch2 then Exch2Error := leST;
+    etNaQpNonNaExch2:
+      // Non-NA stations do not send a location (typically logged as DX)
+      if not (TrueExch2.Equals(Exch2) or
+              (Exch2.Equals('DX') and TrueExch2.IsEmpty)) then
+        Exch2Error := leST;
+    else
+      assert(false, 'missing exchange 2 case');
   end;
+end;
+
+
+procedure CheckErr;
+const
+  ErrorStrs: array[TLogError] of string = (
+    '',     'NIL', 'DUP', 'CALL', 'RST',
+    'NAME', 'CL',  'NR',  'SEC',  'QTH',
+    'ZN',   'SOC', 'ST',  'PWR',  'ERR');
+begin
+    with QsoList[High(QsoList)] do begin
+      // form the legacy Err String (e.g. RST, NR, CL, SEC, etc)
+      if TrueCall = '' then
+        ExchError := leNIL
+      else if TrueCall <> Call then
+      begin
+        ExchError := leCALL;
+      end
+      else if Dupe then
+        ExchError := leDUP  // todo - list this in column, but not as error
+      else
+      begin
+        ExchError := leNONE;
+
+        // find exchange errors for the current Qso
+        Tst.FindQsoErrors(QsoList[High(QsoList)]);
+      end;
+
+      // NIL or DUP errors have priority over showing corrected exchange
+      if ExchError in [leNIL, leDUP] then
+      begin
+        Err := ErrorStrs[ExchError];
+      end
+      else
+      begin
+        if Exch1Error <> leNONE then
+          Err := ErrorStrs[Exch1Error]
+        else if Exch2Error <> leNONE then
+          Err := ErrorStrs[Exch2Error]
+        else
+          Err := '';
+      end;
+
+      if Err.IsEmpty then
+        Err := '   ';
+    end; // end with QsoList[High(QsoList)]
 end;
 
 {
