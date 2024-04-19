@@ -361,7 +361,7 @@ begin
 
   MainForm.PaintBox1.Invalidate;
 
-  //MainForm.Panel11.Caption := IntToStr(Score);
+  MainForm.Panel11.Caption := IntToStr(Score);
 end;
 
 {
