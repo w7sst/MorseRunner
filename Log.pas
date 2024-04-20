@@ -277,14 +277,23 @@ begin
   RawPoints := 0;
   VerifiedPoints := 0;
 
-  ShowCorrections := SimContest in [scWpx, scCwt, scSst, scNaQp, scCQWW, scFieldDay, scArrlDx, scAllJa, scAcag, scIaruHF];
+  ShowCorrections := SimContest in [scWpx, scCwt, scSst, scNaQp, scHst, scCQWW, scFieldDay, scArrlDx, scAllJa, scAcag, scIaruHF];
 
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
   MainForm.RichEdit1.DefAttributes.Name:= 'Consolas';
 
   if Ini.RunMode = rmHst then
-    ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
+    if ShowCorrections then
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Correct', 'Wpm');
+      ScoreTableScaleWidth(1, 0.90);  // shrink Call column
+      ScoreTableScaleWidth(2, 0.90);  // shrink Recv column
+      ScoreTableScaleWidth(3, 0.90);  // shrink Sent column
+      ScoreTableScaleWidth(5, 2);   // expand Corrections column
+      end
+    else
+      ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
   else begin
     // Adding a contest: set Score Table titles
     case Ini.SimContest of
@@ -922,7 +931,11 @@ begin
 
   case Exch2Error of
     leNONE: ;
-    leNR: ACorrections.Add(TrueExch2);
+    leNR:
+      if (RunMode = rmHst) and (Mainform.RecvExchTypes.Exch2 = etSerialNr) then
+        ACorrections.Add(format('%.4d', [TrueNR]))
+      else
+        ACorrections.Add(TrueExch2);
     else
       ACorrections.Add(TrueExch2);
   end;
@@ -978,7 +991,11 @@ begin
         Err := Corrections.DelimitedText;  // Join(' ');
         if ExchError  <> leNONE then CallColumnColor := clRed;
         if Exch1Error <> leNONE then Exch1ColumnColor := clRed;
-        if Exch2Error <> leNONE then Exch2ColumnColor := clRed;
+        if Exch2Error <> leNONE then
+          if RunMode = rmHST then
+            Exch1ColumnColor := clRed
+          else
+            Exch2ColumnColor := clRed;
       end
       else
       begin
