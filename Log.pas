@@ -363,27 +363,19 @@ begin
     scHst:
       if ShowCorrections then
       begin
-        if (Ini.RunMode = rmHst) then
-          ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Correct', 'Wpm')
-        else
-          ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Correct', 'Wpm');
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Correct', 'Wpm');
         ScoreTableScaleWidth(1, 0.90);  // shrink Call column
         ScoreTableScaleWidth(2, 0.90);  // shrink Recv column
         ScoreTableScaleWidth(3, 0.90);  // shrink Sent column
         ScoreTableScaleWidth(5, 2);   // expand Corrections column
       end
-      else if Ini.RunMode = rmHst then
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
       else
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
     else
-      begin
-        assert(false, 'missing case');
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
-      end;
+      assert(false, 'missing case');
   end;  // end case
 
-  if Ini.RunMode = rmHst then
+  if SimContest = scHst then
     Empty := ''
   else
     Empty := FormatScore(0);
@@ -734,7 +726,7 @@ begin
     Qso.Pfx := ExtractPrefix(Qso.Call);
     // extract ';'-delimited multiplier string(s) and update Qso.Points.
     Qso.MultStr := Tst.ExtractMultiplier(Qso);
-    if Ini.RunMode = rmHst then
+    if SimContest = scHst then
       Qso.Pfx := IntToStr(CallToScore(Qso.Call));
 
     //mark if dupe
@@ -769,7 +761,7 @@ begin
   end;
 
   LastQsoToScreen;
-  if Ini.RunMode = rmHst then
+  if SimContest = scHst then
     UpdateStatsHst
   else
     UpdateStats({AVerifyResults=}False);
