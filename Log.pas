@@ -113,6 +113,8 @@ uses
   StdCtrls, PerlRegEx, pcre, StrUtils,
   Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
 
+const
+  ShowHstCorrections: Boolean = true;
 
 constructor THisto.Create(APaintBox: TPaintBOx);
 begin
@@ -277,102 +279,109 @@ begin
   RawPoints := 0;
   VerifiedPoints := 0;
 
-  ShowCorrections := SimContest in [scWpx, scCwt, scSst, scNaQp, scHst, scCQWW, scFieldDay, scArrlDx, scAllJa, scAcag, scIaruHF];
+  // Correction column is implemented for all contests; conditional for HST.
+  ShowCorrections := (SimContest <> scHst) or ShowHstCorrections;
 
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
   MainForm.RichEdit1.DefAttributes.Name:= 'Consolas';
 
-  if Ini.RunMode = rmHst then
-    if ShowCorrections then
+  // Adding a contest: set Score Table titles
+  case Ini.SimContest of
+    scCwt:
       begin
-      ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Correct', 'Wpm');
-      ScoreTableScaleWidth(1, 0.90);  // shrink Call column
-      ScoreTableScaleWidth(2, 0.90);  // shrink Recv column
-      ScoreTableScaleWidth(3, 0.90);  // shrink Sent column
-      ScoreTableScaleWidth(5, 2);   // expand Corrections column
+      ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(3, 0.75);  // shrink Exch2 (NR or QTH) column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scSst:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Corrections', ' Wpm');
+      ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      ScoreTableScaleWidth(6, 1.4);   // expand Wpm column for 22/25 Farnsworth
+      end;
+    scFieldDay:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'Class', 'Sect', '', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.75);  // shrink Class column
+      ScoreTableScaleWidth(3, 0.75);  // shrink Section column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scNaQp:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(1, 0.8);   // shrink Call column
+      ScoreTableScaleWidth(3, 0.6);   // shrink State/Prov column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scCQWW:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'CQ-Zone', 'Pref', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.50);  // shrink RST column
+      ScoreTableScaleWidth(3, 0.80);  // CQ-Zone column
+      ScoreTableScaleWidth(4, 0.00);  // shrink Pref column
+      ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
+      end;
+    scArrlDx:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.50);  // shrink RST column
+      ScoreTableScaleWidth(3, 0.75);  // Exch2 (<pref><power>) column
+      ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
+      end;
+    scAllJa:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.5);  // shrink RST column
+      ScoreTableScaleWidth(3, 0.75);  // Exch2 (<pref><power>) column
+      ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
+      end;
+    scAcag:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.5);   // shrink RST column
+      ScoreTableScaleWidth(3, 1.0);   // Exch2 (city/gun/ku) column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scIaruHf:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Mult', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.5);   // shrink RST column
+      ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
+      ScoreTableScaleWidth(4, 0.00);  // hide Mult column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scWpx:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Pref', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.5);   // shrink RST column
+      ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
+      ScoreTableScaleWidth(4, 0.00);  // hide Pref column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scHst:
+      if ShowCorrections then
+      begin
+        if (Ini.RunMode = rmHst) then
+          ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Correct', 'Wpm')
+        else
+          ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Correct', 'Wpm');
+        ScoreTableScaleWidth(1, 0.90);  // shrink Call column
+        ScoreTableScaleWidth(2, 0.90);  // shrink Recv column
+        ScoreTableScaleWidth(3, 0.90);  // shrink Sent column
+        ScoreTableScaleWidth(5, 2);   // expand Corrections column
       end
-    else
-      ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
-  else begin
-    // Adding a contest: set Score Table titles
-    case Ini.SimContest of
-      scCwt:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Corrections', 'Wpm');
-        ScoreTableScaleWidth(3, 0.75);  // shrink Exch2 (NR or QTH) column
-        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-        end;
-      scSst:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Corrections', ' Wpm');
-        ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
-        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-        ScoreTableScaleWidth(6, 1.4);   // expand Wpm column for 22/25 Farnsworth
-        end;
-      scFieldDay:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'Class', 'Sect', '', 'Corrections', 'Wpm');
-        ScoreTableScaleWidth(2, 0.75);  // shrink Class column
-        ScoreTableScaleWidth(3, 0.75);  // shrink Section column
-        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-        end;
-      scNaQp:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Corrections', 'Wpm');
-        ScoreTableScaleWidth(1, 0.8);   // shrink Call column
-        ScoreTableScaleWidth(3, 0.6);   // shrink State/Prov column
-        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-        end;
-      scCQWW:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'RST', 'CQ-Zone', 'Pref', 'Corrections', 'Wpm');
-        ScoreTableScaleWidth(2, 0.50);  // shrink RST column
-        ScoreTableScaleWidth(3, 0.80);  // CQ-Zone column
-        ScoreTableScaleWidth(4, 0.00);  // shrink Pref column
-        ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
-        end;
-      scArrlDx:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
-        ScoreTableScaleWidth(2, 0.50);  // shrink RST column
-        ScoreTableScaleWidth(3, 0.75);  // Exch2 (<pref><power>) column
-        ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
-        end;
-      scAllJa:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
-        ScoreTableScaleWidth(2, 0.5);  // shrink RST column
-        ScoreTableScaleWidth(3, 0.75);  // Exch2 (<pref><power>) column
-        ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
-        end;
-      scAcag:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
-        ScoreTableScaleWidth(2, 0.5);   // shrink RST column
-        ScoreTableScaleWidth(3, 1.0);   // Exch2 (city/gun/ku) column
-        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-        end;
-      scIaruHf:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Mult', 'Corrections', 'Wpm');
-        ScoreTableScaleWidth(2, 0.5);   // shrink RST column
-        ScoreTableScaleWidth(3, 0.75);  // shrink Exch2 column
-        ScoreTableScaleWidth(4, 0.00);  // shrink Mult column
-        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-        end;
-      scWpx:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Pref', 'Corrections', 'Wpm');
-        ScoreTableScaleWidth(2, 0.5);   // shrink RST column
-        ScoreTableScaleWidth(3, 0.75);  // shrink NR column
-        ScoreTableScaleWidth(4, 0.00);  // hide Pref column
-        ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-        end
+      else if Ini.RunMode = rmHst then
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
       else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
-    end;
-  end;
+    else
+      begin
+        assert(false, 'missing case');
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
+      end;
+  end;  // end case
 
   if Ini.RunMode = rmHst then
     Empty := ''
@@ -932,8 +941,11 @@ begin
   case Exch2Error of
     leNONE: ;
     leNR:
-      if (RunMode = rmHst) and (Mainform.RecvExchTypes.Exch2 = etSerialNr) then
-        ACorrections.Add(format('%.4d', [TrueNR]))
+      if (SimContest = scHst) and ShowHstCorrections then
+      begin
+        assert(Mainform.RecvExchTypes.Exch2 = etSerialNr);
+        ACorrections.Add(format('%.4d', [TrueNR]));
+      end
       else
         ACorrections.Add(TrueExch2);
     else
@@ -992,7 +1004,7 @@ begin
         if ExchError  <> leNONE then CallColumnColor := clRed;
         if Exch1Error <> leNONE then Exch1ColumnColor := clRed;
         if Exch2Error <> leNONE then
-          if RunMode = rmHST then
+          if (SimContest = scHst) and ShowHstCorrections then
             Exch1ColumnColor := clRed
           else
             Exch2ColumnColor := clRed;
