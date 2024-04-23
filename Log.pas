@@ -363,11 +363,11 @@ begin
     scHst:
       if ShowCorrections then
       begin
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Correct', 'Wpm');
+        ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Score', 'Correct', 'Wpm');
         ScoreTableScaleWidth(1, 0.90);  // shrink Call column
-        ScoreTableScaleWidth(2, 0.90);  // shrink Recv column
-        ScoreTableScaleWidth(3, 0.90);  // shrink Sent column
-        ScoreTableScaleWidth(5, 2);   // expand Corrections column
+        ScoreTableScaleWidth(2, 0.50);  // shrink RST column
+        ScoreTableScaleWidth(3, 0.60);  // shrink Exch (NR) column
+        ScoreTableScaleWidth(5, 2);     // expand Corrections column
       end
       else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
@@ -812,10 +812,16 @@ begin
         , format('%4d', [NR])
         , Pfx, Err, format('%3s', [TrueWpm]));
     scHst:
-      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-        , format('%.3d %.4d', [Rst, Nr])
-        , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
-        , Pfx, Err, format('%3s', [TrueWpm]));
+      if ShowCorrections then
+        ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+          , format('%.3d', [Rst])
+          , format(IfThen(RunMode = rmHst, '%.4d', '%4d'), [NR])
+          , Pfx, Err, format('%3s', [TrueWpm]))
+      else
+        ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+          , format('%.3d %.4d', [Rst, Nr])
+          , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
+          , Pfx, Err, format('%3s', [TrueWpm]));
     scCQWW:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
@@ -933,7 +939,7 @@ begin
   case Exch2Error of
     leNONE: ;
     leNR:
-      if (SimContest = scHst) and ShowHstCorrections then
+      if (SimContest = scHst) and ShowHstCorrections and (RunMode = rmHst) then
       begin
         assert(Mainform.RecvExchTypes.Exch2 = etSerialNr);
         ACorrections.Add(format('%.4d', [TrueNR]));
@@ -995,11 +1001,7 @@ begin
         Err := Corrections.DelimitedText;  // Join(' ');
         if ExchError  <> leNONE then CallColumnColor := clRed;
         if Exch1Error <> leNONE then Exch1ColumnColor := clRed;
-        if Exch2Error <> leNONE then
-          if (SimContest = scHst) and ShowHstCorrections then
-            Exch1ColumnColor := clRed
-          else
-            Exch2ColumnColor := clRed;
+        if Exch2Error <> leNONE then Exch2ColumnColor := clRed;
       end
       else
       begin
