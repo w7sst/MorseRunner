@@ -19,16 +19,19 @@ type
     constructor CreateStation;
     destructor Destroy; override;
     procedure ProcessEvent(AEvent: TStationEvent); override;
+{$ifdef DEBUG}
+    procedure SendMsg(AMsg: TStationMessage); override;
+{$endif}
     procedure DataToLastQso;
     function GetBlock: TSingleArray; override;
   var
      Operid: integer;
   end;
 
+{$ifdef DEBUG}
 var
   LastDxCallsign : string = '';
-  LastExch1 : string = '';
-  LastExch2 : string = '';
+{$endif}
 
 implementation
 
@@ -89,13 +92,11 @@ begin
       Operid := -1;
     end;
 
+{$ifdef DEBUG}
   // retain most recent DxCallsign (used for debugging)
   if Ini.RunMode = rmSingle then
-    begin
-      LastDxCallsign := MyCall;
-      LastExch1 := Self.Exch1;
-      LastExch2 := Self.Exch2;
-    end;
+    LastDxCallsign := MyCall;
+{$endif}
 
   //the MeSent event will follow immediately
   TimeOut := NEVER;
@@ -188,6 +189,23 @@ begin
       end;
     end;
 end;
+
+
+{$ifdef DEBUG}
+procedure TDxStation.SendMsg(AMsg: TStationMessage);
+begin
+  inherited SendMsg(AMsg);
+
+  if BDebugExchSettings and (Mainform.Edit2.Text = '') and
+    (AMsg in [msgNR, msgR_NR, msgR_NR2,
+    msgDeMyCallNr1, msgDeMyCallNr2, msgMyCallNr2]) then
+  begin
+    Mainform.Edit2.Text := Exch1;
+    if (SimContest <> scNaQp) or (Exch2 <> 'DX') then
+      MainForm.Edit3.Text := Exch2;
+  end;
+end;
+{$endif}
 
 
 // copies data from this DxStation to the last QSO (top of QsoList[]).

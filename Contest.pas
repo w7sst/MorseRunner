@@ -526,14 +526,16 @@ begin
      Me.Msg := [msgCq]; //no need to send cq in this mode
      Stations.AddCaller.ProcessEvent(evMeFinished);
 
-     // special debug mode to populate callsign and exchange fields
+{$ifdef DEBUG}
      if Main.BDebugExchSettings then
-       begin
+     begin
          MainForm.Edit1.Text := DxStn.LastDxCallsign;
-         MainForm.Edit2.Text := DxStn.LastExch1;
-         if (SimContest <> scNaQp) or (DxStn.LastExch2 <> 'DX') then
-           MainForm.Edit3.Text := DxStn.LastExch2;
-       end;
+         MainForm.Edit2.Text := '';
+         MainForm.Edit3.Text := '';
+         Log.CallSent := False; // my Call hasn't been sent to this new station
+         Log.NrSent := False;   // my Exch hasn't been sent to this new station
+     end;
+{$endif}
   end
   else
     if (RunMode = rmHst) and (DxCount < Activity) then begin
