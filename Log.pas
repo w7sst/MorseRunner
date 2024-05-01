@@ -31,6 +31,18 @@ function ExtractPrefix(Call: string; DeleteTrailingLetters: boolean = True): str
 function ExtractPrefix0(Call: string): string;
 {$endif}
 
+{$ifdef DEBUG}
+// Debugging API patterned after LazLogger.
+// (Used in anticipation of a future port to Lazarus compiler)
+procedure DebugLn(const AMsg: string) overload;
+procedure DebugLn(const AFormat: string; const AArgs: array of const) overload;
+procedure DebugLnEnter(const AMsg: string) overload;
+procedure DebugLnEnter(const AFormat: string; const AArgs: array of const) overload;
+procedure DebugLnExit(const AMsg: string) overload;
+procedure DebugLnExit(const AFormat: string; const AArgs: array of const) overload;
+{$endif}
+
+
 type
   TLogError = (leNONE, leNIL,   leDUP, leCALL, leRST,
                leNAME, leCLASS, leNR,  leSEC,  leQTH,
@@ -115,6 +127,14 @@ uses
 
 const
   ShowHstCorrections: Boolean = true;
+{$ifdef DEBUG}
+  DEBUG_INDENT: Integer = 3;
+{$endif}
+
+{$ifdef DEBUG}
+var
+  Indent: Integer = 0;    // used by DebugLnEnter/DebugLnExit
+{$endif}
 
 constructor THisto.Create(APaintBox: TPaintBOx);
 begin
@@ -1066,6 +1086,50 @@ begin
 
   MainForm.Panel7.Caption := Format('%d  qso/hr.', [Round(Cnt / D / 24)]);
 end;
+
+
+{$ifdef DEBUG}
+procedure DebugLn(const AMsg: string) overload;
+begin
+  OutputDebugString(PChar(StringOfChar(' ', Log.Indent) + AMsg));
+end;
+
+
+procedure DebugLn(const AFormat: string; const AArgs: array of const) overload;
+begin
+  OutputDebugString(PChar(StringOfChar(' ', Log.Indent) + format(AFormat, AArgs)));
+end;
+
+
+procedure DebugLnEnter(const AMsg: string) overload;
+begin
+  OutputDebugString(PChar(StringOfChar(' ', Log.Indent) + AMsg));
+  Inc(Log.Indent, DEBUG_INDENT);
+end;
+
+
+procedure DebugLnEnter(const AFormat: string; const AArgs: array of const) overload;
+begin
+  OutputDebugString(PChar(StringOfChar(' ', Log.Indent) + format(AFormat, AArgs)));
+  Inc(Log.Indent, DEBUG_INDENT);
+end;
+
+
+procedure DebugLnExit(const AMsg: string) overload;
+begin
+  if AMsg <> '' then
+    OutputDebugString(PChar(StringOfChar(' ', Log.Indent) + AMsg));
+  if (Log.Indent >= DEBUG_INDENT) then Dec(Log.Indent, DEBUG_INDENT);
+end;
+
+
+procedure DebugLnExit(const AFormat: string; const AArgs: array of const) overload;
+begin
+  if AFormat <> '' then
+    OutputDebugString(PChar(StringOfChar(' ', Log.Indent) + format(AFormat, AArgs)));
+  if (Log.Indent >= DEBUG_INDENT) then Dec(Log.Indent, DEBUG_INDENT);
+end;
+{$endif}
 
 
 initialization

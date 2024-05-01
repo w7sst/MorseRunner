@@ -104,6 +104,11 @@ const
     Exch2: TExchange2Type(-1);
   );
 
+function ToStr(const val : TStationMessage) : string; overload;
+function ToStr(const val : TStationMessages) : string; overload;
+function ToStr(const val : TStationState) : string; overload;
+function ToStr(const val : TStationEvent) : string; overload;
+
 implementation
 
 uses
@@ -111,7 +116,39 @@ uses
   QrmStn,   // for TQrmStation.ClassType
   Contest,  // for Tst (TContest), Tst.Me.OpName
   StrUtils, // for PosEx
+  TypInfo,  // for typeInfo
   SysUtils, Math, MorseKey;
+
+
+function ToStr(const val : TStationMessage) : string; overload;
+begin
+  Result := GetEnumName(typeInfo(TStationMessage), Ord(val));
+end;
+
+function ToStr(const val: TStationMessages) : string; overload;
+var
+  Msg: TStationMessage;
+begin
+  Result := '[';
+  for Msg := Low(TStationMessage) to High(TStationMessage) do
+    if Msg in val then
+    begin
+      if Length(Result) > 1 then
+        Result := Result + ', ';
+      Result := Result + ToStr(Msg);
+    end;
+  Result := Result + ']';
+end;
+
+function ToStr(const val : TStationState) : string; overload;
+begin
+  Result := GetEnumName(typeInfo(TStationState), Ord(val));
+end;
+
+function ToStr(const val : TStationEvent) : string; overload;
+begin
+  Result := GetEnumName(typeInfo(TStationEvent), Ord(val));
+end;
 
 
 { TExchTypes }

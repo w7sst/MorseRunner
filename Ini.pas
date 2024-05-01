@@ -274,6 +274,7 @@ procedure FromIni(cb : TErrMessageCallback);
 procedure ToIni;
 function IsNum(Num: String): Boolean;
 function FindContestByName(const AContestName : String) : TSimContest;
+function ToStr(const val: TRunMode): String; overload;
 
 
 implementation
@@ -282,7 +283,15 @@ uses
   Classes,        // for TStringList
   Math,           // for Min, Max
   SysUtils,       // for Format(),
+  TypInfo,        // for typeInfo
   Main, Contest;
+
+
+function ToStr(const val : TRunMode) : string; overload;
+begin
+  Result := GetEnumName(typeInfo(TRunMode), Ord(val));
+end;
+
 
 procedure FromIni(cb : TErrMessageCallback);
 var
