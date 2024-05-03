@@ -2482,6 +2482,13 @@ begin
   end
   else
     View.Canvas.Font.Color := IfThen(SubItem = 5, clRed, clBlack);
+
+  // strike out HST Score if a QSO error exists
+  if SimContest = scHst then
+    if (SubItem = 4) and (Qso.Err <> '   ') and (Qso.TrueCall <> '') then
+      View.Canvas.Font.Style := [fsStrikeOut]
+    else
+      View.Canvas.Font.Style := [];
 end;
 
 procedure TMainForm.ListView2SelectItem(Sender: TObject; Item: TListItem;

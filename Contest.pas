@@ -511,7 +511,7 @@ begin
               Log.ScoreTableUpdateCheck;
 
               { TODO -omikeb -cfeature : Clean up status bar code. }
-              if Ini.RunMode = RmHst then
+              if SimContest = scHst then
                 Log.UpdateStatsHst
               else
                 Log.UpdateStats({AVerifyResults=}True);
@@ -550,7 +550,7 @@ begin
       MainForm.Run(rmStop);
       FStopPressed := false;
       MainForm.PopupScoreHst;
-      end        
+      end
     else if (SimContest = scWpx) and
       (RunMode in [rmHst, rmWpx]) and
       not FStopPressed then
