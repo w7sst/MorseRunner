@@ -8,6 +8,7 @@ unit Log;
 interface
 
 uses
+  Graphics,     // for TColor
   Classes, Controls, ExtCtrls;
 
 procedure SaveQso;
@@ -52,9 +53,13 @@ type
     Exch1Error: TLogError;      // Exchange 1 qso error code
     Exch2Error: TLogError;      // Exchange 2 qso error code
     Err: string;                // Qso error string (e.g. corrections)
+    CallColumnColor: TColor;    // Callsign field color (clBlack or clRed)
+    Exch1ColumnColor: TColor;   // Exchange 1 field color (clBlack or clRed)
+    Exch2ColumnColor: TColor;   // Exchange 2 field color (clBlack or clRed)
+    CorrectionsColumnColor: TColor; // Corrections field color (clBlack or clRed)
 
-    procedure CheckExch1;
-    procedure CheckExch2;
+    procedure CheckExch1(var ACorrections: TStringList);
+    procedure CheckExch2(var ACorrections: TStringList);
   end;
 
   THisto= class(TObject)
@@ -92,6 +97,7 @@ var
   VerifiedPoints:   integer;   // accumulated verified QSO points total
   CallSent: boolean; // msgHisCall has been sent; cleared upon edit.
   NrSent: boolean;   // msgNR has been sent. Seems to imply exchange sent.
+  ShowCorrections: boolean;    // show exchange correction column.
   Histo: THisto;
   LogColWidths : Array[0..6] of integer;  // retain original Log column widths
   LogColWidthInitialized : boolean;       // initialize LogColWidths on time only
@@ -103,10 +109,12 @@ var
 implementation
 
 uses
-  Windows, SysUtils, Graphics, RndFunc, Math,
+  Windows, SysUtils, RndFunc, Math,
   StdCtrls, PerlRegEx, pcre, StrUtils,
   Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
 
+const
+  ShowHstCorrections: Boolean = true;
 
 constructor THisto.Create(APaintBox: TPaintBOx);
 begin
@@ -254,8 +262,10 @@ end;
 
 procedure ScoreTableUpdateCheck;
 begin
+  // https://stackoverflow.com/questions/34239493/how-to-color-specific-list-view-item-in-delphi
   with MainForm.ListView2 do begin
-    Items[Items.Count-1].SubItems[4]:= QsoList[High(QsoList)].Err;
+    Items[Items.Count-1].SubItems[4] := QsoList[High(QsoList)].Err;
+    Items[Items.Count-1].Update;
   end;
 end;
 
@@ -268,43 +278,110 @@ begin
   VerifiedMultList.Clear;
   RawPoints := 0;
   VerifiedPoints := 0;
+
+  // Correction column is implemented for all contests; conditional for HST.
+  ShowCorrections := (SimContest <> scHst) or ShowHstCorrections;
+
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
   MainForm.RichEdit1.DefAttributes.Name:= 'Consolas';
 
-  if Ini.RunMode = rmHst then
-    ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
-  else begin
-    // Adding a contest: set Score Table titles
-    case Ini.SimContest of
-      scCwt:
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', 'Wpm');
-      scSst:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Chk', ' Wpm');
-        ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
-        ScoreTableScaleWidth(5, 1.2);   // expand Chk column for 'NAME' error
-        ScoreTableScaleWidth(6, 1.4);   // expand Wpm column for 22/25 Farnsworth
-        end;
-      scFieldDay:
-        ScoreTableSetTitle('UTC', 'Call', 'Class', 'Section', 'Pref', 'Chk', 'Wpm');
-      scNaQp:
-        ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Chk', 'Wpm');
-      scCQWW:
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
-      scArrlDx:
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
-      scAcag:
-        begin
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'City', 'Chk', 'Wpm');
-        ScoreTableScaleWidth(4, 1.2);   // expand City column for wide numbers
-        end;
-      scIaruHf:
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
+  // Adding a contest: set Score Table titles
+  case Ini.SimContest of
+    scCwt:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(3, 0.75);  // shrink Exch2 (NR or QTH) column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scSst:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Corrections', ' Wpm');
+      ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      ScoreTableScaleWidth(6, 1.4);   // expand Wpm column for 22/25 Farnsworth
+      end;
+    scFieldDay:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'Class', 'Sect', '', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.75);  // shrink Class column
+      ScoreTableScaleWidth(3, 0.75);  // shrink Section column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scNaQp:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(1, 0.8);   // shrink Call column
+      ScoreTableScaleWidth(3, 0.6);   // shrink State/Prov column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scCQWW:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'CQ-Zone', 'Pref', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.50);  // shrink RST column
+      ScoreTableScaleWidth(3, 0.80);  // CQ-Zone column
+      ScoreTableScaleWidth(4, 0.00);  // shrink Pref column
+      ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
+      end;
+    scArrlDx:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.50);  // shrink RST column
+      ScoreTableScaleWidth(3, 0.75);  // Exch2 (<pref><power>) column
+      ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
+      end;
+    scAllJa:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.5);  // shrink RST column
+      ScoreTableScaleWidth(3, 0.75);  // Exch2 (<pref><power>) column
+      ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
+      end;
+    scAcag:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.5);   // shrink RST column
+      ScoreTableScaleWidth(3, 1.0);   // Exch2 (city/gun/ku) column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scIaruHf:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Mult', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.5);   // shrink RST column
+      ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
+      ScoreTableScaleWidth(4, 0.00);  // hide Mult column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scWpx:
+      begin
+      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Pref', 'Corrections', 'Wpm');
+      ScoreTableScaleWidth(2, 0.5);   // shrink RST column
+      ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
+      ScoreTableScaleWidth(4, 0.00);  // hide Pref column
+      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
+      end;
+    scHst:
+      if ShowCorrections then
+      begin
+        if (Ini.RunMode = rmHst) then
+          ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Correct', 'Wpm')
+        else
+          ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Correct', 'Wpm');
+        ScoreTableScaleWidth(1, 0.90);  // shrink Call column
+        ScoreTableScaleWidth(2, 0.90);  // shrink Recv column
+        ScoreTableScaleWidth(3, 0.90);  // shrink Sent column
+        ScoreTableScaleWidth(5, 2);   // expand Corrections column
+      end
+      else if Ini.RunMode = rmHst then
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
       else
         ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
-    end;
-  end;
+    else
+      begin
+        assert(false, 'missing case');
+        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Pref', 'Chk', 'Wpm');
+      end;
+  end;  // end case
 
   if Ini.RunMode = rmHst then
     Empty := ''
@@ -721,12 +798,12 @@ begin
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
-        , Pfx, Err, format('%3s', [TrueWpm]));
+        , '', Err, format('%3s', [TrueWpm]));
     scSst:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
-        , Pfx, Err, format('%5s', [TrueWpm]));
+        , '', Err, format('%5s', [TrueWpm]));
     scFieldDay:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
@@ -737,35 +814,40 @@ begin
         , Exch1
         , Exch2
         , Pfx, Err, format('%3s', [TrueWpm]));
-    scWpx, scHst:
+    scWpx:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d', [Rst])
+        , format('%4d', [NR])
+        , Pfx, Err, format('%3s', [TrueWpm]));
+    scHst:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d %.4d', [Rst, Nr])
         , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
         , Pfx, Err, format('%3s', [TrueWpm]));
     scCQWW:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-        , format('%.3d %4d', [Rst, NR])
-        , format('%.3s %4d', [Tst.Me.Exch1, Tst.Me.NR])     // log my sent RST
+        , format('%.3d', [Rst])
+        , format('%4d', [NR])
         , Pfx, Err, format('%3s', [TrueWpm]));
     scArrlDx:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-        , format('%.3d %4s', [Rst, Exch2])
-        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
-        , Pfx, Err, format('%3s', [TrueWpm]));
+        , format('%.3d', [Rst])
+        , Exch2
+        , '', Err, format('%3s', [TrueWpm]));
     scAllJa:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-        , format('%.3d %4s', [Rst, Exch2])
-        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
-        , MultStr, Err, format('%3s', [TrueWpm]));
+        , format('%.3d', [Rst])
+        , Exch2
+        , '', Err, format('%3s', [TrueWpm]));
     scAcag:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-        , format('%.3d %4s', [Rst, Exch2])
-        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
-        , MultStr, Err, format('%3s', [TrueWpm]));
+        , format('%.3d', [Rst])
+        , Exch2
+        , '', Err, format('%3s', [TrueWpm]));
     scIaruHf:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-        , format('%.3d %4s', [Rst, Exch2])
-        , format('%.3s %4s', [Tst.Me.Exch1, Tst.Me.Exch2])  // log my sent RST
+        , format('%.3d', [Rst])
+        , Exch2
         , MultStr, Err, format('%3s', [TrueWpm]));
     else
       assert(false, 'missing case');
@@ -774,7 +856,7 @@ begin
 end;
 
 
-procedure TQso.CheckExch1;
+procedure TQso.CheckExch1(var ACorrections: TStringList);
 begin
   Exch1Error := leNONE;
 
@@ -786,10 +868,17 @@ begin
     else
       assert(false, 'missing exchange 1 case');
   end;
+
+  case Exch1Error of
+    leNONE: ;
+    leRST: ACorrections.Add(Format('%d', [TrueRst]));
+    else
+      ACorrections.Add(TrueExch1);
+  end;
 end;
 
 
-procedure TQso.CheckExch2;
+procedure TQso.CheckExch2(var ACorrections: TStringList);
 
   // Reduce Power characters (T, O, A, N) to (0, 0, 1, 9) respectively.
   function ReducePowerStr(const text: string): string;
@@ -848,6 +937,20 @@ begin
     else
       assert(false, 'missing exchange 2 case');
   end;
+
+  case Exch2Error of
+    leNONE: ;
+    leNR:
+      if (SimContest = scHst) and ShowHstCorrections then
+      begin
+        assert(Mainform.RecvExchTypes.Exch2 = etSerialNr);
+        ACorrections.Add(format('%.4d', [TrueNR]));
+      end
+      else
+        ACorrections.Add(TrueExch2);
+    else
+      ACorrections.Add(TrueExch2);
+  end;
 end;
 
 
@@ -857,7 +960,11 @@ const
     '',     'NIL', 'DUP', 'CALL', 'RST',
     'NAME', 'CL',  'NR',  'SEC',  'QTH',
     'ZN',   'SOC', 'ST',  'PWR',  'ERR');
+var
+  Corrections: TStringList;
 begin
+  Corrections := TStringList.Create;
+  try
     with QsoList[High(QsoList)] do begin
       // form the legacy Err String (e.g. RST, NR, CL, SEC, etc)
       if TrueCall = '' then
@@ -865,21 +972,42 @@ begin
       else if TrueCall <> Call then
       begin
         ExchError := leCALL;
+        Corrections.Add(TrueCall);
       end
-      else if Dupe then
-        ExchError := leDUP  // todo - list this in column, but not as error
+      else if Dupe and not Log.ShowCorrections then
+        ExchError := leDUP
       else
       begin
         ExchError := leNONE;
 
         // find exchange errors for the current Qso
-        Tst.FindQsoErrors(QsoList[High(QsoList)]);
+        Tst.FindQsoErrors(QsoList[High(QsoList)], Corrections);
       end;
+
+      CallColumnColor := clBlack;
+      Exch1ColumnColor := clBlack;
+      Exch2ColumnColor := clBlack;
+      CorrectionsColumnColor := clBlack;
 
       // NIL or DUP errors have priority over showing corrected exchange
       if ExchError in [leNIL, leDUP] then
       begin
         Err := ErrorStrs[ExchError];
+        if ExchError <> leDUP then CorrectionsColumnColor := clRed;
+      end
+      else if ShowCorrections then
+      begin
+        if Dupe then
+          Corrections.Insert(0, ErrorStrs[leDUP]);
+        Corrections.Delimiter := ' ';
+        Err := Corrections.DelimitedText;  // Join(' ');
+        if ExchError  <> leNONE then CallColumnColor := clRed;
+        if Exch1Error <> leNONE then Exch1ColumnColor := clRed;
+        if Exch2Error <> leNONE then
+          if (SimContest = scHst) and ShowHstCorrections then
+            Exch1ColumnColor := clRed
+          else
+            Exch2ColumnColor := clRed;
       end
       else
       begin
@@ -889,11 +1017,16 @@ begin
           Err := ErrorStrs[Exch2Error]
         else
           Err := '';
+        CorrectionsColumnColor := clRed;
       end;
 
       if Err.IsEmpty then
         Err := '   ';
     end; // end with QsoList[High(QsoList)]
+
+  finally
+    Corrections.Free;
+  end;
 end;
 
 {

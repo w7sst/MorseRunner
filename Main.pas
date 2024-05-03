@@ -2455,11 +2455,33 @@ end;
 procedure TMainForm.ListView2CustomDrawSubItem(Sender: TCustomListView;
   Item: TListItem; SubItem: Integer; State: TCustomDrawState;
   var DefaultDraw: Boolean);
+var
+  View: TListView;
+  Qso: PQso;
 begin
-    if (SubItem=5) then
-      (Sender as TListView).Canvas.Font.Color:= clRed
+  if Length(QsoList) = 0 then Exit;
+
+  View := Sender as TListView;
+  Qso := @QsoList[Item.Index];
+
+  if Log.ShowCorrections then
+  begin
+    if Qso.Err <> '   ' then
+    begin
+      case SubItem of
+      1: View.Canvas.Font.Color := Qso.CallColumnColor;
+      2: View.Canvas.Font.Color := Qso.Exch1ColumnColor;
+      3: View.Canvas.Font.Color := Qso.Exch2ColumnColor;
+      5: View.Canvas.Font.Color := Qso.CorrectionsColumnColor;
+      else
+        View.Canvas.Font.Color := clBlack;
+      end;
+    end
     else
-      (Sender as TListView).Canvas.Font.Color:= clBlack;
+      View.Canvas.Font.Color := clBlack;
+  end
+  else
+    View.Canvas.Font.Color := IfThen(SubItem = 5, clRed, clBlack);
 end;
 
 procedure TMainForm.ListView2SelectItem(Sender: TObject; Item: TListItem;
@@ -2467,7 +2489,6 @@ procedure TMainForm.ListView2SelectItem(Sender: TObject; Item: TListItem;
 begin
     if (Selected and mnuShowCallsignInfo.Checked) then
         UpdateSbar(Item.SubItems[0]);
-    //Item.Index  @QsoList[High(QsoList)];
 end;
 
 procedure TMainForm.Activity1Click(Sender: TObject);
