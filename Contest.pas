@@ -808,6 +808,7 @@ begin
              end;
           if z=0 then begin
              // No maximo fica 3 cq sem contesters
+             // (At most 3 cq without contesters)
              inc(NoActivityCnt);
              if ((NoActivityCnt > 2) or (NoStopActivity > 0) )  then begin
                  Stations.AddCaller;

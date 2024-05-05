@@ -412,9 +412,9 @@ begin
   // during debug, use status bar to show CW stream
   Mainform.sbar.Font.Color := clDefault;
   if not s.IsEmpty and (BDebugCwDecoder or BDebugGhosting) then
-    Mainform.sbar.Caption:= LeftStr(Mainform.sbar.Caption, 40) + ' -- ' + s
+    Mainform.sbar.Caption := LeftStr(Mainform.sbar.Caption, 40) + ' -- ' + s
   else
-    MainForm.sbar.Caption:= '  ' + s;
+    MainForm.sbar.Caption := '  ' + s;
 end;
 
 

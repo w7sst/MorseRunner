@@ -13,7 +13,7 @@ uses
 type
   TQrmStation = class(TStation)
   private
-    Patience: integer;
+    Patience: integer;  // number of times station will retry sending messages.
   public
     constructor CreateStation;
     procedure ProcessEvent(AEvent: TStationEvent); override;
