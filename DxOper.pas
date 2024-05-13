@@ -252,9 +252,25 @@ begin
     complete a QSO with the user. FULL_PATIENCE = 5. Patience is the number of
     TimeOut events to occur before this station will disappear.
     A TimeOut is typically in the range of 3-6 seconds (See GetReplyTimeout).
+
+    When entering the osNeedQso state, the original code was setting a Patience
+    value which would cause a station to disappear quickly after its first
+    transmission (i.e. sending its callsign). This was caused by the original
+    RndRayleigh(4) distribution below having a result in the range [0,2] about
+    6% of the time.
+
+    In May 2024, this was changed to '3 + RndRayleigh(3)' to keep the
+    station around long enough for the user to respond to a call.
+    This fixes the so-called ghosting-problem where stations would disappear
+    almost immediately after sending their callsign for the first time.
+    See Issue #200 for additional information.
+
+    0 + RndRayleigh(4)   0+([1,14], mean 4); value 0|1|2 occurs 6% (ghosting)
+    3 + RndRayleigh(3)   3+([1,11], mean 3); [4,14], mean 6; value 4 occurs 2.6%
+    3 + RndRayleigh(2)   3+([1, 7], mean 2); [4,10], mean 5; value 4 occurs 11%
   }
   if AState = osNeedQso
-    then Patience := Round(RndRayleigh(4))
+    then Patience := 3 + Round(RndRayleigh(3))
     else Patience := FULL_PATIENCE;
 
   if (AState = osNeedQso) and (not (RunMode in [rmSingle, RmHst])) and (Random < 0.1)
