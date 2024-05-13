@@ -135,7 +135,7 @@ begin
           // during debug, use status bar to show CW stream
           if BDebugCwDecoder or BDebugGhosting then
             Mainform.sbar.Caption :=
-              (Format('[%s-Timeout]',[MyCall]) + '; ' +
+              (Format('[%s-osFailed], Stn deleted',[MyCall]) + '; ' +
               Mainform.sbar.Caption).Substring(0, 80);
           Free;
           Exit;
@@ -169,7 +169,7 @@ begin
               // during debug, use status bar to show CW stream
               if BDebugCwDecoder or BDebugGhosting then
                 Mainform.sbar.Caption :=
-                  (Format('[%s-Failed]',[MyCall]) + '; ' +
+                  (Format('[%s-osFailed, Stn deleted]',[MyCall]) + '; ' +
                   Mainform.sbar.Caption).Substring(0, 80);
               Free;
               Exit;

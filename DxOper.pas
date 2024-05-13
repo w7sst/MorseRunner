@@ -83,6 +83,7 @@ type
   TDxOperator = class
   private
     procedure DecPatience;
+    procedure MorePatience(AValue: integer = 0);
     function IsMyCall: TCallCheckResult;
   public
     Call: string;
@@ -196,6 +197,31 @@ begin
 
   Dec(Patience);
   if Patience < 1 then State := osFailed;
+end;
+
+
+{
+  MorePatience is called to add additional patience while remaining in the
+  current state. This will happen when a message is received from the user
+  without an associated state change. Without adding additional patience,
+  the DxStation will timeout and disappear from the user in the middle of
+  an ongoing QSO.
+
+  Parameter AValue is an optional Patience value.
+  If AValue > 0, Patience is set to this value;
+  else if RunMode = rmSingle, Patience is set to 4;
+  otherwise Patience is incremented by 2 (up to maximum of 4).
+}
+procedure TDxOperator.MorePatience(AValue: integer);
+begin
+  if State = osDone then Exit;
+
+  if AValue > 0 then
+    Patience := Min(AValue, FULL_PATIENCE)
+  else if RunMode = rmSingle then
+    Patience := 4
+  else
+    Patience := Min(Patience + 2, 4);
 end;
 
 
@@ -341,6 +367,7 @@ begin
       mcYes:
         if State in [osNeedPrevEnd, osNeedQso] then SetState(osNeedNr)
         else if State = osNeedCallNr then SetState(osNeedNr)
+        else if State in [osNeedNr, osNeedEnd] then MorePatience
         else if State = osNeedCall then SetState(osNeedEnd);
 
       mcAlmost:
@@ -366,26 +393,38 @@ begin
       osNeedPrevEnd: ;
       osNeedQso: State := osNeedPrevEnd;
       osNeedNr: if (Random < 0.9) or (RunMode in [rmHst, rmSingle]) then
-        SetState(osNeedEnd);
-      osNeedCall: ;
+          SetState(osNeedEnd)
+        else
+          MorePatience;
+      osNeedCall: MorePatience;
       osNeedCallNr: if (Random < 0.9) or (RunMode in [rmHst, rmSingle]) then
-        SetState(osNeedCall);
-      osNeedEnd: ;
+          SetState(osNeedCall)
+        else
+          MorePatience;
+      osNeedEnd: MorePatience;
       end;
 
   if msgTU in AMsg then
     case State of
       osNeedPrevEnd: SetState(osNeedQso);
-      osNeedQso: ;
-      osNeedNr: ;
-      osNeedCall: ;
-      osNeedCallNr: ;
+      osNeedQso: SetState(osNeedQso);
+      osNeedNr: State := osDone;          // may have exchange (NR) error
+      osNeedCall: State := osDone;        // possible partial call match
+      osNeedCallNr: SetState(osNeedQso);  // start over with new QSO
       osNeedEnd: State := osDone;
       end;
 
   if msgQm in AMsg then
-    if (State = osNeedPrevEnd) and (Mainform.Edit1.Text = '') then
-      SetState(osNeedQso);
+  begin
+    case State of
+      osNeedPrevEnd: if Mainform.Edit1.Text = '' then SetState(osNeedQso);
+      osNeedQso: ;
+      osNeedNr: MorePatience;
+      osNeedCall: MorePatience;
+      osNeedCallNr: MorePatience;
+      osNeedEnd: MorePatience;
+    end;
+  end;
 
   if (not Ini.Lids) and (AMsg = [msgGarbage]) then State := osNeedPrevEnd;
 
