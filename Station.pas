@@ -48,7 +48,10 @@ type
     procedure SetPitch(const Value: integer);
   protected
     SendPos: integer;
-    TimeOut: integer;
+    TimeOut: integer; // remaining Ticks until evTimeout occurs.
+                      // A Tick occurs whenever an audio block is requested.
+                      // TStation.Tick() calls ProcessEvent(evTimeout) whenever
+                      // Timeout decrements to zero.
     NrWithError: boolean;
     R1 : Single;    // holds a Random number; used in NrAsText
     procedure Init;
