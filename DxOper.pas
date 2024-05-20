@@ -95,6 +95,7 @@ type
 			// Patience is increased with calls to MorePatience.
     RepeatCnt: integer;
     State: TOperatorState;
+    function IsGhosting: boolean;
     function GetSendDelay: integer;
     function GetReplyTimeout: integer;
     function GetWpm(out AWpmC : integer) : integer;
@@ -112,6 +113,25 @@ uses
   SysUtils, Ini, Math, RndFunc, Contest, Log, Main;
 
 { TDxOperator }
+
+
+{
+  The notion of ghosting refers to a DxOperator who has run out of
+  Patience and is leaving the QSO because the User has failed to respond.
+  This will occur if the User does not respond or continue to interact with
+  this DxOperator. A station is considered ghosting whenever Patience = 0.
+
+  When a DxStation is ghosting, it will:
+  - leaving the QSO because User did not complete QSO
+  - will not send additional transmissions to the user
+  - will retain in set of active stations so it can still receive messages
+    from the user. Most often, it is waiting for the final 'TU' message.
+  - if 'TU' is received, then the station can be added to the log.
+}
+function TDxOperator.IsGhosting: boolean;
+begin
+  Result := Patience = 0;
+end;
 
 
 //Delay before reply, keying speed and exchange number are functions
@@ -189,14 +209,21 @@ end;
 {
   DecPatience is typically called after an evTimeout event.
   The TDxOperator.Patience value is decremented down to zero.
-  When this count reaches zero, the DxStation is deleted from the simulation.
+  When this count reaches zero, the DxStation will start "ghosting" and
+  stop transmitting. The ghosting station will remain active so it can
+  receive final messages from user, logged and deleted from the simulation.
 }
 procedure TDxOperator.DecPatience;
 begin
   if State = osDone then Exit;
 
-  Dec(Patience);
-  if Patience < 1 then State := osFailed;
+  if Patience > 0 then
+    Dec(Patience);
+
+  // starting in v1.85, caller ghosting will occur when a QSO has started, but
+  // has not yet completed. If the QSO has not yet started, set State=osFailed.
+  if (Patience < 1) and (State in [osNeedPrevEnd, osNeedQso]) then
+    State := osFailed;
 end;
 
 
@@ -451,6 +478,11 @@ end;
 
 function TDxOperator.GetReply: TStationMessage;
 begin
+  // A ghosting station (Patience=0) will not send any additional messages
+  assert(not IsGhosting, 'this should not be called when ghosting');
+  if IsGhosting then
+    Result := msgNone
+  else
   case State of
     osNeedPrevEnd, osDone, osFailed: Result := msgNone;
     osNeedQso: Result := msgMyCall;
