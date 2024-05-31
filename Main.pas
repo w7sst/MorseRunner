@@ -1649,9 +1649,9 @@ end;
 
 
 {
-  called whenever callsign field (Edit1) changes. Any callsign edit will
+  Called whenever callsign field (Edit1) changes. Any callsign edit will
   invalidate the callsign already sent by clearing the CallSent value.
-  If the Callsign is empty, also crear the NrSent value.
+  If the Callsign is empty, also clear the NrSent value.
 }
 procedure TMainForm.Edit1Change(Sender: TObject);
 begin

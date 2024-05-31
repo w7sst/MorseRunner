@@ -83,6 +83,7 @@ type
   TDxOperator = class
   private
     R1: Single;         // holds a Random number; used in IsMyCall
+    R2: Single;         // holds a Random number; used in MsgReceived, GetReply
     procedure DecPatience;
     procedure MorePatience(AValue: integer = 0);
   public
@@ -120,6 +121,7 @@ uses
 constructor TDxOperator.Create(const ACall: string; AState: TOperatorState);
 begin
   R1 := Random;     // a random value assigned at creation provides consistency
+  R2 := Random;     // assigned at creation for consistent responses
   Call := ACall;
   Skills := 1 + Random(3); //1..3
   Patience := 0;
@@ -437,7 +439,7 @@ begin
         if State = osNeedQso then State := osNeedPrevEnd
         else if State in [osNeedNr, osNeedCall, osNeedCallNr] then State := osFailed
         else if State = osNeedEnd then State := osDone;
-      end;
+     end;
 
   if msgB4 in AMsg then
     case State of
@@ -506,17 +508,30 @@ begin
         then Result := msgNrQm
         else Result := msgAgn;
 
-
+    // osNeedCall - I have their Exch (NR), but need user to correct my call.
     osNeedCall:
-      if (RunMode = rmHst) or (Random > 0.5) then Result := msgDeMyCallNr1
-      else if Random > 0.25 then Result := msgDeMyCallNr2
-      else Result := msgMyCallNr2;
+      if (RunMode = rmHst) then
+        Result := msgDeMyCallNr1
+      else
+        case Trunc(R2*6) of
+          0: Result := msgDeMyCallNr1;  // DE <my> <exch>
+          1: Result := msgDeMyCallNr2;  // DE <my> <my> <exch>
+          2,3: Result := msgMyCallNr2;  // <my> <my> <exch>
+          4,5: Result := msgMyCallNr1;  // <my> <exch>
+        end;
 
+    // osNeedCallNr - They have sent an almost-correct callsign.
     osNeedCallNr:
-      if (RunMode = rmHst) or (Random > 0.5)
-        then Result := msgDeMyCall1
-        else Result := msgDeMyCall2;
-
+      if (RunMode = rmHst) then
+        Result := msgDeMyCall1
+      else
+        case Trunc(R2*6) of
+          0: Result := msgDeMyCall1;    // DE <my>
+          1: Result := msgDeMyCall2;    // DE <my> <my>
+          2: Result := msgMyCall2;      // <my> <my>
+          3: Result := msgMyCallNr2;    // <my> <my> <exch>
+          4,5: Result := msgMyCallNr1;  // <my> <exch>
+        end;
     else //osNeedEnd:
       if Patience < (FULL_PATIENCE-1) then Result := msgNR
       else if (RunMode = rmHst) or (Random < 0.9) then Result := msgR_NR

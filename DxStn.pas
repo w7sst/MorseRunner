@@ -213,12 +213,13 @@ procedure TDxStation.SendMsg(AMsg: TStationMessage);
 begin
   inherited SendMsg(AMsg);
 
-  if BDebugExchSettings and (Mainform.Edit2.Text = '') and
-    (AMsg in [msgNR, msgR_NR, msgR_NR2,
-    msgDeMyCallNr1, msgDeMyCallNr2, msgMyCallNr2]) then
+  if BDebugExchSettings and (AMsg in [msgNR, msgR_NR, msgR_NR2,
+    msgDeMyCallNr1, msgDeMyCallNr2, msgMyCallNr1, msgMyCallNr2]) then
   begin
-    Mainform.Edit2.Text := Exch1;
-    if (SimContest <> scNaQp) or (Exch2 <> 'DX') then
+    if (Mainform.Edit2.Text = '') then
+      Mainform.Edit2.Text := Exch1;
+    if (Mainform.Edit3.Text = '') and
+      ((SimContest <> scNaQp) or (Exch2 <> 'DX')) then
       MainForm.Edit3.Text := Exch2;
   end;
 end;
