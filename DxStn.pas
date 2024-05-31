@@ -53,10 +53,7 @@ begin
   Operid := Tst.PickStation;
   MyCall := Tst.GetCall(Operid);
 
-  Oper := TDxOperator.Create;
-  Oper.Call := MyCall;
-  Oper.Skills := 1 + Random(3); //1..3
-  Oper.SetState(osNeedPrevEnd);
+  Oper := TDxOperator.Create(MyCall, osNeedPrevEnd);
   NrWithError := Ini.Lids and (Random < 0.1);
 
   // DX's speed, {WpmS,WpmC}, is set once at creation time

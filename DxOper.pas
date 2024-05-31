@@ -95,6 +95,7 @@ type
 			// Patience is increased with calls to MorePatience.
     RepeatCnt: integer;
     State: TOperatorState;
+    constructor Create(const ACall: string; AState: TOperatorState);
     function IsGhosting: boolean;
     function GetSendDelay: integer;
     function GetReplyTimeout: integer;
@@ -113,6 +114,16 @@ uses
   SysUtils, Ini, Math, RndFunc, Contest, Log, Main;
 
 { TDxOperator }
+
+
+constructor TDxOperator.Create(const ACall: string; AState: TOperatorState);
+begin
+  Call := ACall;
+  Skills := 1 + Random(3); //1..3
+  Patience := 0;
+  RepeatCnt := 1;
+  SetState(AState);
+end;
 
 
 {
