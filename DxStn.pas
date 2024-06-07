@@ -135,13 +135,23 @@ begin
           // during debug, use status bar to show CW stream
           if BDebugCwDecoder or BDebugGhosting then
             Mainform.sbar.Caption :=
-              (Format('[%s-Timeout]',[MyCall]) + '; ' +
+              (Format('[%s-osFailed], Stn deleted',[MyCall]) + '; ' +
               Mainform.sbar.Caption).Substring(0, 80);
           Free;
           Exit;
           end;
-        State := stPreparingToSend;
+
+        if Oper.IsGhosting then
+        begin
+          // if the operator is ghosting, this station will stop transmitting.
+          // force this station's state into stListening mode so it can
+          // receive final messages from the operator.
+          State := stListening;
+        end
+        else
+          State := stPreparingToSend;
         end;
+
       //preparations to send are done, now send
       if State = stPreparingToSend then
         for i:=1 to Oper.RepeatCnt do SendMsg(Oper.GetReply)
@@ -169,22 +179,32 @@ begin
               // during debug, use status bar to show CW stream
               if BDebugCwDecoder or BDebugGhosting then
                 Mainform.sbar.Caption :=
-                  (Format('[%s-Failed]',[MyCall]) + '; ' +
+                  (Format('[%s-osFailed, Stn deleted]',[MyCall]) + '; ' +
                   Mainform.sbar.Caption).Substring(0, 80);
               Free;
               Exit;
-            end
-          else
+            end;
+
+          if Oper.IsGhosting then begin
+            // if the operator is ghosting, this station will stop transmitting.
+            // force this station's state into stListening mode so it can
+            // receive final messages from the operator.
+            State := stListening;
+          end
+          else begin
             TimeOut := Oper.GetSendDelay; //reply or switch to standby
-          State := stPreparingToSend;
+            State := stPreparingToSend;
+          end;
         end;
 
     evMeStarted:
       //If we are not sending, we can start copying
       //Cancel timeout, he is replying
       begin
-        if State <> stSending then
+        if State <> stSending then begin
+          assert(State in [stPreparingToSend, stListening]);
           State := stCopying;
+        end;
         TimeOut := NEVER;
       end;
     end;

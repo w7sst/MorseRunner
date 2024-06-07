@@ -14,6 +14,66 @@ const
   FULL_PATIENCE = 5;
 
 type
+  {
+    TOperatorState represents the various states of an independent DxStation/
+    DxOperator object. During a pile-up, multiple DxStation objects will exist.
+    These states represent the operational state of each unique station within
+    a simulated QSO.
+
+    Each state follows the back and forth transmissions between the user and
+    an indiviual DxOperator. Remember that DxStation and DxOperator objects
+    are the simulated stations within the MR simulation.
+
+    State           Description
+    NORMAL FLOW...
+    osNeedPrevEnd   Starting point. This is the initial operator state for a
+                    newly created DxStation. The station will wait for the
+                    completion of any prior QSO's as indicated by either
+                    the user's next CQ call or a 'TU' message.
+    osNeedQso       The DxOperator is waiting for their Dx callsign to be sent
+                    by user. This state begins after the user has either called
+                    CQ or finished the prior QSO by sending a 'TU' message.
+                    For RunMode rmSingle, the CQ message is assumed and
+                    the DxOperator immediately goes into this state
+                    (expecting their callsign to be sent by user).
+                    Typical response msg: send DxStation's callsign.
+    osNeedNr        DxOperator is waiting for user's exchange.
+                    DxOperator has received the user's callsign and is now
+                    waiting to receive the user's exchange.
+                    Typical response: send DxStation's exchange.
+    osNeedEnd       DxStation is waiting for 'TU' from user.
+                    User's call and exchange have been received.
+                    Typical response msg: send DxStation's exchange.
+    osDone          DxOperator has received a 'TU' from the user.
+                    This QSO is now considered complete and can be logged.
+
+    SPECIAL CASES (timeouts, call/exchange copy errors, random events)...
+    osFailed        This QSO has failed. Reasons for failure include:
+                    - DxStation is created and waits for the User to call their
+                      callsign. If the user does not call them within a given
+                      timeframe, the DxOperator will loose Patience and stop
+                      sending their callsign. This is a form of caller ghosting
+                      where the DxOperator gives up due to lack of patience
+                      (occurs whenever Patience decrements to zero).
+                    - user sends a msgNIL, which forces the QSO to fail.
+                    - user sends a msgB4, stating that they had a prior QSO.
+    osNeedCall      DxStation is expecting their call to be corrected by the
+                    user. This state is entered when user sends a partially-
+                    correct callsign. This DxOperator will wait for the correct
+                    call to be sent before sending its Exchange.
+                    The logic also appears to support the fact the user's
+                    exchange (NR) has already been copied by this DxStation.
+                    Once corrected, we should send 'R <exch>'.
+                    Typical response msg: send DxStation's callsign
+    osNeedCallNr    DxStation is expecting both their callsign and Exchange
+                    to be sent by user.
+                    This state is entered when the DxStation receives a
+                    partially-correct callsign from the user. In this case,
+                    the QSO advances from osNeedQso to osNeedCallNr.
+                    Once the correct callsign is received, the next state will
+                    be osNeedNr.
+                    Typical response msg: DxStation's callsign
+  }
   TOperatorState = (osNeedPrevEnd, osNeedQso, osNeedNr, osNeedCall,
     osNeedCallNr, osNeedEnd, osDone, osFailed);
 
@@ -23,13 +83,19 @@ type
   TDxOperator = class
   private
     procedure DecPatience;
+    procedure MorePatience(AValue: integer = 0);
     function IsMyCall: TCallCheckResult;
   public
     Call: string;
     Skills: integer;
-    Patience: integer;
+    Patience: integer;  // Number of times operator will retry before leaving.
+                        // Decremented to zero upon each evTimeout.
+                        // When it reaches zero, the operator will ghost and its
+			// TDxOperator.State set to osFailed.
+			// Patience is increased with calls to MorePatience.
     RepeatCnt: integer;
     State: TOperatorState;
+    function IsGhosting: boolean;
     function GetSendDelay: integer;
     function GetReplyTimeout: integer;
     function GetWpm(out AWpmC : integer) : integer;
@@ -47,6 +113,25 @@ uses
   SysUtils, Ini, Math, RndFunc, Contest, Log, Main;
 
 { TDxOperator }
+
+
+{
+  The notion of ghosting refers to a DxOperator who has run out of
+  Patience and is leaving the QSO because the User has failed to respond.
+  This will occur if the User does not respond or continue to interact with
+  this DxOperator. A station is considered ghosting whenever Patience = 0.
+
+  When a DxStation is ghosting, it will:
+  - leaving the QSO because User did not complete QSO
+  - will not send additional transmissions to the user
+  - will retain in set of active stations so it can still receive messages
+    from the user. Most often, it is waiting for the final 'TU' message.
+  - if 'TU' is received, then the station can be added to the log.
+}
+function TDxOperator.IsGhosting: boolean;
+begin
+  Result := Patience = 0;
+end;
 
 
 //Delay before reply, keying speed and exchange number are functions
@@ -106,6 +191,11 @@ begin
 end;
 
 
+{
+  Returns the amount of time to wait for a reply after sending a transmission.
+  This is in units of block counts. A new block is fetched by the audio
+  system as needed to keep the audio stream full (See TContest.GetAudio).
+}
 function TDxOperator.GetReplyTimeout: integer;
 begin
   if RunMode = rmHst then
@@ -116,21 +206,98 @@ begin
 end;
 
 
-
+{
+  DecPatience is typically called after an evTimeout event.
+  The TDxOperator.Patience value is decremented down to zero.
+  When this count reaches zero, the DxStation will start "ghosting" and
+  stop transmitting. The ghosting station will remain active so it can
+  receive final messages from user, logged and deleted from the simulation.
+}
 procedure TDxOperator.DecPatience;
 begin
   if State = osDone then Exit;
 
-  Dec(Patience);
-  if Patience < 1 then State := osFailed;
+  if Patience > 0 then
+    Dec(Patience);
+
+  // starting in v1.85, caller ghosting will occur when a QSO has started, but
+  // has not yet completed. If the QSO has not yet started, set State=osFailed.
+  if (Patience < 1) and (State in [osNeedPrevEnd, osNeedQso]) then
+    State := osFailed;
 end;
 
 
+{
+  MorePatience is called to add additional patience while remaining in the
+  current state. This will happen when a message is received from the user
+  without an associated state change. Without adding additional patience,
+  the DxStation will timeout and disappear from the user in the middle of
+  an ongoing QSO.
+
+  Parameter AValue is an optional Patience value.
+  If AValue > 0, Patience is set to this value;
+  else if RunMode = rmSingle, Patience is set to 4;
+  otherwise Patience is incremented by 2 (up to maximum of 4).
+}
+procedure TDxOperator.MorePatience(AValue: integer);
+begin
+  if State = osDone then Exit;
+
+  if AValue > 0 then
+    Patience := Min(AValue, FULL_PATIENCE)
+  else if RunMode = rmSingle then
+    Patience := 4
+  else
+    Patience := Min(Patience + 2, 4);
+end;
+
+
+{
+  Calling this function will set the new State and compute a new Patience
+  value to represent how patient this operator will be while waiting for
+  a subsequent transmission from the user.
+
+  SetState will:
+    - set the operator State - See TOperatorState.
+    - set Patience value - represents operator patience while waiting
+      for response from user.
+      - For osNeedQso, Patience is set to a random value using a
+        Rayleigh distribution within the range of [1, 14] retries,
+        with a Mean value of 4.
+      - For all other states, Patience is set to 5.
+
+  This function is typically called by TDxOperator.MsgReceived() whenever
+  new TStationMessages are being sent to this DxStation/DxOperator by the
+  simulation engine.
+}
 procedure TDxOperator.SetState(AState: TOperatorState);
 begin
   State := AState;
+
+  {
+    Patience, set below, represents how long a station will stay around to
+    complete a QSO with the user. FULL_PATIENCE = 5. Patience is the number of
+    TimeOut events to occur before this station will disappear.
+    A TimeOut is typically in the range of 3-6 seconds (See GetReplyTimeout).
+
+    When entering the osNeedQso state, the original code was setting a Patience
+    value which would cause a station to disappear quickly after its first
+    transmission (i.e. sending its callsign). This was caused by the original
+    RndRayleigh(4) distribution below having a result in the range [0,2] about
+    6% of the time.
+
+    In May 2024, this was changed to '3 + RndRayleigh(3)' to keep the
+    station around long enough for the user to respond to a call.
+    This fixes the so-called ghosting-problem where stations would disappear
+    almost immediately after sending their callsign for the first time.
+    See Issue #200 for additional information.
+
+    0 + RndRayleigh(4)   0+([1,14], mean 4); value 0|1|2 occurs 6% (ghosting)
+    3 + RndRayleigh(3)   3+([1,11], mean 3); [4,14], mean 6; value 4 occurs 2.6%
+    3 + RndRayleigh(2)   3+([1, 7], mean 2); [4,10], mean 5; value 4 occurs 11%
+  }
   if AState = osNeedQso
-    then Patience := Round(RndRayleigh(4))
+    then Patience := 3 + Round(RndRayleigh(3))
     else Patience := FULL_PATIENCE;
 
   if (AState = osNeedQso) and (not (RunMode in [rmSingle, RmHst])) and (Random < 0.1)
@@ -243,6 +410,7 @@ begin
       mcYes:
         if State in [osNeedPrevEnd, osNeedQso] then SetState(osNeedNr)
         else if State = osNeedCallNr then SetState(osNeedNr)
+        else if State in [osNeedNr, osNeedEnd] then MorePatience
         else if State = osNeedCall then SetState(osNeedEnd);
 
       mcAlmost:
@@ -268,26 +436,38 @@ begin
       osNeedPrevEnd: ;
       osNeedQso: State := osNeedPrevEnd;
       osNeedNr: if (Random < 0.9) or (RunMode in [rmHst, rmSingle]) then
-        SetState(osNeedEnd);
-      osNeedCall: ;
+          SetState(osNeedEnd)
+        else
+          MorePatience;
+      osNeedCall: MorePatience;
       osNeedCallNr: if (Random < 0.9) or (RunMode in [rmHst, rmSingle]) then
-        SetState(osNeedCall);
-      osNeedEnd: ;
+          SetState(osNeedCall)
+        else
+          MorePatience;
+      osNeedEnd: MorePatience;
       end;
 
   if msgTU in AMsg then
     case State of
       osNeedPrevEnd: SetState(osNeedQso);
-      osNeedQso: ;
-      osNeedNr: ;
-      osNeedCall: ;
-      osNeedCallNr: ;
+      osNeedQso: SetState(osNeedQso);
+      osNeedNr: State := osDone;          // may have exchange (NR) error
+      osNeedCall: State := osDone;        // possible partial call match
+      osNeedCallNr: SetState(osNeedQso);  // start over with new QSO
       osNeedEnd: State := osDone;
       end;
 
   if msgQm in AMsg then
-    if (State = osNeedPrevEnd) and (Mainform.Edit1.Text = '') then
-      SetState(osNeedQso);
+  begin
+    case State of
+      osNeedPrevEnd: if Mainform.Edit1.Text = '' then SetState(osNeedQso);
+      osNeedQso: ;
+      osNeedNr: MorePatience;
+      osNeedCall: MorePatience;
+      osNeedCallNr: MorePatience;
+      osNeedEnd: MorePatience;
+    end;
+  end;
 
   if (not Ini.Lids) and (AMsg = [msgGarbage]) then State := osNeedPrevEnd;
 
@@ -298,6 +478,11 @@ end;
 
 function TDxOperator.GetReply: TStationMessage;
 begin
+  // A ghosting station (Patience=0) will not send any additional messages
+  assert(not IsGhosting, 'this should not be called when ghosting');
+  if IsGhosting then
+    Result := msgNone
+  else
   case State of
     osNeedPrevEnd, osDone, osFailed: Result := msgNone;
     osNeedQso: Result := msgMyCall;
