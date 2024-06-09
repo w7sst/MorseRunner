@@ -16,8 +16,8 @@ const
 type
   TStationMessage =  (msgNone, msgCQ, msgNR, msgTU, msgMyCall, msgHisCall,
     msgB4, msgQm, msgNil, msgGarbage, msgR_NR, msgR_NR2, msgDeMyCall1, msgDeMyCall2,
-    msgDeMyCallNr1, msgDeMyCallNr2, msgNrQm, msgLongCQ, msgMyCallNr2,
-    msgQrl, msgQrl2, msqQsy, msgAgn);
+    msgDeMyCallNr1, msgDeMyCallNr2, msgMyCallNr1, msgMyCallNr2, msgMyCall2,
+    msgNrQm, msgLongCQ, msgQrl, msgQrl2, msqQsy, msgAgn);
 
   TStationMessages = set of TStationMessage;
 

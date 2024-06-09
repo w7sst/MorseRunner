@@ -108,7 +108,7 @@ var
   RawPoints:        integer;   // accumalated raw QSO points total
   VerifiedPoints:   integer;   // accumulated verified QSO points total
   CallSent: boolean; // msgHisCall has been sent; cleared upon edit.
-  NrSent: boolean;   // msgNR has been sent. Seems to imply exchange sent.
+  NrSent: boolean;   // msgNR has been sent; cleared after qso is completed.
   ShowCorrections: boolean;    // show exchange correction column.
   Histo: THisto;
   LogColWidths : Array[0..6] of integer;  // retain original Log column widths
