@@ -82,9 +82,9 @@ type
 
   TDxOperator = class
   private
+    R1: Single;         // holds a Random number; used in IsMyCall
     procedure DecPatience;
     procedure MorePatience(AValue: integer = 0);
-    function IsMyCall: TCallCheckResult;
   public
     Call: string;
     Skills: integer;
@@ -95,6 +95,7 @@ type
 			// Patience is increased with calls to MorePatience.
     RepeatCnt: integer;
     State: TOperatorState;
+    constructor Create(const ACall: string; AState: TOperatorState);
     function IsGhosting: boolean;
     function GetSendDelay: integer;
     function GetReplyTimeout: integer;
@@ -104,6 +105,7 @@ type
     procedure MsgReceived(AMsg: TStationMessages);
     procedure SetState(AState: TOperatorState);
     function GetReply: TStationMessage;
+    function IsMyCall(const ACall: string; ARandomResult: boolean): TCallCheckResult;
   end;
 
 
@@ -113,6 +115,17 @@ uses
   SysUtils, Ini, Math, RndFunc, Contest, Log, Main;
 
 { TDxOperator }
+
+
+constructor TDxOperator.Create(const ACall: string; AState: TOperatorState);
+begin
+  R1 := Random;     // a random value assigned at creation provides consistency
+  Call := ACall;
+  Skills := 1 + Random(3); //1..3
+  Patience := 0;
+  RepeatCnt := 1;
+  SetState(AState);
+end;
 
 
 {
@@ -306,7 +319,8 @@ begin
 end;
 
 
-function TDxOperator.IsMyCall: TCallCheckResult;
+function TDxOperator.IsMyCall(const ACall: string;
+  ARandomResult: boolean): TCallCheckResult;
 const
   W_X = 1; W_Y = 1; W_D = 1;
 var
@@ -318,7 +332,7 @@ var
   P: integer;
 begin
   C0 := Call;
-  C := Tst.Me.HisCall;
+  C := ACall;
 
   SetLength(M, Length(C)+1, Length(C0)+1);
 
@@ -372,10 +386,10 @@ begin
   if Length(StringReplace(C, '?', '', [rfReplaceAll])) < 2 then Result := mcNo;
 
   //accept a wrong call, or reject the correct one
-  if Ini.Lids and (Length(C) > 3) then
+  if ARandomResult and Ini.Lids and (Length(C) > 3) then
     case Result of
-      mcYes: if Random < 0.01 then Result := mcAlmost;
-      mcAlmost: if Random < 0.04 then Result := mcYes;
+      mcYes: if R1 < 0.01 then Result := mcAlmost;
+      mcAlmost: if R1 < 0.04 then Result := mcYes;
       end;
 end;
 
@@ -406,7 +420,7 @@ begin
     end;  
 
   if msgHisCall in AMsg then
-    case IsMyCall of
+    case IsMyCall(Tst.Me.HisCall, True) of
       mcYes:
         if State in [osNeedPrevEnd, osNeedQso] then SetState(osNeedNr)
         else if State = osNeedCallNr then SetState(osNeedNr)
@@ -415,6 +429,7 @@ begin
 
       mcAlmost:
         if State in [osNeedPrevEnd, osNeedQso] then SetState(osNeedCallNr)
+        else if State = osNeedCallNr then MorePatience
         else if State = osNeedNr then SetState(osNeedCallNr)
         else if State = osNeedEnd then SetState(osNeedCall);
 

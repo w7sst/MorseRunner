@@ -760,7 +760,7 @@ begin
     for i:=Tst.Stations.Count-1 downto 0 do
       if Tst.Stations[i] is TDxStation then
         with Tst.Stations[i] as TDxStation do
-          if (MyCall = Qso.Call) then
+          if ((MyCall = Qso.Call) or (Oper.IsMyCall(Qso.Call, False) = mcAlmost)) then
           begin
             Qso.TrueWpm := WpmAsText();
             Break;
@@ -770,7 +770,8 @@ begin
     for i:=Tst.Stations.Count-1 downto 0 do
       if Tst.Stations[i] is TDxStation then
         with Tst.Stations[i] as TDxStation do
-          if (Oper.State = osDone) and (MyCall = Qso.Call) then
+          if (Oper.State = osDone) and
+             ((MyCall = Qso.Call) or (Oper.IsMyCall(Qso.Call, False) = mcAlmost)) then
             begin
               DataToLastQso; //grab "True" data and delete this dx station!
               Break;
@@ -995,12 +996,10 @@ begin
       else if Dupe and not Log.ShowCorrections then
         ExchError := leDUP
       else
-      begin
         ExchError := leNONE;
 
-        // find exchange errors for the current Qso
-        Tst.FindQsoErrors(QsoList[High(QsoList)], Corrections);
-      end;
+      // find exchange errors for the current Qso
+      Tst.FindQsoErrors(QsoList[High(QsoList)], Corrections);
 
       CallColumnColor := clBlack;
       Exch1ColumnColor := clBlack;
