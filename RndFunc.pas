@@ -35,10 +35,20 @@ begin
 end;
 
 
+{
+  Compute a limited gaussian distribution by eliminating values outside
+  of the specified limits. The original implememtation used a clipping
+  algorithm which resulted in a non-gaussian distribution of the returned
+  values.
+}
 function RndGaussLim(AMean, ALim: Single): Single;
 begin
-  Result := AMean + RndNormal * 0.5 * ALim;
-  Result := Max(AMean-ALim, Min(AMean+ALim, Result));
+  //Result := AMean + RndNormal * 0.5 * ALim;
+  //Result := Max(AMean-ALim, Min(AMean+ALim, Result));
+  repeat
+    Result := RndNormal * 0.5 * ALim;
+  until Abs(Result) <= ALim;
+  Result := AMean + Result;
 end;
 
 
