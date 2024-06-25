@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{3DCAE539-5982-452B-BD4C-D811996F4114}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="MorseRunner.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Test\UnitTests.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="MorseRunner">
+        <MSBuild Projects="MorseRunner.dproj"/>
+    </Target>
+    <Target Name="MorseRunner:Clean">
+        <MSBuild Projects="MorseRunner.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MorseRunner:Make">
+        <MSBuild Projects="MorseRunner.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="UnitTests">
+        <MSBuild Projects="Test\UnitTests.dproj"/>
+    </Target>
+    <Target Name="UnitTests:Clean">
+        <MSBuild Projects="Test\UnitTests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UnitTests:Make">
+        <MSBuild Projects="Test\UnitTests.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="MorseRunner;UnitTests"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="MorseRunner:Clean;UnitTests:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="MorseRunner:Make;UnitTests:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
