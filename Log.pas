@@ -650,51 +650,23 @@ end;
 
 procedure SaveQso;
 var
+  Call: string;
   i: integer;
   Qso: PQso;
-
-  // Adding a contest: validate contest-specific exchange fields
-  //validate Exchange 1 (Edit2) field lengths
-  function ValidateExchField1(const text: string): Boolean;
-  begin
-    Result := false;
-    case Mainform.RecvExchTypes.Exch1 of
-      etRST:     Result := Length(text) = 3;
-      etOpName:  Result := Length(text) > 1;
-      etFdClass: Result := Length(text) > 1;
-      else
-        assert(false, 'missing case');
-    end;
-  end;
-
-  //validate Exchange 2 (Edit3) field lengths
-  function ValidateExchField2(const text: string): Boolean;
-  begin
-    Result := false;
-    case Mainform.RecvExchTypes.Exch2 of
-      etSerialNr:    Result := Length(text) > 0;
-      etGenericField:Result := Length(text) > 0;
-      etArrlSection: Result := Length(text) > 1;
-      etStateProv:   Result := Length(text) > 1;
-      etCqZone:      Result := Length(text) > 0;
-      etItuZone:     Result := Length(text) > 0;
-      //etAge:
-      etPower:       Result := Length(text) > 0;
-      etJaPref:      Result := Length(text) > 2;
-      etJaCity:      Result := Length(text) > 3;
-      etNaQpExch2:   Result := Length(text) > 0;
-      etNaQpNonNaExch2: Result := Length(text) >= 0;
-      else
-        assert(false, 'missing case');
-    end;
-  end;
-
 begin
   with MainForm do
     begin
-    if (Length(Edit1.Text) < 3) or
-      not ValidateExchField1(Edit2.Text) or
-      not ValidateExchField2(Edit3.Text) then
+    Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
+
+    // This is too late for this check. The user has already sent 'TU'.
+    // If the entered information is incomplete, this is an error. This code
+    // results in an entry not being entered in the log and the DxStation
+    // is already gone after receiving the user's 'TU'.
+    //
+    // ValidateEnteredQsoData below is a virtual function to allow specialized
+    // contests to apply special processing (e.g. ARRL Sweepstakes).
+    if (Length(Call) < 3) or
+      not Tst.ValidateEnteredQsoData(Call, Edit2.Text, Edit3.Text) then
       begin
         {Beep;}
         Exit;
@@ -706,7 +678,7 @@ begin
 
     //save data
     Qso.T := BlocksToSeconds(Tst.BlockNumber) /  86400;
-    Qso.Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
+    Qso.Call := Call;
 
     // Adding a contest: save contest-specific exchange values into QsoList
     //save Exchange 1 (Edit2)
