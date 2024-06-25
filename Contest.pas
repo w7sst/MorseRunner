@@ -68,6 +68,7 @@ type
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
 
     function ValidateEnteredQsoData(const ACall, AExch1, AExch2: string) : boolean; virtual;
+    procedure SaveEnteredExchToQso(var Qso: TQso; const AExch1, AExch2: string); virtual;
     procedure FindQsoErrors(var Qso: TQso; var ACorrections: TStringList);
     function ExtractMultiplier(Qso: PQso) : string; virtual;
     function Minute: Single;
@@ -421,6 +422,48 @@ function TContest.ValidateEnteredQsoData(const ACall, AExch1, AExch2: string) : 
 
 begin
   Result := ValidateExchField1(AExch1) and ValidateExchField2(AExch2);
+end;
+
+
+{
+  SaveEnteredExchToQso will save contest-specific exchange values into a QSO.
+  This is called to enter the completed QSO into the log.
+  This virtual function can be overriden by specialized contests as needed
+  (see ARRL Sweepstakes).
+}
+procedure TContest.SaveEnteredExchToQso(var Qso: TQso; const AExch1, AExch2: string);
+begin
+    // Adding a contest: save contest-specific exchange values into QsoList
+    //save Exchange 1 (Edit2)
+    case Mainform.RecvExchTypes.Exch1 of
+      etRST:     Qso.Rst := StrToInt(AExch1);
+      etOpName:  Qso.Exch1 := AExch1;
+      etFdClass: Qso.Exch1 := AExch1;
+      else
+        assert(false, 'missing case');
+    end;
+
+    //save Exchange2 (Edit3)
+    case Mainform.RecvExchTypes.Exch2 of
+      etSerialNr:    Qso.Nr := StrToInt(AExch2);
+      etGenericField:Qso.Exch2 := AExch2;
+      etArrlSection: Qso.Exch2 := AExch2;
+      etStateProv:   Qso.Exch2 := AExch2;
+      etCqZone:      Qso.NR := StrToInt(AExch2);
+      etItuZone:     Qso.Exch2 := AExch2;
+      //etAge:
+      etPower:       Qso.Exch2 := AExch2;
+      etJaPref:      Qso.Exch2 := AExch2;
+      etJaCity:      Qso.Exch2 := AExch2;
+      etNaQpExch2:   Qso.Exch2 := AExch2;
+      etNaQpNonNaExch2:
+        if AExch2 = '' then
+          Qso.Exch2 := 'DX'
+        else
+          Qso.Exch2 := AExch2;
+      else
+        assert(false, 'missing case');
+    end;
 end;
 
 

@@ -680,37 +680,8 @@ begin
     Qso.T := BlocksToSeconds(Tst.BlockNumber) /  86400;
     Qso.Call := Call;
 
-    // Adding a contest: save contest-specific exchange values into QsoList
-    //save Exchange 1 (Edit2)
-    case Mainform.RecvExchTypes.Exch1 of
-      etRST:     Qso.Rst := StrToInt(Edit2.Text);
-      etOpName:  Qso.Exch1 := Edit2.Text;
-      etFdClass: Qso.Exch1 := Edit2.Text;
-      else
-        assert(false, 'missing case');
-    end;
-
-    //save Exchange2 (Edit3)
-    case Mainform.RecvExchTypes.Exch2 of
-      etSerialNr:    Qso.Nr := StrToInt(Edit3.Text);
-      etGenericField:Qso.Exch2 := Edit3.Text;
-      etArrlSection: Qso.Exch2 := Edit3.Text;
-      etStateProv:   Qso.Exch2 := Edit3.Text;
-      etCqZone:      Qso.NR := StrToInt(Edit3.Text);
-      etItuZone:     Qso.Exch2 := Edit3.Text;
-      //etAge:
-      etPower:       Qso.Exch2 := Edit3.Text;
-      etJaPref:      Qso.Exch2 := Edit3.Text;
-      etJaCity:      Qso.Exch2 := Edit3.Text;
-      etNaQpExch2:   Qso.Exch2 := Edit3.Text;
-      etNaQpNonNaExch2:
-        if Edit3.Text = '' then
-          Qso.Exch2 := 'DX'
-        else
-          Qso.Exch2 := Edit3.Text;
-      else
-        assert(false, 'missing case');
-    end;
+    //save contest-specific exchange values into QSO
+    Tst.SaveEnteredExchToQso(Qso^, Edit2.Text, Edit3.Text);
 
     Qso.Points := 1;  // defaults to 1; override in ExtractMultiplier()
     Qso.RawCallsign:= ExtractCallsign(Qso.Call);
