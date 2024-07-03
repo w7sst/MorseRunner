@@ -8,7 +8,6 @@ unit Log;
 interface
 
 uses
-  Graphics,     // for TColor
   Classes, Controls, ExtCtrls;
 
 procedure SaveQso;
@@ -19,9 +18,11 @@ procedure UpdateStatsHst;
 procedure CheckErr;
 //procedure PaintHisto;
 procedure ShowRate;
-procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
-procedure ScoreTableScaleWidth(const ACol : integer; const AScaleWidth : Single);
-procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
+procedure ScoreTableInit(const ColDefs: array of string);
+procedure SetExchColumns(AExch1ColPos, AExch2ColPos: integer;
+  AExch1ExColPos: integer = -1;
+  AExch2ExColPos: integer = -1);
+procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6: string; const ACol7: string = ''; const ACol8: string = '');
 procedure ScoreTableUpdateCheck;
 function FormatScore(const AScore: integer):string;
 procedure UpdateSbar(const ACallsign: string);
@@ -62,16 +63,19 @@ type
     Points: integer;            // points for this QSO
     Dupe: boolean;              // this qso is a DUP.
     ExchError: TLogError;       // Callsign error code
-    Exch1Error: TLogError;      // Exchange 1 qso error code
-    Exch2Error: TLogError;      // Exchange 2 qso error code
+    Exch1Error: TLogError;      // Exchange 1 qso primary error code
+    Exch1ExError: TLogError;    // Exchange 1 qso secondary error code (used by ARRL SS)
+    Exch2Error: TLogError;      // Exchange 2 qso primary error code
+    Exch2ExError: TLogError;    // Exchange 2 qso secondary error code (used by ARRL SS)
     Err: string;                // Qso error string (e.g. corrections)
-    CallColumnColor: TColor;    // Callsign field color (clBlack or clRed)
-    Exch1ColumnColor: TColor;   // Exchange 1 field color (clBlack or clRed)
-    Exch2ColumnColor: TColor;   // Exchange 2 field color (clBlack or clRed)
-    CorrectionsColumnColor: TColor; // Corrections field color (clBlack or clRed)
+    ColumnErrorFlags: Integer;  // holds column-specific errors using bit mask
+                                // with (0x01 << ColumnInx).
 
     procedure CheckExch1(var ACorrections: TStringList);
     procedure CheckExch2(var ACorrections: TStringList);
+
+    procedure SetColumnErrorFlag(AColumnInx: integer);
+    function TestColumnErrorFlag(ColumnInx: Integer): Boolean;
   end;
 
   THisto= class(TObject)
@@ -111,8 +115,15 @@ var
   NrSent: boolean;   // msgNR has been sent; cleared after qso is completed.
   ShowCorrections: boolean;    // show exchange correction column.
   Histo: THisto;
-  LogColWidths : Array[0..6] of integer;  // retain original Log column widths
-  LogColWidthInitialized : boolean;       // initialize LogColWidths on time only
+
+  // the following column index values are used to set error flags in TQso.ColumnErrorFlags
+  CallColumnInx: Integer;
+  Exch1ColumnInx: Integer;
+  Exch1ExColumnInx: Integer;
+  Exch2ColumnInx: Integer;
+  Exch2ExColumnInx: Integer;
+  CorrectionColumnInx: Integer;
+
 {$ifdef DEBUG}
   RunUnitTest : boolean;  // run ExtractPrefix unit tests once
 {$endif}
@@ -122,17 +133,57 @@ implementation
 
 uses
   Windows, SysUtils, RndFunc, Math,
+  Graphics,     // for TColor
   StdCtrls, PerlRegEx, pcre, StrUtils,
   Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
 
 const
   ShowHstCorrections: Boolean = true;
+  LogColUtcWidth: Integer = 80;   // matches value in resource file
+  LogColPadding: Integer = 8;     // Additional padding space for columns
+
+  {
+    The following constants are used to initialize the Log Report columns
+    for the various contests. Many of these declarations are used across
+    many contests (e.g. UTC, Call, RST, etc...).
+    See Log.Clear and Log.ScoreTableInit for more information.
+
+    This declaration is composed as follows: <Name>,<Width>,<Justification>
+    - Name - column name displayed at the top of each Log report column
+    - Width - column width expressed in the number of characters to reserve
+    - Justification - L, C, or R representing Left, Center, or Right
+  }
+  UTC_COL         = 'UTC,8,L';
+  CALL_COL        = 'Call,10,L';
+  NR_COL          = 'Nr,4,R';
+  RST_COL         = 'RST,4,R';
+  ARRL_SECT_COL   = 'Sect,4,L';
+  FD_CLASS_COL    = 'Class,5,L';
+  CORRECTIONS_COL = 'Corrections,11,L';
+  WPM_COL         = 'Wpm,3,R';
+  WPM_FARNS_COL   = 'Wpm,5,R';
+  NAME_COL        = 'Name,8,L';
+  STATE_PROV_COL  = 'State,5,L';
+  PREFIX_COL      = 'Pref,5,L';
+  ARRLDX_EXCH_COL = 'Exch,6,L';
+  CWT_EXCH_COL    = 'Exch,5,L';
+  SST_EXCH_COL    = 'Exch,5,L';
+  ALLJA_EXCH_COL  = 'Exch,6,L';
+  ACAG_EXCH_COL   = 'Exch,8,L';
+  IARU_EXCH_COL   = 'Exch,6,L';
+  WPX_EXCH_COL    = 'Exch,6,L';
+  HST_EXCH_COL    = 'Exch,6,L';
+  CQ_ZONE_COL     = 'CQ-Zone,7,L';
+
 {$ifdef DEBUG}
   DEBUG_INDENT: Integer = 3;
 {$endif}
 
-{$ifdef DEBUG}
 var
+  LogColScaling: Single;          // columns widths can be scaled.
+  LogColWidthPerChar: Single;     // scaled pixel count per character
+  ScaleTableInitialized: boolean; // initialize ScaleTable values one time only
+{$ifdef DEBUG}
   Indent: Integer = 0;    // used by DebugLnEnter/DebugLnExit
 {$endif}
 
@@ -195,53 +246,122 @@ begin
   FormatScore:= format('%6d', [AScore]);
 end;
 
-procedure ScoreTableSetTitle(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
-var
-  I: Integer;
-
-  // adjust column with for empty table title strings
-  procedure SetCaption(const I : integer; const ACaption : string);
-  begin
-    MainForm.ListView2.Column[I].Width:= IfThen(ACaption.IsEmpty, 0, LogColWidths[I]);
-    MainForm.ListView2.Column[I].Caption:= ACaption;
-  end;
-
+procedure TQso.SetColumnErrorFlag(AColumnInx: integer);
 begin
-  // retain initial log column widths (used to restore column widths)
-  if not LogColWidthInitialized then
-    begin
-      for I := Low(LogColWidths) to High(LogColWidths) do
-        LogColWidths[I]:= MainForm.ListView2.Column[I].Width;
-      LogColWidthInitialized:= true;
-    end;
+  if AColumnInx <> -1 then
+    ColumnErrorFlags := ColumnErrorFlags or (1 shl AColumnInx);
+end;
 
-  SetCaption(0, ACol1);
-  SetCaption(1, ACol2);
-  SetCaption(2, ACol3);
-  SetCaption(3, ACol4);
-  SetCaption(4, ACol5);
-  SetCaption(5, ACol6);
-  SetCaption(6, ACol7);
+function TQso.TestColumnErrorFlag(ColumnInx: Integer): Boolean;
+begin
+  Result := (ColumnErrorFlags and (1 shl ColumnInx)) <> 0;
 end;
 
 {
-  Adjust the Log Table column width by AScaleWidth scaling factor.
-  This scaling number is multiplied by the original column width from the UI.
-  Typical usage is to increase the width of a column for a given contest.
-  For example, the SST contest will increase the column width from 3 to 5
-  characters by using 'ScoreTableScaleWidth(6, 5.0/3)' or to increase width
-  by 40% use 'ScoreTableScaleWidth(6, 1.4)'.
-  This method can also be used to set the column width to zero if desired.
-  Note that whenever a new contest is started, the column widths are restored
-  to their original column widths.
+  Initialize the Log Report.
+
+  An array of ColDefs is passed in with one entry for each column.
+  Each column definition string is defined as follows:
+    <Name>,<Width>,<Justification>
+    - Name - column name displayed at the top of each Log report column
+    - Width - column width expressed in the number of characters to reserve
+    - Justification - L, C, or R representing Left, Center, or Right
 }
-procedure ScoreTableScaleWidth(const ACol : integer; const AScaleWidth : Single);
+procedure ScoreTableInit(const ColDefs: array of string);
+var
+  I: integer;
+  tl: TStringList;
+  CallColumnName, CorrectionsColumnName: string;
+  Name: string;
+  Width: integer;
+  Alignment: TAlignment;
+
+  // return the column name from a column definition string
+  function GetColumnName(const AColDef: string): string;
+  begin
+    Result := AColDef.Substring(0, AColDef.IndexOf(','));
+  end;
+
 begin
-  assert(LogColWidthInitialized, 'must be called after ScoreTableSetTitle');
-  MainForm.ListView2.Column[ACol].Width:= Ceil(AScaleWidth * LogColWidths[ACol]);
+  tl := TStringList.Create('''',',');
+  try
+    // retain initial log column widths (used to restore column widths)
+    if not ScaleTableInitialized then
+      begin
+        Width := MainForm.ListView2.Column[0].Width;
+        LogColScaling := Width / LogColUtcWidth;  // e.g. 125% for laptops
+        LogColWidthPerChar := (Width - (LogColPadding*LogColScaling)) / 8;
+        ScaleTableInitialized:= true;
+      end;
+
+    CallColumnInx := -1;
+    Exch1ColumnInx := -1;
+    Exch1ExColumnInx := -1;
+    Exch2ColumnInx := -1;
+    Exch2ExColumnInx := -1;
+    CorrectionColumnInx := -1;
+    CallColumnName := GetColumnName(CALL_COL);
+    CorrectionsColumnName := GetColumnName(CORRECTIONS_COL);
+
+    // initialize log report columns
+    for I := Low(ColDefs) to High(ColDefs) do begin
+      tl.DelimitedText := ColDefs[I];
+      assert(tl.Count = 3);
+      Name := tl[0];
+      Width := Round(tl[1].ToInteger * LogColWidthPerChar + LogColPadding*LogColScaling);
+      Alignment := taLeftJustify;
+      case tl[2][1] of
+        'L': Alignment := taLeftJustify;
+        'C': Alignment := taCenter;
+        'R': Alignment := taRightJustify;
+        else
+          assert(false, 'invalid alignment');
+      end;
+
+      // add additional columns if needed
+      while I >= MainForm.ListView2.Columns.Count do
+        MainForm.ListView2.Columns.Add;
+
+      MainForm.ListView2.Column[I].Caption := Name;
+      MainForm.ListView2.Column[I].Width := Width;
+      MainForm.ListView2.Column[I].Alignment := Alignment;
+
+      if Name = CallColumnName then
+        CallColumnInx := I
+      else if CorrectionsColumnName.StartsWith(Name) then
+        CorrectionColumnInx := I;
+    end;
+
+    // delete unused columns
+    while I < MainForm.ListView2.Columns.Count do
+      MainForm.ListView2.Columns.Delete(I);
+
+    // By default, exchance fields 1 and 2 are displayed in columns 2 and 3
+    Log.SetExchColumns(2, 3);
+
+  finally
+  tl.Free;
+  end;
 end;
 
-procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7 :string);
+
+{
+  Set column indices for dynamic exchange columns
+}
+procedure SetExchColumns(AExch1ColPos, AExch2ColPos: integer;
+  AExch1ExColPos, AExch2ExColPos: integer);
+begin
+  Log.Exch1ColumnInx := AExch1ColPos;
+  Log.Exch2ColumnInx := AExch2ColPos;
+  Log.Exch1ExColumnInx := AExch1ExColPos;
+  Log.Exch2ExColumnInx := AExch2ExColPos;
+end;
+
+
+{
+  Add row to Score Table Log Report.
+}
+procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7, ACol8: string);
 begin
   with MainForm.ListView2.Items.Add do begin
     Caption:= ACol1;
@@ -250,7 +370,8 @@ begin
     SubItems.Add(ACol4);
     SubItems.Add(ACol5);
     SubItems.Add(ACol6);
-    SubItems.Add(ACol7);
+    if ACol7 <> '' then SubItems.Add(ACol7);
+    if ACol8 <> '' then SubItems.Add(ACol8);
     Selected:= True;
   end;
   //UpdateSbar(MainForm.ListView2.Items.Count);
@@ -280,14 +401,19 @@ begin
 end;
 
 
+{
+  Update the error corrections column or error string in the Score Table.
+}
 procedure ScoreTableUpdateCheck;
 begin
   // https://stackoverflow.com/questions/34239493/how-to-color-specific-list-view-item-in-delphi
   with MainForm.ListView2 do begin
-    Items[Items.Count-1].SubItems[4] := QsoList[High(QsoList)].Err;
+    if CorrectionColumnInx > 0 then
+      Items[Items.Count-1].SubItems[CorrectionColumnInx-1] := QsoList[High(QsoList)].Err;
     Items[Items.Count-1].Update;
   end;
 end;
+
 
 procedure Clear;
 var
@@ -305,92 +431,35 @@ begin
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
   MainForm.RichEdit1.DefAttributes.Name:= 'Consolas';
+  MainForm.ListView2.Clear;
 
   // Adding a contest: set Score Table titles
   case Ini.SimContest of
     scCwt:
-      begin
-      ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Corrections', 'Wpm');
-      ScoreTableScaleWidth(3, 0.75);  // shrink Exch2 (NR or QTH) column
-      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-      end;
+      ScoreTableInit([UTC_COL, CALL_COL, NAME_COL, CWT_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scSst:
-      begin
-      ScoreTableSetTitle('UTC', 'Call', 'Name', 'Exch', '', 'Corrections', ' Wpm');
-      ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
-      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-      ScoreTableScaleWidth(6, 1.4);   // expand Wpm column for 22/25 Farnsworth
-      end;
+      ScoreTableInit([UTC_COL, CALL_COL, NAME_COL, SST_EXCH_COL, CORRECTIONS_COL, WPM_FARNS_COL]);
     scFieldDay:
-      begin
-      ScoreTableSetTitle('UTC', 'Call', 'Class', 'Sect', '', 'Corrections', 'Wpm');
-      ScoreTableScaleWidth(2, 0.75);  // shrink Class column
-      ScoreTableScaleWidth(3, 0.75);  // shrink Section column
-      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-      end;
+      ScoreTableInit([UTC_COL, CALL_COL, FD_CLASS_COL, ARRL_SECT_COL, CORRECTIONS_COL, WPM_COL]);
     scNaQp:
-      begin
-      ScoreTableSetTitle('UTC', 'Call', 'Name', 'State', 'Pref', 'Corrections', 'Wpm');
-      ScoreTableScaleWidth(1, 0.8);   // shrink Call column
-      ScoreTableScaleWidth(3, 0.6);   // shrink State/Prov column
-      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-      end;
+      ScoreTableInit([UTC_COL, 'Call,8,L', NAME_COL, STATE_PROV_COL, PREFIX_COL, CORRECTIONS_COL, WPM_COL]);
     scCQWW:
-      begin
-      ScoreTableSetTitle('UTC', 'Call', 'RST', 'CQ-Zone', 'Pref', 'Corrections', 'Wpm');
-      ScoreTableScaleWidth(2, 0.50);  // shrink RST column
-      ScoreTableScaleWidth(3, 0.80);  // CQ-Zone column
-      ScoreTableScaleWidth(4, 0.00);  // shrink Pref column
-      ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
-      end;
+      ScoreTableInit([UTC_COL, CALL_COL, RST_COL, CQ_ZONE_COL, CORRECTIONS_COL, WPM_COL]);
     scArrlDx:
-      begin
-      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
-      ScoreTableScaleWidth(2, 0.50);  // shrink RST column
-      ScoreTableScaleWidth(3, 0.75);  // Exch2 (<pref><power>) column
-      ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
-      end;
+      ScoreTableInit([UTC_COL, CALL_COL, RST_COL, ARRLDX_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scAllJa:
-      begin
-      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
-      ScoreTableScaleWidth(2, 0.5);  // shrink RST column
-      ScoreTableScaleWidth(3, 0.75);  // Exch2 (<pref><power>) column
-      ScoreTableScaleWidth(5, 2.50);  // expand Corrections column
-      end;
+      ScoreTableInit([UTC_COL, CALL_COL, RST_COL, ALLJA_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scAcag:
-      begin
-      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', '', 'Corrections', 'Wpm');
-      ScoreTableScaleWidth(2, 0.5);   // shrink RST column
-      ScoreTableScaleWidth(3, 1.0);   // Exch2 (city/gun/ku) column
-      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-      end;
+      ScoreTableInit([UTC_COL, CALL_COL, RST_COL, ACAG_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scIaruHf:
-      begin
-      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Mult', 'Corrections', 'Wpm');
-      ScoreTableScaleWidth(2, 0.5);   // shrink RST column
-      ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
-      ScoreTableScaleWidth(4, 0.00);  // hide Mult column
-      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-      end;
+      ScoreTableInit([UTC_COL, CALL_COL, RST_COL, IARU_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scWpx:
-      begin
-      ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Pref', 'Corrections', 'Wpm');
-      ScoreTableScaleWidth(2, 0.5);   // shrink RST column
-      ScoreTableScaleWidth(3, 0.75);  // shrink Exch column
-      ScoreTableScaleWidth(4, 0.00);  // hide Pref column
-      ScoreTableScaleWidth(5, 2.5);   // expand Corrections column
-      end;
+      ScoreTableInit([UTC_COL, CALL_COL, RST_COL, WPX_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scHst:
       if ShowCorrections then
-      begin
-        ScoreTableSetTitle('UTC', 'Call', 'RST', 'Exch', 'Score', 'Correct', 'Wpm');
-        ScoreTableScaleWidth(1, 0.90);  // shrink Call column
-        ScoreTableScaleWidth(2, 0.50);  // shrink RST column
-        ScoreTableScaleWidth(3, 0.60);  // shrink Exch (NR) column
-        ScoreTableScaleWidth(5, 2);     // expand Corrections column
-      end
+        ScoreTableInit([UTC_COL, CALL_COL, RST_COL, HST_EXCH_COL, 'Score,5,R', 'Correct,8,L', WPM_COL])
       else
-        ScoreTableSetTitle('UTC', 'Call', 'Recv', 'Sent', 'Score', 'Chk', 'Wpm')
+        ScoreTableInit([UTC_COL, CALL_COL, 'Recv,10,L', 'Sent,9,L', 'Score,5,R', 'Chk,3,L', WPM_COL]);
     else
       assert(false, 'missing case');
   end;  // end case
@@ -754,63 +823,66 @@ begin
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
-        , '', Err, format('%3s', [TrueWpm]));
+        , Err, format('%3s', [TrueWpm]));
     scSst:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
-        , '', Err, format('%5s', [TrueWpm]));
+        , Err, format('%3s', [TrueWpm]));
     scFieldDay:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
-        , Pfx, Err, format('%3s', [TrueWpm]));
+        , Err, format('%3s', [TrueWpm]));
     scNaQp:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2
-        , Pfx, Err, format('%3s', [TrueWpm]));
+        , Pfx
+        , Err, format('%3s', [TrueWpm]));
     scWpx:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
         , format('%4d', [NR])
-        , Pfx, Err, format('%3s', [TrueWpm]));
+        , Err, format('%3s', [TrueWpm]));
     scHst:
       if ShowCorrections then
         ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
           , format('%.3d', [Rst])
           , format(IfThen(RunMode = rmHst, '%.4d', '%4d'), [NR])
-          , Pfx, Err, format('%3s', [TrueWpm]))
+          , Pfx   // Score string was written into prefix field
+          , Err, format('%3s', [TrueWpm]))
       else
         ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-          , format('%.3d %.4d', [Rst, Nr])
-          , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])
-          , Pfx, Err, format('%3s', [TrueWpm]));
+          , format('%.3d %.4d', [Rst, Nr])                // Sent
+          , format('%.3d %.4d', [Tst.Me.Rst, Tst.Me.NR])  // Recv
+          , Pfx                                           // Score
+          , Err, format('%3s', [TrueWpm]));
     scCQWW:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
         , format('%4d', [NR])
-        , Pfx, Err, format('%3s', [TrueWpm]));
+        , Err, format('%3s', [TrueWpm]));
     scArrlDx:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
         , Exch2
-        , '', Err, format('%3s', [TrueWpm]));
+        , Err, format('%3s', [TrueWpm]));
     scAllJa:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
         , Exch2
-        , '', Err, format('%3s', [TrueWpm]));
+        , Err, format('%3s', [TrueWpm]));
     scAcag:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
         , Exch2
-        , '', Err, format('%3s', [TrueWpm]));
+        , Err, format('%3s', [TrueWpm]));
     scIaruHf:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
         , Exch2
-        , MultStr, Err, format('%3s', [TrueWpm]));
+        , Err, format('%3s', [TrueWpm]));
     else
       assert(false, 'missing case');
     end;
@@ -821,6 +893,7 @@ end;
 procedure TQso.CheckExch1(var ACorrections: TStringList);
 begin
   Exch1Error := leNONE;
+  Exch1ExError := leNONE;
 
   // Adding a contest: check for contest-specific exchange field 1 errors
   case Mainform.RecvExchTypes.Exch1 of
@@ -854,6 +927,7 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
 
 begin
   Exch2Error := leNONE;
+  Exch2ExError := leNONE;
 
   // Adding a contest: check for contest-specific exchange field 2 errors
   case Mainform.RecvExchTypes.Exch2 of
@@ -913,6 +987,12 @@ begin
     else
       ACorrections.Add(TrueExch2);
   end;
+
+  case Exch2ExError of
+    leNONE: ;
+    else
+      assert(false);
+  end;
 end;
 
 
@@ -944,26 +1024,27 @@ begin
       // find exchange errors for the current Qso
       Tst.FindQsoErrors(QsoList[High(QsoList)], Corrections);
 
-      CallColumnColor := clBlack;
-      Exch1ColumnColor := clBlack;
-      Exch2ColumnColor := clBlack;
-      CorrectionsColumnColor := clBlack;
+      // column errors are stored as individual bits in TQso.ColumnErrorFlags
+      ColumnErrorFlags := 0;
 
       // NIL or DUP errors have priority over showing corrected exchange
       if ExchError in [leNIL, leDUP] then
       begin
         Err := ErrorStrs[ExchError];
-        if ExchError <> leDUP then CorrectionsColumnColor := clRed;
+        if ExchError <> leDUP then SetColumnErrorFlag(CorrectionColumnInx);
       end
       else if ShowCorrections then
       begin
         if Dupe then
           Corrections.Insert(0, ErrorStrs[leDUP]);
-        Corrections.Delimiter := ' ';
-        Err := Corrections.DelimitedText;  // Join(' ');
-        if ExchError  <> leNONE then CallColumnColor := clRed;
-        if Exch1Error <> leNONE then Exch1ColumnColor := clRed;
-        if Exch2Error <> leNONE then Exch2ColumnColor := clRed;
+        Corrections.StrictDelimiter	:= True;
+        Corrections.Delimiter := ',';
+        Err := Corrections.DelimitedText.Replace(',', ' ');  // Join(' ');
+        if ExchError  <> leNONE then SetColumnErrorFlag(CallColumnInx);
+        if Exch1Error <> leNONE then SetColumnErrorFlag(Exch1ColumnInx);
+        if Exch1ExError <> leNONE then SetColumnErrorFlag(Exch1ExColumnInx);
+        if Exch2Error <> leNONE then SetColumnErrorFlag(Exch2ColumnInx);
+        if Exch2ExError <> leNONE then SetColumnErrorFlag(Exch2ExColumnInx);
       end
       else
       begin
@@ -971,9 +1052,13 @@ begin
           Err := ErrorStrs[Exch1Error]
         else if Exch2Error <> leNONE then
           Err := ErrorStrs[Exch2Error]
+        else if Exch1ExError <> leNONE then
+          Err := ErrorStrs[Exch1ExError]
+        else if Exch2ExError <> leNONE then
+          Err := ErrorStrs[Exch2ExError]
         else
           Err := '';
-        CorrectionsColumnColor := clRed;
+        SetColumnErrorFlag(CorrectionColumnInx);
       end;
 
       if Err.IsEmpty then
@@ -1077,6 +1162,7 @@ end;
 initialization
   RawMultList := TMultList.Create;
   VerifiedMultList := TMultList.Create;
+  ScaleTableInitialized := False;
 {$ifdef DEBUG}
   RunUnitTest := true;
 {$endif}
