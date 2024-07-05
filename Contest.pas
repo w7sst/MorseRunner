@@ -73,7 +73,10 @@ type
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
 
-    function ValidateEnteredExchange(const ACall, AExch1, AExch2: string) : boolean; virtual;
+    function CheckEnteredCallLength(const ACall: string;
+      out AExchError: String) : boolean; virtual;
+    function ValidateEnteredExchange(const ACall, AExch1, AExch2: string;
+      out AExchError: String) : boolean; virtual;
     procedure SaveEnteredExchToQso(var Qso: TQso; const AExch1, AExch2: string); virtual;
     procedure FindQsoErrors(var Qso: TQso; var ACorrections: TStringList);
     function ExtractMultiplier(Qso: PQso) : string; virtual;
@@ -447,11 +450,26 @@ end;
 
 
 {
+  Performs simple length check on a callsign.
+  Returns true for callsigns with 3 or more characters; false otherwise.
+  Upon error, AExchError will contain a simple error message.
+}
+function TContest.CheckEnteredCallLength(const ACall: string;
+  out AExchError: String) : boolean;
+begin
+  Result := ACall.Length >= 3;
+  if not Result then
+    AExchError := 'Invalid callsign';
+end;
+
+
+{
   ValidateEnteredExchange is called prior to sending the final 'TU' and calling
   SaveQSO (see Log.pas). This virtual function can be overriden for complex
   exchange information (e.g. ARRL Sweepstakes).
 }
-function TContest.ValidateEnteredExchange(const ACall, AExch1, AExch2: string) : boolean;
+function TContest.ValidateEnteredExchange(const ACall, AExch1, AExch2: string;
+  out AExchError: String) : boolean;
   // Adding a contest: validate contest-specific exchange fields
   //validate Exchange 1 (Edit2) field lengths
   function ValidateExchField1(const text: string): Boolean;
@@ -489,7 +507,15 @@ function TContest.ValidateEnteredExchange(const ACall, AExch1, AExch2: string) :
   end;
 
 begin
-  Result := ValidateExchField1(AExch1) and ValidateExchField2(AExch2);
+  if not ValidateExchField1(AExch1) then
+    AExchError := format('Missing/Invalid %s',
+      [Exchange1Settings[Mainform.RecvExchTypes.Exch1].C])
+  else if not ValidateExchField2(AExch2) then
+    AExchError := format('Missing/Invalid %s',
+      [Exchange2Settings[Mainform.RecvExchTypes.Exch2].C])
+  else
+    AExchError := '';
+  Result := AExchError.IsEmpty;
 end;
 
 

@@ -397,6 +397,8 @@ begin
     s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
   end;
 
+  Mainform.sbar.Font.Color := clDefault;
+
   // during debug, use status bar to show CW stream
   if not s.IsEmpty and (BDebugCwDecoder or BDebugGhosting) then
     Mainform.sbar.Caption:= LeftStr(Mainform.sbar.Caption, 40) + ' -- ' + s
@@ -721,9 +723,17 @@ begin
 end;
 
 
+{
+  Save QSO data into the Log.
+
+  Called by either:
+  - 'Enter' key (after sending 'TU' to caller).
+  - 'Shift-Enter', 'Cntl-Enter' or 'Alt-Enter' (without sending 'TU' to caller).
+}
 procedure SaveQso;
 var
   Call: string;
+  ExchError: string;
   i: integer;
   Qso: PQso;
 begin
@@ -731,17 +741,19 @@ begin
     begin
     Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
 
-    // This is too late for this check. The user has already sent 'TU'.
-    // If the entered information is incomplete, this is an error. This code
-    // results in an entry not being entered in the log and the DxStation
-    // is already gone after receiving the user's 'TU'.
-    //
-    // ValidateEnteredExchange below is a virtual function to allow specialized
-    // contests to apply special processing (e.g. ARRL Sweepstakes).
-    if (Length(Call) < 3) or
-      not Tst.ValidateEnteredExchange(Call, Edit2.Text, Edit3.Text) then
+    // Virtual functions used here to allow allow special processing for some
+    // contests (e.g. ARRL Sweepstakes).
+    if not Tst.CheckEnteredCallLength(Call, ExchError) or
+      not Tst.ValidateEnteredExchange(Call, Edit2.Text, Edit3.Text, ExchError) then
       begin
         {Beep;}
+        if not ExchError.IsEmpty then
+          begin
+            sbar.Caption := ExchError;
+            sbar.Align:= alBottom;
+            sbar.Visible:= true;
+            sbar.Font.Color := clRed;
+          end;
         Exit;
       end;
 
