@@ -49,7 +49,7 @@ type
 implementation
 
 uses
-  SysUtils, PerlRegEx, pcre, ARRL, CallLst,
+  SysUtils, PerlRegEx, ARRL, CallLst,
   Ini, Main;
 
 

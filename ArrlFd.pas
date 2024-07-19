@@ -86,7 +86,7 @@ end;
 implementation
 
 uses
-  SysUtils, Classes, PerlRegEx, pcre,
+  SysUtils, Classes,
   Ini,
   System.Generics.Collections,
 {$ifdef DISTRIBUTION_REPORT}

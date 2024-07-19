@@ -35,7 +35,7 @@ var
 implementation
 
 uses
-    SysUtils, Contnrs, log, PerlRegEx, pcre, Ini;
+    SysUtils, Contnrs, log, PerlRegEx, Ini;
 
 procedure TDXCC.LoadDxCCList;
 var

@@ -134,7 +134,7 @@ implementation
 uses
   Windows, SysUtils, RndFunc, Math,
   Graphics,     // for TColor
-  StdCtrls, PerlRegEx, pcre, StrUtils,
+  StdCtrls, PerlRegEx, StrUtils,
   Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
 
 const

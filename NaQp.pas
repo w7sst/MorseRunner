@@ -51,7 +51,7 @@ end;
 implementation
 
 uses
-  SysUtils, Classes, Contnrs, PerlRegEx, pcre,
+  SysUtils, Classes, Contnrs, PerlRegEx,
   Ini, ARRL, Contest;
 
 function TNcjNaQp.LoadCallHistory(const AUserCallsign : string) : boolean;
