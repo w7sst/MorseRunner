@@ -52,6 +52,7 @@ implementation
 
 uses
   SysUtils, ARRL, CallLst,
+  ExchFields,
   Ini, Main;
 
 

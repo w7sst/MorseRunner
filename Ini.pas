@@ -8,6 +8,7 @@ unit Ini;
 interface
 
 uses
+  ExchFields,
   IniFiles;
 
 const
@@ -28,14 +29,6 @@ type
   TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW, scArrlDx,
                  scSst, scAllJa, scAcag, scIaruHf);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
-
-  // Exchange Field #1 types
-  TExchange1Type = (etRST, etOpName, etFdClass);
-
-  // Exchange Field #2 Types
-  TExchange2Type = (etSerialNr, etGenericField, etArrlSection, etStateProv,
-                    etCqZone, etItuZone, etAge, etPower, etJaPref, etJaCity,
-                    etNaQpExch2, etNaQpNonNaExch2);
 
   // Serial NR types
   TSerialNRTypes = (snStartContest, snMidContest, snEndContest, snCustomRange);

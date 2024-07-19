@@ -8,6 +8,7 @@ unit DualExchContest;
 interface
 
 uses
+  ExchFields,
   Contest, Station, Ini;
 
 type

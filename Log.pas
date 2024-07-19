@@ -134,6 +134,7 @@ implementation
 uses
   Windows, SysUtils, RndFunc, Math,
   Graphics,     // for TColor
+  ExchFields,   // for exchange field types
   StdCtrls, PerlRegEx, StrUtils,
   Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
 
