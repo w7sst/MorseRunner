@@ -2466,22 +2466,17 @@ begin
 
   if Log.ShowCorrections then
   begin
-    if Qso.Err <> '   ' then
-    begin
-      case SubItem of
-      1: View.Canvas.Font.Color := Qso.CallColumnColor;
-      2: View.Canvas.Font.Color := Qso.Exch1ColumnColor;
-      3: View.Canvas.Font.Color := Qso.Exch2ColumnColor;
-      5: View.Canvas.Font.Color := Qso.CorrectionsColumnColor;
-      else
-        View.Canvas.Font.Color := clBlack;
-      end;
-    end
+    // column errors are stored as individual bits in Qso.ColumnErrorFlags
+    const ColumnFlag: integer = (1 shl SubItem);
+    if (Qso.Err <> '   ') and ((Qso.ColumnErrorFlags and ColumnFlag) <> 0) then
+      View.Canvas.Font.Color := clRed
     else
       View.Canvas.Font.Color := clBlack;
   end
+  else if SubItem = Log.CorrectionColumnInx then
+    View.Canvas.Font.Color := clRed
   else
-    View.Canvas.Font.Color := IfThen(SubItem = 5, clRed, clBlack);
+    View.Canvas.Font.Color := clBlack;
 
   // strike out HST Score if a QSO error exists
   if SimContest = scHst then
