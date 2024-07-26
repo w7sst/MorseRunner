@@ -663,10 +663,10 @@ begin
     // results in an entry not being entered in the log and the DxStation
     // is already gone after receiving the user's 'TU'.
     //
-    // ValidateEnteredQsoData below is a virtual function to allow specialized
+    // ValidateEnteredExchange below is a virtual function to allow specialized
     // contests to apply special processing (e.g. ARRL Sweepstakes).
     if (Length(Call) < 3) or
-      not Tst.ValidateEnteredQsoData(Call, Edit2.Text, Edit3.Text) then
+      not Tst.ValidateEnteredExchange(Call, Edit2.Text, Edit3.Text) then
       begin
         {Beep;}
         Exit;
