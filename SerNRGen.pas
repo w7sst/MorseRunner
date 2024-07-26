@@ -13,7 +13,7 @@ interface
 
 uses
   Generics.Collections, // for TArray<>
-  Ini;                  // for TSerialNumberRange
+  Ini;                  // for TSerialNRSettings
 
 type
 // Used to declare a set of bins containing the number of logs/entries
