@@ -67,7 +67,7 @@ type
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
 
-    function ValidateEnteredQsoData(const ACall, AExch1, AExch2: string) : boolean; virtual;
+    function ValidateEnteredExchange(const ACall, AExch1, AExch2: string) : boolean; virtual;
     procedure SaveEnteredExchToQso(var Qso: TQso; const AExch1, AExch2: string); virtual;
     procedure FindQsoErrors(var Qso: TQso; var ACorrections: TStringList);
     function ExtractMultiplier(Qso: PQso) : string; virtual;
@@ -380,10 +380,11 @@ end;
 
 
 {
-  ValidateEnteredQsoData is called by SaveQSO (see Log.pas).
-  SaveQSO is called when the QSO is complete and the user has sent 'TU'.
+  ValidateEnteredExchange is called prior to sending the final 'TU' and calling
+  SaveQSO (see Log.pas). This virtual function can be overriden for complex
+  exchange information (e.g. ARRL Sweepstakes).
 }
-function TContest.ValidateEnteredQsoData(const ACall, AExch1, AExch2: string) : boolean;
+function TContest.ValidateEnteredExchange(const ACall, AExch1, AExch2: string) : boolean;
   // Adding a contest: validate contest-specific exchange fields
   //validate Exchange 1 (Edit2) field lengths
   function ValidateExchField1(const text: string): Boolean;
