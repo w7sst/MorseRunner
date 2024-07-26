@@ -166,6 +166,7 @@
         <DCCReference Include="IaruHf.pas"/>
         <DCCReference Include="ExchFields.pas"/>
         <DCCReference Include="SerNRGen.pas"/>
+        <DCCReference Include="Util\Lexer.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -279,6 +280,12 @@
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="MorseRunner.exe" Configuration="Debug" Class="ProjectOutput"/>
+                <DeployFile LocalName="MorseRunner.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>MorseRunner.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="MorseRunner.exe" Configuration="Release" Class="ProjectOutput"/>
                 <DeployClass Name="AdditionalDebugSymbols">
                     <Platform Name="OSX32">

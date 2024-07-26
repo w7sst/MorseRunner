@@ -47,7 +47,8 @@ uses
   ACAG in 'ACAG.pas',
   IaruHf in 'IaruHf.pas',
   ExchFields in 'ExchFields.pas',
-  SerNRGen in 'SerNRGen.pas';
+  SerNRGen in 'SerNRGen.pas',
+  Lexer in 'Util\Lexer.pas';
 
 {$R *.RES}
 
