@@ -363,6 +363,7 @@ end;
 }
 procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6, ACol7, ACol8: string);
 begin
+  MainForm.ListView2.Items.BeginUpdate;
   with MainForm.ListView2.Items.Add do begin
     Caption:= ACol1;
     SubItems.Add(ACol2);
@@ -374,6 +375,8 @@ begin
     if ACol8 <> '' then SubItems.Add(ACol8);
     Selected:= True;
   end;
+  MainForm.ListView2.Items.EndUpdate;
+
   //UpdateSbar(MainForm.ListView2.Items.Count);
   MainForm.ListView2.Perform(WM_VSCROLL, SB_BOTTOM, 0);
 end;
