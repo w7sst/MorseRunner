@@ -15,8 +15,14 @@ uses
   DUnitX.TestFramework,
   pcre in '..\PerlRegEx\pcre.pas',
   PerlRegEx in '..\PerlRegEx\PerlRegEx.pas',
+  Lexer in '..\Util\Lexer.pas',
+  SSExchParser in '..\Util\SSExchParser.pas',
+  ExchFields in '..\ExchFields.pas',
+  ArrlSections in '..\Util\ArrlSections.pas',
   LexerTest in 'LexerTest.pas',
-  Lexer in '..\Util\Lexer.pas';
+  SSLexerTest in 'SSLexerTest.pas',
+  MySSExchTest in 'MySSExchTest.pas',
+  SSExchParserTest in 'SSExchParserTest.pas';
 
 {$IFNDEF TESTINSIGHT}
 var
