@@ -8,7 +8,9 @@ unit Station;
 interface
 
 uses
-  Classes, SndTypes, Ini;
+  Classes, SndTypes,
+  ExchFields,
+  Ini;
 
 const
   NEVER = MAXINT;

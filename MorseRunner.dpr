@@ -46,6 +46,7 @@ uses
   ALLJA in 'ALLJA.pas',
   ACAG in 'ACAG.pas',
   IaruHf in 'IaruHf.pas',
+  ExchFields in 'ExchFields.pas',
   SerNRGen in 'SerNRGen.pas';
 
 {$R *.RES}

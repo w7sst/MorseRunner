@@ -20,7 +20,9 @@ type
 implementation
 
 uses
-  Ini, RndFunc, Math;
+  Ini, RndFunc,
+  ExchFields,
+  Math;
 
 constructor TQrnStation.CreateStation;
 var

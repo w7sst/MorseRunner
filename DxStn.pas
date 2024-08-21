@@ -38,6 +38,7 @@ implementation
 uses
   SysUtils, Classes, RndFunc, Dialogs,
   Main,     // for Mainform
+  ExchFields, // for TExchField
   CallLst, Log, Ini, Contest;
 
 { TDxStation }

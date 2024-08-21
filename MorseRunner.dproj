@@ -164,6 +164,7 @@
         <DCCReference Include="ALLJA.pas"/>
         <DCCReference Include="ACAG.pas"/>
         <DCCReference Include="IaruHf.pas"/>
+        <DCCReference Include="ExchFields.pas"/>
         <DCCReference Include="SerNRGen.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

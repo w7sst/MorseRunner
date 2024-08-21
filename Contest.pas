@@ -85,6 +85,7 @@ implementation
 
 uses
   SysUtils, RndFunc, Math, DxOper,
+  ExchFields,
   Main, CallLst, ARRL;
 
 { TContest }
