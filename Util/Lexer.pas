@@ -15,7 +15,7 @@ type
     into TLexer.Create.
 
     Example:
-      LexerRules: array[0..2] of TTokenRuleDef = (
+      LexerRules: array[0..3] of TTokenRuleDef = (
         (R: '[A-Z]+';               T: Ord(ttAlpha)),
         (R: '\d+';                  T: Ord(ttNumeric)),
         (R: '+';                    T: Ord(ttPlus)),
