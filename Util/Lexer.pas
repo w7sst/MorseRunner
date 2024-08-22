@@ -12,13 +12,14 @@ type
   {
     Lexer rules are defined as a pair, consisting of a RegEx string and a
     corresponding type. An array of TTokenRuleDef records will be passed
-    into TLexer<T>.Create.
+    into TLexer.Create.
 
     Example:
       LexerRules: array[0..2] of TTokenRuleDef = (
         (R: '[A-Z]+';               T: Ord(ttAlpha)),
         (R: '\d+';                  T: Ord(ttNumeric)),
-        (R: '[A-Z][A-Z\d]*';        T: Ord(ttAlphaNumeric))
+        (R: '+';                    T: Ord(ttPlus)),
+        (R: '-';                    T: ORd(ttMinus))
       );
 
     Perl-Compatible Regular Expressions ...
@@ -48,6 +49,9 @@ type
     for a match, where each expression represents a different token. Whitespace
     is handled in one of two ways: it can be automatically skipped by the Lexer,
     or user can provide additional rules to manage whitespace.
+
+    The initial application of this class will be to support the ARRL
+    Sweepstakes Contest.
 
     Inspiration and design is based on this article:
       https://eli.thegreenplace.net/2013/06/25/regex-based-lexical-analysis-in-python-and-javascript
