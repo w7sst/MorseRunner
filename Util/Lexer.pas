@@ -167,12 +167,12 @@ var
 begin
   Buf := ABuf;
   Pos := 1;
-  ReSkipWhitespace.Subject := Self.Buf;
+  ReSkipWhitespace.Subject := UTF8String(Self.Buf);
   ReSkipWhitespace.Start := 1;
   ReSkipWhitespace.Stop := Self.Buf.Length;
   for Rule in Rules do
     begin
-      Rule.regex.Subject := Self.Buf;
+      Rule.regex.Subject := UTF8String(Self.Buf);
       Rule.regex.Start := 1;
       Rule.regex.Stop := Self.Buf.Length;
     end;
@@ -182,7 +182,6 @@ end;
 function TLexer.NextToken(var AToken: TExchToken): Boolean;
 var
   Rule: TTokenRule;
-  Matched: boolean;
 begin
   Result := self.Pos <= buf.length;
   if not Result then
