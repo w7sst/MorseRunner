@@ -9,6 +9,7 @@ interface
 
 uses
   SndTypes, Station, StnColl, MyStn, Ini, Log, System.Classes,
+  ExchFields,
   MovAvg, Mixers, VolumCtl, DxStn;
 
 type
@@ -25,6 +26,8 @@ type
     constructor Create;
     function IsReloadRequired(const AUserCallsign : String) : boolean;
     procedure SetLastLoadCallsign(const AUserCallsign : String);
+    function ValidateExchField(const FieldDef: PFieldDefinition;
+      const Avalue: string) : Boolean;
 
   public
     BlockNumber: integer;
@@ -49,6 +52,9 @@ type
     function PickCallOnly : string;
 
     function OnSetMyCall(const AUserCallsign : string; out err : string) : boolean; virtual;
+    function ValidateMyExchange(const AExchange: string;
+      ATokens: TStringList;
+      out AExchError: string): boolean; virtual;
     function OnContestPrepareToStart(const AUserCallsign: string;
       const ASentExchange : string) : Boolean; virtual;
     procedure SerialNrModeChanged; virtual;
@@ -85,7 +91,7 @@ implementation
 
 uses
   SysUtils, RndFunc, Math, DxOper,
-  ExchFields,
+  PerlRegEx,
   Main, CallLst, ARRL;
 
 { TContest }
@@ -225,6 +231,66 @@ begin
   Me.SentExchTypes:= GetSentExchTypes(skMyStation, AUserCallsign);
 
   Result:= True;
+end;
+
+
+{
+  Parse into two strings [Exch1, Exch2].
+  Validate each string and set error string in AExchError.
+  Return True upon success; False otherwise.
+}
+function TContest.ValidateMyExchange(const AExchange: string;
+  ATokens: TStringList;
+  out AExchError: string): boolean;
+var
+  SentExchTypes : TExchTypes;
+  Field1Def: PFieldDefinition;
+  Field2Def: PFieldDefinition;
+begin
+  SentExchTypes := Self.Me.SentExchTypes;
+  Field1Def := @Exchange1Settings[SentExchTypes.Exch1];
+  Field2Def := @Exchange2Settings[SentExchTypes.Exch2];
+
+  // parse into two strings [Exch1, Exch2]
+  ATokens.Clear;
+  ExtractStrings([' '], [], PChar(AExchange), ATokens);
+  if ATokens.Count = 0 then
+    ATokens.AddStrings(['', '']);
+  if ATokens.Count = 1 then
+    ATokens.AddStrings(['']);
+
+  // validate sent exchange strings
+  Result := ValidateExchField(Field1Def, ATokens[0]) and
+            ValidateExchField(Field2Def, ATokens[1]);
+
+  if not Result then
+    AExchError := Format('Invalid exchange: ''%s'' - expecting %s.',
+          [AExchange, ActiveContest.Msg]);
+end;
+
+function TContest.ValidateExchField(const FieldDef: PFieldDefinition;
+  const Avalue: string) : Boolean;
+var
+  reg: TPerlRegEx;
+  s: string;
+begin
+  if SimContest = scNaQp then begin
+    // special case - I can't figure out how to match an empty string,
+    // so manually check for an optional string.
+    s := FieldDef.R;
+    Result := s.StartsWith('()|(') and Avalue.IsEmpty;
+    if Result then Exit;
+  end;
+
+  reg := TPerlRegEx.Create();
+  try
+    reg.Subject := UTF8Encode(Avalue);
+    s:= '^(' + FieldDef.R + ')$';
+    reg.RegEx:= UTF8Encode(s);
+    Result:= Reg.Match;
+  finally
+    reg.Free;
+  end;
 end;
 
 

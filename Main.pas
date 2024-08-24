@@ -325,8 +325,6 @@ type
     procedure ConfigureExchangeFields;
     procedure SetMyExch1(const AExchType: TExchange1Type; const Avalue: string);
     procedure SetMyExch2(const AExchType: TExchange2Type; const Avalue: string);
-    function ValidateExchField(const FieldDef: PFieldDefinition;
-      const Avalue: string) : Boolean;
     procedure ProcessSpace;
     procedure SendMsg(AMsg: TStationMessage);
     procedure ProcessEnter;
@@ -1080,6 +1078,7 @@ end;}
 function TMainForm.SetMyExchange(const AExchange: string) : Boolean;
 var
   sl: TStringList;
+  ExchError: string;
   SentExchTypes : TExchTypes;
   Field1Def: PFieldDefinition;
   Field2Def: PFieldDefinition;
@@ -1093,19 +1092,11 @@ begin
     Field2Def := @Exchange2Settings[SentExchTypes.Exch2];
 
     // parse into two strings [Exch1, Exch2]
-    ExtractStrings([' '], [], PChar(AExchange), sl);
-    if sl.Count = 0 then
-      sl.AddStrings(['', '']);
-    if sl.Count = 1 then
-      sl.AddStrings(['']);
-
     // validate sent exchange strings
-    if not ValidateExchField(Field1Def, sl[0]) or
-       not ValidateExchField(Field2Def, sl[1]) then
+    if not Tst.ValidateMyExchange(AExchange, sl, ExchError) then
       begin
         Result := False;
-        sbar.Caption := Format('Invalid exchange: ''%s'' - expecting %s.',
-          [AExchange, ActiveContest.Msg]);
+        sbar.Caption := ExchError;
 
         sbar.Align:= alBottom;
         sbar.Visible:= true;
@@ -1377,31 +1368,6 @@ begin
   Tst.Me.SentExchTypes.Exch2 := AExchType;
 end;
 
-
-function TMainForm.ValidateExchField(const FieldDef: PFieldDefinition;
-  const Avalue: string) : Boolean;
-var
-  reg: TPerlRegEx;
-  s: string;
-begin
-  if SimContest = scNaQp then begin
-    // special case - I can't figure out how to match an empty string,
-    // so manually check for an optional string.
-    s := FieldDef.R;
-    Result := s.StartsWith('()|(') and Avalue.IsEmpty;
-    if Result then Exit;
-  end;
-
-  reg := TPerlRegEx.Create();
-  try
-    reg.Subject := UTF8Encode(Avalue);
-    s:= '^(' + FieldDef.R + ')$';
-    reg.RegEx:= UTF8Encode(s);
-    Result:= Reg.Match;
-  finally
-    reg.Free;
-  end;
-end;
 
 {
   Set pitch based on menu item number.
