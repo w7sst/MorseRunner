@@ -465,8 +465,12 @@ end;
 
 {
   ValidateEnteredExchange is called prior to sending the final 'TU' and calling
-  SaveQSO (see Log.pas). This virtual function can be overriden for complex
-  exchange information (e.g. ARRL Sweepstakes).
+  SaveQSO (see Log.pas). The basic validation is a length test where each
+  exchange is checked against a minimum length requirement.
+  This is contest with original 1.68 behaviors.
+
+  This virtual function can be overriden for complex exchange information
+  (e.g. ARRL Sweepstakes).
 }
 function TContest.ValidateEnteredExchange(const ACall, AExch1, AExch2: string;
   out AExchError: String) : boolean;

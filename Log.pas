@@ -397,9 +397,8 @@ begin
     s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
   end;
 
-  Mainform.sbar.Font.Color := clDefault;
-
   // during debug, use status bar to show CW stream
+  Mainform.sbar.Font.Color := clDefault;
   if not s.IsEmpty and (BDebugCwDecoder or BDebugGhosting) then
     Mainform.sbar.Caption:= LeftStr(Mainform.sbar.Caption, 40) + ' -- ' + s
   else
@@ -741,8 +740,8 @@ begin
     begin
     Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
 
-    // Virtual functions used here to allow allow special processing for some
-    // contests (e.g. ARRL Sweepstakes).
+    // Virtual functions used below allow special processing as needed
+    // for some contests (e.g. ARRL Sweepstakes).
     if not Tst.CheckEnteredCallLength(Call, ExchError) or
       not Tst.ValidateEnteredExchange(Call, Edit2.Text, Edit3.Text, ExchError) then
       begin
