@@ -850,6 +850,7 @@ end;
 procedure TMainForm.ProcessEnter;
 var
   C, N, R, Q: boolean;
+  ExchError: string;
 begin
   if ActiveControl = ExchangeEdit then
     begin
@@ -872,6 +873,9 @@ begin
     end;
   MustAdvance := false;
 
+  sbar.Font.Color := clDefault;
+
+  // 'Control-Enter', 'Shift-Enter' and 'Alt-Enter' are shortcuts to SaveQSO
   if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0 then
   begin
     Log.SaveQso;
@@ -914,6 +918,19 @@ begin
 
   if R and Q and (C or N) then
   begin
+    // validate Exchange before sending TU and logging the QSO
+    if not Tst.ValidateEnteredExchange(Edit1.Text, Edit2.Text, Edit3.Text, ExchError) then
+      begin
+        if not ExchError.IsEmpty then
+          begin
+            sbar.Caption := ExchError;
+            sbar.Align:= alBottom;
+            sbar.Visible:= true;
+            sbar.Font.Color := clRed;
+          end;
+        Exit;
+      end;
+
     SendMsg(msgTU);
     Log.SaveQso;
   end
@@ -1080,16 +1097,12 @@ var
   sl: TStringList;
   ExchError: string;
   SentExchTypes : TExchTypes;
-  Field1Def: PFieldDefinition;
-  Field2Def: PFieldDefinition;
 begin
   sl:= TStringList.Create;
   try
     assert(Tst.Me.SentExchTypes = Tst.GetSentExchTypes(skMyStation, Ini.Call),
       'set by TMainForm.SetMyCall');
     SentExchTypes := Tst.Me.SentExchTypes;
-    Field1Def := @Exchange1Settings[SentExchTypes.Exch1];
-    Field2Def := @Exchange2Settings[SentExchTypes.Exch2];
 
     // parse into two strings [Exch1, Exch2]
     // validate sent exchange strings
