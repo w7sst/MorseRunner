@@ -13,12 +13,12 @@ uses
 
 type
   // Exchange Field #1 types
-  TExchange1Type = (etRST, etOpName, etFdClass);
+  TExchange1Type = (etRST, etOpName, etFdClass, etSSNrPrecedence);
 
   // Exchange Field #2 Types
   TExchange2Type = (etSerialNr, etGenericField, etArrlSection, etStateProv,
                     etCqZone, etItuZone, etAge, etPower, etJaPref, etJaCity,
-                    etNaQpExch2, etNaQpNonNaExch2);
+                    etNaQpExch2, etNaQpNonNaExch2, etSSCheckSection);
 
   {
     Defines the characteristics and behaviors of an exchange field.
@@ -44,6 +44,8 @@ const
     (C: 'RST';   R: '[1-5E][1-9N][1-9N]';     L: 3;   T:Ord(etRST))
    ,(C: 'Name';  R: '[A-Z][A-Z]*';            L: 10;  T:Ord(etOpName))
    ,(C: 'Class'; R: '[1-9][0-9]*[A-F]';       L: 3;   T:Ord(etFdClass))
+   // ARRL SS does not parse user-entered Exchange 1 field; Exchange 2 field is used.
+   ,(C: '';      R: '([0-9]+|#)? *[QABUMS]';  L: 4;   T:Ord(etSSNrPrecedence))
   );
 
   // Exchange Field 2 settings/rules
@@ -63,6 +65,8 @@ const
     //           Non-NA stations send name only
    ,(C: 'State';      R: '([0-9A-Z/]*)';                   L: 6; T:Ord(etNaQpExch2))
    ,(C: 'State';      R: '()|([0-9A-Z/]*)';                L: 6; T:Ord(etNaQpNonNaExch2))
+   ,(C: 'Nr Prec Call CK Sect';
+                      R: '[0-9ONT]{1,2} +[A-Z]+';          L: 32; T:Ord(etSSCheckSection))
   );
 
 implementation
