@@ -469,7 +469,7 @@ CONTEST INFORMATION
     F: Emergency Operation Centers
     Rules: https://contests.arrl.org/ContestRules/Field-Day-Rules.pdf
 
-    ARRL Sweepstates
+    ARRL Sweepstakes
     When: First full weekend in November
     How: Stations in US/Canada exchange information with other US/Canada stations.
     Exchange: <serial number> <Precedence> <Callsign> <Check> <Section>
@@ -507,9 +507,17 @@ CONTEST INFORMATION
       update the callsign when storing the QSO into the log.
     - For added realism, the simulation will populate the exchange field
       with the Check and Section entries for the entered callsign. This
-      behavior matches current N1MM behavior. However, the simulation will
-      occasionally modify the Section to simulate that the operator is
-      operating from a different location.
+      behavior matches current N1MM behavior. In addition, the simulation will
+      occasionally modify the Section to simulate when an operator is operating
+      from a different location.
+
+      By default, the Check/Section value will be pre-populated in the Exchange
+      field about 50% of the time. This behavior can be adjusted between 0% and
+      100% by setting the following keyword in the MorseRunner.ini file:
+        [Settings]
+        ShowCheckSection=50
+      Valid values range between 0 and 100, representing 0% and 100%.
+      Note that a zero value will disable this feature.
 
     CQ WPX
     When: Last weekend in May
