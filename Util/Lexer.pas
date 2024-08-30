@@ -214,7 +214,7 @@ begin
       Result := Rule.regex.MatchAgain;
       if Result then
         begin
-          AToken.Init(Rule.tokenType, Rule.regex.MatchedText, Self.Pos);
+          AToken.Init(Rule.tokenType, String(Rule.regex.MatchedText), Self.Pos);
           Self.Pos := Rule.regex.Start;
           Exit;
         end;
