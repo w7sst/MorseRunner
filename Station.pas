@@ -364,7 +364,7 @@ begin
   // Adding a contest: TStation.NrAsText(), converts <#> to exchange (usually '<exch1> <exch2>'). Inject LID errors.
   case SimContest of
     scCQWW:
-      Result := Format('%s %d', [Exch1, NR]);     // <RST> <CQ-Zone>
+      Result := Format('%s %s', [Exch1, Exch2]);  // <RST> <CQ-Zone>
     scCwt:
       Result := Format('%s  %s', [Exch1, Exch2]); // <Name> <NR|State|Prov|Prefix>
     scSst:
@@ -448,14 +448,27 @@ begin
     if not IsDxStation then begin
       Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
       Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
+      if SentExchTypes.Exch2 = etCqZone then
+        Result := StringReplace(Result, '1', 'A', [rfReplaceAll]);
     end
-    else if Random < 0.4
+    else if (Random < 0.4) and (SentExchTypes.Exch2 <> etCqZone)
       then Result := StringReplace(Result, '0', 'O', [rfReplaceAll])
-    else if Random < 0.97
+    else if (Random < 0.97) and (SentExchTypes.Exch2 <> etCqZone)
       then Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
 
-    if Random < 0.97
-      then Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
+    // this function needs to be refactored so it can operate individual
+    // parts of the exchange.
+    if (SentExchTypes.Exch2 = etCqZone) then
+      begin
+        if R1 < 0.70 then
+          begin
+            Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
+            Result := StringReplace(Result, '1', 'A', [rfReplaceAll]);
+            Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
+          end;
+      end
+    else if Random < 0.97 then
+      Result := StringReplace(Result, '9', 'N', [rfReplaceAll]);
     end;
 
   // for JARL ALLJA, ACAG contest

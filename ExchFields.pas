@@ -55,7 +55,7 @@ const
     (C: 'Section';    R: '([A-Z][A-Z])|([A-Z][A-Z][A-Z])'; L: 3;  T:Ord(etArrlSection)),
     (C: 'State/Prov'; R: '[ABCDFGHIKLMNOPQRSTUVWY][ABCDEFHIJKLMNORSTUVXYZ]';
                                                            L: 6;  T:Ord(etStateProv)),
-    (C: 'CQ-Zone';    R: '[0-9]*';                         L: 2;  T:Ord(etCqZone)),
+    (C: 'CQ-Zone';    R: '[0-9OANT]+';                     L: 2;  T:Ord(etCqZone)),
     (C: 'Zone';       R: '[0-9]*';                         L: 4;  T:Ord(etItuZone)),
     (C: 'Age';        R: '[0-9][0-9]';                     L: 2;  T:Ord(etAge)),
     (C: 'Power';      R: '([0-9]*)|(K)|(KW)|([0-9A]*[OTN]*)'; L: 4; T:Ord(etPower)),

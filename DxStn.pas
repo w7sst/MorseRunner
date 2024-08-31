@@ -251,7 +251,7 @@ begin
     case SentExchTypes.Exch2 of
       etSerialNr: TrueExch2 := IntToStr(Self.NR);
       etGenericField: TrueExch2 := Self.Exch2;
-      etCqZone: TrueExch2 := IntToStr(Self.NR);
+      etCqZone: TrueExch2 := Self.Exch2;
       etItuZone: TrueExch2 := Self.Exch2;
       etArrlSection: TrueExch2 := Self.Exch2;
       etStateProv: TrueExch2 := Self.Exch2;

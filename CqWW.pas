@@ -291,6 +291,10 @@ end;
 function TCqWw.getExch2(id:integer): string;    // returns section info (e.g. 3)
 begin
   result := CqWwCallList.Items[id].CQZone;
+
+  // insert an occasional leading zero for Zones [1-8]
+  if (result.ToInteger < 9) and (Random < 0.05) then
+    Result.Insert(0, '0');
 end;
 
 

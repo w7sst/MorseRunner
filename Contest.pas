@@ -547,7 +547,7 @@ begin
       etGenericField:Qso.Exch2 := AExch2;
       etArrlSection: Qso.Exch2 := AExch2;
       etStateProv:   Qso.Exch2 := AExch2;
-      etCqZone:      Qso.NR := StrToInt(AExch2);
+      etCqZone:      Qso.Exch2 := AExch2;
       etItuZone:     Qso.Exch2 := AExch2;
       //etAge:
       etPower:       Qso.Exch2 := AExch2;
