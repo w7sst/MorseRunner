@@ -47,7 +47,7 @@ begin
     tl:= TStringList.Create;
     try
         DXCCList:= TList.Create;
-        slst.LoadFromFile(ParamStr(1) + 'ARRL.LIST');
+        slst.LoadFromFile(ParamStr(1) + 'DXCC.LIST');
 
         // The search algorithm walks this list in reverse order.
         for i:= 0 to slst.Count-1 do begin
