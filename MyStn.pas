@@ -34,7 +34,7 @@ implementation
 
 uses
   ExchFields,
-  SysUtils, RndFunc, Ini, MorseKey, Contest, Main, ARRL;
+  SysUtils, RndFunc, Ini, MorseKey, Contest, Main, DXCC;
 
 { TMyStation }
 

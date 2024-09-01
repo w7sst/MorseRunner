@@ -51,7 +51,7 @@ type
 implementation
 
 uses
-  SysUtils, ARRL, CallLst,
+  SysUtils, DXCC, CallLst,
   ExchFields,
   Ini, Main;
 

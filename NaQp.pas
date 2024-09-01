@@ -53,7 +53,7 @@ implementation
 uses
   SysUtils, Classes, Contnrs, PerlRegEx,
   ExchFields,
-  Ini, ARRL, Contest;
+  Ini, DXCC, Contest;
 
 function TNcjNaQp.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
