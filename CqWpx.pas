@@ -49,7 +49,7 @@ implementation
 uses
   SysUtils, Generics.Defaults, System.Math,
   Main,           // for SetMySerialNR
-  Classes, ARRL;
+  Classes, DXCC;
 
 function TCqWpx.OnContestPrepareToStart(const AUserCallsign: string;
   const ASentExchange : string) : Boolean;

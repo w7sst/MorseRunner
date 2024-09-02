@@ -48,7 +48,7 @@ end;
 implementation
 
 uses
-  SysUtils, Classes, ARRL;
+  SysUtils, Classes, DXCC;
 
 function TCqWw.LoadCallHistory(const AUserCallsign : string) : boolean;
 const

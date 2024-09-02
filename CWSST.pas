@@ -46,7 +46,7 @@ type
 implementation
 
 uses
-    SysUtils, StrUtils, ARRL;
+    SysUtils, StrUtils, DXCC;
 
 function TCWSST.LoadCallHistory(const AUserCallsign : string) : boolean;
 const

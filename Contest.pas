@@ -95,7 +95,7 @@ implementation
 uses
   SysUtils, RndFunc, Math, DxOper,
   PerlRegEx,
-  Main, CallLst, ARRL;
+  Main, CallLst, DXCC;
 
 { TContest }
 

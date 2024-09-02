@@ -35,7 +35,7 @@ uses
   WavFile in 'VCL\WavFile.pas',
   pcre in 'PerlRegEx\pcre.pas',
   PerlRegEx in 'PerlRegEx\PerlRegEx.pas',
-  ARRL in 'ARRL.pas',
+  DXCC in 'DXCC.pas',
   ArrlFd in 'ArrlFd.pas',
   ArrlSS in 'ArrlSS.pas',
   NaQp in 'NaQp.pas',

@@ -93,7 +93,7 @@ uses
   Dialogs,      // for ShowMessage
   Vcl.Clipbrd,  // for TClipBoard
 {$endif}
-  ARRL;
+  DXCC;
 
 var
   IntegerComparer: IComparer<Integer>;

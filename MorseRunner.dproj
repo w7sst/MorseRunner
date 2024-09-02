@@ -153,7 +153,7 @@
         <DCCReference Include="VCL\WavFile.pas"/>
         <DCCReference Include="PerlRegEx\pcre.pas"/>
         <DCCReference Include="PerlRegEx\PerlRegEx.pas"/>
-        <DCCReference Include="ARRL.pas"/>
+        <DCCReference Include="DXCC.pas"/>
         <DCCReference Include="ArrlFd.pas"/>
         <DCCReference Include="ArrlSS.pas"/>
         <DCCReference Include="NaQp.pas"/>
