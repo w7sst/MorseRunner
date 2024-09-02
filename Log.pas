@@ -145,7 +145,7 @@ uses
 const
   ShowHstCorrections: Boolean = true;
   LogColUtcWidth: Integer = 80;   // matches value in resource file
-  LogColPadding: Integer = 8;     // Additional padding space for columns
+  LogColPadding: Integer = 10;    // Additional padding space for columns
 
   {
     The following constants are used to initialize the Log Report columns
@@ -165,12 +165,12 @@ const
   ARRL_SECT_COL   = 'Sect,4,L';
   FD_CLASS_COL    = 'Class,5,L';
   CORRECTIONS_COL = 'Corrections,11,L';
-  WPM_COL         = 'Wpm,3,R';
+  WPM_COL         = 'Wpm,3.25,R';
   WPM_FARNS_COL   = 'Wpm,5,R';
   NAME_COL        = 'Name,8,L';
   STATE_PROV_COL  = 'State,5,L';
-  PREFIX_COL      = 'Pref,5,L';
-  ARRLDX_EXCH_COL = 'Exch,6,L';
+  PREFIX_COL      = 'Pref,4,L';
+  ARRLDX_EXCH_COL = 'Exch,5,R';
   CWT_EXCH_COL    = 'Exch,5,L';
   SST_EXCH_COL    = 'Exch,5,L';
   ALLJA_EXCH_COL  = 'Exch,6,L';
@@ -179,9 +179,9 @@ const
   WPX_EXCH_COL    = 'Exch,6,L';
   HST_EXCH_COL    = 'Exch,6,L';
   CQ_ZONE_COL     = 'CQ-Zone,7,L';
-  SS_PREC_COL     = 'Pr,2,C';
-  SS_CHECK_COL    = 'Chk,3,C';
-  SS_SECT_COL     = 'Sect,4,L';
+  SS_CALL_COL     = 'Call,9,L';
+  SS_PREC_COL     = 'Pr,2.5,C';
+  SS_CHECK_COL    = 'Chk,3.25,C';
 
 {$ifdef DEBUG}
   DEBUG_INDENT: Integer = 3;
@@ -299,7 +299,7 @@ begin
       begin
         Width := MainForm.ListView2.Column[0].Width;
         LogColScaling := Width / LogColUtcWidth;  // e.g. 125% for laptops
-        LogColWidthPerChar := (Width - (LogColPadding*LogColScaling)) / 8;
+        LogColWidthPerChar := Width / 8.5;  // UTC-column width, ~8.5 characters
         ScaleTableInitialized:= true;
       end;
 
@@ -317,7 +317,10 @@ begin
       tl.DelimitedText := ColDefs[I];
       assert(tl.Count = 3);
       Name := tl[0];
-      Width := Round(tl[1].ToInteger * LogColWidthPerChar + LogColPadding*LogColScaling);
+      if I = 0 then // use existing width for UTC Column
+        Width := MainForm.ListView2.Column[I].Width
+      else
+        Width := Round(tl[1].ToSingle * LogColWidthPerChar + LogColPadding*LogColScaling);
       Alignment := taLeftJustify;
       case tl[2][1] of
         'L': Alignment := taLeftJustify;
@@ -456,7 +459,7 @@ begin
       ScoreTableInit([UTC_COL, CALL_COL, FD_CLASS_COL, ARRL_SECT_COL, CORRECTIONS_COL, WPM_COL]);
     scArrlSS:
       begin
-      ScoreTableInit([UTC_COL, CALL_COL, NR_COL, SS_PREC_COL, SS_CHECK_COL, ARRL_SECT_COL, CORRECTIONS_COL, WPM_COL]);
+      ScoreTableInit([UTC_COL, SS_CALL_COL, NR_COL, SS_PREC_COL, SS_CHECK_COL, ARRL_SECT_COL, CORRECTIONS_COL, WPM_COL]);
       SetExchColumns(2, 4, 3, 5);
       end;
     scNaQp:
