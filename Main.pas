@@ -381,6 +381,10 @@ const
 
 var
   MainForm: TMainForm;
+  SaveEdit1Width: integer = 0;
+  SaveLabel3Left: integer = 0;
+  SaveEdit3Left: integer = 0;
+  SaveEdit3Width: integer = 0;
 
   { debug switches - set via .INI file or compile-time switches (above) }
   BDebugExchSettings: boolean;    // display parsed Exchange field settings
@@ -391,7 +395,7 @@ implementation
 
 uses
   ARRL, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, CWSST, ALLJA, ACAG,
-  IARUHF,
+  IARUHF, ARRLSS,
   MorseKey, FarnsKeyer, CallLst,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
   Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
@@ -489,6 +493,7 @@ begin
   scAllJa:      Result := TALLJA.Create;
   scAcag:       Result := TACAG.Create;
   scIaruHf:     Result := TIaruHf.Create;
+  scArrlSS:     Result := TSweepstakes.Create;
   else
     assert(false);
   end;
@@ -654,6 +659,12 @@ begin
         if not CharInSet(Key, ['0'..'9', 'L', 'M', 'H', 'P', 'l', 'm', 'h', 'p', #8]) then
           Key := #0;
       end;
+    etSSCheckSection:
+      begin
+        // valid NR/Prec/Call/Check/Section characters
+        if not CharInSet(Key, ['0'..'9', 'A'..'Z', 'a'..'z', '/', #32, #8]) then
+          Key := #0;
+      end
     else
       assert(false, Format('invalid exchange field 2 type: %s',
         [ToStr(RecvExchTypes.Exch2)]));
@@ -711,7 +722,8 @@ begin
       end;
 
     ' ': // advance to next exchange field
-      if ActiveControl <> ExchangeEdit then
+      if (ActiveControl <> ExchangeEdit) and
+         not ((ActiveControl = Edit3) and (SimContest = scArrlSS)) then
         ProcessSpace
       else
         Exit;
@@ -827,7 +839,10 @@ begin
         begin
           if SimContest = scFieldDay then
             UpdateSbar(Edit1.Text);
-          ActiveControl := Edit2;
+          if SimContest = scArrlSS then
+            ActiveControl := Edit3
+          else
+            ActiveControl := Edit2;
         end
       else if ActiveControl = Edit2 then
         ActiveControl := Edit3
@@ -904,9 +919,14 @@ begin
   //current state
   C := CallSent;
   N := NrSent;    // 'Nr' represents the exchange (<exch1> <exch2>).
-  Q := Edit2.Text <> '';
-  R := (Edit3.Text <> '') or ((SimContest = scNaQp) and
-                              (RecvExchTypes.Exch2 = etNaQpNonNaExch2));
+  Q := (Edit2.Text <> '') or (SimContest in [scArrlSS]);
+  case SimContest of
+    scArrlSS:
+      R := Tst.ValidateEnteredExchange(Edit1.Text, Edit2.Text, Edit3.Text, ExchError);
+    else
+      R := (Edit3.Text <> '') or ((SimContest = scNaQp) and
+                                  (RecvExchTypes.Exch2 = etNaQpNonNaExch2));
+  end;
 
   //send his call if did not send before, or if call changed
   if (not C) or ((not N) and (not R)) then
@@ -1017,7 +1037,7 @@ begin
   // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
   if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst,
-    scCQWW, scArrlDx, scSst, scAllJa, scAcag, scIaruHf]) then
+    scCQWW, scArrlDx, scSst, scAllJa, scAcag, scIaruHf, scArrlSS]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex :=
@@ -1091,6 +1111,10 @@ end;}
 
   My "sent" exchange types (Tst.Me.SentExchTypes) have been previously set by
   SetMyCall().
+
+  Beginning with ARRL Sweepstakes contest, the exchange will have more than
+  two values, namely '# A 72 OR'. For the case of ARRL Sweepstakes, we will
+  break this into two pieces: Exch1='# A', Exch2='72 OR'.
 }
 function TMainForm.SetMyExchange(const AExchange: string) : Boolean;
 var
@@ -1104,8 +1128,8 @@ begin
       'set by TMainForm.SetMyCall');
     SentExchTypes := Tst.Me.SentExchTypes;
 
-    // parse into two strings [Exch1, Exch2]
-    // validate sent exchange strings
+    // ValidateMyExchange will parse user-entered exchange and
+    // return Exch1 and Exch2 tokens.
     if not Tst.ValidateMyExchange(AExchange, sl, ExchError) then
       begin
         Result := False;
@@ -1126,6 +1150,20 @@ begin
         sbar.Visible := mnuShowCallsignInfo.Checked;
         sbar.Font.Color := clDefault;
         sbar.Caption := '';
+      end;
+
+    // restore Edit3 if not ARRL Sweepstakes
+    if (SimContest <> scArrlSS) and (SaveEdit3Left <> 0) then
+      begin
+        Edit1.Width := SaveEdit1Width;
+        Label3.Left := SaveLabel3Left;
+        Edit3.Left := SaveEdit3Left;
+        Edit3.Width := SaveEdit3Width;
+        Label2.Show;
+        Edit2.Show;
+        SaveLabel3Left := 0;
+        SaveEdit3Left := 0;
+        SaveEdit3Width := 0;
       end;
 
     // set contest-specific sent exchange values
@@ -1270,6 +1308,10 @@ end;
 
 procedure TMainForm.SetMyExch1(const AExchType: TExchange1Type;
   const Avalue: string);
+const
+  DIGITS = ['0'..'9'];
+var
+  L: integer;
 begin
   // Adding a contest: setup contest-specific exchange field 1
   case AExchType of
@@ -1297,6 +1339,63 @@ begin
         Ini.ArrlClass := Avalue;
         Ini.UserExchange1[SimContest] := Avalue;
         Tst.Me.Exch1 := Avalue;
+        if BDebugExchSettings then Edit2.Text := Avalue; // testing only
+      end;
+    etSSNrPrecedence:
+      begin
+        // Active during ARRL Sweepstakes contest.
+        // '#A' | '# A' | '123A' | '123 A' | 'A'
+        //    --> Exch1 = 'A' | ' A'       // optional leading space
+        // We want to send what is specified. If they say, '#A', then so space.
+        // We can can store leading space in Tst.Me.Exch1 = ' A', so strip
+        // the leading '#' or numeric ('123').
+        // - pull the leading numeric or '#' and store in NumberStr
+        // - convert '<nr><prec>' to '<nr>''<prec>'
+        // - convert '<nr> <prec>' to '<nr>' ' <prec>'
+        // - insert leading space if count=2
+        Ini.UserExchange1[SimContest] := Avalue;
+
+        if Avalue.IsEmpty then
+          begin
+            Tst.Me.NR := 1;
+            Tst.Me.Exch1 := '';
+          end
+        else if Avalue[1] = '#' then
+          begin
+            // optional leading '#' ('#A' | '# A')
+            if SerialNR in [snMidContest, snEndContest] then
+              Tst.Me.NR := 1 + (Tst.GetRandomSerialNR div 10) * 10
+            else
+              Tst.Me.NR := 1;
+            L := 2;
+            if Avalue[L] = ' ' then
+              while Avalue[L+1] = ' ' do
+                Inc(L);
+            Tst.Me.Exch1 := Avalue.Substring(L-1);
+          end
+        else if CharInSet(Avalue[1], DIGITS) then
+          begin
+            // optional leading serial number ('123A' | '123 A')
+            L := 1;
+            repeat
+              Inc(L)
+            until not CharInSet(Avalue[L], DIGITS);
+            Tst.Me.NR := AValue.Substring(0,L-1).ToInteger;
+            if Avalue[L] = ' ' then
+              while Avalue[L+1] = ' ' do
+                Inc(L);
+            Tst.Me.Exch1 := Avalue.Substring(L-1);
+            if BDebugExchSettings then Edit2.Text := Avalue; // testing only
+          end
+        else
+          begin
+            // no leading serial number. use assigned serial number behavior.
+            if SerialNR in [snMidContest, snEndContest] then
+              Tst.Me.NR := 1 + (Tst.GetRandomSerialNR div 10) * 10
+            else
+              Tst.Me.NR := 1;
+            Tst.Me.Exch1 := ' ' + Avalue;
+          end;
         if BDebugExchSettings then Edit2.Text := Avalue; // testing only
       end;
     else
@@ -1374,6 +1473,33 @@ begin
         Ini.UserExchange2[SimContest] := Avalue;
         Tst.Me.Exch2 := Avalue;
         if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
+    etSSCheckSection:
+      begin
+        // retain current field sizes
+        SaveEdit1Width := Edit1.Width;
+        SaveLabel3Left := Label3.Left;
+        SaveEdit3Left := Edit3.Left;
+        SaveEdit3Width := Edit3.Width;
+
+        // hide Exch1 (Edit2)
+        Edit2.Hide;
+        Label2.Hide;
+
+        // reduce Edit1 width; shift Exch Field 2 to the left and grow
+        var Reduce1: integer := (SaveEdit1Width * 4) div 9;
+        Label3.Left := Label3.Left - (Label3.Left - Label2.Left) - Reduce1;
+        Edit3.Left := Edit2.Left - Reduce1;
+        Edit3.Width := Edit3.Width + (SaveEdit3Left - Edit2.Left + Reduce1 + 15);
+        Edit1.Width := Edit1.Width - Reduce1;
+
+        Ini.UserExchange2[SimContest] := Avalue; // <check> <sect> (e.g. 72 OR)
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then
+          begin
+            Edit3.Text := Edit2.Text + ' ' + Avalue;  // testing only
+            Edit2.Text := '';
+          end;
       end;
     else
       assert(false, Format('Unsupported exchange 2 type: %s.', [ToStr(AExchType)]));
@@ -2059,10 +2185,22 @@ begin
   else
     begin
       { otherwise advance to next field, skipping RST }
-      if Edit2IsRST then
+      if Edit2IsRST or not Edit2.Showing then
         ActiveControl := Edit3
       else
         ActiveControl := Edit2;
+
+      if (SimContest = scArrlSS) and
+        (Ini.ShowCheckSection > 0) and
+        (ActiveControl = Edit3) and (Edit3.Text = '') and
+        (Random < (ShowCheckSection/100)) then
+          begin
+            var S: string := (Tst as TSweepstakes).GetCheckSection(Edit1.Text, 0.25);
+            if not S.IsEmpty then
+              S := S + ' ';
+            Edit3.Text := S;
+            Edit3.SelStart := S.Length;
+          end;
     end;
 
   MustAdvance := false;

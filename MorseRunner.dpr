@@ -37,6 +37,7 @@ uses
   PerlRegEx in 'PerlRegEx\PerlRegEx.pas',
   ARRL in 'ARRL.pas',
   ArrlFd in 'ArrlFd.pas',
+  ArrlSS in 'ArrlSS.pas',
   NaQp in 'NaQp.pas',
   CWOPS in 'CWOPS.pas',
   CqWW in 'CqWW.pas',
@@ -48,7 +49,9 @@ uses
   IaruHf in 'IaruHf.pas',
   ExchFields in 'ExchFields.pas',
   SerNRGen in 'SerNRGen.pas',
-  Lexer in 'Util\Lexer.pas';
+  Lexer in 'Util\Lexer.pas',
+  ArrlSections in 'Util\ArrlSections.pas',
+  SSExchParser in 'Util\SSExchParser.pas';
 
 {$R *.RES}
 

@@ -155,6 +155,7 @@
         <DCCReference Include="PerlRegEx\PerlRegEx.pas"/>
         <DCCReference Include="ARRL.pas"/>
         <DCCReference Include="ArrlFd.pas"/>
+        <DCCReference Include="ArrlSS.pas"/>
         <DCCReference Include="NaQp.pas"/>
         <DCCReference Include="CWOPS.pas"/>
         <DCCReference Include="CqWW.pas"/>
@@ -167,6 +168,8 @@
         <DCCReference Include="ExchFields.pas"/>
         <DCCReference Include="SerNRGen.pas"/>
         <DCCReference Include="Util\Lexer.pas"/>
+        <DCCReference Include="Util\ArrlSections.pas"/>
+        <DCCReference Include="Util\SSExchParser.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -287,6 +290,12 @@
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="MorseRunner.exe" Configuration="Release" Class="ProjectOutput"/>
+                <DeployFile LocalName="MorseRunner.exe" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>MorseRunner.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployClass Name="AdditionalDebugSymbols">
                     <Platform Name="OSX32">
                         <Operation>1</Operation>

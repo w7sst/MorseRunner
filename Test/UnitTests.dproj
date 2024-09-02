@@ -91,6 +91,12 @@
         <DCCReference Include="..\PerlRegEx\PerlRegEx.pas"/>
         <DCCReference Include="LexerTest.pas"/>
         <DCCReference Include="..\Util\Lexer.pas"/>
+        <DCCReference Include="..\Util\SSExchParser.pas"/>
+        <DCCReference Include="SSLexerTest.pas"/>
+        <DCCReference Include="..\ExchFields.pas"/>
+        <DCCReference Include="MySSExchTest.pas"/>
+        <DCCReference Include="..\Util\ArrlSections.pas"/>
+        <DCCReference Include="SSExchParserTest.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

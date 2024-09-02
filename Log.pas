@@ -47,7 +47,8 @@ procedure DebugLnExit(const AFormat: string; const AArgs: array of const) overlo
 type
   TLogError = (leNONE, leNIL,   leDUP, leCALL, leRST,
                leNAME, leCLASS, leNR,  leSEC,  leQTH,
-               leZN,   leSOC,   leST,  lePWR,  leERR);
+               leZN,   leSOC,   leST,  lePWR,  leERR,
+               lePREC, leCHK);
 
   PQso = ^TQso;
   TQso = record
@@ -55,6 +56,9 @@ type
     Call, TrueCall, RawCallsign: string;
     Rst, TrueRst: integer;
     Nr, TrueNr: integer;
+    Prec, TruePrec: string;     // SS' Precedence character
+    Check, TrueCheck: integer;  // SS' Chk (year licensed)
+    Sect, TrueSect: string;     // SS' Arrl/RAC Section
     Exch1, TrueExch1: string;   // exchange 1 (e.g. 3A, OpName)
     Exch2, TrueExch2: string;   // exchange 2 (e.g. OR, CWOPSNum)
     TrueWpm: string;            // WPM of sending DxStn (reported in log)
@@ -175,6 +179,9 @@ const
   WPX_EXCH_COL    = 'Exch,6,L';
   HST_EXCH_COL    = 'Exch,6,L';
   CQ_ZONE_COL     = 'CQ-Zone,7,L';
+  SS_PREC_COL     = 'Pr,2,C';
+  SS_CHECK_COL    = 'Chk,3,C';
+  SS_SECT_COL     = 'Sect,4,L';
 
 {$ifdef DEBUG}
   DEBUG_INDENT: Integer = 3;
@@ -249,6 +256,7 @@ end;
 
 procedure TQso.SetColumnErrorFlag(AColumnInx: integer);
 begin
+  assert((AColumnInx > -1) and (AColumnInx < 32));
   if AColumnInx <> -1 then
     ColumnErrorFlags := ColumnErrorFlags or (1 shl AColumnInx);
 end;
@@ -259,7 +267,7 @@ begin
 end;
 
 {
-  Initialize the Log Report.
+  Initialize the Call Log Report.
 
   An array of ColDefs is passed in with one entry for each column.
   Each column definition string is defined as follows:
@@ -446,6 +454,11 @@ begin
       ScoreTableInit([UTC_COL, CALL_COL, NAME_COL, SST_EXCH_COL, CORRECTIONS_COL, WPM_FARNS_COL]);
     scFieldDay:
       ScoreTableInit([UTC_COL, CALL_COL, FD_CLASS_COL, ARRL_SECT_COL, CORRECTIONS_COL, WPM_COL]);
+    scArrlSS:
+      begin
+      ScoreTableInit([UTC_COL, CALL_COL, NR_COL, SS_PREC_COL, SS_CHECK_COL, ARRL_SECT_COL, CORRECTIONS_COL, WPM_COL]);
+      SetExchColumns(2, 4, 3, 5);
+      end;
     scNaQp:
       ScoreTableInit([UTC_COL, 'Call,8,L', NAME_COL, STATE_PROV_COL, PREFIX_COL, CORRECTIONS_COL, WPM_COL]);
     scCQWW:
@@ -818,7 +831,8 @@ begin
   MainForm.WipeBoxes;
 
   //inc NR
-  if Tst.Me.SentExchTypes.Exch2 = etSerialNr then
+  if (Tst.Me.SentExchTypes.Exch1 in [etSSNrPrecedence]) or
+     (Tst.Me.SentExchTypes.Exch2 in [etSerialNr]) then
     Inc(Tst.Me.NR);
 end;
 
@@ -898,6 +912,13 @@ begin
         , format('%.3d', [Rst])
         , Exch2
         , Err, format('%3s', [TrueWpm]));
+    scArrlSS:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%4d', [NR])
+        , Prec
+        , format('%.2d', [Check])
+        , Sect
+        , Err, format('%3s', [TrueWpm]));
     else
       assert(false, 'missing case');
     end;
@@ -915,6 +936,11 @@ begin
     etRST:     if TrueRst   <> Rst   then Exch1Error := leRST;
     etOpName:  if TrueExch1 <> Exch1 then Exch1Error := leNAME;
     etFdClass: if TrueExch1 <> Exch1 then Exch1Error := leCLASS;
+    etSSNrPrecedence: begin
+      // For ARRL SS, exchange 1 tests the raw NR and Prec values
+      if TrueNR <> NR then Exch1Error := leNR;
+      if TruePrec <> Prec then Exch1ExError := lePrec;
+    end
     else
       assert(false, 'missing exchange 1 case');
   end;
@@ -922,8 +948,12 @@ begin
   case Exch1Error of
     leNONE: ;
     leRST: ACorrections.Add(Format('%d', [TrueRst]));
+    leNR: ACorrections.Add(Format('%d', [TrueNR]));
     else
       ACorrections.Add(TrueExch1);
+  end;
+  case Exch1ExError of
+    lePrec: ACorrections.Add(TruePrec);
   end;
 end;
 
@@ -985,6 +1015,10 @@ begin
       if not (TrueExch2.Equals(Exch2) or
               (Exch2.Equals('DX') and TrueExch2.IsEmpty)) then
         Exch2Error := leST;
+    etSSCheckSection: begin
+      if TrueCheck <> Check then Exch2Error := leCHK;
+      if TrueSect <> Sect then Exch2ExError := leSEC;
+    end
     else
       assert(false, 'missing exchange 2 case');
   end;
@@ -997,14 +1031,23 @@ begin
         assert(Mainform.RecvExchTypes.Exch2 = etSerialNr);
         ACorrections.Add(format('%.4d', [TrueNR]));
       end
+      else if (SimContest = scArrlSS) then
+        ACorrections.Add(TrueSect)
       else
         ACorrections.Add(TrueExch2);
+    leCHK:
+        ACorrections.Add(format('%.02d', [TrueCheck]));
     else
       ACorrections.Add(TrueExch2);
   end;
 
   case Exch2ExError of
     leNONE: ;
+    leSEC:
+      begin
+        assert(SimContest = scArrlSS);
+        ACorrections.Add(TrueSect);
+      end;
     else
       assert(false);
   end;
@@ -1016,7 +1059,8 @@ const
   ErrorStrs: array[TLogError] of string = (
     '',     'NIL', 'DUP', 'CALL', 'RST',
     'NAME', 'CL',  'NR',  'SEC',  'QTH',
-    'ZN',   'SOC', 'ST',  'PWR',  'ERR');
+    'ZN',   'SOC', 'ST',  'PWR',  'ERR',
+    'PREC', 'CHK');
 var
   Corrections: TStringList;
 begin
