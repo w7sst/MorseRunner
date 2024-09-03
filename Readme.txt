@@ -193,8 +193,9 @@ CONFIGURATION
           You will have to send your exchange again (Hit F2).
        5. "R" with their exchange.
           When you get the exchange hit enter to log it.
-          Please note that occasionally you will get "NR?" and "AGN" multiple times. Respond with
-          F2 until you get that "R" (Roger) and the exchange.
+          Please note that occasionally you will get "NR?" and "AGN" multiple times.
+          Respond with F5 then F2. This is a FULL exchange, you will get that "R" 
+          (Roger) and the exchange. Respond with F3, "TU".
 
 KEY ASSIGNMENTS
   F1               - Send CQ (sounds like seek you)
