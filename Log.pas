@@ -178,7 +178,8 @@ const
   IARU_EXCH_COL   = 'Exch,6,L';
   WPX_EXCH_COL    = 'Exch,6,L';
   HST_EXCH_COL    = 'Exch,6,L';
-  CQ_ZONE_COL     = 'CQ-Zone,7,L';
+  CQWW_RST_COL    = 'RST,4,L';
+  CQ_ZONE_COL     = 'Zone,4,L';
   SS_CALL_COL     = 'Call,9,L';
   SS_PREC_COL     = 'Pr,2.5,C';
   SS_CHECK_COL    = 'Chk,3.25,C';
@@ -465,7 +466,7 @@ begin
     scNaQp:
       ScoreTableInit([UTC_COL, 'Call,8,L', NAME_COL, STATE_PROV_COL, PREFIX_COL, CORRECTIONS_COL, WPM_COL]);
     scCQWW:
-      ScoreTableInit([UTC_COL, CALL_COL, RST_COL, CQ_ZONE_COL, CORRECTIONS_COL, WPM_COL]);
+      ScoreTableInit([UTC_COL, CALL_COL, CQWW_RST_COL, CQ_ZONE_COL, CORRECTIONS_COL, WPM_COL]);
     scArrlDx:
       ScoreTableInit([UTC_COL, CALL_COL, RST_COL, ARRLDX_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scAllJa:
@@ -893,7 +894,7 @@ begin
     scCQWW:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
-        , format('%4d', [NR])
+        , format('%.2d', [Exch2.ToInteger])
         , Err, format('%3s', [TrueWpm]));
     scArrlDx:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
@@ -966,14 +967,20 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
   // Reduce Power characters (T, O, A, N) to (0, 0, 1, 9) respectively.
   function ReducePowerStr(const text: string): string;
   begin
-    assert(Mainform.RecvExchTypes.Exch2 = etPower);
+    assert(Mainform.RecvExchTypes.Exch2 in [etPower, etCqZone]);
     Result := text.Replace('T', '0', [rfReplaceAll])
                   .Replace('O', '0', [rfReplaceAll])
                   .Replace('A', '1', [rfReplaceAll])
                   .Replace('N', '9', [rfReplaceAll]);
   end;
 
-begin
+  // Reduce numeric characters (T, O, A, N) to (0, 0, 1, 9) respectively.
+  function ReduceNumeric(const text: string): integer;
+  begin
+    Result := StrToIntDef(ReducePowerStr(text), 0);
+  end;
+
+  begin
   Exch2Error := leNONE;
   Exch2ExError := leNONE;
 
@@ -1003,7 +1010,10 @@ begin
           if TrueExch2 <> Exch2 then
             Exch2Error := leERR;
       end;
-    etCqZone:      if TrueNr    <> NR    then Exch2Error := leZN;
+    etCqZone:
+      // use ReducePowerStr to reduce (T, O, A, N) to (0, 0, 1, 9) respectively
+      if ReduceNumeric(TrueExch2) <> ReduceNumeric(Exch2) then
+        Exch2Error := leZN;
     etArrlSection: if TrueExch2 <> Exch2 then Exch2Error := leSEC;
     etStateProv:   if TrueExch2 <> Exch2 then Exch2Error := leST;
     etItuZone:     if TrueExch2 <> Exch2 then Exch2Error := leZN;

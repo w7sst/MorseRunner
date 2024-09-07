@@ -603,7 +603,7 @@ end;
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
   case RecvExchTypes.Exch2 of
-    etSerialNr, etCqZone, etItuZone, etAge:
+    etSerialNr, etItuZone, etAge:
       begin
         if RunMode <> rmHst then
           case Key of
@@ -612,6 +612,19 @@ begin
             't', 'T': Key := '0';
           end;
         // valid Zone or NR field characters...
+        if not CharInSet(Key, ['0'..'9', #8]) then
+          Key := #0;
+      end;
+    etCqZone:
+      begin
+        if RunMode <> rmHst then
+          case Key of
+            'a', 'A': Key := '1';
+            'n', 'N': Key := '9';
+            'o', 'O': Key := '0';
+            't', 'T': Key := '0';
+          end;
+        // valid CQ-Zone field characters...
         if not CharInSet(Key, ['0'..'9', #8]) then
           Key := #0;
       end;
@@ -1451,8 +1464,8 @@ begin
     etCqZone:
       begin
         Ini.UserExchange2[SimContest] := Avalue;
-        Tst.Me.Nr := StrToInt(Avalue);
-        if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue;  // testing only
       end;
     etItuZone:
       begin
