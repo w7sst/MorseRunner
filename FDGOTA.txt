@@ -2,12 +2,15 @@
 !!Order!!,Call,Exch1,Sect,UserText
 # FD
 # FDGOTA
-# Last Edit,2023-06-23 
-# Original file from Mike W1MI 2023-05-17
-# Cleaned and converted to 2023 RAC sections by Bjorn SM7IUN
+# Last Edit,2024-06-21 
+# Original file from Mike W1MI 
+# 
 # Send new info/corrections  DIRECT  ve2fk@arrl.net
 # FDGOTA is the new name/callhistory for both FD and FDGOTA.
-7L4IOU,1D,DX,
+# Thanks Bjorn SM7IUN for his help
+# Could not get 2023 FD results from ARRL to update, so we will
+# use 2023 file with update from users.
+
 AA0AC,1D,MN,Spirit Valley Amateurs
 AA0AJ,1D,MN,
 AA0AW,1D,MN,
@@ -1057,6 +1060,7 @@ K0DZX,1D,KS,
 K0EHR,1B,CO,
 K0EMT,1E,IN,Mid-MO ARC
 K0EOR,3A,MO,Eastern Ozarks ARC
+K0ETY,2A,MO,Mid-MO ARC (GOTA)
 K0EU,1B,CO,
 K0FE,1D,SC,Greer ARC
 K0FJ,1D,KS,Trojan ARC
@@ -1473,6 +1477,7 @@ K2HJ,1D,WNY,
 K2HT,1E,MO,
 K2HYD,1B,VA,Valley and Massanutten ARA
 K2I,4A,NNY,Thousand Islands Radio Club
+K2IN,2A,NNJ,444 DX Grp.
 K2IQ,2A,WNY,Utica ARC
 K2IW,1A,ENY,
 K2IWR,3A,WNY,Skyline ARC
@@ -1552,7 +1557,7 @@ K2SAQ,1E,NTX,
 K2SCH,1E,NNJ,Morris RC/Hanover TWP OEM
 K2SD,1D,NC,Watauga ARC
 K2SE,1D,SNJ,Gloucester County ARC
-K2SG,1D,SNJ,Old Barney ARC
+K2SG,1D,NFL,Florida Contest Group
 K2SH,1B,WNY,QRP Soc. of Western NY
 K2SI,1D,WNY,Rochester (NY) DX Assn
 K2SQS,1E,SNJ,Burlington County RC
@@ -1666,7 +1671,7 @@ K3HKI,2A,MDC,St. Mary's Co. ARA
 K3HMA,3A,MDC,Easton ARS
 K3IDE,2D,NC,
 K3IEC,3A,EPA,Cumberland ARC
-K3II,2A,EPA,Berger's Bandits Contest Club
+K3II,1B,EPA,Berger's Bandits Contest Club
 K3III,1B,WV,Signal Hill ARC
 K3ILC,1D,CO,Pikes Peak Radio Amateur Assn
 K3IMC,1D,GA,LaGrange ARC
@@ -4312,7 +4317,7 @@ KC7IVJ,1E,WWA,Wahkiakum County ARC
 KC7JLM,1D,WWA,Issaquah ARC
 KC7JM,1D,WWA,Stanwood Camano ARC
 KC7JPC,1E,EWA,
-KC7KFF,1D,NC,Milky Way Wireless Club
+KC7KFF,1E,AZ,Milky Way Wireless Club
 KC7KMP,1D,AZ,MARCA
 KC7KNY,1D,OR,
 KC7KPG,1D,NM,
@@ -7057,7 +7062,7 @@ KW0LF,8A,IN,(W9UUU GOTA) Wabash Valley ARA
 KW0MPS,1D,MN,
 KW0RM,1D,MI,Blossomland ARA 
 KW1HF,1D,OR,
-KW20,2A,NLI,Order of Boiled Owls of NY and Radio Central ARC
+KW2O,2A,NLI,Order of Boiled Owls of NY and Radio Central ARC
 KW2A,1D,MDC,
 KW2P,1D,WV,
 KW2T,1E,WMA,Nashoba Valley ARC
@@ -7169,7 +7174,7 @@ KY4WIN,1D,KY,
 KY4X,2A,KY,Mammoth Cave ARC
 KY5M,1D,NTX,Johnson County ARC
 KY6M,1D,SB,
-KY7M,1E,AZ,
+KY7M,1B,CO,
 KY9I,1B,KY,Paducah ARA
 KZ0FOX,1D,NTX,McKinney ARC
 KZ1G,2B,UT,South Valley Radio Guys
@@ -7983,6 +7988,7 @@ N4EWF,1D,AL,
 N4EWT,1D,GA,Alford Memorial RC
 N4F,3F,NFL,Citrus Co. ARC and ARES
 N4FA,1E,SFL,
+N4FL,3A,SFL,
 N4FLA,5A,NFL,(K4FC GOTA) Lake ARA
 N4FLB,1E,AL,Montgomery ARC
 N4FP,1E,NFL,Silver Springs RC
@@ -8091,7 +8097,7 @@ N4PRS,1D,NC,Pamlico ARS
 N4PSS,1A,VA,(AA4WC GOTA) Warren Co. EmComm Group
 N4PVH,1E,NC,Brightleaf ARC
 N4PWG,1D,TN,Reelfoot ARC
-N4PX,3A,TN,Hardin and McNairy ARC
+N4PX,2A,TN,Hardin and McNairy ARC
 N4PY,1D,NC,Mila's Field Day Group
 N4QEP,1D,NFL,Santa Rosa Co. ARES
 N4QET,1B,NC,Etowah Valley ARC
@@ -8657,7 +8663,7 @@ N7WAH,2A,WWA,Wahkiakum Co. ARC
 N7WFK,1D,OK,South Canadian ARS
 N7WLC,1E,SB,Ventura County ARS
 N7WS,1D,AZ,
-N7WY,1B,WY,
+N7WY,1D,WY,
 N7XCZ,2D,NV,
 N7XE,2D,WWA,Microhams ARC
 N7XLD,1D,WWA,
@@ -8679,7 +8685,7 @@ N8AJM,1E,MI,
 N8ARA,5A,OH,Newark ARA
 N8AUC,1E,OH,Lorain County ARA
 N8AWW,1D,MI,
-N8BC,5A,OH,Lake Co. ARA
+N8BC,6A,OH,Lake Co. ARA
 N8BI,2D,OH,Portage Co. Amateur Radio Service
 N8BJQ,1D,OH,Deep Dixie Contest Club
 N8BL,1D,WV,
@@ -9977,7 +9983,7 @@ VE2TFX,1B,QC,
 VE2THQ,1B,QC,
 VE2TSM,1D,QC,
 VE2TSX,1D,QC,Club Sation Répétitrice de Laval
-VE2UMS,1A,QC,Union Metropolitaine des Sans-filistes de Montreal
+VE2UMS,2A,QC,Union Metropolitaine des Sans-filistes de Montreal
 VE2VIA,2B,QC,
 VE2WNF,1D,QC,Union Metropolitaine des Sans-filistes de Montreal
 VE2WPL,1D,QC,Club Radio Amateur de Quebec
@@ -10454,6 +10460,7 @@ VE7VIE,1B,BC,
 VE7VYZ,1D,BC,Nanaimo ARA
 VE7WBM,1B,BC,North Okanagan RAC
 VE7WJ,1D,BC,Coquitlam ARC
+VE7WO,1D,BC,
 VE7XBP,1E,BC,
 VE7XF,1D,BC,Comox Valley ARC
 VE7XFA,1D,BC,Comox Valley ARC
@@ -10498,7 +10505,7 @@ W0AAE,1D,WMA,
 W0ADL,1D,MN,Anoka Co. Radio Club
 W0AH,1D,WI,Wisconsin ARC
 W0AJ,1D,MO,Raytown ARC
-W0AK,3A,IA,Des Moines Radio Amateurs Assn.
+W0AK,5E,IA,Des Moines Radio Amateurs Assn.
 W0ALX,3A,MN,Runestone ARC
 W0AMR,1D,CO,
 W0AMT,1B,NM,
@@ -10530,6 +10537,7 @@ W0CN,1D,VA,W3AO Team
 W0CO,1B,CO,
 W0COE,1D,MN,Mining ARC/St. Paul (MN) Radio Club
 W0CP,1D,CO,High Desert Wireless
+W0CPH,5A,CO,Colorado Party Hams
 W0CQC,2A,CO,Colorado QRP Club
 W0CW,1D,MO,Carbon Co. DXCC
 W0CWO,1B,MN,Minnesota Wireless Assn
@@ -10598,6 +10606,7 @@ W0JV,3A,IA,Iowa City ARC
 W0JW,1D,IA,Warren ARS
 W0JWT,1D,MO,Raytown ARC
 W0KAH,1E,MO,St Charles ARC
+W0KCK,2A,KS,Wyandotte CTY Emergenry
 W0KD,1D,LA,Shreveport ARA 
 W0KI,1E,CO,
 W0KKI,1B,CO,Longmont ARC
@@ -10930,7 +10939,7 @@ W1SKU,1D,MI,Oakland Co. ARS
 W1SMH,2A,EMA,Sturdy Memorial Hospital ARC
 W1SR,1D,AZ,Oro Valley ARC
 W1SRD,1D,SV,El Dorado County ARC
-W1SRG,2D,EMA,Southborough Rod & Gun ARC
+W1SRG,4A,WMA,Southborough Rod & Gun ARC
 W1STR,3A,EMA,Sci-Tech ARS
 W1SYE,2A,RI,Newport Co. Radio Club
 W1TBM,1D,MO,Eastern Ozarks ARC
@@ -11042,7 +11051,7 @@ W2GJF,1D,ENY,
 W2GM,1B,WNY,Morris RC/Hanover TWP OEM
 W2GPS,1D,MDC,W3AO Team
 W2GSA,3A,NNJ,Garden State ARA
-W2GSB,6F,NLI,Great South Bay ARC
+W2GSB,3F,NLI,Great South Bay ARC
 W2HCB,1E,NLI,Great South Bay ARC
 W2HO,5A,ENY,Orange Co. (NY) ARC
 W2HY,1D,ENY,Yonkers ARC
@@ -11147,6 +11156,7 @@ W2TCR,1D,SNJ,Old Barney ARC
 W2TE,1E,NLI,Great South Bay ARC
 W2TI,1D,ENY,
 W2TM,1B,ID,
+W2TOB,3F,NLI,Great South Bay ARC
 W2TQ,1D,NNJ,Cherryville Repeater Assn. II
 W2TT,1E,CT,Old Barney ARC
 W2TZ,1D,WNY,Rochester (NY) DX Assn.
@@ -11188,6 +11198,7 @@ W3AA,6A,EPA,(W3EM GOTA) Philmont Mobile Radio Club
 W3AAC,2F,MDC,Anne Arundel Co. ARES
 W3ACH,4A,WPA,Cumberland Valley ARC
 W3ACO,1D,IA,Iowa City ARC
+W3AD,2A,EPA,Lancaster Radio Transmitting Society
 W3ADP,1E,MDC,Montgomery ARC/Damascus ECT
 W3AEC,3F,EPA,ARES of Delaware Co.
 W3AF,1D,VA,Southern Peninsula Amateur Radio Klub
@@ -11195,7 +11206,7 @@ W3AI,4A,EPA,RF Hill ARC
 W3AKD,1E,ME,Ellsworth Amateur Wireless Assn.
 W3AND,1B,EPA,
 W3ANX,1E,WPA,Skyview Radio Soc.
-W3AO,11A,MDC,Potomac Valley Radio Club
+W3AO,13A,MDC,Potomac Valley Radio Club
 W3ARO,4A,EPA,Wayne Co. ARC
 W3ATB,1B,NH,
 W3AVP,1D,EPA,East Coast Kerchunkers
@@ -11216,7 +11227,7 @@ W3CEB,1D,MDC,
 W3CF,1E,NFL,
 W3CG,1D,WPA,Union City Wireless Assn.
 W3CHB,1D,MDC,Columbia (MD) ARA
-W3CQ,2A,VA,(K4CQ GOTA) Lynchburg ARC
+W3CQ,3A,VA,(K4CQ GOTA) Lynchburg ARC
 W3CRZ,1E,OH,CRES ARC
 W3CSL,3A,WPA,Monessen ARC
 W3CU,2A,MDC,Maryland Mobileers ARC
@@ -11339,7 +11350,7 @@ W3RGA,1D,EPA,Frankford Radio Club
 W3RLO,1D,DE,
 W3RMS,1E,EPA,Hilltop Transmitting Assn.
 W3RN,5F,EPA,(N3EP GOTA) Endless Mountains ARC
-W3RRR,6A,EPA,Red Rose Repeater Assn.
+W3RRR,4A,EPA,Red Rose Repeater Assn.
 W3RSH,1B,EPA,Southern Pennsylvania ARC
 W3RWB,1D,VA,Lynchburg ARC
 W3RWN,1D,WWA,Highline ARC
@@ -11375,7 +11386,7 @@ W3USA,1A,OH,Not Case ARC
 W3USN,1D,MDC,Maryland Mobileers ARC
 W3UU,3A,EPA,Harrisburg Radio Amateurs Club
 W3VC,4A,WPA,Carnegie Tech Radio Club
-W3VPJ,2A,EPA,Susquehanna Valley ARC
+W3VPJ,3A,EPA,Susquehanna Valley ARC
 W3VPR,6A,MDC,Anne Arundel Radio Club
 W3VV,6A,WPA,McKean Co. ARC
 W3VVV,1D,MDC,Montgomery ARC/Damascus ECT
@@ -11657,6 +11668,7 @@ W4NJA,3A,KY,Paducah ARA
 W4NLT,1E,VA,
 W4NMH,1E,VA,Radio Amateur Soc Of Norfolk
 W4NNK,2F,VA,Rappahannock ARA
+W4NO,1D,NFL,NSS DX Group
 W4NPS,2A,VA,Radio Amatuer Society of Norfolk
 W4NTO,1D,SC,Spartanburg ARC
 W4NWB,1D,SC,
@@ -12355,7 +12367,7 @@ W7BOI,2A,ID,(N7LGN GOTA) American Legion Post 113 ARC
 W7BRR,1D,WWA,Olympia ARS
 W7BU,4A,OR,Sunset Empire ARC
 W7BV,1D,AZ,Tortolita RC
-W7C,3A,AZ,Hassayampa Amateur Radio Klub
+W7C,1A,WY,
 W7CAL,1D,NV,
 W7CBC,1D,WWA,
 W7CD,2A,WWA,Kitsap Co. DX Club
