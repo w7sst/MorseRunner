@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 238
   Top = 115
-  BorderIcons = [biSystemMenu]
+  BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Morse Runner'
   ClientHeight = 506
