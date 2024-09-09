@@ -2,8 +2,8 @@
                               Contest Simulator
                                   freeware
 
-                Version 1.84 - IARU HF World Championship Contest
-            The fifth release of the Morse Runner Community Edition
+                Version 1.85 - ARRL Sweepstakes Contest
+            The sixth release of the Morse Runner Community Edition
 
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
                       http://www.dxatlas.com/MorseRunner/
@@ -75,7 +75,6 @@ CONFIGURATION
             make mistakes when they send code, copy your messages incorrectly,
             and send RST other than 599. They might even ask for info over and
             over.
-
      Activity - band activity, determines how many stations on average
                 reply to your CQ.
 
@@ -91,10 +90,10 @@ CONFIGURATION
       To start a Competition, select either the WPX and HST competitions found
       in the run drop down. Many settings are locked for the competitions but
       The keying speed and activity are still under your control.
-      
+
       WPX Competition mode forces all Band Conditions (QRM, QRN, QRB, Flutter, LIDs).
       HST Competition mode settings conform to the IARU High Speed Telegraphy
-      competition rules and forces off all Band Conditions 
+      competition rules and forces off all Band Conditions
       (QRM, QRN, QRB, Flutter, LIDs).
 
       The default duration of a competition session is 60 minutes. You can
@@ -193,8 +192,9 @@ CONFIGURATION
           You will have to send your exchange again (Hit F2).
        5. "R" with their exchange.
           When you get the exchange hit enter to log it.
-          Please note that occasionally you will get "NR?" and "AGN" multiple times. Respond with
-          F2 until you get that "R" (Roger) and the exchange.
+          Please note that occasionally you will get "NR?" and "AGN" multiple times.
+          Respond with F5 then F2. This is a FULL exchange, you will get that "R"
+          (Roger) and the exchange. Respond with F3, "TU".
 
 KEY ASSIGNMENTS
   F1               - Send CQ (sounds like seek you)
@@ -296,6 +296,26 @@ SUBMITTING YOUR SCORE
   File -> View Score menu command.
 
 VERSION HISTORY
+
+Version 1.85 (September 2024)
+  - Add ARRL Sweepstakes Contest (W7SST)
+
+  Contest-specific improvements...
+  - Correct the call history file for the JARL ALL JA contest (JR8PPG)
+  - HST Contest - show Score column for all run modes (W7SST)
+  - CQWW - Allow cut numbers to sent and entered into log (W7SST)
+  - NCJ NAQP - update call history file
+  - ARRL FD - update call history file
+  - IARU HF - update call history file
+
+  General bug fixes and improvements...
+  - Replace Check column with corrected exchange information (errors are shown in Red) (W7SST)
+  - Fix caller ghosting where stations would disappear from QSO (W7SST)
+  - Fix problem where ghosted calls are not added to log (W7SST)
+  - Improve handling of partial callsign matches (W7SST)
+  - Improve QSO exchanges for partially-correct callsigns (W7SST)
+  - Improve QSO exchange error reporting via status bar (W7SST)
+  - Add application Minimize button (W7SST)
 
 Version 1.84 (March 2024)
   - Add IARU HF World Championship Contest (W7SST)
@@ -468,6 +488,56 @@ CONTEST INFORMATION
     E: Home stations using emergency power
     F: Emergency Operation Centers
     Rules: https://contests.arrl.org/ContestRules/Field-Day-Rules.pdf
+
+    ARRL Sweepstakes
+    When: First full weekend in November
+    How: Stations in US/Canada exchange information with other US/Canada stations.
+    Exchange: <serial number> <Precedence> <Callsign> <Check> <Section>
+    where:
+      Serial number: sequential serial number for each contact
+      Precedence: A, B, Q, M, S, U
+      Callsign: your call sign
+      Check: last two digits of the year the operator or station was first licenced
+      Section: ARRL/RAC Section
+      for example: "123 A 72 OR"
+    Rules: https://contests.arrl.org/ContestRules/SS-Rules.pdf
+    Entering your Exchange:
+    - This contest uses a single field to enter the four parts of the SS-Rules
+      exchange. The exchange parts can be entered in any order as long as the
+      'numeric part' is followed by its corresponding 'character part.'
+    - For example, the two exchange parts can be entered in either order:
+        a) "123 A 72 OR"
+        b) "72 OR 123 A"
+    - If a correction needs to be made, just type it at the end. For example,
+      while copying you realize a mistake (123 should be 124). In this case,
+      simply type the correction at the end:
+        "123 A 72 OR  124 A"
+      This allows corrections to be made while you are copying the exchange
+      without using any arrow, delete or backspace keys.
+    - The spaces between the numeric and characters parts are optional.
+      The following are equivalent:
+        "123 A 72 OR"
+        "123A 72OR"
+        "72 OR 123 A"
+        "72OR 123A"
+    - Callsigns corrections can be optionally entered into the Exchange field.
+      If the caller sends a corrected callsign, you can enter the updated call
+      anywhere in the exchange field without changing focus to the original
+      callsign entry field.  For example, entering "W1AW 123 A 38 CT" will
+      update the callsign when storing the QSO into the log.
+    - For added realism, the simulation will populate the exchange field
+      with the Check and Section entries for the entered callsign. This
+      behavior matches current N1MM behavior. In addition, the simulation will
+      occasionally modify the Section to simulate when an operator is operating
+      from a different location.
+
+      By default, the Check/Section value will be pre-populated in the Exchange
+      field about 50% of the time. This behavior can be adjusted between 0% and
+      100% by setting the following keyword in the MorseRunner.ini file:
+        [Settings]
+        ShowCheckSection=50
+      Valid values range between 0 and 100, representing 0% and 100%.
+      Note that a zero value will disable this feature.
 
     CQ WPX
     When: Last weekend in May
