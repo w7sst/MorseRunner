@@ -193,9 +193,8 @@ CONFIGURATION
           You will have to send your exchange again (Hit F2).
        5. "R" with their exchange.
           When you get the exchange hit enter to log it.
-          Please note that occasionally you will get "NR?" and "AGN" multiple times.
-          Respond with F5 then F2. This is a FULL exchange, you will get that "R" 
-          (Roger) and the exchange. Respond with F3, "TU".
+          Please note that occasionally you will get "NR?" and "AGN" multiple times. Respond with
+          F2 until you get that "R" (Roger) and the exchange.
 
 KEY ASSIGNMENTS
   F1               - Send CQ (sounds like seek you)
@@ -469,56 +468,6 @@ CONTEST INFORMATION
     E: Home stations using emergency power
     F: Emergency Operation Centers
     Rules: https://contests.arrl.org/ContestRules/Field-Day-Rules.pdf
-
-    ARRL Sweepstakes
-    When: First full weekend in November
-    How: Stations in US/Canada exchange information with other US/Canada stations.
-    Exchange: <serial number> <Precedence> <Callsign> <Check> <Section>
-    where:
-      Serial number: sequential serial number for each contact
-      Precedence: A, B, Q, M, S, U
-      Callsign: your call sign
-      Check: last two digits of the year the operator or station was first licenced
-      Section: ARRL/RAC Section
-      for example: "123 A 72 OR"
-    Rules: https://contests.arrl.org/ContestRules/SS-Rules.pdf
-    Entering your Exchange:
-    - This contest uses a single field to enter the four parts of the SS-Rules
-      exchange. The exchange parts can be entered in any order as long as the
-      'numeric part' is followed by its corresponding 'character part.'
-    - For example, the two exchange parts can be entered in either order:
-        a) "123 A 72 OR"
-        b) "72 OR 123 A"
-    - If a correction needs to be made, just type it at the end. For example,
-      while copying you realize a mistake (123 should be 124). In this case,
-      simply type the correction at the end:
-        "123 A 72 OR  124 A"
-      This allows corrections to be made while you are copying the exchange
-      without using any arrow, delete or backspace keys.
-    - The spaces between the numeric and characters parts are optional.
-      The following are equivalent:
-        "123 A 72 OR"
-        "123A 72OR"
-        "72 OR 123 A"
-        "72OR 123A"
-    - Callsigns corrections can be optionally entered into the Exchange field.
-      If the caller sends a corrected callsign, you can enter the updated call
-      anywhere in the exchange field without changing focus to the original
-      callsign entry field.  For example, entering "W1AW 123 A 38 CT" will
-      update the callsign when storing the QSO into the log.
-    - For added realism, the simulation will populate the exchange field
-      with the Check and Section entries for the entered callsign. This
-      behavior matches current N1MM behavior. In addition, the simulation will
-      occasionally modify the Section to simulate when an operator is operating
-      from a different location.
-
-      By default, the Check/Section value will be pre-populated in the Exchange
-      field about 50% of the time. This behavior can be adjusted between 0% and
-      100% by setting the following keyword in the MorseRunner.ini file:
-        [Settings]
-        ShowCheckSection=50
-      Valid values range between 0 and 100, representing 0% and 100%.
-      Note that a zero value will disable this feature.
 
     CQ WPX
     When: Last weekend in May
