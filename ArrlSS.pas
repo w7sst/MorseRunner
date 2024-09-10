@@ -66,7 +66,7 @@ uses
   PerlRegEx,      // for regular expression support
   Ini,            // for ActiveContest
   ArrlSections,   // SectionsTbl
-  ARRL;
+  DXCC;
 
 function TSweepstakes.LoadCallHistory(const AUserCallsign : string) : boolean;
 const

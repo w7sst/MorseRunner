@@ -4,7 +4,7 @@
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Console</AppType>
@@ -89,13 +89,13 @@
         </DelphiCompile>
         <DCCReference Include="..\PerlRegEx\pcre.pas"/>
         <DCCReference Include="..\PerlRegEx\PerlRegEx.pas"/>
-        <DCCReference Include="LexerTest.pas"/>
         <DCCReference Include="..\Util\Lexer.pas"/>
         <DCCReference Include="..\Util\SSExchParser.pas"/>
-        <DCCReference Include="SSLexerTest.pas"/>
         <DCCReference Include="..\ExchFields.pas"/>
-        <DCCReference Include="MySSExchTest.pas"/>
         <DCCReference Include="..\Util\ArrlSections.pas"/>
+        <DCCReference Include="LexerTest.pas"/>
+        <DCCReference Include="SSLexerTest.pas"/>
+        <DCCReference Include="MySSExchTest.pas"/>
         <DCCReference Include="SSExchParserTest.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
