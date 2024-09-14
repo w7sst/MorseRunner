@@ -276,6 +276,9 @@ begin
   Qso.Check := StrToIntDef(ExchValidator.Check, 0);
   Qso.Sect := ExchValidator.Section;
 
+  if Qso.Prec.IsEmpty then Qso.Prec := '?';
+  if Qso.Sect.IsEmpty then Qso.Sect := '?';
+
   if not ExchValidator.Call.IsEmpty then
     Qso.Call := ExchValidator.Call;
 

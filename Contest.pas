@@ -562,6 +562,9 @@ begin
       else
         assert(false, 'missing case');
     end;
+
+  if Qso.Exch1.IsEmpty then Qso.Exch1 := '?';
+  if Qso.Exch2.IsEmpty then Qso.Exch2 := '?';
 end;
 
 
