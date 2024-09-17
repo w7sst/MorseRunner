@@ -534,7 +534,7 @@ begin
     // Adding a contest: save contest-specific exchange values into QsoList
     //save Exchange 1 (Edit2)
     case Mainform.RecvExchTypes.Exch1 of
-      etRST:     Qso.Rst := StrToInt(AExch1);
+      etRST:     Qso.Rst := StrToIntDef(AExch1, 0);
       etOpName:  Qso.Exch1 := AExch1;
       etFdClass: Qso.Exch1 := AExch1;
       else
@@ -543,7 +543,7 @@ begin
 
     //save Exchange2 (Edit3)
     case Mainform.RecvExchTypes.Exch2 of
-      etSerialNr:    Qso.Nr := StrToInt(AExch2);
+      etSerialNr:    Qso.Nr := StrToIntDef(AExch2, 0);
       etGenericField:Qso.Exch2 := AExch2;
       etArrlSection: Qso.Exch2 := AExch2;
       etStateProv:   Qso.Exch2 := AExch2;
