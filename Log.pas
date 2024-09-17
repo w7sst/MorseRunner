@@ -8,7 +8,8 @@ unit Log;
 interface
 
 uses
-  Classes, Controls, ExtCtrls;
+  System.UITypes,     // TColor
+  Classes, ExtCtrls;
 
 procedure SaveQso;
 procedure LastQsoToScreen;
@@ -26,6 +27,7 @@ procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6: strin
 procedure ScoreTableUpdateCheck;
 function FormatScore(const AScore: integer):string;
 procedure UpdateSbar(const ACallsign: string);
+procedure DisplayError(const AExchError: string; const AColor: TColor);
 function ExtractCallsign(Call: string): string;
 function ExtractPrefix(Call: string; DeleteTrailingLetters: boolean = True): string;
 {$ifdef DEBUG}
@@ -139,6 +141,7 @@ uses
   Windows, SysUtils, RndFunc, Math,
   Graphics,     // for TColor
   ExchFields,   // for exchange field types
+  Controls,
   StdCtrls, PerlRegEx, StrUtils,
   Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
 
@@ -415,6 +418,20 @@ begin
     Mainform.sbar.Caption := LeftStr(Mainform.sbar.Caption, 40) + ' -- ' + s
   else
     MainForm.sbar.Caption := '  ' + s;
+end;
+
+
+procedure DisplayError(const AExchError: string; const AColor: TColor);
+begin
+  if AExchError.IsEmpty then Exit;
+
+  Mainform.sbar.Font.Color := AColor;
+  if (BDebugCwDecoder or BDebugGhosting) then
+    Mainform.sbar.Caption := LeftStr(Mainform.sbar.Caption, 40) + ' -- ' + AExchError
+  else
+    Mainform.sbar.Caption := AExchError;
+  Mainform.sbar.Align:= alBottom;
+  Mainform.sbar.Visible:= true;
 end;
 
 
@@ -763,13 +780,7 @@ begin
       not Tst.ValidateEnteredExchange(Call, Edit2.Text, Edit3.Text, ExchError) then
       begin
         {Beep;}
-        if not ExchError.IsEmpty then
-          begin
-            sbar.Caption := ExchError;
-            sbar.Align:= alBottom;
-            sbar.Visible:= true;
-            sbar.Font.Color := clRed;
-          end;
+        DisplayError(ExchError, clRed);
         Exit;
       end;
 

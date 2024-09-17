@@ -954,13 +954,7 @@ begin
     // validate Exchange before sending TU and logging the QSO
     if not Tst.ValidateEnteredExchange(Edit1.Text, Edit2.Text, Edit3.Text, ExchError) then
       begin
-        if not ExchError.IsEmpty then
-          begin
-            sbar.Caption := ExchError;
-            sbar.Align:= alBottom;
-            sbar.Visible:= true;
-            sbar.Font.Color := clRed;
-          end;
+        DisplayError(ExchError, clRed);
         Exit;
       end;
 
@@ -1146,11 +1140,7 @@ begin
     if not Tst.ValidateMyExchange(AExchange, sl, ExchError) then
       begin
         Result := False;
-        sbar.Caption := ExchError;
-
-        sbar.Align:= alBottom;
-        sbar.Visible:= true;
-        sbar.Font.Color := clRed;
+        DisplayError(ExchError, clRed);
 
         // update the Sent Exchange field value
         ExchangeEdit.Text := AExchange;
