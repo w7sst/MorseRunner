@@ -69,7 +69,8 @@ type
     function GetExchangeTypes(
       const AStationKind : TStationKind;
       const ARequestedMsgType : TRequestedMsgType;
-      const AStationCallsign : string) : TExchTypes; virtual;
+      const AStationCallsign : String;
+      const ARemoteCallsign : String) : TExchTypes; virtual;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
     procedure OnWipeBoxes; virtual;
@@ -357,7 +358,7 @@ function TContest.GetSentExchTypes(
   const AStationKind : TStationKind;
   const AMyCallsign : string) : TExchTypes;
 begin
-  Result:= Self.GetExchangeTypes(AStationKind, mtSendMsg, AMyCallsign);
+  Result:= Self.GetExchangeTypes(AStationKind, mtSendMsg, AMyCallsign, '');
 end;
 
 
@@ -372,16 +373,17 @@ function TContest.GetRecvExchTypes(
   const ADxCallsign : string) : TExchTypes;
 begin
   if AStationKind = skMyStation then
-    Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, AMyCallsign)
+    Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, AMyCallsign, ADxCallsign)
   else
-    Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, ADxCallsign);
+    Result:= Self.GetExchangeTypes(AStationKind, mtRecvMsg, ADxCallsign, AMyCallsign);
 end;
 
 
 function TContest.GetExchangeTypes(
   const AStationKind : TStationKind;
   const ARequestedMsgType : TRequestedMsgType;
-  const AStationCallsign : string) : TExchTypes;
+  const AStationCallsign : String;
+  const ARemoteCallsign : String) : TExchTypes;
 begin
   Result.Exch1 := ActiveContest.ExchType1;
   Result.Exch2 := ActiveContest.ExchType2;
@@ -443,6 +445,7 @@ end;
 }
 procedure TContest.OnWipeBoxes;
 begin
+  Me.HisCall := '';
   Log.NrSent := False;
   Log.DisplayError('', clDefault);
 end;
@@ -618,7 +621,8 @@ begin
     end;
 
   if Qso.Exch1.IsEmpty then Qso.Exch1 := '?';
-  if Qso.Exch2.IsEmpty then Qso.Exch2 := '?';
+  if Qso.Exch2.IsEmpty and (Mainform.RecvExchTypes.Exch2 <> etNaQpNonNaExch2) then
+    Qso.Exch2 := '?';
 end;
 
 
