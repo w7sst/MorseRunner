@@ -72,6 +72,11 @@ type
       const AStationCallsign : string) : TExchTypes; virtual;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
+    procedure OnWipeBoxes; virtual;
+    function OnExchangeEdit(const ACall, AExch1, AExch2: string;
+       out AExchSummary: string) : Boolean; virtual;
+    procedure OnExchangeEditComplete; virtual;
+    procedure SetHisCall(const ACall: string); virtual;
 
     function CheckEnteredCallLength(const ACall: string;
       out AExchError: String) : boolean; virtual;
@@ -429,6 +434,54 @@ end;
 procedure TContest.SendText(const AStn: TStation; const AMsg: string);
 begin
   AStn.SendText(AMsg);  // virtual
+end;
+
+
+{
+  Called at end of each QSO or by user's Cntl-W (Wipe Boxes) keystroke.
+}
+procedure TContest.OnWipeBoxes;
+begin
+  Log.CallSent := False;
+  Log.NrSent := False;
+end;
+
+
+{
+  Called after each keystroke of the Exch2 field (Edit3).
+}
+function TContest.OnExchangeEdit(const ACall, AExch1, AExch2: string;
+  out AExchSummary: string) : Boolean;
+begin
+  AExchSummary := '';
+  Result := False;
+end;
+
+
+{
+  Called at the start of each action/command after user has finished typing
+  in the Exchange fields. Can be overriden as needed for complex exchange
+  behaviors (e.g. ARRL SS).
+}
+procedure TContest.OnExchangeEditComplete;
+begin
+  Log.CallSent := (Mainform.Edit1.Text <> '') and
+    (Mainform.Edit1.Text = Self.Me.HisCall);
+end;
+
+
+{
+  SetHisCall will:
+  - sets TContest.Me.HisCall to the supplied callsign, ACall.
+  - sets Log.CallSent to False if the callsign should be sent.
+
+  Override as needed to provide more complex callsign behaviors (e.g. ARRL
+  Sweepstakes allows callsign corrections in the exchange).
+}
+procedure TContest.SetHisCall(const ACall: string);
+begin
+  Self.Me.HisCall := ACall;
+  Log.CallSent := ACall <> '';
 end;
 
 

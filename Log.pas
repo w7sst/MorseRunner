@@ -184,7 +184,7 @@ const
   CQWW_RST_COL    = 'RST,4,L';
   CQ_ZONE_COL     = 'Zone,4,L';
   SS_CALL_COL     = 'Call,9,L';
-  SS_PREC_COL     = 'Pr,2.5,C';
+  SS_PREC_COL     = 'Pr,2.5,L';
   SS_CHECK_COL    = 'Chk,3.25,C';
 
 {$ifdef DEBUG}

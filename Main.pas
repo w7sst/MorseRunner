@@ -314,6 +314,7 @@ type
     procedure Edit4Exit(Sender: TObject);
     procedure SpinEdit1Exit(Sender: TObject);
     procedure Edit3Enter(Sender: TObject);
+    procedure Edit3KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     MustAdvance: boolean;       // Controls when Exchange fields advance
@@ -528,9 +529,10 @@ begin
     SpinEdit1Exit(SpinEdit1);
 
   if AMsg = msgHisCall then begin
-    // retain current callsign, including ''. if empty, return.
-    Tst.Me.HisCall := Edit1.Text;
-    CallSent := Edit1.Text <> '';
+    // retain current callsign, including ''.
+    Tst.SetHisCall(Edit1.Text);   // virtual; sets Tst.Me.HisCall and Log.CallSent
+
+    // if his callsign is empty or hasn't changed, return
     if not CallSent then
       Exit;
 
@@ -584,6 +586,22 @@ begin
       assert(false, Format('invalid exchange field 1 type: %s',
         [ToStr(RecvExchTypes.Exch1)]));
   end;
+end;
+
+{
+  Called after each keystroke while editing the Exch2 field (Edit3).
+  Allows special processing to occur for certain contests.
+}
+procedure TMainForm.Edit3KeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  // some contests have additional processing (e.g. ARRL SS)
+  // (exclude function keys so we can use the debugger)
+  var ExchSummary: string;
+  if (SimContest in [scArrlSS]) and ((Key < VK_F1) or (Key > VK_F12)) then
+    begin
+      Tst.OnExchangeEdit(Edit1.Text, Edit2.Text, Edit3.Text, ExchSummary);
+    end;
 end;
 
 procedure TMainForm.Edit3Enter(Sender: TObject);
@@ -735,6 +753,9 @@ begin
             DisplayError(ExchError, clRed);
             Exit;
           end;
+
+        // some contests have additional exchange processing (e.g. ARRL SS)
+        Tst.OnExchangeEditComplete;  // sets Log.CallSent
 
         if not CallSent then
           SendMsg(msgHisCall);
@@ -944,6 +965,9 @@ begin
       MustAdvance := true;
     Exit;
   end;
+
+  // Update CallSent (HisCall has been sent)
+  Tst.OnExchangeEditComplete;
 
   //current state
   C := CallSent;
@@ -1667,6 +1691,9 @@ begin
   Edit2.Text := '';
   Edit3.Text := '';
   ActiveControl := Edit1;
+
+  if Assigned(Tst) then
+    Tst.OnWipeBoxes;
 
   CallSent := false;
   NrSent := false;
