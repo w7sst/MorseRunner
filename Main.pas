@@ -963,7 +963,10 @@ begin
   if not N then
     SendMsg(msgNR);
   if N and (not R or not Q) then
-    SendMsg(msgQm);
+    begin
+      DisplayError(ExchError, clDefault);
+      SendMsg(msgQm);
+    end;
 
   if R and Q and (C or N) then
   begin
