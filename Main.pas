@@ -600,7 +600,8 @@ begin
   var ExchSummary: string;
   if (SimContest in [scArrlSS]) and ((Key < VK_F1) or (Key > VK_F12)) then
     begin
-      Tst.OnExchangeEdit(Edit1.Text, Edit2.Text, Edit3.Text, ExchSummary);
+      if Tst.OnExchangeEdit(Edit1.Text, Edit2.Text, Edit3.Text, ExchSummary) then
+        Label3.Caption := ExchSummary;
     end;
 end;
 
@@ -1691,6 +1692,9 @@ begin
   Edit2.Text := '';
   Edit3.Text := '';
   ActiveControl := Edit1;
+
+  if SimContest = scArrlSS then
+    Label3.Caption := Exchange2Settings[etSSCheckSection].C;
 
   if Assigned(Tst) then
     Tst.OnWipeBoxes;
