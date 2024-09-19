@@ -457,7 +457,7 @@ end;
 function TContest.CheckEnteredCallLength(const ACall: string;
   out AExchError: String) : boolean;
 begin
-  Result := ACall.Length >= 3;
+  Result := StringReplace(ACall, '?', '', [rfReplaceAll]).Length >= 3;
   if not Result then
     AExchError := 'Invalid callsign';
 end;
@@ -467,7 +467,7 @@ end;
   ValidateEnteredExchange is called prior to sending the final 'TU' and calling
   SaveQSO (see Log.pas). The basic validation is a length test where each
   exchange is checked against a minimum length requirement.
-  This is contest with original 1.68 behaviors.
+  This is consistent with original 1.68 behaviors.
 
   This virtual function can be overriden for complex exchange information
   (e.g. ARRL Sweepstakes).
@@ -525,7 +525,7 @@ end;
 
 {
   SaveEnteredExchToQso will save contest-specific exchange values into a QSO.
-  This is called to enter the completed QSO into the log.
+  This is called by SaveQSO while saving the completed QSO into the log.
   This virtual function can be overriden by specialized contests as needed
   (see ARRL Sweepstakes).
 }

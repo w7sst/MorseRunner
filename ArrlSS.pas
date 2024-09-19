@@ -50,6 +50,8 @@ public
 
   function FindCallRec(out ssrec: TSweepstakesCallRec; const ACall: string): Boolean;
   procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
+  function CheckEnteredCallLength(const ACall: string;
+    out AExchError: String) : boolean; override;
   function ValidateEnteredExchange(const ACall, AExch1, AExch2: string;
     out AExchError: String) : boolean; override;
   procedure SaveEnteredExchToQso(var Qso: TQso; const AExch1, AExch2: string); override;
@@ -251,6 +253,17 @@ begin
     else
       inherited SendMsg(AStn, AMsg);
   end;
+end;
+
+
+function TSweepstakes.CheckEnteredCallLength(const ACall: string;
+  out AExchError: String) : boolean;
+begin
+  AExchError := '';
+  if ExchValidator.Call.IsEmpty then
+    Result := inherited CheckEnteredCallLength(ACall, AExchError)
+  else
+    Result := True;
 end;
 
 

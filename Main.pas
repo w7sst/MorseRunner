@@ -728,6 +728,14 @@ begin
 
     '.', '+', '[', ',': //TU & Save
       begin
+        // verify callsign using simple length-based check
+        var ExchError: string;
+        if not Tst.CheckEnteredCallLength(Edit1.Text, ExchError) then
+          begin
+            DisplayError(ExchError, clRed);
+            Exit;
+          end;
+
         if not CallSent then
           SendMsg(msgHisCall);
         SendMsg(msgTU);
@@ -900,12 +908,20 @@ begin
         Exit;
     end;
   MustAdvance := false;
+  ExchError := '';
 
   sbar.Font.Color := clDefault;
 
   // 'Control-Enter', 'Shift-Enter' and 'Alt-Enter' are shortcuts to SaveQSO
   if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0 then
   begin
+    // verify callsign before calling SaveQSO
+    if not Tst.CheckEnteredCallLength(Edit1.Text, ExchError) then
+      begin
+        DisplayError(ExchError, clRed);
+        Exit;
+      end;
+
     Log.SaveQso;
     Exit;
   end;
