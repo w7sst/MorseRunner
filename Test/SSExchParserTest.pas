@@ -138,6 +138,14 @@ type
     [TestCase('Mixed.49',  'W1AW10A20OR,          0....W1AW10A20OR')]
     [TestCase('Mixed.50',  '10A20ORW1AW,          10.A.01.')]
 
+    // While trying to enter an invalid (short) callsign, I typed ' ' after WM.
+    [TestCase('Mixed.51',  '86 TN,                0..86.TN')]
+    [TestCase('Mixed.52',  '86 TN WM,             0..86.')]
+    [TestCase('Mixed.53',  '86 TN WM 6,           6..86.TN-Missing/Invalid Precedence')]
+    [TestCase('Mixed.54',  '86 TN WM 66,          0..66.TN-Missing/Invalid Serial Number')]
+    [TestCase('Mixed.55',  '86 TN WM 66 B,        66.B.86.TN')]
+    [TestCase('Mixed.56',  '86 TN WM4Q 66 B,      66.B.86.TN.WM4Q')]
+
     [TestCase('Misc.p04.1',  '98,               0..98.')]
     [TestCase('Misc.p04.2',  '98 WNY,           0..98.WNY')]
     [TestCase('Misc.p04.3',  '98 WNY 1,         1..98.WNY')]

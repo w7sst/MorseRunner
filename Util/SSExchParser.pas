@@ -523,9 +523,9 @@ begin
               Exit;
             end;
 {$endif}
-          if token.Value.Length = 2 then
+          if token.Value.Length = 2 then // could be a 2x1 or 2x2 callsign
             begin
-              if TwoDigitList.Count > 0 then
+              if (TwoDigitList.Count > 0) and Assigned(NRToken) then
                 begin
 {$ifdef DEBUG}
                   assert(Assigned(NRToken));
