@@ -512,6 +512,11 @@ begin
     osNeedCall:
       if (RunMode = rmHst) then
         Result := msgDeMyCallNr1
+      else if (SimContest in [scArrlSS]) then
+        case Trunc(R2*3) of
+          0: Result := msgDeMyCallNr1;  // DE <my> <exch>
+          1,2: Result := msgMyCallNr1;  // <my> <exch>
+        end
       else
         case Trunc(R2*6) of
           0: Result := msgDeMyCallNr1;  // DE <my> <exch>
@@ -524,6 +529,13 @@ begin
     osNeedCallNr:
       if (RunMode = rmHst) then
         Result := msgDeMyCall1
+      else if (SimContest in [scArrlSS]) then
+        case Trunc(R2*5) of
+          0: Result := msgDeMyCall1;    // DE <my>
+          1: Result := msgDeMyCall2;    // DE <my> <my>
+          2: Result := msgMyCall2;      // <my> <my>
+          3,4: Result := msgMyCallNr1;  // <my> <exch>
+        end
       else
         case Trunc(R2*6) of
           0: Result := msgDeMyCall1;    // DE <my>
@@ -531,10 +543,12 @@ begin
           2: Result := msgMyCall2;      // <my> <my>
           3: Result := msgMyCallNr2;    // <my> <my> <exch>
           4,5: Result := msgMyCallNr1;  // <my> <exch>
-        end;
+        end
     else //osNeedEnd:
       if Patience < (FULL_PATIENCE-1) then Result := msgNR
-      else if (RunMode = rmHst) or (Random < 0.9) then Result := msgR_NR
+      else if (RunMode = rmHst) or (SimContest in [scArrlSS]) or
+              (Random < 0.9) then
+        Result := msgR_NR
       else Result := msgR_NR2;
     end;
 end;
