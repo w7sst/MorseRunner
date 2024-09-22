@@ -72,6 +72,11 @@ type
       const AStationCallsign : string) : TExchTypes; virtual;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
+    procedure OnWipeBoxes; virtual;
+    function OnExchangeEdit(const ACall, AExch1, AExch2: string;
+       out AExchSummary: string) : Boolean; virtual;
+    procedure OnExchangeEditComplete; virtual;
+    procedure SetHisCall(const ACall: string); virtual;
 
     function CheckEnteredCallLength(const ACall: string;
       out AExchError: String) : boolean; virtual;
@@ -433,6 +438,54 @@ end;
 
 
 {
+  Called at end of each QSO or by user's Cntl-W (Wipe Boxes) keystroke.
+}
+procedure TContest.OnWipeBoxes;
+begin
+  Log.CallSent := False;
+  Log.NrSent := False;
+end;
+
+
+{
+  Called after each keystroke of the Exch2 field (Edit3).
+}
+function TContest.OnExchangeEdit(const ACall, AExch1, AExch2: string;
+  out AExchSummary: string) : Boolean;
+begin
+  AExchSummary := '';
+  Result := False;
+end;
+
+
+{
+  Called at the start of each action/command after user has finished typing
+  in the Exchange fields. Can be overriden as needed for complex exchange
+  behaviors (e.g. ARRL SS).
+}
+procedure TContest.OnExchangeEditComplete;
+begin
+  Log.CallSent := (Mainform.Edit1.Text <> '') and
+    (Mainform.Edit1.Text = Self.Me.HisCall);
+end;
+
+
+{
+  SetHisCall will:
+  - sets TContest.Me.HisCall to the supplied callsign, ACall.
+  - sets Log.CallSent to False if the callsign should be sent.
+
+  Override as needed to provide more complex callsign behaviors (e.g. ARRL
+  Sweepstakes allows callsign corrections in the exchange).
+}
+procedure TContest.SetHisCall(const ACall: string);
+begin
+  Self.Me.HisCall := ACall;
+  Log.CallSent := ACall <> '';
+end;
+
+
+{
   Find exchange errors in the current Qso.
   Called at end of each Qso during Qso validaiton.
   This virtual procedure can be overriden to perform special exchange
@@ -457,7 +510,7 @@ end;
 function TContest.CheckEnteredCallLength(const ACall: string;
   out AExchError: String) : boolean;
 begin
-  Result := ACall.Length >= 3;
+  Result := StringReplace(ACall, '?', '', [rfReplaceAll]).Length >= 3;
   if not Result then
     AExchError := 'Invalid callsign';
 end;
@@ -467,7 +520,7 @@ end;
   ValidateEnteredExchange is called prior to sending the final 'TU' and calling
   SaveQSO (see Log.pas). The basic validation is a length test where each
   exchange is checked against a minimum length requirement.
-  This is contest with original 1.68 behaviors.
+  This is consistent with original 1.68 behaviors.
 
   This virtual function can be overriden for complex exchange information
   (e.g. ARRL Sweepstakes).
@@ -525,7 +578,7 @@ end;
 
 {
   SaveEnteredExchToQso will save contest-specific exchange values into a QSO.
-  This is called to enter the completed QSO into the log.
+  This is called by SaveQSO while saving the completed QSO into the log.
   This virtual function can be overriden by specialized contests as needed
   (see ARRL Sweepstakes).
 }
@@ -534,7 +587,7 @@ begin
     // Adding a contest: save contest-specific exchange values into QsoList
     //save Exchange 1 (Edit2)
     case Mainform.RecvExchTypes.Exch1 of
-      etRST:     Qso.Rst := StrToInt(AExch1);
+      etRST:     Qso.Rst := StrToIntDef(AExch1, 0);
       etOpName:  Qso.Exch1 := AExch1;
       etFdClass: Qso.Exch1 := AExch1;
       else
@@ -543,7 +596,7 @@ begin
 
     //save Exchange2 (Edit3)
     case Mainform.RecvExchTypes.Exch2 of
-      etSerialNr:    Qso.Nr := StrToInt(AExch2);
+      etSerialNr:    Qso.Nr := StrToIntDef(AExch2, 0);
       etGenericField:Qso.Exch2 := AExch2;
       etArrlSection: Qso.Exch2 := AExch2;
       etStateProv:   Qso.Exch2 := AExch2;
@@ -562,6 +615,9 @@ begin
       else
         assert(false, 'missing case');
     end;
+
+  if Qso.Exch1.IsEmpty then Qso.Exch1 := '?';
+  if Qso.Exch2.IsEmpty then Qso.Exch2 := '?';
 end;
 
 

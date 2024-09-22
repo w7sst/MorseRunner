@@ -184,7 +184,7 @@ const
   CQWW_RST_COL    = 'RST,4,L';
   CQ_ZONE_COL     = 'Zone,4,L';
   SS_CALL_COL     = 'Call,9,L';
-  SS_PREC_COL     = 'Pr,2.5,C';
+  SS_PREC_COL     = 'Pr,2.5,L';
   SS_CHECK_COL    = 'Chk,3.25,C';
 
 {$ifdef DEBUG}
@@ -759,7 +759,7 @@ end;
 {
   Save QSO data into the Log.
 
-  Called by either:
+  Called after user presses:
   - 'Enter' key (after sending 'TU' to caller).
   - 'Shift-Enter', 'Cntl-Enter' or 'Alt-Enter' (without sending 'TU' to caller).
 }
@@ -774,10 +774,8 @@ begin
     begin
     Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
 
-    // Virtual functions used below allow special processing as needed
-    // for some contests (e.g. ARRL Sweepstakes).
-    if not Tst.CheckEnteredCallLength(Call, ExchError) or
-      not Tst.ValidateEnteredExchange(Call, Edit2.Text, Edit3.Text, ExchError) then
+    // Verify callsign (simple length-based check); virtual
+    if not Tst.CheckEnteredCallLength(Call, ExchError) then
       begin
         {Beep;}
         DisplayError(ExchError, clRed);

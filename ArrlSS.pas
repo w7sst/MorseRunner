@@ -50,6 +50,13 @@ public
 
   function FindCallRec(out ssrec: TSweepstakesCallRec; const ACall: string): Boolean;
   procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
+  procedure OnWipeBoxes; override;
+  function OnExchangeEdit(const ACall, AExch1, AExch2: string;
+    out AExchSummary: string) : Boolean; override;
+  procedure OnExchangeEditComplete; override;
+  procedure SetHisCall(const ACall: string); override;
+  function CheckEnteredCallLength(const ACall: string;
+    out AExchError: String) : boolean; override;
   function ValidateEnteredExchange(const ACall, AExch1, AExch2: string;
     out AExchError: String) : boolean; override;
   procedure SaveEnteredExchToQso(var Qso: TQso; const AExch1, AExch2: string); override;
@@ -255,6 +262,94 @@ end;
 
 
 {
+  Called after a QSO has completed or when user wipes (clears) all exchange
+  entry boxes on the GUI.
+}
+procedure TSweepstakes.OnWipeBoxes;
+begin
+  inherited OnWipeBoxes;
+  ExchValidator.OnWipeBoxes;
+end;
+
+
+{
+  User has finished typing in the exchange fields and has pressed Enter or
+  another command keystroke.
+  Set Log.CallSent to False if the callsign has been modified or corrected.
+}
+procedure TSweepstakes.OnExchangeEditComplete;
+begin
+  if ExchValidator.Call.IsEmpty then
+    inherited OnExchangeEditComplete
+  else if ExchValidator.Call <> Self.Me.HisCall then
+    Log.CallSent := False;
+end;
+
+
+{
+  This overriden SetHisCall will:
+  - if the exchange field contains a callsign correction, apply it here;
+    otherwise call the base class.
+  - sets TContest.Me.HisCall.
+  - sets Log.CallSent to False if the callsign should be sent.
+}
+procedure TSweepstakes.SetHisCall(const ACall: string);
+begin
+  var CorrectedCallsign: string := ExchValidator.Call;
+  if CorrectedCallsign <> '' then
+    begin
+      // resend Callsign if it has changed since last time it was sent
+      if (CorrectedCallsign <> Self.Me.HisCall) and
+        not Self.Me.UpdateCallInMessage(CorrectedCallsign) then
+          begin
+            Self.Me.HisCall := CorrectedCallsign;
+            Log.CallSent := True;
+          end
+      else if (CorrectedCallsign = Self.Me.HisCall) and not CallSent then
+        Log.CallSent := True;
+    end
+  else
+    inherited SetHisCall(ACall);
+end;
+
+
+{
+  Called after each keystoke for the Exch2 entry field.
+  Parse user-entered Exchange and returns the Exchange summary.
+  Overriden here to handle complex ARRL Sweepstakes exchange.
+  Returns whether Exchange summary is non-empty.
+}
+function TSweepstakes.OnExchangeEdit(
+  const ACall, AExch1, AExch2: string; out AExchSummary: string) : Boolean;
+var
+  ExchError: string;
+begin
+  // incrementally parse the exchange with each keystroke
+  ExchValidator.ValidateEnteredExchange(ACall, AExch1, AExch2, ExchError);
+
+  // return summary (displayed above Exch2's Caption)
+  AExchSummary := ExchValidator.ExchSummary;
+  Result := not AExchSummary.IsEmpty;
+end;
+
+
+{
+  Verify callsign using length-based check.
+  For ARRL SS, if Call has been parsed, it is assumed valid; otherwise
+  call the base class implementation.
+}
+function TSweepstakes.CheckEnteredCallLength(const ACall: string;
+  out AExchError: String) : boolean;
+begin
+  AExchError := '';
+  if ExchValidator.Call.IsEmpty then
+    Result := inherited CheckEnteredCallLength(ACall, AExchError)
+  else
+    Result := True;
+end;
+
+
+{
   Validate user-entered Exchange before sending TU and logging the QSO.
   Overriden here to handle complex ARRL Sweepstakes exchange.
 }
@@ -275,6 +370,9 @@ begin
   Qso.Prec := ExchValidator.Precedence;
   Qso.Check := StrToIntDef(ExchValidator.Check, 0);
   Qso.Sect := ExchValidator.Section;
+
+  if Qso.Prec.IsEmpty then Qso.Prec := '?';
+  if Qso.Sect.IsEmpty then Qso.Sect := '?';
 
   if not ExchValidator.Call.IsEmpty then
     Qso.Call := ExchValidator.Call;
