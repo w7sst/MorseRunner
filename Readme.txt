@@ -59,7 +59,13 @@ CONFIGURATION
                    assignments below.
 
 
-  Band Conditions
+  Band Conditions and sounds
+     It has been brought to our attention that our Morse Runner's Morse Code
+     sounds different than the original 1.67/1.68. This is true, and if you 
+     caught this you have good ears! We corrected the spacing in the original 
+     program to match the rules for proper Morse Code. For more on this see:
+     https://github.com/w7sst/MorseRunner/issues/301
+
      Alex Shovkoplyas, VE3NEA, made the sound as realistic as possible,
      and included a few effects based on the mathematical model of the
      ionospheric propagation. Also, some of the calling stations exhibit
@@ -175,6 +181,12 @@ CONFIGURATION
             This option allows a user-entered range string of the form "<min>-<max>".
             An optional leading zero can be specified for generating serial numbers
             with leading zeros (e.g. 001-200).
+
+    Show Check/Section (for ARRL Sweepstakes only)
+      This contest has a complicated exchange and there is a setting to prepopulate
+      the exchange to match N1MM's behavior. Please see the contest rules section
+      below for more information. 
+
 
   Responses
     There are five basic responses that you can receive:
@@ -497,7 +509,7 @@ CONTEST INFORMATION
       Serial number: sequential serial number for each contact
       Precedence: A, B, Q, M, S, U
       Callsign: your call sign
-      Check: last two digits of the year the operator or station was first licenced
+      Check: last two digits of the year the operator or station was first licensed
       Section: ARRL/RAC Section
       for example: "123 A 72 OR"
     Rules: https://contests.arrl.org/ContestRules/SS-Rules.pdf
