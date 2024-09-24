@@ -74,7 +74,7 @@ type
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
     procedure OnWipeBoxes; virtual;
     function OnExchangeEdit(const ACall, AExch1, AExch2: string;
-       out AExchSummary: string) : Boolean; virtual;
+       out AExchSummary: string; out AExchError: string) : Boolean; virtual;
     procedure OnExchangeEditComplete; virtual;
     procedure SetHisCall(const ACall: string); virtual;
 
@@ -100,6 +100,7 @@ implementation
 uses
   SysUtils, RndFunc, Math, DxOper,
   PerlRegEx,
+  VCL.Graphics,       // clDefault
   Main, CallLst, DXCC;
 
 { TContest }
@@ -203,7 +204,7 @@ end;
 {
   GetStationInfo() returns station's DXCC information.
 
-  Adding a contest: UpdateSbar - update status bar with station info (e.g. FD shows UserText)
+  Adding a contest: SbarUpdateStationInfo - update status bar with station info (e.g. FD shows UserText)
   Override as needed for each contest.
 }
 function TContest.GetStationInfo(const ACallsign : string) : string;
@@ -442,8 +443,8 @@ end;
 }
 procedure TContest.OnWipeBoxes;
 begin
-  Log.CallSent := False;
   Log.NrSent := False;
+  Log.DisplayError('', clDefault);
 end;
 
 
@@ -451,7 +452,7 @@ end;
   Called after each keystroke of the Exch2 field (Edit3).
 }
 function TContest.OnExchangeEdit(const ACall, AExch1, AExch2: string;
-  out AExchSummary: string) : Boolean;
+  out AExchSummary: string; out AExchError: string) : Boolean;
 begin
   AExchSummary := '';
   Result := False;
@@ -480,7 +481,7 @@ end;
 }
 procedure TContest.SetHisCall(const ACall: string);
 begin
-  Self.Me.HisCall := ACall;
+  if ACall <> '' then Self.Me.HisCall := ACall;
   Log.CallSent := ACall <> '';
 end;
 
@@ -764,7 +765,19 @@ begin
                 Log.UpdateStatsHst
               else
                 Log.UpdateStats({AVerifyResults=}True);
+
+{
+              This code can be used to clear QSO info after 'TU' is sent.
+              However, this may be a multi-threading issue here because
+              this audio thread will be changing things being manipulated
+              by the GUI thread. Need more time to think through this one.
+
+              // clear any errors/status from last QSO
+              Log.DisplayError('', clDefault);
+              Log.SBarUpdateSummary('');
+}
           end;
+
   //show info
   ShowRate;
   MainForm.Panel2.Caption := FormatDateTime('hh:nn:ss', BlocksToSeconds(BlockNumber) /  86400);

@@ -137,6 +137,7 @@ uses
   Main,     // for Mainform.sbar.Caption, BDebugCwDecoder
   QrmStn,   // for TQrmStation.ClassType
   Contest,  // for Tst (TContest), Tst.Me.OpName
+  Log,      // for SBarUpdateDebugMsg
   StrUtils, // for PosEx
   TypInfo,  // for typeInfo
   SysUtils, Math, MorseKey;
@@ -227,7 +228,7 @@ begin
 
   // during debug, use status bar to show CW stream
   if (AMsg = msgTU) and BDebugCwDecoder and not (self is TQrmStation) then
-    Mainform.sbar.Caption:= '';
+    Log.SBarUpdateDebugMsg('');
 
   // Create contest-specific messages...
   Tst.SendMsg(self, AMsg);
@@ -296,7 +297,7 @@ begin
 
   // during debug, use status bar to show CW stream
   if BDebugCwDecoder and not (self is TQrmStation) then
-    Mainform.sbar.Caption := (MsgText + '; ' + Mainform.sbar.Caption).Substring(0, 80);
+    Log.SBarUpdateDebugMsg(MsgText);
 
   SendMorse(Keyer.Encode(MsgText));
 end;
