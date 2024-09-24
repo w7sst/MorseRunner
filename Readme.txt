@@ -59,7 +59,7 @@ CONFIGURATION
                    assignments below.
 
 
-  Band Conditions and sounds
+  Band Conditions and Sounds
      It has been brought to our attention that our Morse Runner's Morse Code
      sounds different than the original 1.67/1.68. This is true, and if you 
      caught this you have good ears! We corrected the spacing in the original 
