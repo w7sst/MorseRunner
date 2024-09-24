@@ -22,7 +22,7 @@ type
     [Category('Simple')]
 
     [TestCase('Simple.1',   '1,           1...-Missing/Invalid Precedence')]
-    [TestCase('Simple.2',   '12,          0..12.-Missing/Invalid Serial NUmber')]
+    [TestCase('Simple.2',   '12,          0..12.-Missing/Invalid Serial Number')]
     [TestCase('Simple.3',   '123,         123...-Missing/Invalid Precedence')]
     [TestCase('Simple.4',   '1234,        1234...-Missing/Invalid Precedence')]
     [TestCase('Simple.5',   '11 22,       11..22.')]    // rotate to NR

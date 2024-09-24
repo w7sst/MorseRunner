@@ -68,7 +68,7 @@ type
   protected
     IsValidExchange: Boolean;
     Lexer: TSSLexer;
-    PreviousCall: String;
+    PreviousCall: String;                   // copy of user-entered call (Edit1)
     Tokens: TObjectList<TSSExchToken>;
     TwoDigitList: TList<TSSExchToken>;      // insert each new 2digit token into this list (mru at 0)
     CheckTokenstack: TStack<TSSExchToken>;  // each new check token is pushed
@@ -79,6 +79,7 @@ type
     SectionToken: TSSExchToken;
     FExchError: String;               // most recent exchange parsing error
     procedure Reset;
+    function GetExchSummary: String;
 
   public
     NR: Integer;
@@ -87,10 +88,12 @@ type
     Section: String;
     Call: String;
     property ExchError: String read FExchError;
+    property ExchSummary: String read GetExchSummary;
 
     constructor Create;
     destructor Destroy; override;
 
+    procedure OnWipeBoxes;
     function ValidateEnteredExchange(const ACall, AExch1, AExch2: string;
       out AExchError: String) : boolean;
   end;
@@ -330,6 +333,31 @@ begin
   IsValidExchange := False;
 end;
 
+
+{
+  Exchange summary shows parsed result; displayed as an updated Caption.
+  Example: '192A W7SST 72 OR'
+}
+function TSSExchParser.GetExchSummary: String;
+begin
+  if Assigned(NRToken) or
+     Assigned(CheckToken) or
+     Assigned(PrecedenceToken) or
+     Assigned(SectionToken) or
+     not Call.IsEmpty then
+    Result := format('%d%s %s %s %s', [NR, Precedence,
+      IfThen(Call.IsEmpty, PreviousCall, Call), Check, Section])
+  else
+    Result := '';
+end;
+
+
+procedure TSSExchParser.OnWipeBoxes;
+begin
+  Reset;
+end;
+
+
 function TSSExchParser.ValidateEnteredExchange(const ACall, AExch1, AExch2: string;
   out AExchError: String) : boolean;
 var
@@ -499,8 +527,10 @@ begin
             begin
               if TwoDigitList.Count > 0 then
                 begin
+{$ifdef DEBUG}
                   assert(Assigned(NRToken));
                   assert(CheckToken = TwoDigitList.Last);
+{$endif}
                   CheckToken := TwoDigitList.Last;
                   CheckTokenstack.Push(CheckToken);
                 end
