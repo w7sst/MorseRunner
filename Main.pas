@@ -1522,22 +1522,25 @@ begin
       end;
     etSSCheckSection:
       begin
-        // retain current field sizes
-        SaveEdit1Width := Edit1.Width;
-        SaveLabel3Left := Label3.Left;
-        SaveEdit3Left := Edit3.Left;
-        SaveEdit3Width := Edit3.Width;
+        if SaveEdit3Left = 0 then
+          begin
+            // retain current field sizes
+            SaveEdit1Width := Edit1.Width;
+            SaveLabel3Left := Label3.Left;
+            SaveEdit3Left := Edit3.Left;
+            SaveEdit3Width := Edit3.Width;
 
-        // hide Exch1 (Edit2)
-        Edit2.Hide;
-        Label2.Hide;
+            // hide Exch1 (Edit2)
+            Edit2.Hide;
+            Label2.Hide;
 
-        // reduce Edit1 width; shift Exch Field 2 to the left and grow
-        var Reduce1: integer := (SaveEdit1Width * 4) div 9;
-        Label3.Left := Label3.Left - (Label3.Left - Label2.Left) - Reduce1;
-        Edit3.Left := Edit2.Left - Reduce1;
-        Edit3.Width := Edit3.Width + (SaveEdit3Left - Edit2.Left + Reduce1 + 15);
-        Edit1.Width := Edit1.Width - Reduce1;
+            // reduce Edit1 width; shift Exch Field 2 to the left and grow
+            var Reduce1: integer := (SaveEdit1Width * 4) div 9;
+            Label3.Left := Label3.Left - (Label3.Left - Label2.Left) - Reduce1;
+            Edit3.Left := Edit2.Left - Reduce1;
+            Edit3.Width := Edit3.Width + (SaveEdit3Left - Edit2.Left + Reduce1 + 15);
+            Edit1.Width := Edit1.Width - Reduce1;
+          end;
 
         Ini.UserExchange2[SimContest] := Avalue; // <check> <sect> (e.g. 72 OR)
         Tst.Me.Exch2 := Avalue;
