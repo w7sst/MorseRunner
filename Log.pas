@@ -288,6 +288,7 @@ var
   Name: string;
   Width: integer;
   Alignment: TAlignment;
+  FS: TFormatSettings;
 
   // return the column name from a column definition string
   function GetColumnName(const AColDef: string): string;
@@ -297,6 +298,7 @@ var
 
 begin
   tl := TStringList.Create('''',',');
+  FS := TFormatSettings.Create('en-US');  // DecimalPoint = '.'
   try
     // retain initial log column widths (used to restore column widths)
     if not ScaleTableInitialized then
@@ -324,7 +326,7 @@ begin
       if I = 0 then // use existing width for UTC Column
         Width := MainForm.ListView2.Column[I].Width
       else
-        Width := Round(tl[1].ToSingle * LogColWidthPerChar + LogColPadding*LogColScaling);
+        Width := Round(StrToFloat(tl[1], FS) * LogColWidthPerChar + LogColPadding*LogColScaling);
       Alignment := taLeftJustify;
       case tl[2][1] of
         'L': Alignment := taLeftJustify;
