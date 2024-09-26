@@ -556,15 +556,18 @@ CONTEST INFORMATION
       Valid values range between 0 and 100, representing 0% and 100%.
       Note that a zero value will disable this feature.
 
-      An Exchange Summary is provided as the user enters the received exchange
-      into the Exchange field. This summary shows QSO information as it will
-      entered into the log. For example: "192B W7SST 72 OR". By default, this
-      information is displayed in the status bar. If desired, the exchange
-      summary can be written into the label above the exchange field entry
-      field by setting the following keyword in the MorseRunner.ini file:
+      As the user enters an exchange into the exchange entry field, an Exchange
+      Summary is provided in the Label above the field. This summary shows QSO
+      information as it will entered into the log. For example:
+        "192B W7SST 72 OR".
+      By default, this information is displayed above the exchange entry field.
+      If desired, the exchange summary can be turned off. This is controlled by
+      setting the following keyword in the MorseRunner.ini file:
         [Settings]
-        ShowExchangeSummaryInStatusBar=0
-      Valid values are: 0-display above entry field; or 1-display in status bar.
+        ShowExchangeSummary=N
+      Valid values for N:
+        0 - Off
+        1 - Display summary in label above entry field (default)
 
     CQ WPX
     When: Last weekend in May

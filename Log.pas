@@ -454,18 +454,21 @@ end;
 // Refresh Status Bar
 // [<Exchange Summary> --] [(Error | UserText)] [>> Debug]
 procedure UpdateSbar;
-  var S: String;
+var
+  S: String;
 begin
   // optional exchange summary...
-  if SimContest in [scArrlSS] then
-    begin
-      if Ini.ShowExchangeSummaryInStatusBar then
-        S := SBarSummaryMsg
-      else if SBarSummaryMsg.IsEmpty then
-        Mainform.Label3.Caption := Exchange2Settings[etSSCheckSection].C
-      else
-        Mainform.Label3.Caption := SBarSummaryMsg;
-    end;
+  if Ini.ShowExchangeSummary <> 0 then
+    if SimContest in [scArrlSS] then
+      case Ini.ShowExchangeSummary of
+        1:
+          if SBarSummaryMsg.IsEmpty then
+            Mainform.Label3.Caption := Exchange2Settings[etSSCheckSection].C
+          else
+            Mainform.Label3.Caption := SBarSummaryMsg;
+        2:
+          S := SBarSummaryMsg;
+      end;
 
   // error or UserText...
   if not SBarErrorMsg.IsEmpty then

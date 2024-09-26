@@ -322,12 +322,17 @@ end;
 function TSweepstakes.OnExchangeEdit(const ACall, AExch1, AExch2: string;
   out AExchSummary: string; out AExchError: string) : Boolean;
 begin
-  // incrementally parse the exchange with each keystroke
-  ExchValidator.ValidateEnteredExchange(ACall, AExch1, AExch2, AExchError);
+  if Ini.ShowExchangeSummary <> 0 then
+    begin
+      // incrementally parse the exchange with each keystroke
+      ExchValidator.ValidateEnteredExchange(ACall, AExch1, AExch2, AExchError);
 
-  // return summary (displayed above Exch2's Caption)
-  AExchSummary := ExchValidator.ExchSummary;
-  Result := not AExchSummary.IsEmpty;
+      // return summary (displayed above Exch2's Caption)
+      AExchSummary := ExchValidator.ExchSummary;
+      Result := not AExchSummary.IsEmpty;
+    end
+  else
+    Result := False;
 end;
 
 
