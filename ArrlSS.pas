@@ -62,7 +62,7 @@ public
   procedure SaveEnteredExchToQso(var Qso: TQso; const AExch1, AExch2: string); override;
   function GetStationInfo(const ACallsign: string) : string; override;
   function ExtractMultiplier(Qso: PQso) : string; override;
-  function GetCheckSection(const ACallsign: string; AThreshold: extended = 0): String;
+  function GetCheckSection(const ACallsign: string; AThreshold: Single = 0): String;
   function IsNum(Num: String): Boolean;
 end;
 
@@ -409,10 +409,21 @@ end;
 }
 procedure TSweepstakes.GetExchange(id : integer; out station : TDxStation);
 const
-  PrecedenceTbl: array[0..5] of string = ('Q', 'A', 'B', 'U', 'M', 'S');
+  PrecedenceTbl: array[0..5] of string = ('A', 'B', 'U', 'Q', 'M', 'S');
 begin
   station.NR := GetRandomSerialNR;  // serial number
-  station.Prec := PrecedenceTbl[Random(6)];
+
+  // Mark, KD0EE, recommends 50% calls are A, 20% B, 20% U, 10% for the rest.
+  var R: Single := Random;
+  if R < 0.50 then
+    station.Prec := PrecedenceTbl[0]
+  else if R < 0.70 then
+    station.Prec := PrecedenceTbl[1]
+  else if R < 0.90 then
+    station.Prec := PrecedenceTbl[2]
+  else
+    station.Prec := PrecedenceTbl[3+Random(3)];
+
   station.Chk := SweepstakesCallList.Items[id].Check;
   station.Sect := SweepstakesCallList.Items[id].Section;
   station.UserText := SweepstakesCallList.Items[id].UserText;
@@ -461,7 +472,7 @@ end;
   so the user has to correct the string being copied.
 }
 function TSweepstakes.GetCheckSection(const ACallsign: string;
-  AThreshold: extended): String;
+  AThreshold: Single): String;
 var
   ssrec: TSweepstakesCallRec;
   section: string;

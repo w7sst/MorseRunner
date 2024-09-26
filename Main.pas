@@ -2244,7 +2244,8 @@ begin
         (ActiveControl = Edit3) and (Edit3.Text = '') and
         (Random < (ShowCheckSection/100)) then
           begin
-            var S: string := (Tst as TSweepstakes).GetCheckSection(Edit1.Text, 0.25);
+            // inject a Section error 10% of the time
+            var S: string := (Tst as TSweepstakes).GetCheckSection(Edit1.Text, 0.10);
             if not S.IsEmpty then
               S := S + ' ';
             Edit3.Text := S;
