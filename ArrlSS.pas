@@ -414,10 +414,12 @@ begin
   station.NR := GetRandomSerialNR;  // serial number
 
   // Mark, KD0EE, recommends 50% calls are A, 20% B, 20% U, 10% for the rest.
+  // Jim, K6OK, reported     37% calls are A, 19% B, 36% U, 10% for the rest.
+  // Using the average ...             43% A, 19% B, 28% U, 10% for Q, M and S.
   var R: Single := Random;
-  if R < 0.50 then
+  if R < 0.43 then
     station.Prec := PrecedenceTbl[0]
-  else if R < 0.70 then
+  else if R < 0.62 then
     station.Prec := PrecedenceTbl[1]
   else if R < 0.90 then
     station.Prec := PrecedenceTbl[2]

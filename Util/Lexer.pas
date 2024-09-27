@@ -145,7 +145,6 @@ begin
       Rule.regex := Reg;
       Rule.tokenType := Def.T;
       Rules.Add(Rule);
-      Reg := nil;
     end;
 end;
 
