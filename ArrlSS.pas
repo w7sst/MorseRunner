@@ -52,7 +52,7 @@ public
   procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
   procedure OnWipeBoxes; override;
   function OnExchangeEdit(const ACall, AExch1, AExch2: string;
-    out AExchSummary: string) : Boolean; override;
+    out AExchSummary: string; out AExchError: string) : Boolean; override;
   procedure OnExchangeEditComplete; override;
   procedure SetHisCall(const ACall: string); override;
   function CheckEnteredCallLength(const ACall: string;
@@ -177,7 +177,7 @@ function TSweepstakes.ValidateMyExchange(const AExchange: string;
 const
   // Syntax: [123|#][ ]<Precedence> <Check> <Section>
   Regexpr: string = ' *(?P<exch1>(?P<nr>[0-9]+|#)? *(?P<prec>[QABUMS])) +'
-                  + '(?P<chk>[0-9]{2}) +(?P<sect>[A-Z]+) *';
+                  + '(?P<chk>[0-9]{2}) +(?P<sect>[A-Z]{2,3}) *';
 var
   reg: TPerlRegEx;
   Exch1, Exch2: string;
@@ -319,17 +319,20 @@ end;
   Overriden here to handle complex ARRL Sweepstakes exchange.
   Returns whether Exchange summary is non-empty.
 }
-function TSweepstakes.OnExchangeEdit(
-  const ACall, AExch1, AExch2: string; out AExchSummary: string) : Boolean;
-var
-  ExchError: string;
+function TSweepstakes.OnExchangeEdit(const ACall, AExch1, AExch2: string;
+  out AExchSummary: string; out AExchError: string) : Boolean;
 begin
-  // incrementally parse the exchange with each keystroke
-  ExchValidator.ValidateEnteredExchange(ACall, AExch1, AExch2, ExchError);
+  if Ini.ShowExchangeSummary <> 0 then
+    begin
+      // incrementally parse the exchange with each keystroke
+      ExchValidator.ValidateEnteredExchange(ACall, AExch1, AExch2, AExchError);
 
-  // return summary (displayed above Exch2's Caption)
-  AExchSummary := ExchValidator.ExchSummary;
-  Result := not AExchSummary.IsEmpty;
+      // return summary (displayed above Exch2's Caption)
+      AExchSummary := ExchValidator.ExchSummary;
+      Result := not AExchSummary.IsEmpty;
+    end
+  else
+    Result := False;
 end;
 
 

@@ -61,8 +61,8 @@ CONFIGURATION
 
   Band Conditions and Sounds
      It has been brought to our attention that our Morse Runner's Morse Code
-     sounds different than the original 1.67/1.68. This is true, and if you 
-     caught this you have good ears! We corrected the spacing in the original 
+     sounds different than the original 1.67/1.68. This is true, and if you
+     caught this you have good ears! We corrected the spacing in the original
      program to match the rules for proper Morse Code. For more on this see:
      https://github.com/w7sst/MorseRunner/issues/301
 
@@ -185,7 +185,12 @@ CONFIGURATION
     Show Check/Section (for ARRL Sweepstakes only)
       This contest has a complicated exchange and there is a setting to prepopulate
       the exchange to match N1MM's behavior. Please see the contest rules section
-      below for more information. 
+      below for more information.
+
+    Show Exchange Summary In Status Bar (for ARRL Sweepstakes only)
+      This contest will display the parsed exchange summary in either the status
+      bar (default) or optionally in the label/caption above the exchange entry
+      field. Please see the contest rules section below for more information.
 
 
   Responses
@@ -235,7 +240,7 @@ KEY ASSIGNMENTS
   Alt-W            - Wipes the input fields (with Windows chime)
   Shift-Enter      - Saves the QSO without sending anything
   Ctrl-Enter       - Saves the QSO without sending anything
-  Alt-Enter        - Saves the QSO without sending anything (with Windows Chime)
+  Alt-Enter        - Saves the QSO without sending anything
   Tab Key          - Moves to Call, RST, CQ-Zone, Station Call, and your exchange
   Shift Tab        - Moves to Call, RST, CQ-Zone, Station Call, and your exchange
   Up arrow         - Moves the RIT right (reversible in settings)
@@ -550,6 +555,19 @@ CONTEST INFORMATION
         ShowCheckSection=50
       Valid values range between 0 and 100, representing 0% and 100%.
       Note that a zero value will disable this feature.
+
+      As the user enters an exchange into the exchange entry field, an Exchange
+      Summary is provided in the Label above the field. This summary shows QSO
+      information as it will entered into the log. For example:
+        "192B W7SST 72 OR".
+      By default, this information is displayed above the exchange entry field.
+      If desired, the exchange summary can be turned off. This is controlled by
+      setting the following keyword in the MorseRunner.ini file:
+        [Settings]
+        ShowExchangeSummary=N
+      Valid values for N:
+        0 - Off
+        1 - Display summary in label above entry field (default)
 
     CQ WPX
     When: Last weekend in May

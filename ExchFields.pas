@@ -66,7 +66,7 @@ const
    ,(C: 'State';      R: '([0-9A-Z/]*)';                   L: 6; T:Ord(etNaQpExch2))
    ,(C: 'State';      R: '()|([0-9A-Z/]*)';                L: 6; T:Ord(etNaQpNonNaExch2))
    ,(C: 'Nr Prec CK Sect';
-                      R: '[0-9ONT]{1,2} +[A-Z]+';          L: 32; T:Ord(etSSCheckSection))
+                      R: '[0-9ONT]{1,2} +[A-Z]{2,3}';      L: 32; T:Ord(etSSCheckSection))
   );
 
 implementation

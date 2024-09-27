@@ -49,7 +49,6 @@ object MainForm: TMainForm
     000000FF000001FF000083FF0000E7FF0000E7FF0000}
   KeyPreview = True
   Menu = MainMenu1
-  OldCreateOrder = False
   Position = poScreenCenter
   OnClose = FormClose
   OnCreate = FormCreate
@@ -59,7 +58,6 @@ object MainForm: TMainForm
   OnKeyUp = FormKeyUp
   OnMouseWheelDown = FormMouseWheelDown
   OnMouseWheelUp = FormMouseWheelUp
-  PixelsPerInch = 96
   TextHeight = 15
   object Bevel1: TBevel
     Left = 0
@@ -543,7 +541,6 @@ object MainForm: TMainForm
       ScrollBars = ssVertical
       TabOrder = 1
       Visible = False
-      Zoom = 100
     end
     object ListView2: TListView
       Left = 0
