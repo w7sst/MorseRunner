@@ -15,6 +15,14 @@ Any contest with a corresponding call history file could be implemented.
 A short video introducing this project can be found [here](https://www.youtube.com/watch?v=Y1kHqJRytMM). 
 It covers why we started the community edition and our goals. 
 
+## Supported contests
+| International | US/NA            | Japan         | Other                |
+|---------------|------------------|---------------|----------------------|
+| ARRL DX       | ARRL Field Day   | JARL ALL JA   | CWOPS CWT            |
+| CQ WPX        | ARRL Sweepstakes | JARL ACAG     | K1USN Slow Speed Test|
+| CQ WW         | NCJ NAQP         |               | HST (High Speed Test)|
+| IARU HF       |                  |               |                      |
+
 ## Goals
 Our goal is to create a community of users and developers who share
 a common vision of improving and supporting the Morse Runner Contest Simulator.
@@ -48,11 +56,27 @@ Below is a high-level overview of project activities over the next year.
 
 ### Roadmap - Now, Next, and Future
 
-#### Now - Spring 2024 (Apr-Jun)
+#### Now - Fall 2024 (Oct-Dec '24)
 Projects we are currently working on...
 
-- [ ] **GUI Enhancement Discussions** - The team will evaluate the GUI for ergonomic enhancements.
-Perhaps build a prototype to collect useability feedback from project advocates and users.
+- [ ] **GUI Enhancement (v1.90)** - Jim, K6OK, will continue leading our efforts to develop a new Morse Runner GUI.
+We are hoping to release the new GUI as version 1.90 sometime late this year or early next year.
+If you are interesting in helping and providing early feedback, please join our github Community
+and let us know.
+We are always looking for additional project advocates, developers, testers and users.
+Developer skills are not required; only an interest in improving Morse Runner Community Edition.
+
+- [ ] **Resolve 100-person limit on groups.io** -
+Groups.io has a 100-person limit in their free-plan.
+When we launched MRCE, we formed a user-group on Groups.io.
+This group grew to 100 user limit by February 2024.
+We plan to start a discussion in our GitHub Discussions area to explore ideas to resolve this issue.
+Stay tuned for an announcement on both GitHub and groups.io.
+
+- [ ] **Focus on Quality** - Address important quality issues as they are reported.
+
+#### Next - 1st half 2025
+Projects that we'll work on next (as time permits)...
 
 - [ ] **Redefine our strategy moving forward** - Originally, we had hoped additional developers would step forward and join our coding efforts.
 We currently have a core group of advocates that are providing awesome project direction and insight and we appreciate their involvement and efforts.
@@ -60,32 +84,12 @@ However, we do need to slow down and consider what the next steps will be given 
 There has been some preliminary work on a GUI redesign and several contests have been suggested.
 We will start discussions amoungst the core development group on how to proceed.
 
-- [ ] **ARRL Field Day support announcement** - We would like to figure out how to announce MRCE's support for ARRL Field Day.
-This contest was the main focus from two years ago and we want to be sure that users are aware of this training opportunity in time for FD 2024.
-
-- [ ] **Focus on Quality** - Address important quality issues as they are reported.
-
-#### Next - 2nd half 2024
-Projects that we'll work on next (as time permits)...
 - [ ] **Developer on-boarding** - Help new developers get up to speed with compiling and pushing to the project.
 
-- [ ] **Merge selected features and bug fixes** - (As time permits...) Identify and integrate features from
-[other MR branches](#morse-runner-release-history) into the main release branch.
-
-- [ ] **ARRL Sweepstakes Contest development** - As time permits, continue development work on ARRL Sweepstakes CW Contest.
-This contest has a complex exchange, so the implementation is taking longer than expected.
-
-- [ ] **Maintain existing integration with N1MM and DxLog.**
-N2IC has done work to integrate Morse Runner within N1MM and DxLog.
-We want to continue this work to allow Morse Runner to run with these
-popular logging programs.
-
-- [ ] **Additional contests** - Based on community input, we will consider adding a few more contests for the fall contesting season.
+- [ ] **Additional contests** - Based on community input, we will consider adding a few more contests based on interest and available developer time.
 
 #### Future
 Projects that we'll work on later...
-- [ ] **Developer on-boarding** - Help other developers get up to speed with compiling and pushing to the project.
-
 - [ ] **Document git setup** - Document a recommended git setup to avoid issues with CRLF caused by different git
 setups on individual computers and git setups.
 Document this issue so other developers can understand avoid this issue.
@@ -97,6 +101,11 @@ to generalize an individual contest.
 
 - [ ] **SO2R Investigation** -
 Investigate whether it is possible to support SO2R using MRCE. Perhaps build a prototype for evaluation and user feedback and requirements.
+
+- [ ] **Maintain existing integration with N1MM and DxLog.**
+N2IC has done work to integrate Morse Runner within N1MM and DxLog.
+We want to continue this work to allow Morse Runner to run with these
+popular logging programs.
 
 - [ ] **Team-based (developer/advocate) contest development model** - promote the notion of a small contest development team consisting of a developer and one or more user/advocates.
 This team will develop and test an individual contest before it is released for general use.
@@ -110,6 +119,9 @@ added by extending these interfaces only. Most switch statements in code have be
 Perhaps adding a contest will need two people, a contest developer and a contest advocate.
 This team can develop and test a contest before releasing to general use.
 
+- [ ] **Merge selected features and bug fixes** - (As time permits...) Identify and integrate features from
+[other MR branches](#morse-runner-release-history) into the main release branch.
+
 - [ ] **Project Wiki** - Explore idea of developing a project wiki containing additional
 project details, including recommended setups (both developer and user),
 design discussions, compile instructions, coding standards, release criteria, etc.
@@ -122,10 +134,6 @@ Please let the development know if you have experience in adding multi-language 
 to Delphi-based or Lazarus-based applications.
 
 - [ ] **User-defined contests** - Explore notion of user-defined contests using a contest configuration file. Perhaps a yaml file? Can this be similar to N1MM contest definition file?
-
-- [ ] **Add ARRL Sweepstakes** - Consider adding ARRL Sweepstakes; however this one might be a little harder since
-it has a complex exchange.
-(This is on hold for now due to resources and complexity of exchange. w7sst, Oct 12, 2022)
 
 ### Roadmap - Completed
 
@@ -195,6 +203,17 @@ Release 1.84...
 - [x] **Merge F6FVY improvements** - This includes improvements to add new callers are added after qso, F1 improvements, speed increment/decrement, remove beep after qso, F7 improvements to cause Dx stations to call again, and mouse wheel controls RIT.
 
 - [x] Quality improvements.
+
+#### Complete - Spring/Summer 2024 (Mar '24 - Sept '24)
+Release 1.85...
+- [x] **Add ARRL Sweepstakes Contest** - Added support for the upcoming ARRL Sweepstakes Contest,
+improved Screen Logging with error reporting (exchange errors displayed in Red),
+updated a few call history files and fixed several bugs.
+
+- [x] **GUI Enhancement Discussions** - The team, lead by Jim, K6OK, has been working on an updated
+GUI with for ergonomic enhancements. Jim has shared a preliminary version with other team members.
+If interested in helping, please join our github group and let us know.
+Perhaps build a prototype to collect useability feedback from project advocates and users.
 
 # History
 TODO - add a paragraph or two regarding the history of MR.
