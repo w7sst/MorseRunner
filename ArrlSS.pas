@@ -480,15 +480,25 @@ function TSweepstakes.GetCheckSection(const ACallsign: string;
   AThreshold: Single): String;
 var
   ssrec: TSweepstakesCallRec;
+  check: integer;
   section: string;
 begin
   if FindCallRec(ssrec, ACallsign) then
     begin
-      if (Random < AThreshold) then
-        section := GetAlternateSection(ssrec.Section)
-      else
-        section := ssrec.Section;
-      result := format('%.02d %s', [ssrec.Check, section]);
+      check := ssrec.Check;
+      if Random < AThreshold then   // 10%
+        begin
+          if Random(2) = 0 then
+            check := (check+1) mod 100
+          else
+            check := ((check-1) + 100) mod 100;
+        end;
+
+      section := ssrec.Section;
+      if Random < AThreshold then   // 10%
+        section := GetAlternateSection(section);
+
+      result := format('%.02d %s', [check, section]);
     end
   else
     result:= '';
