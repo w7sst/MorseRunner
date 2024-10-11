@@ -251,8 +251,21 @@ end;
 
   Parameter AValue is an optional Patience value.
   If AValue > 0, Patience is set to this value;
+  else if Patience=FULL_PATIENCE, no changes;
   else if RunMode = rmSingle, Patience is set to 4;
   otherwise Patience is incremented by 2 (up to maximum of 4).
+
+  Note: When MorePatience was introduced in May 2024, a bug (Issue #370) was
+  introduced causing the DxStation to not send an 'R' after the user corrected
+  a callsign. The case involved the user sending a corrected callsign using
+  the Enter key while leaving the exchange fields blank (user sends
+  '<his incorrect call> ?'. In this case, the DxOperator.MsgReceived function
+  would call MorePatience for the '?' and the Patience value was set to 4.
+  This caused DxOperator.GetReply() to send the wrong response:
+      DxOperator.GetReply(osNeedEnd, Patience=5) --> 'R <HisCall>'
+      DxOperator.GetReply(osNeedEnd, Patience=4) --> '<HisCall>'
+  To fix this problem, MorePatience will maintain an existing Patience value
+  of 5 (FULL_PATIENCE) and not set it to 4. Resolved in October 2024.
 }
 procedure TDxOperator.MorePatience(AValue: integer);
 begin
@@ -260,10 +273,13 @@ begin
 
   if AValue > 0 then
     Patience := Min(AValue, FULL_PATIENCE)
-  else if RunMode = rmSingle then
-    Patience := 4
-  else
-    Patience := Min(Patience + 2, 4);
+  else if Patience < FULL_PATIENCE then
+    begin
+      if RunMode = rmSingle then
+        Patience := 4
+      else
+        Patience := Min(Patience + 2, 4);
+    end;
 end;
 
 
@@ -419,7 +435,7 @@ begin
       osNeedNr, osNeedCall, osNeedCallNr, osNeedEnd: State := osFailed;
      end;
     Exit;
-    end;  
+    end;
 
   if msgHisCall in AMsg then
     case IsMyCall(Tst.Me.HisCall, True) of
