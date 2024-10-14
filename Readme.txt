@@ -2,7 +2,7 @@
                               Contest Simulator
                                   freeware
 
-                Version 1.85 - ARRL Sweepstakes Contest
+                Version 1.85.1 - ARRL Sweepstakes Contest
             The sixth release of the Morse Runner Community Edition
 
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
@@ -313,6 +313,9 @@ SUBMITTING YOUR SCORE
   File -> View Score menu command.
 
 VERSION HISTORY
+
+Version 1.85.1 (October 2024)
+  - DxStation now sends 'R' after callsign correction (W7SST)
 
 Version 1.85 (September 2024)
   - Add ARRL Sweepstakes Contest (W7SST)
