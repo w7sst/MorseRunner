@@ -423,6 +423,10 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+{$ifdef DEBUG}
+  // detect/report memory leaks while in debug mode
+  System.ReportMemoryLeaksOnShutdown := True;
+{$endif}
   Randomize;
 
   Panel2.DoubleBuffered := True;
