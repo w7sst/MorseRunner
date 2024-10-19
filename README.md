@@ -1,5 +1,11 @@
 # Morse Runner Community Edition
 > Click [here](https://github.com/w7sst/MorseRunner/releases/latest) to install the latest release.
+
+### Notice - 100-person limit on groups.io has been resolved
+We have recently removed the 100-person limit from the [MRCE user's group](https://groups.io/g/MorseRunnerCE) on groups.io.
+If you were unable to subscribe in the past, please visit our user group page and try again.
+Please click [here](https://groups.io/g/MorseRunnerCE/sponsor) to help cover the MRCE User Group hosting fees; any donation would be appreciated.
+
 ## Welcome
 For many years, hams have been using Morse Runner as an effective practice tool
 for improving their CW copying and pileup handling skills. All along, users
@@ -66,7 +72,7 @@ and let us know.
 We are always looking for additional project advocates, developers, testers and users.
 Developer skills are not required; only an interest in improving Morse Runner Community Edition.
 
-- [ ] **Resolve 100-person limit on groups.io** -
+- [x] **Resolve 100-person limit on groups.io** -
 Groups.io has a 100-person limit in their free-plan.
 When we launched MRCE, we formed a user-group on Groups.io.
 This group grew to 100 user limit by February 2024.
