@@ -1,7 +1,7 @@
 # Morse Runner Community Edition
 > Click [here](https://github.com/w7sst/MorseRunner/releases/latest) to install the latest release.
 
-### Notice - 100-person limit on groups.io has been resolved
+### Notice - 100-person limit on groups.io has been removed
 We have recently removed the 100-person limit from the [MRCE user's group](https://groups.io/g/MorseRunnerCE) on groups.io.
 If you were unable to subscribe in the past, please visit our user group page and try again.
 Please click [here](https://groups.io/g/MorseRunnerCE/sponsor) to help cover the MRCE User Group hosting fees; any donation would be appreciated.
