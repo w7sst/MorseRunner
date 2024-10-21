@@ -315,7 +315,11 @@ SUBMITTING YOUR SCORE
 VERSION HISTORY
 
 Version 1.85.1 (October 2024)
+  Bug Fix Release
   - DxStation now sends 'R' after callsign correction (W7SST)
+  - Fix memory leak (W7SST)
+
+  General
   - Removed 100-person subsciption limit for user's group on groups.io
 
 Version 1.85 (September 2024)
