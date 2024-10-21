@@ -19,7 +19,7 @@ type
 
 TNcjNaQp = class(TDualExchContest)
 private
-  NaQpCallList: TList<TNaQpCallRec>;
+  NaQpCallList: TObjectList<TNaQpCallRec>;
   Comparer: IComparer<TNaQpCallRec>;
 
 public
@@ -202,7 +202,7 @@ constructor TNcjNaQp.Create;
 begin
     inherited Create(etOpName, etNaQpExch2,     // NA station exchange
                      etOpName, etNaQpNonNaExch2); // non-NA station exchange
-    NaQpCallList := TList<TNaQpCallRec>.Create;
+    NaQpCallList := TObjectList<TNaQpCallRec>.Create;
     Comparer := TComparer<TNaQpCallRec>.Construct(TNaQpCallRec.compareCall);
 end;
 
