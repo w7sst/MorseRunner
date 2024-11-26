@@ -303,6 +303,19 @@ begin
 end;
 
 
+{
+  Read settings from MorseRunner.ini file.
+  Most settings are stored in various Ini.<setting> filelds.
+  Some simple UI settings are stored directly in UI components (e.g. Pitch,
+  Bandwidth, etc.) and do not have dedicated variables declared as part
+  of this Ini.pas unit.
+
+  Note that not all UI components have been initialized when this procedure is
+  called. For example, in the upcoming new GUI (v1.90+), the Contest dropdown
+  list will be populated after this procedure is called. Be sure to load the
+  settings in this procedure and then update any dynamic UI components after
+  this procedure has returned.
+}
 procedure FromIni(cb : TErrMessageCallback);
 var
   V: integer;
@@ -336,15 +349,15 @@ begin
   var IniFile: TCustomIniFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
   with IniFile do
     try
-      // initial Contest pick will be first item in the Contest Dropdown.
-      V:= Ord(FindContestByName(MainForm.SimContestCombo.Items[0]));
+      // initial Contest pick will be CQ WPX (original 1.68 contest).
       // Load SimContest, but do not call SetContest() until UI is initialized.
-      V:= ReadInteger(SEC_TST, 'SimContest', V);
-      if V > Length(ContestDefinitions) then V := 0;
+      V:= ReadInteger(SEC_TST, 'SimContest', Ord(SimContest));
+      if (V < 0) or (V > Length(ContestDefinitions)) then V := 0;
       SimContest := TSimContest(V);
       ActiveContest := @ContestDefinitions[SimContest];
-      MainForm.SimContestCombo.ItemIndex :=
-        MainForm.SimContestCombo.Items.IndexOf(ActiveContest.Name);
+
+      V := ReadInteger(SEC_TST, 'DefaultRunMode', Ord(DefaultRunMode));
+      MainForm.SetDefaultRunMode(Max(Ord(rmPileUp), Min(Ord(rmHst), V)));
 
       // load contest-specific Exchange Strings from .INI file.
       for SC := Low(ContestDefinitions) to High(ContestDefinitions) do begin
@@ -405,8 +418,6 @@ begin
       MainForm.CheckBox6.Checked := ReadBool(SEC_BND, 'Lids', Lids);
       MainForm.ReadCheckBoxes;
 
-      V := ReadInteger(SEC_TST, 'DefaultRunMode', Ord(DefaultRunMode));
-      MainForm.SetDefaultRunMode(Max(Ord(rmPileUp), Min(Ord(rmHst), V)));
       Duration := ReadInteger(SEC_TST, 'Duration', Duration);
       MainForm.SpinEdit2.Value := Duration;
       HiScore := ReadInteger(SEC_TST, 'HiScore', HiScore);
@@ -461,6 +472,7 @@ begin
 
       // write contest-specfic Exchange Strings to .INI file.
       WriteInteger(SEC_TST, 'SimContest', Ord(SimContest));
+      WriteInteger(SEC_TST, 'DefaultRunMode', Ord(DefaultRunMode));
       for SC := Low(ContestDefinitions) to High(ContestDefinitions) do begin
         assert(ContestDefinitions[SC].T = SC);
         KeyName := Format('%sExchange', [ContestDefinitions[SC].Key]);
@@ -504,7 +516,6 @@ begin
       WriteBool(SEC_BND, 'Flutter', Flutter);
       WriteBool(SEC_BND, 'Lids', Lids);
 
-      WriteInteger(SEC_TST, 'DefaultRunMode', Ord(DefaultRunMode));
       WriteInteger(SEC_TST, 'Duration', Duration);
       WriteInteger(SEC_TST, 'HiScore', HiScore);
       WriteInteger(SEC_TST, 'CompetitionDuration', CompDuration);
