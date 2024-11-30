@@ -308,7 +308,7 @@ type
       Selected: Boolean);
     procedure mnuShowCallsignInfoClick(Sender: TObject);
     procedure SimContestComboChange(Sender: TObject);
-    procedure SimContestComboPopulate;
+    procedure SimContestComboRefresh;
     procedure ExchangeEditChange(Sender: TObject);
     procedure ExchangeEditExit(Sender: TObject);
     procedure Edit4Exit(Sender: TObject);
@@ -443,15 +443,14 @@ begin
   UserCallsignDirty := False;
   UserExchangeDirty := False;
 
-  // populate and sort SimContestCombo
-  SimContestComboPopulate;
-
   // load DXCC support
   gDXCCList := TDXCC.Create;
 
   Histo:= THisto.Create(PaintBox1);
 
   AlSoundOut1.BufCount := 4;
+
+  // Read settings from .INI file
   FromIni(
     procedure (const aMsg : string)
     begin
@@ -460,6 +459,11 @@ begin
         MB_OK or MB_ICONERROR);
     end
   );
+
+  // populate and sort SimContestCombo after reading .ini file settings
+  SimContestComboRefresh;
+  assert(MainForm.SimContestCombo.ItemIndex =
+    MainForm.SimContestCombo.Items.IndexOf(ActiveContest.Name));
 
   // enable Exchange debugging either locally or via .INI file
   BDebugExchSettings := CDebugExchSettings or Ini.DebugExchSettings;
@@ -1143,6 +1147,10 @@ begin
   // the following will initialize simulation-specific data owned by contest.
   // (moved here from Ini.FromIni)
   begin
+    // if emtpy, set initial User Exchange (e.g. 3A OR)
+    if Ini.UserExchangeTbl[SimContest].IsEmpty then
+      Ini.UserExchangeTbl[SimContest] := ActiveContest.ExchDefault;
+
     // set contest-specific Sent Exchange field prior to calling SetMyCall().
     // UI assumes uppercase only, so convert .ini file data to uppercase.
     ExchangeEdit.Text := UpperCase(Ini.UserExchangeTbl[SimContest]);
@@ -1609,14 +1617,24 @@ begin
 end;
 
 { add contest names to SimContest Combo box and sort }
-procedure TMainForm.SimContestComboPopulate;
+procedure TMainForm.SimContestComboRefresh;
 var
   C: TContestDefinition;
+  I: integer;
 begin
   SimContestCombo.Items.Clear;
   for C in ContestDefinitions do
     SimContestCombo.Items.Add(C.Name);
   SimContestCombo.Sorted:= True;
+
+  // Use current contest if it exists within the list; otherwise select the first
+  I := SimContestCombo.Items.IndexOf(Ini.ContestDefinitions[SimContest].Name);
+  if I = -1 then
+    begin
+      I := 0;
+      SetContest(Ini.FindContestByName(SimContestCombo.Items[I]));
+    end;
+  SimContestCombo.ItemIndex := I;
 end;
 
 procedure TMainForm.ComboBox2Change(Sender: TObject);
