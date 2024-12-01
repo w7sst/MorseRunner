@@ -446,7 +446,16 @@ begin
         else if State = osNeedCall then SetState(osNeedEnd);
 
       mcAlmost:
-        if State in [osNeedPrevEnd, osNeedQso] then SetState(osNeedCallNr)
+        if State in [osNeedPrevEnd, osNeedQso] then
+          begin
+            if not (RunMode in [rmHST, rmWpx]) and
+              (msgNR in AMsg) and (Random < 0.8) then
+              // user sent partial call and exchange; send my call and exchange
+              SetState(osNeedCallNr)
+            else
+              // user sent partial callsign only; resend my call
+              MorePatience
+          end
         else if State = osNeedCallNr then MorePatience
         else if State = osNeedNr then SetState(osNeedCallNr)
         else if State = osNeedEnd then SetState(osNeedCall);
