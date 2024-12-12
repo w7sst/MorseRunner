@@ -57,14 +57,13 @@ type
                       (occurs whenever Patience decrements to zero).
                     - user sends a msgNIL, which forces the QSO to fail.
                     - user sends a msgB4, stating that they had a prior QSO.
-    osNeedCall      DxStation is expecting their call to be corrected by the
-                    user. This state is entered when user sends a partially-
-                    correct callsign. This DxOperator will wait for the correct
-                    call to be sent before sending its Exchange.
-                    The logic also appears to support the fact the user's
-                    exchange (NR) has already been copied by this DxStation.
-                    Once corrected, we should send 'R <exch>'.
-                    Typical response msg: send DxStation's callsign
+    osNeedCall      DxStation has received a partially correct callsign from
+                    the user along with the user's exchange. At this point, the
+                    DxStation is expecting their call to be corrected by the
+                    user. This station responds with either "DE <call>" or
+                    "DE <call> <exch>".
+                    Once corrected, the State becomes osNeedEnd and sends
+                    'R <exch>'.
     osNeedCallNr    DxStation is expecting both their callsign and Exchange
                     to be sent by user.
                     This state is entered when the DxStation receives a
@@ -448,6 +447,7 @@ begin
       mcAlmost:
         if State in [osNeedPrevEnd, osNeedQso] then SetState(osNeedCallNr)
         else if State = osNeedCallNr then MorePatience
+        else if State = osNeedCall then MorePatience
         else if State = osNeedNr then SetState(osNeedCallNr)
         else if State = osNeedEnd then SetState(osNeedCall);
 
@@ -537,28 +537,22 @@ begin
         case Trunc(R2*6) of
           0: Result := msgDeMyCallNr1;  // DE <my> <exch>
           1: Result := msgDeMyCallNr2;  // DE <my> <my> <exch>
-          2,3: Result := msgMyCallNr2;  // <my> <my> <exch>
-          4,5: Result := msgMyCallNr1;  // <my> <exch>
+          2,3: Result := msgMyCallNr1;  // <my> <exch>
+          4: Result := msgMyCallNr2;    // <my> <my> <exch>
+          5: Result := msgMyCall;       // <my>
         end;
 
     // osNeedCallNr - They have sent an almost-correct callsign.
     osNeedCallNr:
       if (RunMode = rmHst) then
         Result := msgDeMyCall1
-      else if (SimContest in [scArrlSS]) then
-        case Trunc(R2*5) of
-          0: Result := msgDeMyCall1;    // DE <my>
-          1: Result := msgDeMyCall2;    // DE <my> <my>
-          2: Result := msgMyCall2;      // <my> <my>
-          3,4: Result := msgMyCallNr1;  // <my> <exch>
-        end
       else
         case Trunc(R2*6) of
           0: Result := msgDeMyCall1;    // DE <my>
           1: Result := msgDeMyCall2;    // DE <my> <my>
-          2: Result := msgMyCall2;      // <my> <my>
-          3: Result := msgMyCallNr2;    // <my> <my> <exch>
-          4,5: Result := msgMyCallNr1;  // <my> <exch>
+          2,3: Result := msgMyCall;     // <my>
+          4: Result := msgMyCall2;      // <my> <my>
+          5: Result := msgMyCallNr1;    // <my> <exch>
         end
     else //osNeedEnd:
       if Patience < (FULL_PATIENCE-1) then Result := msgNR
