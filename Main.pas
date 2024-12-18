@@ -322,7 +322,6 @@ type
     UserExchangeDirty: boolean; // SetMyExchange is called after exchange edits
     CWSpeedDirty: boolean;      // SetWpm is called after CW Speed edits
     RitLocal: integer;          // tracks incremented RIT Value
-    QsoCountSinceStationID: Integer;  // send station ID once-every-three QSOs
     function CreateContest(AContestId : TSimContest) : TContest;
     procedure ConfigureExchangeFields;
     procedure SetMyExch1(const AExchType: TExchange1Type; const Avalue: string);
@@ -442,7 +441,6 @@ begin
 
   UserCallsignDirty := False;
   UserExchangeDirty := False;
-  QsoCountSinceStationID := 0;
 
   // load DXCC support
   gDXCCList := TDXCC.Create;
@@ -548,21 +546,6 @@ begin
   if AMsg = msgNR then
     NrSent := true;
   Tst.Me.SendMsg(AMsg);
-
-  // send station ID once-every-three QSOs
-  if RunMode <> rmHST then
-    case AMsg of
-    msgCQ: QsoCountSinceStationID := 0;
-    msgTU:
-      begin
-        Inc(QsoCountSinceStationID);
-        if QsoCountSinceStationID >= 3 then
-          begin
-            SendMsg(msgMyCall);
-            QsoCountSinceStationID := 0;
-          end;
-      end;
-    end;
 end;
 
 
