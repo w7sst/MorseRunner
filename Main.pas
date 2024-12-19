@@ -369,7 +369,6 @@ type
     procedure UpdCWMaxRxSpeed(Maxspd: integer);
     procedure ClientHTTP1Redirect(Sender: TObject; var dest: string;
       var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
-
   end;
 
 function ToStr(const val : TExchange1Type): string; overload;

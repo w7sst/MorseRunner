@@ -208,7 +208,7 @@ begin
     NewEnvelope := Keyer.Envelope;
     for i:=0 to High(NewEnvelope) do
       NewEnvelope[i] := NewEnvelope[i] * Amplitude;
-      
+
     //compare to the old one
     Result := Length(NewEnvelope) >= SendPos;
     if Result then

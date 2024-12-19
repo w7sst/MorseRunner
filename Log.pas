@@ -920,6 +920,9 @@ begin
   if (Tst.Me.SentExchTypes.Exch1 in [etSSNrPrecedence]) or
      (Tst.Me.SentExchTypes.Exch2 in [etSerialNr]) then
     Inc(Tst.Me.NR);
+
+  // Notify SaveQso is complete
+  Tst.OnSaveQsoComplete;
 end;
 
 
