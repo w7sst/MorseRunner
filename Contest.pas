@@ -407,7 +407,8 @@ begin
     msgCQ: SendText(AStn, 'CQ <my> TEST');
     msgNR: SendText(AStn, '<#>');
     msgTU:
-      // send station ID after 3 consecutive QSOs
+      // send station ID after 3 consecutive QSOs (the comparison below uses
+      // 2 since the counter is incremented after 'TU <my>' has been sent).
       if (RunMode <> rmHST) and (QsoCountSinceStationID >= 2)
         then SendText(AStn, 'TU <my>')
         else SendText(AStn, 'TU');
