@@ -21,6 +21,10 @@ type
     procedure SwapFilters;
 
   protected
+  const
+    STATION_ID_RATE = 3;  // send Station ID after 3 consecutive QSOs
+
+  var
     QsoCountSinceStationID: Integer;  // QSOs since last CQ or Station ID
     BFarnsworthEnabled : Boolean; // enables Farnsworth timing (e.g. SST Contest)
 
@@ -409,7 +413,7 @@ begin
     msgTU:
       // send station ID after 3 consecutive QSOs (the comparison below uses
       // 2 since the counter is incremented after 'TU <my>' has been sent).
-      if (RunMode <> rmHST) and (QsoCountSinceStationID >= 2)
+      if (RunMode <> rmHST) and (QsoCountSinceStationID >= (STATION_ID_RATE-1))
         then SendText(AStn, 'TU <my>')
         else SendText(AStn, 'TU');
     msgMyCall: SendText(AStn, '<my>');
@@ -873,7 +877,7 @@ var
 begin
   // reset Station ID counter after sending a CQ or 3 consecutive QSOs
   if (msgCQ in Me.Msg) or
-     ((msgTU in Me.Msg) and (QsoCountSinceStationID >= 3)) then
+     ((msgTU in Me.Msg) and (QsoCountSinceStationID >= STATION_ID_RATE)) then
     OnStationIDSent;
 
   //the stations heard my CQ and want to call
