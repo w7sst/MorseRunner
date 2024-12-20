@@ -21,6 +21,11 @@ type
     procedure SwapFilters;
 
   protected
+  const
+    STATION_ID_RATE = 3;  // send Station ID after 3 consecutive QSOs
+
+  var
+    QsoCountSinceStationID: Integer;  // QSOs since last CQ or Station ID
     BFarnsworthEnabled : Boolean; // enables Farnsworth timing (e.g. SST Contest)
 
     constructor Create;
@@ -91,6 +96,8 @@ type
     function GetAudio: TSingleArray;
     procedure OnMeFinishedSending;
     procedure OnMeStartedSending;
+    procedure OnSaveQsoComplete;
+    procedure OnStationIDSent;
   end;
 
 var
@@ -135,6 +142,7 @@ begin
   Agc.AgcEnabled := true;
   NoActivityCnt :=0;
   LastLoadCallsign := '';
+  QsoCountSinceStationID := 0;
   BFarnsworthEnabled := false;
 
   Init;
@@ -159,6 +167,7 @@ begin
   Stations.Clear;
   BlockNumber := 0;
   LastLoadCallsign := '';
+  QsoCountSinceStationID := 0;
   BFarnsworthEnabled := false;
 end;
 
@@ -404,7 +413,12 @@ begin
   case AMsg of
     msgCQ: SendText(AStn, 'CQ <my> TEST');
     msgNR: SendText(AStn, '<#>');
-    msgTU: SendText(AStn, 'TU');
+    msgTU:
+      // send station ID after 3 consecutive QSOs (the comparison below uses
+      // 2 since the counter is incremented after 'TU <my>' has been sent).
+      if (RunMode <> rmHST) and (QsoCountSinceStationID >= (STATION_ID_RATE-1))
+        then SendText(AStn, 'TU <my>')
+        else SendText(AStn, 'TU');
     msgMyCall: SendText(AStn, '<my>');
     msgHisCall: SendText(AStn, '<his>');
     msgB4: SendText(AStn, 'QSO B4');
@@ -893,6 +907,11 @@ var
   z: integer;
   Dx : integer;
 begin
+  // reset Station ID counter after sending a CQ or 3 consecutive QSOs
+  if (msgCQ in Me.Msg) or
+     ((msgTU in Me.Msg) and (QsoCountSinceStationID >= STATION_ID_RATE)) then
+    OnStationIDSent;
+
   //the stations heard my CQ and want to call
   if (not (RunMode in [rmSingle, RmHst])) then
     if (msgCQ in Me.Msg) or
@@ -930,6 +949,21 @@ begin
   //tell callers that I started sending
   for i:=Stations.Count-1 downto 0 do
     Stations[i].ProcessEvent(evMeStarted);
+end;
+
+
+// Called by Log.SaveQso after saving a QSO into the log.
+procedure TContest.OnSaveQsoComplete;
+begin
+  // send station ID after 3 consecutive QSOs
+  Inc(QsoCountSinceStationID);
+end;
+
+
+// Called by TContest.OnMeFinishedSending after sending 'CQ <my>' or 'TU <my>'.
+procedure TContest.OnStationIDSent;
+begin
+  QsoCountSinceStationID := 0;
 end;
 
 

@@ -314,10 +314,9 @@ SUBMITTING YOUR SCORE
 
 VERSION HISTORY
 
-Version 1.85.2 (March 2025)
+Version 1.85.2 (April 2025)
   Bug Fix Release
   - DxStation now sends callsign correction only after user sends partial callsign (#382) (W7SST)
-  - Send 'TU MyCall' after three consecutive QSOs (#247) (W7SST)
   - Send Station ID after 3 consecutive QSOs (#247) (W7SST)
   - Fix program hang when using QRM Band Condition (#379) (W7SST)
   - Fix NIL log error after incomplete callsign is sent and later corrected (#399) (W7SST)
