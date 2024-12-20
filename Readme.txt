@@ -314,6 +314,10 @@ SUBMITTING YOUR SCORE
 
 VERSION HISTORY
 
+Version 1.86 (Spring 2025)
+  General bug fixes and improvements...
+  - Send 'TU MyCall' after three consecutive QSOs (W7SST)
+
 Version 1.85.2 (December 2024)
   Bug Fix Release
   - DxStation now sends callsign correction only after user sends partial callsign (#382) (W7SST)
