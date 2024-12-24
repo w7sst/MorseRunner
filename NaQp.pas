@@ -21,6 +21,8 @@ TNcjNaQp = class(TDualExchContest)
 private
   NaQpCallList: TObjectList<TNaQpCallRec>;
   Comparer: IComparer<TNaQpCallRec>;
+  FIsCallLocalLastCall: String;     // used to optimize IsCallLocalToContest
+  FIsCallLocalLastResult: Boolean;  // used to optimize IsCallLocalToContest
 
 public
   constructor Create;
@@ -28,7 +30,8 @@ public
   function GetExchangeTypes(
     const AStationKind : TStationKind;
     const ARequestedMsgType : TRequestedMsgType;
-    const AStationCallsign : string) : TExchTypes; override;
+    const AStationCallsign : String;
+    const ARemoteCallsign : String) : TExchTypes; override;
   function LoadCallHistory(const AUserCallsign : string) : boolean; override;
   function OnSetMyCall(const AUserCallsign : string; out err : string) : boolean; override;
   function PickStation(): integer; override;
@@ -65,9 +68,12 @@ var
 {$ifdef DEBUG}
   dxcc: TDxCCRec;
   DxOnly, DxccTest, HiOnly, AkOnly, NaOnly: boolean;
+  Keep50: Integer;
 {$endif}
 begin
   NaQpCallList.Clear;
+  FIsCallLocalLastCall := '';
+  FIsCallLocalLastResult := False;
 
   slst:= TStringList.Create;
   tl:= TStringList.Create;
@@ -80,6 +86,7 @@ begin
   HiOnly := False;
   AkOnly := False;
   NaOnly := False;
+  Keep50 := -1;
 {$endif}
 
   try
@@ -98,6 +105,7 @@ begin
       else if (slst.Strings[i].Equals('DxOnly')) then DxOnly := True
       else if (slst.Strings[i].Equals('HiOnly')) then HiOnly := True
       else if (slst.Strings[i].Equals('AkOnly')) then AkOnly := True
+      else if (slst.Strings[i].Equals('Keep50')) then Keep50 := 50
       else if (slst.Strings[i].Equals('NaOnly')) then NaOnly := True;
 {$endif}
 
@@ -106,15 +114,15 @@ begin
       if (tl.Count > 2) then begin
           if rec = nil then
             rec := TNaQpCallRec.Create;
-          rec.Call := UpperCase(tl.Strings[0]);
-          rec.Name := UpperCase(tl.Strings[1]);
-          rec.State := UpperCase(tl.Strings[2]);
+          rec.Call := UpperCase(tl.Strings[0].Trim);
+          rec.Name := UpperCase(tl.Strings[1].Trim);
+          rec.State := UpperCase(tl.Strings[2].Trim);
           rec.UserText := '';
           if tl.Count >= 4 then rec.UserText := Trim(tl.Strings[3]);
           if rec.Call='' then continue;
           if rec.Name='' then continue;
           if length(rec.Name) > 12 then continue;
-          if rec.State='' then continue;
+          // ignore rec.State=''; handled in TNcjNaQp.PickStation().
 
 {$ifdef DEBUG}
           // debug hook to force each call to look up DXCC Record
@@ -124,7 +132,7 @@ begin
           end;
 
           // debug hooks provide ability to load subset of call history
-          if DxOnly and (rec.State <> '') then continue
+          if DxOnly and Self.IsCallLocalToContest(rec.Call)	then continue
           else if HiOnly and (not rec.State.Equals('HI')) then continue
           else if AkOnly and (not rec.State.Equals('AK')) then continue
           else if NaOnly and not (gDXCCList.FindRec(dxcc, rec.Call) and
@@ -132,6 +140,10 @@ begin
                  dxcc.Entity.Equals('Hawaii') or
                  dxcc.Entity.Equals('Canada') or
                  dxcc.Entity.Equals('Mexico'))) then
+            continue
+          else if (Keep50>0) and Self.IsCallLocalToContest(rec.Call) then
+            Dec(Keep50)
+          else if (Keep50=0) and Self.IsCallLocalToContest(rec.Call) then
             continue;
 
           // 4U1WB is from DC, not DX. DX is flagged as an Invalid Section by N1MM.
@@ -204,6 +216,9 @@ begin
                      etOpName, etNaQpNonNaExch2); // non-NA station exchange
     NaQpCallList := TObjectList<TNaQpCallRec>.Create;
     Comparer := TComparer<TNaQpCallRec>.Construct(TNaQpCallRec.compareCall);
+
+  FIsCallLocalLastCall := '';
+  FIsCallLocalLastResult := False;
 end;
 
 
@@ -217,18 +232,30 @@ end;
 {
   returns exchange types for this contest and sending station.
 
-  For the NCJ NAQP Contest, the exchange being sent if determined by the
+  For the NCJ NAQP Contest, the exchange being sent is determined by the
   sending station's callsign:
   - NA stations send Name and Location (State, Province or Entity prefix)
   - Non-NA stations send only Name
+  - This function is called for each new contact to determine whether the
+    calling station is a Dx contact (outside of local contest). If so,
+    the Non-NA station will send only name and the rule checking will adapt
+    accordingly.
 }
 function TNcjNaQp.GetExchangeTypes(
   const AStationKind : TStationKind;
   const ARequestedMsgType : TRequestedMsgType;
-  const AStationCallsign : string) : TExchTypes;
+  const AStationCallsign : String;
+  const ARemoteCallsign : String) : TExchTypes;
 begin
-  // exchange type being sent are determine by sending station's location
-  if (Tst as TNcjNaQp).IsCallLocalToContest(AStationCallsign) then
+  // exchange type being sent is determined by the sending station's location
+  if ((ARequestedMsgType = mtRecvMsg) and not ARemoteCallsign.IsEmpty) then
+    begin
+      if (Tst as TNcjNaQp).IsCallLocalToContest(ARemoteCallsign) then
+        Result := Self.LocalTypes
+      else
+        Result := Self.DxTypes;
+    end
+  else if (Tst as TNcjNaQp).IsCallLocalToContest(AStationCallsign) then
     Result := Self.LocalTypes
   else
     Result := Self.DxTypes;
@@ -384,8 +411,13 @@ function TNcjNaQp.IsCallLocalToContest(const ACallsign: string) : boolean;
 var
   dxrec : TDXCCRec;
 begin
-  Result := gDXCCList.FindRec(dxrec, ACallsign) and
+  if FIsCallLocalLastCall <> ACallsign then
+    begin
+      FIsCallLocalLastCall := ACallsign;
+      FIsCallLocalLastResult := gDXCCList.FindRec(dxrec, ACallsign) and
             (dxrec.Continent.Equals('NA') or dxrec.Entity.Equals('Hawaii'));
+    end;
+  Result := FIsCallLocalLastResult;
 end;
 
 

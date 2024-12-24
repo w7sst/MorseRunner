@@ -30,7 +30,8 @@ type
     function GetExchangeTypes(
       const AStationKind : TStationKind;
       const ARequestedMsgType : TRequestedMsgType;
-      const AStationCallsign : string) : TExchTypes; override;
+      const AStationCallsign : String;
+      const ARemoteCallsign : String) : TExchTypes; override;
 
   end;
 
@@ -76,7 +77,8 @@ end;
 function TDualExchContest.GetExchangeTypes(
   const AStationKind : TStationKind;
   const ARequestedMsgType : TRequestedMsgType;
-  const AStationCallsign : string) : TExchTypes;
+  const AStationCallsign : String;
+  const ARemoteCallsign : String) : TExchTypes;
 var
   HomeCallIsDX: Boolean;
   IsSimDxStation: Boolean;
