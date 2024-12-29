@@ -994,9 +994,11 @@ begin
   case SimContest of
     scArrlSS:
       R := Tst.ValidateEnteredExchange(Edit1.Text, Edit2.Text, Edit3.Text, ExchError);
+    scNaQp:
+      // for NAQP, Exch2 can be empty because Non-NA (DX) Stations do not send State.
+      R := (Edit3.Text <> '') or (not (Tst as TNcjNaQp).IsCallLocalToContest(Edit1.Text));
     else
-      R := (Edit3.Text <> '') or ((SimContest = scNaQp) and
-                                  (RecvExchTypes.Exch2 = etNaQpNonNaExch2));
+      R := (Edit3.Text <> '');
   end;
 
   //send his call if did not send before, or if call changed

@@ -1135,6 +1135,15 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
         ACorrections.Add(TrueExch2);
     leCHK:
         ACorrections.Add(format('%.02d', [TrueCheck]));
+    leST:
+      // special case for NAQP - Non-NA Stations do not send State. Return a
+      // space (' ') to avoid printing a confusing "" in the error log.
+      if (SimContest = scNaQP) and
+        (Mainform.RecvExchTypes.Exch2 = etNaQpNonNaExch2) and
+        TrueExch2.IsEmpty then
+        ACorrections.Add(' ')
+      else
+        ACorrections.Add(TrueExch2);
     else
       ACorrections.Add(TrueExch2);
   end;
