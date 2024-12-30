@@ -19,6 +19,7 @@ type
     FDownX: integer;
     FOverloaded: boolean;
     FShowHint: boolean;
+    FHintStep: Integer;
     FDbMax: Single;
     FDbScale: Single;
 
@@ -33,6 +34,7 @@ type
     function GetDb: Single;
     procedure UpdateHint;
     procedure SetDb(const AdB: Single);
+    procedure SetHintStep(const AHintStep: Integer);
   protected
     procedure Paint; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState;
@@ -43,6 +45,7 @@ type
     constructor Create(AOwner: TComponent); override;
   published
     property ShowHint: boolean read FShowHint write SetShowHint;
+    property HintStep: Integer read FHintStep write SetHintStep;
     property Margin: integer read FMargin write SetMargin;
     property Value: Single read FValue write SetValue;
     property Enabled;
@@ -82,6 +85,7 @@ begin
   ControlStyle := [csCaptureMouse, csClickEvents, csDoubleClicks, csOpaque];
   FHintWin := TPermanentHintWindow.Create(Self);
   FShowHint := true;
+  FHintStep := 0;
 
   FDbMax := 0;
   FDbScale := 60;
@@ -226,9 +230,32 @@ begin
   Result := DbMax + (FValue - 1) * DbScale;
 end;
 
+procedure TVolumeSlider.SetHintStep(const AHintStep: Integer);
+begin
+  FHintStep := max(0, AHintStep);
+  UpdateHint;
+end;
+
 procedure TVolumeSlider.UpdateHint;
 begin
-  Hint := Format('%.1f dB', [dB]);
+  case FHintStep of
+  0:
+    if dB > 0 then
+      Hint := Format('+%.1f dB', [dB])
+    else
+      Hint := Format(' %.1f dB', [dB]);
+  else
+    begin
+    var V: Single := FHintStep*round(dB/FHintStep);
+    //-60..+20 dB
+    if V > 0 then
+      Hint := Format('+%.0f dB', [min(FDbMax, V)])
+    else if V >= (FDbMax-FDbScale+FHintStep) then
+      Hint := Format( '%.0f dB', [max(FDbMax-FDbScale, V)])
+    else
+      Hint := 'Off';
+    end;
+  end;
 end;
 
 procedure TVolumeSlider.SetDb(const AdB: Single);

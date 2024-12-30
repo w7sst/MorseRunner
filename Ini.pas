@@ -263,6 +263,7 @@ var
   HiScore: integer;
   CompDuration: integer = 60;
 
+  SelfMonVolume: Integer = 0;
   SaveWav: boolean = false;
   FarnsworthCharRate: integer = 25;
   AllStationsWpmS: integer = 0;      // force all stations to this Wpm
@@ -424,9 +425,11 @@ begin
       V := Max(1, Min(5, V));
       BufSize := 64 shl V;
 
+      // [Station]
       V := ReadInteger(SEC_STN, 'SelfMonVolume', 0);
-      MainForm.VolumeSlider1.Value := V / 80 + 0.75;
-
+      V := max(-60, min(20, V));
+      SelfMonVolume := V;
+      MainForm.VolumeSlider1.Db := SelfMonVolume;
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
 
       // [Settings]
@@ -451,7 +454,6 @@ end;
 
 procedure ToIni;
 var
-  V: integer;
   SC: TSimContest;
   KeyName: String;
 begin
@@ -509,9 +511,8 @@ begin
       WriteInteger(SEC_TST, 'HiScore', HiScore);
       WriteInteger(SEC_TST, 'CompetitionDuration', CompDuration);
 
-      V := Round(80 * (MainForm.VolumeSlider1.Value - 0.75));
-      WriteInteger(SEC_STN, 'SelfMonVolume', V);
-
+      // [Station]
+      WriteInteger(SEC_STN, 'SelfMonVolume', SelfMonVolume);
       WriteBool(SEC_STN, 'SaveWav', SaveWav);
 
       // [Settings]
