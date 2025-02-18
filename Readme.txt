@@ -314,8 +314,9 @@ SUBMITTING YOUR SCORE
 
 VERSION HISTORY
 
-Version 1.85.2 (December 2024)
+Version 1.85.2 (February 2025)
   Bug Fix Release
+  - Fix program hang when using QRM Band Condition (#379) (W7SST)
   - DxStation now sends callsign correction only after user sends partial callsign (#382) (W7SST)
   - NAQP - DX Stations are now included in simulation (#353) (W7SST)
 
