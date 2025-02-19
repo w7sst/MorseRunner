@@ -8,7 +8,7 @@
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
                       http://www.dxatlas.com/MorseRunner/
 
-        Copyright (C) 2022-2024 Morse Runner Community Edition Contributors
+        Copyright (C) 2022-2025 Morse Runner Community Edition Contributors
                    https://www.github.com/w7sst/MorseRunner/
 
 
