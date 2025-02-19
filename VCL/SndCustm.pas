@@ -85,6 +85,7 @@ begin
     else if Msg.hwnd <> 0 then Continue
     else
       case Msg.Message of
+        // Synchronize() causes the ProcessEvent call to be executed by the main thread.
         MM_WIM_DATA, MM_WOM_DONE: Synchronize(ProcessEvent);
         MM_WIM_CLOSE: Terminate;
         end;
@@ -99,7 +100,7 @@ begin
   except on E: Exception do
     begin
     Application.ShowException(E);
-    Terminate;
+    Application.Terminate;
     end;
   end;
 end;
