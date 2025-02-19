@@ -1760,7 +1760,7 @@ const
         'CW CONTEST SIMULATOR'#13#13 +
         'Version %s'#13#13 +
         'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13 +
-        'Copyright ©2022-2024 Morse Runner Community Edition Contributors'#13#13 +
+        'Copyright ©2022-2025 Morse Runner Community Edition Contributors'#13#13 +
         'https://www.github.com/w7sst/MorseRunner/#readme'#13 +
         'https://groups.io/g/MorseRunnerCE';
 begin
