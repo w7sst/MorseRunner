@@ -511,7 +511,7 @@ end;
 procedure TMainForm.AlSoundOut1BufAvailable(Sender: TObject);
 begin
   if AlSoundOut1.Enabled then
-    try AlSoundOut1.PutData(Tst.GetAudio); except end;
+    AlSoundOut1.PutData(Tst.GetAudio);
 end;
 
 

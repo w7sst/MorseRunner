@@ -17,6 +17,7 @@ type
   public
     constructor CreateStation;
     procedure ProcessEvent(AEvent: TStationEvent); override;
+    procedure SendText(AMsg: string); override;
   end;
 
 implementation
@@ -63,6 +64,18 @@ begin
     evTimeout:
       SendMsg(msgLongCQ);
     end;
+end;
+
+
+{
+  Overriden to allow replacement of '<his>' with the user's callsign.
+  This is needed to bypass special handling of '<his>' during message
+  processing to accomodate 'Ini.CallsFromKeyer'.
+}
+procedure TQrmStation.SendText(AMsg: string);
+begin
+  AMsg := AMsg.Replace('<his>', HisCall);
+  inherited SendText(AMsg);
 end;
 
 end.

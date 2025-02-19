@@ -278,11 +278,16 @@ begin
   P := Pos('<', AMsg);
   while (P > 0) do
     begin
+      var Q: Integer := P;
       if ReplaceTokenAt(AMsg, P, '<my>', MyCall) then Break;
       if ReplaceTokenAt(AMsg, P, '<exch1>', Exch1) then Break;
       if ReplaceTokenAt(AMsg, P, '<exch2>', Exch2) then Break;
       if ReplaceTokenAt(AMsg, P, '<HisName>', MainForm.Edit2.Text) then Break;
       if ReplaceTokenAt(AMsg, P, '<MyName>', Tst.Me.OpName) then Break;
+      if P = Q then
+        raise Exception.CreateFmt(
+          'Internal error: TStation.SendText: unrecognized token in msg: "%s"',
+          [AMsg]);
     end;
 
 {

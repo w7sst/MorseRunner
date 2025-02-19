@@ -434,10 +434,10 @@ begin
     msgMyCallNr1: SendText(AStn, '<my> <#>');
     msgMyCallNr2: SendText(AStn, '<my> <my> <#>');
     msgNrQm: SendText(AStn, 'NR?');
-    msgLongCQ: SendText(AStn, 'CQ CQ TEST <my> <my> TEST');  // QrmStation only
+    msgLongCQ: SendText(AStn, 'CQ CQ TEST <my> <my> TEST');
     msgQrl: SendText(AStn, 'QRL?');
     msgQrl2: SendText(AStn, 'QRL?   QRL?');
-    msqQsy: SendText(AStn, '<his>  QSY QSY');
+    msqQsy: SendText(AStn, '<his>  QSY QSY');                // QrmStation only
     msgAgn: SendText(AStn, 'AGN');
   end;
 end;
