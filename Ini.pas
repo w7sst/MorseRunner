@@ -424,9 +424,11 @@ begin
       V := Max(1, Min(5, V));
       BufSize := 64 shl V;
 
+      // [Station]
       V := ReadInteger(SEC_STN, 'SelfMonVolume', 0);
-      MainForm.VolumeSlider1.Value := V / 80 + 0.75;
-
+      V := max(-60, min(0, V));
+      SelfMonVolume := V;
+      MainForm.VolumeSlider1.Db := SelfMonVolume;
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
 
       // [Settings]
@@ -509,9 +511,9 @@ begin
       WriteInteger(SEC_TST, 'HiScore', HiScore);
       WriteInteger(SEC_TST, 'CompetitionDuration', CompDuration);
 
+      // [Station]
       V := Round(80 * (MainForm.VolumeSlider1.Value - 0.75));
       WriteInteger(SEC_STN, 'SelfMonVolume', V);
-
       WriteBool(SEC_STN, 'SaveWav', SaveWav);
 
       // [Settings]
