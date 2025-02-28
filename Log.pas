@@ -900,6 +900,7 @@ begin
              ((MyCall = Qso.Call) or (Oper.IsMyCall(Qso.Call, False) = mcAlmost)) then
             begin
               DataToLastQso; //grab "True" data and delete this dx station!
+              Tst.ResetQsoState;
               Break;
             end;
 
