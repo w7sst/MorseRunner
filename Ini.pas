@@ -427,7 +427,7 @@ begin
 
       // [Station]
       V := ReadInteger(SEC_STN, 'SelfMonVolume', 0);
-      V := max(-60, min(20, V));
+      V := max(-60, min(0, V));
       SelfMonVolume := V;
       MainForm.VolumeSlider1.Db := SelfMonVolume;
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);

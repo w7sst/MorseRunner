@@ -712,11 +712,11 @@ begin
     begin
     Blk := Me.GetBlock;
     //self-mon. gain
-    Smg := Power(10, (MainForm.VolumeSlider1.Value - 0.75) * 4);
+    Smg := Power(10, (MainForm.VolumeSlider1.Value - 1) * 3);
 
     // apply linear rolloff towards zero between -57 and -60db (i.e. Smg=0 @ -60db)
-    if MainForm.VolumeSlider1.Value < 0.0375 then     // @ -57db, value = 3/80 = 0.0375
-      Smg := Smg * MainForm.VolumeSlider1.Value * 80; // 80 dB steps in [-60,+20dB]
+    if MainForm.VolumeSlider1.Value < 0.05 then       // @ -57db, value = 3/60 = 0.05
+      Smg := Smg * MainForm.VolumeSlider1.Value * 60; // 60 dB steps in [-60,0dB]
 
     Rfg := 1;
     if Ini.Qsk
