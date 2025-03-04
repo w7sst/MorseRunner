@@ -263,6 +263,7 @@ var
   HiScore: integer;
   CompDuration: integer = 60;
 
+  SelfMonVolume: Integer = 0;
   SaveWav: boolean = false;
   FarnsworthCharRate: integer = 25;
   AllStationsWpmS: integer = 0;      // force all stations to this Wpm
@@ -453,7 +454,6 @@ end;
 
 procedure ToIni;
 var
-  V: integer;
   SC: TSimContest;
   KeyName: String;
 begin
@@ -512,8 +512,7 @@ begin
       WriteInteger(SEC_TST, 'CompetitionDuration', CompDuration);
 
       // [Station]
-      V := Round(80 * (MainForm.VolumeSlider1.Value - 0.75));
-      WriteInteger(SEC_STN, 'SelfMonVolume', V);
+      WriteInteger(SEC_STN, 'SelfMonVolume', SelfMonVolume);
       WriteBool(SEC_STN, 'SaveWav', SaveWav);
 
       // [Settings]
