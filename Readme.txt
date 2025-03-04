@@ -323,11 +323,12 @@ Version 1.85.2 (March 2025)
 
   Contest-specific improvements...
   - NAQP - DX Stations are now included in simulation (#353) (W7SST)
+  - ARRL DX - Update call history file
 
   CW Monitor Volume Control Improvements
     The following changes were made to improve the behavior of the CW Monitor
     volume control. Previously, the volume slider did not display the correct
-    range nor did the slider provide any noticable volume changes in the upper
+    range nor did the slider provide any noticeable volume changes in the upper
     range of motion.  Now, the CW monitor slider provides smooth control across
     the entire range.
   - Self-monitor of user's CW can now be turned off (#290) (W7SST)
