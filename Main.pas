@@ -449,6 +449,13 @@ begin
 
   AlSoundOut1.BufCount := 4;
 
+  // Initialize Volume Slider with dB range [-60dB, 0dB]
+  // (using direct calls to avoid merge issues in .dfm)
+  VolumeSlider1.DbMax := 0;
+  VolumeSlider1.DbScale := 60;
+  VolumeSlider1.HintStep := 3;
+  VolumeSlider1.Db := 0;            // sets value = 1.0 (0dB)
+
   // Read settings from .INI file
   FromIni(
     procedure (const aMsg : string)
@@ -2301,21 +2308,19 @@ end;
 procedure TMainForm.VolumeSliderDblClick(Sender: TObject);
 begin
   with Sender as TVolumeSlider do begin
-    Value := 0.75;
+    Value := 1;         // Set to full volume, 0 dB
     OnChange(Sender);
   end;
 end;
 
+
+{
+  The Volume slider changes and Hint generation are handled within the VCL
+  Control. See VCL/VolmSldr.pas.
+}
 procedure TMainForm.VolumeSlider1Change(Sender: TObject);
 begin
-  with VolumeSlider1 do begin
-    //-60..+20 dB
-    Db := 80 * (Value - 0.75);
-    if dB > 0 then
-      Hint := Format('+%.0f dB', [dB])
-    else
-      Hint := Format( '%.0f dB', [dB]);
-    end;
+  Ini.SelfMonVolume := round(VolumeSlider1.Db);
 end;
 
 
@@ -2451,7 +2456,7 @@ end;
 
 procedure TMainForm.SelfMonClick(Sender: TObject);
 begin
-  VolumeSlider1.Value := (Sender as TMenuItem).Tag / 80 + 0.75;
+  VolumeSlider1.Db := (Sender as TMenuItem).Tag;
   VolumeSlider1.OnChange(Sender);
 end;
 
