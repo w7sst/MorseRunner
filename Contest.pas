@@ -78,6 +78,7 @@ type
       const ARemoteCallsign : String) : TExchTypes; virtual;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
+    procedure ResetQsoState;
     procedure OnWipeBoxes; virtual;
     function OnExchangeEdit(const ACall, AExch1, AExch2: string;
        out AExchSummary: string; out AExchError: string) : Boolean; virtual;
@@ -455,11 +456,23 @@ end;
 
 
 {
+  Called after each QSO is completed to reset internal QSO-tracking state logic.
+
+  TContest.Me.HisCall is used by TDxOperator.MsgReceived to determine if the
+  user's call matches the DxStation's assigned callsign. TContest.Me.HisCall
+  is a copy of the call as entered by the user during each QSO.
+}
+procedure TContest.ResetQsoState;
+begin
+  Me.HisCall := '';
+end;
+
+
+{
   Called at end of each QSO or by user's Cntl-W (Wipe Boxes) keystroke.
 }
 procedure TContest.OnWipeBoxes;
 begin
-  Me.HisCall := '';
   Log.NrSent := False;
   Log.DisplayError('', clDefault);
 end;
@@ -780,6 +793,11 @@ begin
               // grab Qso's "True" data (e.g. TrueCall, TrueExch1, TrueExch2)
               DataToLastQso; // deletes this TDxStation from Stations[]
 
+              // Tst.Me.HisCall can be cleared now in preparation for the next
+              // QSO. It was last used by TDxOperator.MsgReceived when comparing
+              // the user-entered callsign against the DxStation's callsign.
+              Tst.ResetQsoState;
+
               // rerun error check and update Err string on screen log
               Log.CheckErr;
               Log.ScoreTableUpdateCheck;
@@ -795,6 +813,10 @@ begin
               However, this may be a multi-threading issue here because
               this audio thread will be changing things being manipulated
               by the GUI thread. Need more time to think through this one.
+              --> There is no threading issue. The Audio thread is synchronized
+                  with the main thread using a call to TThread.Synchonize() in
+                  the audio thread execute function. See TWaitThread.Execute()
+                  in VCL/SndCustm.pas for more details.
 
               // clear any errors/status from last QSO
               Log.DisplayError('', clDefault);

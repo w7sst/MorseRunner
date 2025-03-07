@@ -71,7 +71,10 @@ type
                     the QSO advances from osNeedQso to osNeedCallNr.
                     Once the correct callsign is received, the next state will
                     be osNeedNr.
-                    Typical response msg: DxStation's callsign
+                    Typical DxStation response messages include:
+                      - [DE] <callsign>
+                      - [DE] <callsign> <callsign>
+                      -      <callsign> <exch>
   }
   TOperatorState = (osNeedPrevEnd, osNeedQso, osNeedNr, osNeedCall,
     osNeedCallNr, osNeedEnd, osDone, osFailed);
@@ -81,7 +84,6 @@ type
 
   TDxOperator = class
   private
-    R1: Single;         // holds a Random number; used in IsMyCall
     R2: Single;         // holds a Random number; used in MsgReceived, GetReply
     procedure DecPatience;
     procedure MorePatience(AValue: integer = 0);
@@ -91,10 +93,12 @@ type
     Patience: integer;  // Number of times operator will retry before leaving.
                         // Decremented to zero upon each evTimeout.
                         // When it reaches zero, the operator will ghost and its
-			// TDxOperator.State set to osFailed.
-			// Patience is increased with calls to MorePatience.
+                        // TDxOperator.State set to osFailed.
+                        // Patience is increased with calls to MorePatience.
     RepeatCnt: integer;
     State: TOperatorState;
+    CorrectedCallAndExchSent: Boolean;  // DxOper has sent callsign correction
+                                        // and exchange in one message.
     constructor Create(const ACall: string; AState: TOperatorState);
     function IsGhosting: boolean;
     function GetSendDelay: integer;
@@ -119,13 +123,13 @@ uses
 
 constructor TDxOperator.Create(const ACall: string; AState: TOperatorState);
 begin
-  R1 := Random;     // a random value assigned at creation provides consistency
   R2 := Random;     // assigned at creation for consistent responses
   Call := ACall;
   Skills := 1 + Random(3); //1..3
   Patience := 0;
   RepeatCnt := 1;
   SetState(AState);
+  CorrectedCallAndExchSent := false;
 end;
 
 
@@ -333,6 +337,9 @@ begin
   if (AState = osNeedQso) and (not (RunMode in [rmSingle, RmHst])) and (Random < 0.1)
     then RepeatCnt := 2
     else RepeatCnt := 1;
+
+  if AState = osNeedQso
+    then CorrectedCallAndExchSent := False;
 end;
 
 
@@ -405,8 +412,8 @@ begin
   //accept a wrong call, or reject the correct one
   if ARandomResult and Ini.Lids and (Length(C) > 3) then
     case Result of
-      mcYes: if R1 < 0.01 then Result := mcAlmost;
-      mcAlmost: if R1 < 0.04 then Result := mcYes;
+      mcYes: if Random < 0.01 then Result := mcAlmost;   // LID rejects correct call; sends <HisCall>
+      mcAlmost: if Random < 0.04 then Result := mcYes;   // LID accepts a wrong call; doesn't correct a partial call
       end;
 end;
 
@@ -486,7 +493,10 @@ begin
       osNeedQso: SetState(osNeedQso);
       osNeedNr: State := osDone;          // may have exchange (NR) error
       osNeedCall: State := osDone;        // possible partial call match
-      osNeedCallNr: SetState(osNeedQso);  // start over with new QSO
+      osNeedCallNr: if CorrectedCallAndExchSent then
+          State := osDone                 // we are done
+        else
+          SetState(osNeedQso);            // start over with new QSO
       osNeedEnd: State := osDone;
       end;
 
@@ -552,7 +562,10 @@ begin
           1: Result := msgDeMyCall2;    // DE <my> <my>
           2,3: Result := msgMyCall;     // <my>
           4: Result := msgMyCall2;      // <my> <my>
-          5: Result := msgMyCallNr1;    // <my> <exch>
+          5: begin
+              Result := msgMyCallNr1;   // <my> <exch>
+              CorrectedCallAndExchSent := true;
+             end;
         end
     else //osNeedEnd:
       if Patience < (FULL_PATIENCE-1) then Result := msgNR
