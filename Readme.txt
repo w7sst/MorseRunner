@@ -324,7 +324,9 @@ Version 1.85.2 (March 2025)
 
   Contest-specific improvements...
   - NAQP - DX Stations are now included in simulation (#353) (W7SST)
+  - NAQP - Update call history file
   - ARRL DX - Update call history file
+  - K1USN Slow Speed Test - Update call history file
 
   CW Monitor Volume Control Improvements
     The following changes were made to improve the behavior of the CW Monitor
