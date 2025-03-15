@@ -321,6 +321,7 @@ Version 1.85.2 (March 2025)
   - Send Station ID after 3 consecutive QSOs (#247) (W7SST)
   - Fix program hang when using QRM Band Condition (#379) (W7SST)
   - Fix NIL log error after incomplete callsign is sent and later corrected (#399) (W7SST)
+  - Improve handling of short callsigns causing stations to not respond (#326) (W7SST)
 
   Contest-specific improvements...
   - NAQP - DX Stations are now included in simulation (#353) (W7SST)
