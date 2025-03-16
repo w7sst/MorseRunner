@@ -345,20 +345,28 @@ end;
 
 function TDxOperator.IsMyCall(const ACall: string;
   ARandomResult: boolean): TCallCheckResult;
-const
-  W_X = 1; W_Y = 1; W_D = 1;
 var
   C, C0: string;
   M: array of array of integer;
   x, y: integer;
   T, L, D: integer;
-
   P: integer;
+  W_X, W_Y, W_D: integer;
+  NewerAlgorithm: Boolean;
 begin
   C0 := Call;
   C := ACall;
 
   SetLength(M, Length(C)+1, Length(C0)+1);
+
+  // Use the newer 1.68.2+ for longer callsigns (added 2018);
+  // use the original 1.68 for shorter callsigns.
+  NewerAlgorithm := C0.Length > 4;
+
+  if NewerAlgorithm then
+    begin W_X := 1; W_Y := 1; W_D := 1; end
+  else
+    begin W_X := 2; W_Y := 2; W_D := 2; end;
 
   //dynamic programming algorithm
 
@@ -387,15 +395,24 @@ begin
       M[x,y] := MinIntValue([T,D,L]);
     end;
 
-  P := M[High(M), High(M[0])];
-
-  if (P = 0) then
-    Result := mcYes
-  else if (((Length(C0) <= 4) and (Length(C0) - P >= 3)) or
-       ((Length(C0) > 4) and (Length(C0) - P >= 4))) then
-    Result := mcAlmost
-  else
-    Result := mcNo;
+  //classify by penalty
+  if NewerAlgorithm then      // longer callsigns (len > 4)
+    begin
+    P := M[High(M), High(M[0])];
+    if (P = 0) then
+      Result := mcYes
+    else if (((Length(C0) <= 4) and (Length(C0) - P >= 3)) or
+         ((Length(C0) > 4) and (Length(C0) - P >= 4))) then
+      Result := mcAlmost
+    else
+      Result := mcNo;
+    end
+  else                        // shorter callsigns (len <= 4)
+    case M[High(M), High(M[0])] of
+      0:   Result := mcYes;
+      1,2: Result := mcAlmost;
+      else Result := mcNo;
+    end;
 
   //callsign-specific corrections
 
