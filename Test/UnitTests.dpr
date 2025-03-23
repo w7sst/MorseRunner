@@ -36,6 +36,9 @@ begin
   TestInsight.DUnitX.RunRegisteredTests;
 {$ELSE}
   try
+    // Keep console window open due to change in version 12.1 (added by w7sst)
+    TDUnitX.Options.ExitBehavior := TDUnitXExitBehavior.Pause;
+
     //Check command line options, will exit if invalid
     TDUnitX.CheckCommandLine;
     //Create the test runner
