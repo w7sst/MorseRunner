@@ -193,6 +193,20 @@ begin
             TimeOut := Oper.GetSendDelay; //reply or switch to standby
             State := stPreparingToSend;
           end;
+        end
+      // special case where user is sending 'TU' with a partial callsign
+      else if State = stSending then
+        begin
+          { Special case where the user has sent an incorrect/partial callsign
+            and this DxStation/DxOperator is re-sending their correct callsign.
+            However, the user just sent 'TU', indicating that they have
+            finished the QSO and moving on to the next caller. In this
+            case, we want this DxStation to finish the QSO (by setting their
+            Oper.State = osDone). Once complete, this station will stop
+            sending, the log will be updated and report the incorrect callsign.
+          }
+          if (Oper.State = osNeedCall) and (msgTU in Tst.Me.Msg) then
+            Oper.MsgReceived(Tst.Me.Msg);
         end;
 
     evMeStarted:
