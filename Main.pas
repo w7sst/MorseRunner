@@ -1040,7 +1040,7 @@ var
   P: integer;
 begin
   P := Pos('?', Edit1.Text);
-  if P > 1 then
+  if P > 0 then
   begin
     Edit1.SelStart := P-1;
     Edit1.SelLength := 1;
