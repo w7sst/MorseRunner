@@ -14,6 +14,7 @@ type
   TStations = class(TCollection)
   private
     function GetItem(Index: Integer): TStation;
+    function CallsignExists(const ACall: String) : Boolean;
   public
     constructor Create;
     //destructor Destroy; override;
@@ -42,9 +43,38 @@ begin
 end;
 
 
-function TStations.AddCaller: TStation;
+function TStations.CallsignExists(const ACall: String) : Boolean;
+var
+  i: integer;
 begin
-  Result := TDxStation.CreateStation;
+  Result := False;
+  for i:=Self.Count-1 downto 0 do begin
+    Result := Self[i].MyCall = ACall;
+    if Result then
+      Break;
+  end;
+end;
+
+
+{
+  When adding a DxStation, make sure that we do not add a station whose
+  callsign already exists in the TStations collection. This can be very
+  confusing during debugging and during operation.
+}
+function TStations.AddCaller: TStation;
+var
+  cnt: integer;
+begin
+  cnt := 10;
+  Result := nil;
+  while Result = nil do
+    begin
+      Result := TDxStation.CreateStation;
+      Dec(cnt);
+      if Cnt = 0 then break;
+      if CallsignExists(Result.MyCall) then
+        FreeAndNil(Result);
+    end;
   Result.Collection := Self;
 end;
 
