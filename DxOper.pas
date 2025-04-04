@@ -115,6 +115,9 @@ type
     function GetReply: TStationMessage;
     function IsMyCall(const APattern: string; ARandomResult: boolean;
       ACallConfidencePtr: PInteger = nil): TCallCheckResult;
+    function CallConfidenceCheck(const ACall: string;
+      ARandomResult: boolean): TCallCheckResult;
+    function IsActiveInQso: Boolean;
   end;
 
 
@@ -507,6 +510,30 @@ begin
 end;
 
 
+{
+  For the case where there are two callers, K7AA and K7AB, and the user enters
+  K7AA to work the first one, the first call is a full match (mcYes) and the
+  second call is a partial match (mcAlmost). In this case, we want the full
+  match to take precidence and subsequent callers should wait their turn.
+}
+function TDxOperator.CallConfidenceCheck(const ACall: string;
+  ARandomResult: boolean): TCallCheckResult;
+begin
+  Result := IsMyCall(ACall, ARandomResult);
+  if (Result = mcAlmost) and
+    (Self.CallConfidence < Tst.Stations.BestMatchConfidence) then
+    Result := mcNo;
+end;
+
+
+{
+  A TDxOperator is considered active in the QSO if it's CallConfidence value
+  meets or exceeds TContest.Stations.BestMatchConfidence.
+}
+function TDxOperator.IsActiveInQso: Boolean;
+begin
+  Result := (CallConfidence >= Tst.Stations.BestMatchConfidence) or
+            (Tst.Stations.BestMatchCallsign = Self.Call);
 end;
 
 
@@ -536,7 +563,7 @@ begin
     end;
 
   if msgHisCall in AMsg then
-    case IsMyCall(Tst.Me.HisCall, True) of
+    case CallConfidenceCheck(Tst.Me.HisCall, True) of
       mcYes:
         if State in [osNeedPrevEnd, osNeedQso] then SetState(osNeedNr)
         else if State = osNeedCallNr then SetState(osNeedNr)
@@ -583,12 +610,15 @@ begin
     case State of
       osNeedPrevEnd: SetState(osNeedQso);
       osNeedQso: SetState(osNeedQso);
-      osNeedNr: State := osDone;          // may have exchange (NR) error
-      osNeedCall: State := osDone;        // possible partial call match
-      osNeedCallNr: if CorrectedCallAndExchSent then
-          State := osDone                 // we are done
-        else
-          SetState(osNeedQso);            // start over with new QSO
+      osNeedNr: if IsActiveInQso
+        then State := osDone              // may have exchange (NR) error
+        else SetState(osNeedQso);         // start over with new QSO
+      osNeedCall: if IsActiveInQso
+        then State := osDone              // possible partial call match
+        else SetState(osNeedQso);         // start over with new QSO
+      osNeedCallNr: if IsActiveInQso and CorrectedCallAndExchSent
+        then State := osDone              // we are done
+        else SetState(osNeedQso);         // start over with new QSO
       osNeedEnd: State := osDone;
       end;
 
