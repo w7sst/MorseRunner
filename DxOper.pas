@@ -280,6 +280,8 @@ begin
     begin
       if RunMode = rmSingle then
         Patience := 4
+      else if Patience = 0 then
+        Patience := 3   // this is immediately decremented, leaving 2 retries
       else
         Patience := Min(Patience + 2, 4);
     end;
