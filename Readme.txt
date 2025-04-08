@@ -318,11 +318,31 @@ Version 1.86 (Spring 2025)
   General bug fixes and improvements...
   - Send 'TU MyCall' after three consecutive QSOs (W7SST)
 
-Version 1.85.2 (February 2025)
+Version 1.85.2 (March 2025)
   Bug Fix Release
-  - Fix program hang when using QRM Band Condition (#379) (W7SST)
   - DxStation now sends callsign correction only after user sends partial callsign (#382) (W7SST)
+  - Send 'TU MyCall' after three consecutive QSOs (#247) (W7SST)
+  - Send Station ID after 3 consecutive QSOs (#247) (W7SST)
+  - Fix program hang when using QRM Band Condition (#379) (W7SST)
+  - Fix NIL log error after incomplete callsign is sent and later corrected (#399) (W7SST)
+  - Improve handling of short callsigns causing stations to not respond (#326) (W7SST)
+
+  Contest-specific improvements...
   - NAQP - DX Stations are now included in simulation (#353) (W7SST)
+  - NAQP - Update call history file
+  - ARRL DX - Update call history file
+  - K1USN Slow Speed Test - Update call history file
+
+  CW Monitor Volume Control Improvements
+    The following changes were made to improve the behavior of the CW Monitor
+    volume control. Previously, the volume slider did not display the correct
+    range nor did the slider provide any noticeable volume changes in the upper
+    range of motion.  Now, the CW monitor slider provides smooth control across
+    the entire range.
+  - Self-monitor of user's CW can now be turned off (#290) (W7SST)
+  - Remove an annoying pumping sound when set to lowest setting (#290) (W7SST)
+  - Monitor Level hint now displays full audio range (#390) (W7SST)
+  - Improve Self Monitor Volume control behavior (#394) (W7SST)
 
 Version 1.85.1 (October 2024)
   Bug Fix Release
