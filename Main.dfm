@@ -472,7 +472,7 @@ object MainForm: TMainForm
       Top = 234
       Width = 448
       Height = 15
-      Caption = 'Copyright '#169'2022-2024 Morse Runner Community Edition Contributors'
+      Caption = 'Copyright '#169'2022-2025 Morse Runner Community Edition Contributors'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -13

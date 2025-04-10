@@ -79,7 +79,7 @@ constructor TVolumeSlider.Create(AOwner: TComponent);
 begin
   inherited;
   FMargin := 5;
-  FValue := 0.75;
+  FValue := 1.00;
   Width := 60;
   Height := 20;
   ControlStyle := [csCaptureMouse, csClickEvents, csDoubleClicks, csOpaque];
@@ -240,18 +240,22 @@ procedure TVolumeSlider.UpdateHint;
 begin
   case FHintStep of
   0:
-    if dB > 0 then
+    if dB >= 0.05 then
       Hint := Format('+%.1f dB', [dB])
+    else if dB > -0.05 then
+      Hint := Format(' %.1f dB', [dB])
     else
-      Hint := Format(' %.1f dB', [dB]);
+      Hint := Format('%.1f dB', [dB]);
   else
     begin
     var V: Single := FHintStep*round(dB/FHintStep);
     //-60..+20 dB
-    if V > 0 then
+    if V >= 0.5 then
       Hint := Format('+%.0f dB', [min(FDbMax, V)])
+    else if V > -0.5 then
+      Hint := Format(' %.0f dB', [V])
     else if V >= (FDbMax-FDbScale+FHintStep) then
-      Hint := Format( '%.0f dB', [max(FDbMax-FDbScale, V)])
+      Hint := Format('%.0f dB', [max(FDbMax-FDbScale, V)])
     else
       Hint := 'Off';
     end;
