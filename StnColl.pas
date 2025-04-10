@@ -8,7 +8,7 @@ unit StnColl;
 interface
 
 uses
-  SysUtils, Classes, Station, DxStn, QrnStn, QrmStn;
+  SysUtils, Classes, Station;
 
 type
   TStations = class(TCollection)
@@ -16,15 +16,25 @@ type
     function GetItem(Index: Integer): TStation;
     function CallsignExists(const ACall: String) : Boolean;
   public
+    BestMatchConfidence: Integer;   // maximum Confidence level for active callers
+    BestMatchCallsign: String;      // callsign with highest Confidence level
+
     constructor Create;
     //destructor Destroy; override;
     function AddCaller: TStation;
     function AddQrn: TStation;
     function AddQrm: TStation;
+
+    procedure FindBestMatches(const AEnteredCall: String);
+
     property Items[Index: Integer]: TStation read GetItem; default;
   end;
 
 implementation
+
+uses
+  DxOper,       // TCallCheckResult
+  DxStn, QrnStn, QrmStn;
 
 { TCallerCollection }
 
@@ -93,6 +103,36 @@ begin
 end;
 
 
+{
+  Called by TContest.OnMeFinishedSending after the user's station finishes
+  sending an entered callsign. This method will visit all DxStations looking
+  for exact or partial callsign matches. For each exact or partial match,
+  compute its corresponding CallConfidence metric. The maximum confidence
+  value is retained for later comparison by TDxOperator.CallConfidenceCheck
+  or TDxOperator.IsActiveInQso:.
+}
+procedure TStations.FindBestMatches(const AEnteredCall: String);
+var
+  i: Integer;
+  DxStn: TDxStation;
+  R: TCallCheckResult;
+  CallConfidence: Integer;
+begin
+  BestMatchConfidence := 1;   // 1 is used to reject all mcNo (0) values
+  BestMatchCallsign := '';
+  for i:=Self.Count-1 downto 0 do
+    if Self[i] is TDxStation then
+      begin
+        DxStn := Self[i] as TDxStation;
+        R := DxStn.Oper.IsMyCall(AEnteredCall, False, @CallConfidence);
+        assert((R = mcNo) or (CallConfidence > 0));
+        if CallConfidence > BestMatchConfidence then
+          begin
+            BestMatchCallsign := DxStn.Oper.Call;
+            BestMatchConfidence := CallConfidence;
+          end;
+      end;
+end;
 
 
 end.

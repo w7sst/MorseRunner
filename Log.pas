@@ -886,7 +886,7 @@ begin
     for i:=Tst.Stations.Count-1 downto 0 do
       if Tst.Stations[i] is TDxStation then
         with Tst.Stations[i] as TDxStation do
-          if ((MyCall = Qso.Call) or (Oper.IsMyCall(Qso.Call, False) = mcAlmost)) then
+          if Oper.CallConfidenceCheck(Qso.Call, False) in [mcYes, mcAlmost] then
           begin
             Qso.TrueWpm := WpmAsText();
             Break;
@@ -897,7 +897,7 @@ begin
       if Tst.Stations[i] is TDxStation then
         with Tst.Stations[i] as TDxStation do
           if (Oper.State = osDone) and
-             ((MyCall = Qso.Call) or (Oper.IsMyCall(Qso.Call, False) = mcAlmost)) then
+            (Oper.CallConfidenceCheck(Qso.Call, False) in [mcYes, mcAlmost]) then
             begin
               DataToLastQso; //grab "True" data and delete this dx station!
               Tst.ResetQsoState;
