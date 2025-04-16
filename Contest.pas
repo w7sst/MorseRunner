@@ -788,8 +788,9 @@ begin
       if Stations[i] is TDxStation then
         with Stations[i] as TDxStation do
           if (Oper.State = osDone) and (QsoList <> nil) and
-            ((MyCall = QsoList[High(QsoList)].Call) or
-             (Oper.IsMyCall(QsoList[High(QsoList)].Call, False) = mcAlmost)) then begin
+            (Oper.CallConfidenceCheck(QsoList[High(QsoList)].Call, False)
+              in [mcYes, mcAlmost]) then
+            begin
               // grab Qso's "True" data (e.g. TrueCall, TrueExch1, TrueExch2)
               DataToLastQso; // deletes this TDxStation from Stations[]
 
@@ -822,7 +823,7 @@ begin
               Log.DisplayError('', clDefault);
               Log.SBarUpdateSummary('');
 }
-          end;
+            end;
 
   //show info
   ShowRate;
@@ -936,6 +937,11 @@ begin
              end;
           end;
        end;
+
+  //update caller's Confidence metric
+  if msgHisCall in Tst.Me.Msg then
+    Stations.FindBestMatches(Tst.Me.HisCall);
+
   //tell callers that I finished sending
   for i:=Stations.Count-1 downto 0 do
     Stations[i].ProcessEvent(evMeFinished);
