@@ -635,8 +635,20 @@ begin
     end;
   end;
 
-  if (not Ini.Lids) and (AMsg = [msgGarbage]) then State := osNeedPrevEnd;
-
+  //msgGarbage is received when Station was sending and missed part/all of the message
+  if (not Ini.Lids) and (AMsg = [msgGarbage]) then
+    case State of
+      osNeedPrevEnd: ;            // waiting for CQ/TU after prior QSO finishes
+      osNeedQso: MorePatience;    // waiting for callsign (full or partial)
+      osNeedNr: MorePatience;     // has call, waiting for Exch
+      osNeedCall: MorePatience;   // has Exch, waiting for call correction
+      osNeedCallNr: MorePatience; // waiting for call and Exch
+      osNeedEnd: ;                // waiting for TU
+      osDone: ;                   // QSO complete; no state change
+      osFailed: ;                 // QSO failed; no state change
+      else
+        State := osNeedPrevEnd;
+    end;
 
   if State <> osNeedPrevEnd then DecPatience;
 end;
