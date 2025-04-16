@@ -22,7 +22,8 @@ uses
   LexerTest in 'LexerTest.pas',
   SSLexerTest in 'SSLexerTest.pas',
   MySSExchTest in 'MySSExchTest.pas',
-  SSExchParserTest in 'SSExchParserTest.pas';
+  SSExchParserTest in 'SSExchParserTest.pas',
+  DxOperTest in 'DxOperTest.pas';
 
 {$IFNDEF TESTINSIGHT}
 var

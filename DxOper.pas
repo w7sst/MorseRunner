@@ -85,6 +85,8 @@ type
   TDxOperator = class
   private
     R2: Single;         // holds a Random number; used in MsgReceived, GetReply
+    LastCheckedCall: String;            // last call passed to IsMyCall()
+    LastCallCheck: TCallCheckResult;    // IsMyCall()'s last result
     procedure DecPatience;
     procedure MorePatience(AValue: integer = 0);
   public
@@ -97,6 +99,8 @@ type
                         // Patience is increased with calls to MorePatience.
     RepeatCnt: integer;
     State: TOperatorState;
+    CallConfidence: Integer;  // confidence-level of partial call match (0-100%).
+                              // set by IsMyCall.
     CorrectedCallAndExchSent: Boolean;  // DxOper has sent callsign correction
                                         // and exchange in one message.
     constructor Create(const ACall: string; AState: TOperatorState);
@@ -109,13 +113,18 @@ type
     procedure MsgReceived(AMsg: TStationMessages);
     procedure SetState(AState: TOperatorState);
     function GetReply: TStationMessage;
-    function IsMyCall(const ACall: string; ARandomResult: boolean): TCallCheckResult;
+    function IsMyCall(const APattern: string; ARandomResult: boolean;
+      ACallConfidencePtr: PInteger = nil): TCallCheckResult;
+    function CallConfidenceCheck(const ACall: string;
+      ARandomResult: boolean): TCallCheckResult;
+    function IsActiveInQso: Boolean;
   end;
 
 
 implementation
 
 uses
+  PerlRegEx,        // for regular expression support
   SysUtils, Ini, Math, RndFunc, Contest, Log, Main;
 
 { TDxOperator }
@@ -129,6 +138,9 @@ begin
   Patience := 0;
   RepeatCnt := 1;
   SetState(AState);
+  LastCheckedCall := '';
+  LastCallCheck := mcNo;
+  CallConfidence := 0;
   CorrectedCallAndExchSent := false;
 end;
 
@@ -345,78 +357,183 @@ begin
 end;
 
 
-function TDxOperator.IsMyCall(const ACall: string;
-  ARandomResult: boolean): TCallCheckResult;
-const
-  W_X = 1; W_Y = 1; W_D = 1;
+{
+  IsMyCall() will compare the user-entered callsign (APattern) against this
+  operator's callsign. It supports wildcard search using '?' or substring
+  matches, including the starting, ending, or any substring within the call.
+  This will allow the user to partially match a received callsign using any
+  copied portion of the call, including a single character.
+
+  The algorithm uses several steps:
+  1. if the enter-call contains '?', then regular expression searching is used.
+     Each '?' will match a single character and a trailing '?' will match zero
+     or more characters at the end of the callsign.
+  2a. next, a dynamic programming algorithm called "edit distance" is used to
+      compute the number of wrong or missing characters.
+  2b. If no match is found, we search for the user-entered string to exist
+      anywhere within the callsign.
+  3. Finally, a call match Confidence value is computed to represent how
+     close the entered-string matches the operator's callsign. When multiple
+     callsigns partially match the entered string, the call(s) with the
+     highest confidence is used.
+
+  Confidence is defined as:
+      Confidence = 100 * (# matching characters) / callsign_length
+
+    Examples:
+      1. Call W7SST, searching with 'SST' has confidence = 60%.
+      2. Call K7OK, searching with 'OK', has confidence = 50%.
+      3. Given 4 calls, with entered search string 'W7AB'
+            W7ABC - confidence = 100*4/5 = 80%
+            W7ABX - confidence = 100*4/5 = 80%
+            W7AU  - confidence = 100*3/4 = 75%
+            W7ABU/6 - confidence = 100*4/7 = 57%
+         The first two calls with the highest confidence will respond
+         to the partial call match.
+}
+function TDxOperator.IsMyCall(const APattern: string; ARandomResult: boolean;
+  ACallConfidencePtr: PInteger): TCallCheckResult;
 var
-  C, C0: string;
+  C0: string;
   M: array of array of integer;
   x, y: integer;
-  T, L, D: integer;
-
   P: integer;
+  reg: TPerlRegEx;
 begin
   C0 := Call;
-  C := ACall;
+  reg := NIL;
 
-  SetLength(M, Length(C)+1, Length(C0)+1);
+  Result := mcNo;
 
-  //dynamic programming algorithm
+  if LastCheckedCall = APattern then
+    begin
+      Result := LastCallCheck;
+      if ACallConfidencePtr <> nil then ACallConfidencePtr^ := CallConfidence;
+    end
+  else
+    begin
+      LastCheckedCall := APattern;
 
-  for y:=0 to High(M[0]) do
-    M[0,y] := 0;
-  for x:=1 to High(M) do
-    M[x,0] := M[x-1,0] + W_X;
+      if APattern.Contains('?') then
+        try
+          reg := TPerlRegEx.Create();
+          if APattern.EndsWith('?') then
+            reg.RegEx := APattern.Replace('?','.') + '*'
+          else
+            reg.RegEx := APattern.Replace('?','.');
+          reg.Subject := C0;
+          if reg.Match then
+            begin
+              Result := mcAlmost;
+              // count incorrect characters
+              P := C0.Length - APattern.Replace('?', '', [rfReplaceAll]).Length;
+              // confidence = 100 * correct chars / total length
+              CallConfidence := (100 * (C0.Length - P)) div C0.Length;
+            end
+          else
+            begin
+              Result := mcNo;
+              CallConfidence := 0;
+            end;
+        finally
+          FreeAndNil(reg);
+        end
+      else
+        begin
+          //dynamic programming algorithm to determine "Edit Distance", which is
+          //the number of character edits needed for the two strings to match.
+          SetLength(M, Length(APattern)+1, Length(C0)+1);
+          for x:=0 to High(M) do
+            M[x,0] := x;
+          for y:=0 to High(M[0]) do
+            M[0,y] := y;
 
-  for x:=1 to High(M) do
-    for y:=1 to High(M[0]) do begin
-      T := M[x,y-1];
-      //'?' can match more than one char
-      //end may be missing
-      if (x < High(M)) and (C[x] <> '?') then
-        Inc(T, W_Y);
+          for x:=1 to High(M) do
+            for y:=1 to High(M[0]) do begin
+              if APattern[x] = C0[y] then
+                M[x][y] := M[x - 1][y - 1]
+              else
+                M[x][y] := 1 + MinIntValue([M[x    ][y - 1],
+                                            M[x - 1][y    ],
+                                            M[x - 1][y - 1]]);
+            end;
 
-      L := M[x-1,y];
-      //'?' can match no chars
-      if C[x] <> '?' then Inc(L, W_X);
+          //classify by penalty
+          //Penalty is the Edit Distance (# of missing or invalid characters)
+          P := M[High(M), High(M[0])];
+          if (P = 0) then
+            Result := mcYes
+          else if P <= (C0.Length-1)/2 then
+            Result := mcAlmost
+          else
+            Result := mcNo;
 
-      D := M[x-1,y-1];
-      //'?' matches any char
-      //if not (C[x] in [C0[y], '?']) then Inc(D, W_D);
-      if not (CharInSet(C[x], [C0[y], '?'])) then Inc(D, W_D);
+          //partial match for matching any substring within the call
+          if (Result = mcNo) and C0.Contains(APattern) then
+            begin
+              Result := mcAlmost;
+              P := C0.Length - APattern.Length;
+            end;
 
-      M[x,y] := MinIntValue([T,D,L]);
+          // confidence = 100 * correct chars / total length
+          case Result of
+            mcYes: CallConfidence := 100;
+            mcAlmost: CallConfidence := 100 * (C0.Length - P) div C0.Length;
+            mcNo: CallConfidence := 0;
+          end;
+        end;
+
+      LastCallCheck := Result;
+      if ACallConfidencePtr <> nil then ACallConfidencePtr^ := CallConfidence;
     end;
 
-  P := M[High(M), High(M[0])];
-
-  if (P = 0) then
-    Result := mcYes
-  else if (((Length(C0) <= 4) and (Length(C0) - P >= 3)) or
-       ((Length(C0) > 4) and (Length(C0) - P >= 4))) then
-    Result := mcAlmost
-  else
-    Result := mcNo;
-
-  //callsign-specific corrections
-
-  if (not Ini.Lids) and (Length(C) = 2) and (Result = mcAlmost) then Result := mcNo;
-
-  //partial and wildcard match result in 0 penalty but are not exact matches
-  if (Result = mcYes) then
-    if (Length(C) <> Length(C0)) or (Pos('?', C) > 0)
-      then Result := mcAlmost;
-
-  //partial match too short
-  if Length(StringReplace(C, '?', '', [rfReplaceAll])) < 2 then Result := mcNo;
-
   //accept a wrong call, or reject the correct one
-  if ARandomResult and Ini.Lids and (Length(C) > 3) then
-    case Result of
-      mcYes: if Random < 0.01 then Result := mcAlmost;   // LID rejects correct call; sends <HisCall>
-      mcAlmost: if Random < 0.04 then Result := mcYes;   // LID accepts a wrong call; doesn't correct a partial call
-      end;
+  if ARandomResult and Ini.Lids and (Length(APattern) > 3) then
+    begin
+      case Result of
+        mcYes: if Random < 0.01 then
+          begin
+            // LID rejects correct call; sends <HisCall>
+            Result := mcAlmost;
+            if ACallConfidencePtr <> nil then
+              ACallConfidencePtr^ := 100 * (C0.Length-1) div C0.Length;
+          end;
+        mcAlmost: if Random < 0.04 then
+          begin
+            // LID accepts a wrong call; doesn't correct a partial call
+            Result := mcYes;
+            if ACallConfidencePtr <> nil then
+              ACallConfidencePtr^ := 100;
+          end;
+        end;
+    end;
+end;
+
+
+{
+  For the case where there are two callers, K7AA and K7AB, and the user enters
+  K7AA to work the first one, the first call is a full match (mcYes) and the
+  second call is a partial match (mcAlmost). In this case, we want the full
+  match to take precidence and subsequent callers should wait their turn.
+}
+function TDxOperator.CallConfidenceCheck(const ACall: string;
+  ARandomResult: boolean): TCallCheckResult;
+begin
+  Result := IsMyCall(ACall, ARandomResult);
+  if (Result = mcAlmost) and
+    (Self.CallConfidence < Tst.Stations.BestMatchConfidence) then
+    Result := mcNo;
+end;
+
+
+{
+  A TDxOperator is considered active in the QSO if it's CallConfidence value
+  meets or exceeds TContest.Stations.BestMatchConfidence.
+}
+function TDxOperator.IsActiveInQso: Boolean;
+begin
+  Result := (CallConfidence >= Tst.Stations.BestMatchConfidence) or
+            (Tst.Stations.BestMatchCallsign = Self.Call);
 end;
 
 
@@ -446,7 +563,7 @@ begin
     end;
 
   if msgHisCall in AMsg then
-    case IsMyCall(Tst.Me.HisCall, True) of
+    case CallConfidenceCheck(Tst.Me.HisCall, True) of
       mcYes:
         if State in [osNeedPrevEnd, osNeedQso] then SetState(osNeedNr)
         else if State = osNeedCallNr then SetState(osNeedNr)
@@ -493,12 +610,15 @@ begin
     case State of
       osNeedPrevEnd: SetState(osNeedQso);
       osNeedQso: SetState(osNeedQso);
-      osNeedNr: State := osDone;          // may have exchange (NR) error
-      osNeedCall: State := osDone;        // possible partial call match
-      osNeedCallNr: if CorrectedCallAndExchSent then
-          State := osDone                 // we are done
-        else
-          SetState(osNeedQso);            // start over with new QSO
+      osNeedNr: if IsActiveInQso
+        then State := osDone              // may have exchange (NR) error
+        else SetState(osNeedQso);         // start over with new QSO
+      osNeedCall: if IsActiveInQso
+        then State := osDone              // possible partial call match
+        else SetState(osNeedQso);         // start over with new QSO
+      osNeedCallNr: if IsActiveInQso and CorrectedCallAndExchSent
+        then State := osDone              // we are done
+        else SetState(osNeedQso);         // start over with new QSO
       osNeedEnd: State := osDone;
       end;
 
