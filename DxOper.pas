@@ -579,7 +579,8 @@ begin
 
       mcNo:
         if State = osNeedQso then State := osNeedPrevEnd
-        else if State in [osNeedNr, osNeedCall, osNeedCallNr] then State := osFailed
+        else if State in [osNeedNr, osNeedCall, osNeedCallNr] then
+          State := osNeedPrevEnd
         else if State = osNeedEnd then State := osDone;
      end;
 
