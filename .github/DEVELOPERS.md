@@ -54,5 +54,48 @@ navigate to and select VCL/Win32/Debug/MorseRunnerVcl.bpl, click open and click 
 
 6 - Production builds are currently created for each release by W7SST
 
+## Creating a New Release
+There are several steps to creating a new release.
+
+1 - In general, a new release should have
+  - a new section added to the `Readme.txt` file.
+  - update the version number in `Main.pas`.
+  - update the copyright strings in both `Main.pas` and `Main.dfm`.
+
+2 - Create the release directory.
+- To create a release directory, perform the following steps:
+  - Compile in release mode.
+  - execute the following script in a git/bash shell:
+  ```
+  tools/make-install.sh '../Morse Runner 1.8x'
+  ```
+
+3 - Validate a release directory, execute the same script with the `--verify` option:
+  ```
+  tools/make-install.sh --verify '../Morse Runner 1.8x'
+  ```
+
+4 - Create a ZIP file containing the install directory
+- Open a Windows Explorer window and navigate to the parent directory containing the above install directory.
+- Right-click on the install folder and select `Compress > ZIP`
+
+5 - To test this install directory
+- Copy the ZIP File to your desktop
+- Expand the ZIP file to extract the contained installation directory
+- Go into this directory and execute `MorseRunner.exe`
+
+6 - Create a new github Release page [here](https://github.com/w7sst/MorseRunner/releases).
+- Create new draft release page
+- copy contents of a prior release to use as a template.
+- edit the release page for the upcoming release.
+- Copy the `Morse Runner 1.8x.ZIP` file into the file section at the bottom.
+- Save as a draft so you can ask others to review the page before publishing the release.
+- Final step is publish the release.
+
+7 - Post an announcement on groups.io [here](https://groups.io/g/MorseRunnerCE/topic/new_version/94523639).
+  - First, Unlock the `New Version` topic
+  - Write new release announcement and post it.
+  - Lock the `New Version` topic
+
 In conclusion, thank you for volunteering to help improve this project. We all look forward to your contributions!
 
