@@ -263,7 +263,7 @@ var
   HiScore: integer;
   CompDuration: integer = 60;
 
-  SelfMonVolume: Integer = 0;
+  MonLevel: Integer = 0;             // Self Monitor Level in dB; range [-60,0]
   SaveWav: boolean = false;
   FarnsworthCharRate: integer = 25;
   AllStationsWpmS: integer = 0;      // force all stations to this Wpm
@@ -439,8 +439,8 @@ begin
       // [Station]
       V := ReadInteger(SEC_STN, 'SelfMonVolume', 0);
       V := max(-60, min(0, V));
-      SelfMonVolume := V;
-      MainForm.VolumeSlider1.Db := SelfMonVolume;
+      MonLevel := V;
+      MainForm.VolumeSlider1.Db := MonLevel;
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
 
       // [Settings]
@@ -523,7 +523,7 @@ begin
       WriteInteger(SEC_TST, 'CompetitionDuration', CompDuration);
 
       // [Station]
-      WriteInteger(SEC_STN, 'SelfMonVolume', SelfMonVolume);
+      WriteInteger(SEC_STN, 'SelfMonVolume', MonLevel);
       WriteBool(SEC_STN, 'SaveWav', SaveWav);
 
       // [Settings]
