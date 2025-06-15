@@ -245,6 +245,7 @@ var
   SubmitHiScoreURL: string= '';
   PostMethod: string = '';
   ShowCallsignInfo: integer= 1;
+  StationIdRate: Integer = 0;
   Activity: integer = 2;
   Qrn: boolean = false;
   Qrm: boolean = false;
@@ -439,6 +440,7 @@ begin
       RitStepIncr := Max(-500, Min(500, RitStepIncr));
       ShowCheckSection := ReadInteger(SEC_SET, 'ShowCheckSection', ShowCheckSection);
       ShowExchangeSummary := ReadInteger(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
+      StationIdRate := ReadInteger(SEC_SET, 'StationIdRate', StationIdRate);
 
       // [Debug]
       DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
@@ -521,6 +523,7 @@ begin
       WriteInteger(SEC_SET, 'RitStepIncr', RitStepIncr);
       WriteInteger(SEC_SET, 'ShowCheckSection', ShowCheckSection);
       WriteInteger(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
+      WriteInteger(SEC_SET, 'StationIdRate', StationIdRate);
 
     finally
       Free;

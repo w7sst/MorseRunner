@@ -2,7 +2,7 @@
                               Contest Simulator
                                   freeware
 
-                Version 1.85.2 - ARRL Sweepstakes Contest
+                Version 1.85.3 - ARRL Sweepstakes Contest
             The sixth release of the Morse Runner Community Edition
 
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
@@ -192,6 +192,18 @@ CONFIGURATION
       bar (default) or optionally in the label/caption above the exchange entry
       field. Please see the contest rules section below for more information.
 
+    Send Station ID after N consecutive QSOs
+      The user's Station ID will be sent after N consecutive QSOs without
+      sending the Station ID. The Station ID will be sent along with the 'TU'
+      message after every N-th QSO (e.g. 'TU <call>').
+      This feature was originally introduced in version 1.85.2. User feedback
+      recommended that this feature is not desirable in Single Call mode.
+      A keyword has been added to specify the number of QSOs between each
+      Station ID. By default, the value N is set to zero (disabled).
+      You can add the following keyword to the MorseRunner.ini file:
+          [Settings]
+          StationIdRate=N
+
 
   Responses
     There are five basic responses that you can receive:
@@ -313,6 +325,10 @@ SUBMITTING YOUR SCORE
   File -> View Score menu command.
 
 VERSION HISTORY
+
+Version 1.85.3 (June 2025)
+  Bug Fix Release
+  - Disable automatic Station ID after 3 QSOs (#421) (W7SST)
 
 Version 1.85.2 (April 2025)
   Bug Fix Release
