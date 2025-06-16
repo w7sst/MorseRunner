@@ -1079,7 +1079,7 @@ object MainForm: TMainForm
         OnClick = SendClick
       end
       object NRQM: TMenuItem
-        Tag = 16
+        Tag = 19
         Caption = 'NR?'
         ShortCut = 123
         OnClick = SendClick

@@ -524,6 +524,27 @@ procedure TMainForm.SendClick(Sender: TObject);
 var
   Msg: TStationMessage;
 begin
+  // Validate MenuItem tags
+  assert(CQ1.Tag = Ord(msgCQ));               // CQ     F1
+  assert(Exchange1.Tag = Ord(msgNR));         // Exch   F2
+  assert(TU1.Tag = Ord(msgTU));               // TU     F3
+  assert(MyCall1.Tag = Ord(msgMyCall));       // <my>   F4
+  assert(HisCall1.Tag = Ord(msgHisCall));     // <his>  F5
+  assert(QSOB41.Tag = Ord(msgB4));            // B4     F6
+  assert(N1.Tag = Ord(msgQm));                // ?      F7
+  assert(AGN1.Tag = Ord(msgNIL));             // NIL    F8
+  assert(NRQM.Tag = Ord(msgNrQm));            // NR?    F12
+
+  // Validate Control button tags
+  assert(SpeedButton4.Tag = Ord(msgCQ));      // CQ     F1
+  assert(SpeedButton5.Tag = Ord(msgNR));      // Exch   F2
+  assert(SpeedButton6.Tag = Ord(msgTU));      // TU     F3
+  assert(SpeedButton7.Tag = Ord(msgMyCall));  // <my>   F4
+  assert(SpeedButton8.Tag = Ord(msgHisCall)); // <his>  F5
+  assert(SpeedButton9.Tag = Ord(msgB4));      // B4     F6
+  assert(SpeedButton10.Tag = Ord(msgQm));     // ?      F7
+  assert(SpeedButton11.Tag = Ord(msgNIL));    // NIL    F8
+
   Msg := TStationMessage((Sender as TComponent).Tag);
 
   SendMsg(Msg);

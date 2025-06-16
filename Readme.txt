@@ -331,6 +331,7 @@ Version 1.85.3 (June 2025)
   Bug Fix Release
   - Send Station ID after 3 QSOs in Pile-Up or WPX Competition modes (#421) (W7SST)
   - Improve response after operator sends corrected callsign (#420) (W7SST)
+  -  F12 Key should send 'NR?', not '<call> <exch>' (#419) (W7SST)
 
   Contest-specific Improvements...
   - ARRL FD - Update call history file
