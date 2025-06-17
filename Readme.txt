@@ -194,15 +194,16 @@ CONFIGURATION
 
     Send Station ID after N consecutive QSOs
       The user's Station ID will be sent after N consecutive QSOs without
-      sending the Station ID. The Station ID will be sent along with the 'TU'
-      message after every N-th QSO (e.g. 'TU <call>').
-      This feature was originally introduced in version 1.85.2. User feedback
-      recommended that this feature is not desirable in Single Call mode.
-      A keyword has been added to specify the number of QSOs between each
-      Station ID. By default, the value N is set to zero (disabled).
-      You can add the following keyword to the MorseRunner.ini file:
+      sending the Station ID. This will occur when running either Pile-Up mode
+      or WPX Competion mode; it is disabled in Single-Call or HST modes.
+      The Station ID will be added to the 'TU' message after every N-th QSO
+      (e.g. 'TU <call>').  A keyword has been added to specify the number of QSOs
+      between each Station ID. By default, the Station ID will be sent every 3 QSOs.
+      To change this value, you can add the following keyword to the MorseRunner.ini
+      file:
           [Settings]
           StationIdRate=N
+      Settings this value to 0 will disable this feature.
 
 
   Responses
@@ -328,7 +329,7 @@ VERSION HISTORY
 
 Version 1.85.3 (June 2025)
   Bug Fix Release
-  - Disable automatic Station ID after 3 QSOs (#421) (W7SST)
+  - Send Station ID after 3 QSOs in Pile-Up or WPX Competition modes (#421) (W7SST)
 
 Version 1.85.2 (April 2025)
   Bug Fix Release

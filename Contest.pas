@@ -415,7 +415,7 @@ begin
     msgTU:
       // send station ID after 3 consecutive QSOs (the comparison below uses
       // 2 since the counter is incremented after 'TU <my>' has been sent).
-      if not (RunMode in [rmHST, rmSingle]) and (StationIdRate > 0) and
+      if (RunMode in [rmPileup, rmWpx]) and (StationIdRate > 0) and
         (QsoCountSinceStationID >= (StationIdRate-1))
         then SendText(AStn, 'TU <my>')
         else SendText(AStn, 'TU');

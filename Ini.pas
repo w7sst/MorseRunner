@@ -245,7 +245,7 @@ var
   SubmitHiScoreURL: string= '';
   PostMethod: string = '';
   ShowCallsignInfo: integer= 1;
-  StationIdRate: Integer = 0;
+  StationIdRate: Integer = 3;
   Activity: integer = 2;
   Qrn: boolean = false;
   Qrm: boolean = false;
