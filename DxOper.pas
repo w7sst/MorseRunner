@@ -40,7 +40,8 @@ type
     osNeedNr        DxOperator is waiting for user's exchange.
                     DxOperator has received the user's callsign and is now
                     waiting to receive the user's exchange.
-                    Typical response: send DxStation's exchange.
+                    Typical response: send DxStation's exchange, or
+                                      send 'AGN', 'NR?', or contest-appropriate message.
     osNeedEnd       DxStation is waiting for 'TU' from user.
                     User's call and exchange have been received.
                     Typical response msg: send DxStation's exchange.
@@ -101,6 +102,7 @@ type
     State: TOperatorState;
     CallConfidence: Integer;  // confidence-level of partial call match (0-100%).
                               // set by IsMyCall.
+    SendNrQmCnt: Integer;     // Send 'NR?' followed by two 'AGN' messages.
     CorrectedCallAndExchSent: Boolean;  // DxOper has sent callsign correction
                                         // and exchange in one message.
     constructor Create(const ACall: string; AState: TOperatorState);
@@ -141,6 +143,7 @@ begin
   LastCheckedCall := '';
   LastCallCheck := mcNo;
   CallConfidence := 0;
+  SendNrQmCnt := 0;
   CorrectedCallAndExchSent := false;
 end;
 
@@ -354,6 +357,9 @@ begin
 
   if AState = osNeedQso
     then CorrectedCallAndExchSent := False;
+
+  if AState = osNeedNr
+    then Self.SendNrQmCnt := 0;
 end;
 
 
@@ -655,6 +661,11 @@ end;
 
 
 function TDxOperator.GetReply: TStationMessage;
+  function PostInc(var Value: Integer): Integer; inline;
+  begin
+    Result := Value;
+    inc(Value);
+  end;
 begin
   // A ghosting station (Patience=0) will not send any additional messages
   assert(not IsGhosting, 'this should not be called when ghosting');
@@ -665,7 +676,9 @@ begin
     osNeedPrevEnd, osDone, osFailed: Result := msgNone;
     osNeedQso: Result := msgMyCall;
     osNeedNr:
-      if (Patience = (FULL_PATIENCE-1)) or (Random < 0.3)
+      if (Patience = (FULL_PATIENCE-1)) or      // on first occurance,
+        ((PostInc(SendNrQmCnt) mod 3) = 0) or   // every 3rd subsequent occurance,
+        (Random < 0.2)                          // or sometimes send 'NR?'
         then Result := msgNrQm
         else Result := msgAgn;
 

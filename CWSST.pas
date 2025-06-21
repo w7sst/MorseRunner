@@ -46,6 +46,7 @@ type
 implementation
 
 uses
+    Math,
     SysUtils, StrUtils, DXCC;
 
 function TCWSST.LoadCallHistory(const AUserCallsign : string) : boolean;
@@ -188,11 +189,10 @@ begin
   case AMsg of
     msgCQ: SendText(AStn, 'CQ SST <my>'); // sent by MyStation
     msgNrQm: // sent by calling station (DxStation)
-      case Random(5) of
+      case Floor(AStn.R1*4) of
         0,1: SendText(AStn, 'NR?');
         2:   SendText(AStn, 'NAME?');
         3:   SendText(AStn, 'ST?');
-        4:   SendText(AStn, 'AGN?');
        end;
     msgTU:  // TU message sent by MyStation
        SendText(AStn, 'TU <my>');
