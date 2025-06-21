@@ -331,6 +331,9 @@ Version 1.85.3 (June 2025)
   Bug Fix Release
   - Send Station ID after 3 QSOs in Pile-Up or WPX Competition modes (#421) (W7SST)
 
+  Contest-specific Improvements...
+  - ARRL FD - Update call history file
+
 Version 1.85.2 (April 2025)
   Bug Fix Release
   - Calling station now sends callsign correction only after user sends partial callsign (#382) (W7SST)
