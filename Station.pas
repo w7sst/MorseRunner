@@ -69,10 +69,10 @@ type
                       // TStation.Tick() calls ProcessEvent(evTimeout) whenever
                       // Timeout decrements to zero.
     NrWithError: boolean;
-    R1 : Single;    // holds a Random number; used in NrAsText
     procedure Init;
     function NrAsText: string;
   public
+    R1 : Single;            // holds a Random number; used in NrAsText, SendMsg
     Amplitude: Single;
     WpmS: integer;          // Words per minute, sending speed (set by UI)
     WpmC: integer;          // Words per minute, character speed (set via .INI)
