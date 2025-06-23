@@ -246,6 +246,7 @@ var
   PostMethod: string = '';
   ShowCallsignInfo: integer= 1;
   StationIdRate: Integer = 3;
+  SingleCallStartDelay: Integer = 0;
   Activity: integer = 2;
   Qrn: boolean = false;
   Qrm: boolean = false;
@@ -441,6 +442,8 @@ begin
       ShowCheckSection := ReadInteger(SEC_SET, 'ShowCheckSection', ShowCheckSection);
       ShowExchangeSummary := ReadInteger(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
       StationIdRate := ReadInteger(SEC_SET, 'StationIdRate', StationIdRate);
+      SingleCallStartDelay := ReadInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
+      SingleCallStartDelay := Max(0, Min(SingleCallStartDelay, 2500));
 
       // [Debug]
       DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
@@ -524,6 +527,7 @@ begin
       WriteInteger(SEC_SET, 'ShowCheckSection', ShowCheckSection);
       WriteInteger(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
       WriteInteger(SEC_SET, 'StationIdRate', StationIdRate);
+      WriteInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
 
     finally
       Free;

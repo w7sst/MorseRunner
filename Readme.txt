@@ -332,9 +332,24 @@ Version 1.85.3 (June 2025)
   - Send Station ID after 3 QSOs in Pile-Up or WPX Competition modes (#421) (W7SST)
   - Improve response after operator sends corrected callsign (#420) (W7SST)
   - F12 Key should send 'NR?', not '<call> <exch>' (#419) (W7SST)
+  - Delay first callsign sent when running Single Call mode (#424) (W7SST)
 
   Contest-specific Improvements...
   - ARRL FD - Update call history file
+
+  Additional Details...
+    Delay first callsign sent when running Single Calls mode (#424)
+      When using bluetooth headsets, users have reported a problem where
+      they will miss the first character sent after starting a contest in
+      Single Calls mode. They must immediately send F7 ('?') to cause the
+      first call to be repeated.  To fix this issue, an additional delay
+      can be added before the first callsign is sent.
+      - The following keyword is provided to specify an additional delay
+        before the first callsign is sent:
+          [Settings]
+          SingleCallStartDelay=NNN
+      - NNN can be any value between 0 and 2500 milliseconds.
+      - The default value is 0.
 
 Version 1.85.2 (April 2025)
   Bug Fix Release

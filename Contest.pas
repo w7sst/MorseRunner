@@ -25,6 +25,7 @@ type
     QsoCountSinceStationID: Integer;  // QSOs since last CQ or Station ID
     StationIdRate: Integer;       // number of QSOs between a CQ or Station ID
     BFarnsworthEnabled : Boolean; // enables Farnsworth timing (e.g. SST Contest)
+    CallerStartDelayInBlocks: Integer;  // first caller delay in Single Call mode
 
     constructor Create;
     function IsReloadRequired(const AUserCallsign : String) : boolean;
@@ -168,6 +169,7 @@ begin
   LastLoadCallsign := '';
   QsoCountSinceStationID := 0;
   BFarnsworthEnabled := false;
+  CallerStartDelayInBlocks := SecondsToBlocks(Ini.SingleCallStartDelay/1000) + 5;
 end;
 
 
@@ -831,7 +833,8 @@ begin
   if Ini.RunMode = rmPileUp then
     MainForm.Panel4.Caption := Format('Pile-Up:  %d', [DxCount]);
 
-  if (RunMode = rmSingle) and (DxCount = 0) then begin
+  if (RunMode = rmSingle) and (DxCount = 0) and
+     (BlockNumber > CallerStartDelayInBlocks) then begin
      Me.Msg := [msgCq]; //no need to send cq in this mode
      Stations.AddCaller.ProcessEvent(evMeFinished);
 
