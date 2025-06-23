@@ -464,7 +464,7 @@ begin
 
     // this function needs to be refactored so it can operate individual
     // parts of the exchange.
-    if (SentExchTypes.Exch2 = etCqZone) then
+    if (SentExchTypes.Exch2 in [etCqZone, etPower]) then
       begin
         if R1 < 0.70 then
           begin
