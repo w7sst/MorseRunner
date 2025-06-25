@@ -81,7 +81,7 @@ var
   slst, tl: TStringList;
   i: integer;
   rec: TArrlDxCallRec;
-  CallInx, NameInx, StateInx, PowerInx, UserTextInx: integer;
+  CallInx, NameInx, StateInx, PowerInx, UserTextInx, FieldCount: integer;
 begin
   slst:= TStringList.Create;
   tl:= TStringList.Create;
@@ -92,6 +92,7 @@ begin
   StateInx := -1;
   PowerInx := -1;
   UserTextInx := -1;
+  FieldCount := 4;
   rec := nil;
 
   try
@@ -102,11 +103,12 @@ begin
     for i:= 0 to slst.Count-1 do begin
       tl.DelimitedText := slst.Strings[i];
 
-      if (tl.Count < 4) then continue;
-      if (tl.Strings[0] = '!!Order!!') then
+      if (tl.Count > 1) and (tl.Strings[0] = '!!Order!!') then
         begin
-          // !!Order!!,Call,Name,State,Power,UserText,
+          // !!Order!!,Call,Name,State,Power,UserText,  // Dx Stations
+          // !!Order!!,Call,Name,State,                 // US Stations
           tl.Delete(0); // shifts others down by one
+          FieldCount := tl.Count;
           CallInx := tl.IndexOf('Call');
           NameInx := tl.IndexOf('Name');
           StateInx := tl.IndexOf('State');
@@ -115,10 +117,9 @@ begin
           assert(CallInx <> -1);
           assert(NameInx <> -1);
           assert(StateInx <> -1);
-          assert(PowerInx <> -1);
-          assert(UserTextInx <> -1);
           continue;
         end;
+      if (tl.Count < FieldCount) then continue;
 
       if rec = nil then
         rec := TArrlDxCallRec.Create;
@@ -127,8 +128,11 @@ begin
       rec.Call := UpperCase(tl.Strings[CallInx].Trim);
       rec.Name := UpperCase(tl.Strings[NameInx].Trim);
       rec.State := UpperCase(tl.Strings[StateInx].Trim);
-      rec.Power := UpperCase(tl.Strings[PowerInx].Trim);
-      if tl.Count > UserTextInx then
+      if (PowerInx >= 0) and (PowerInx < tl.Count) then
+        rec.Power := UpperCase(tl.Strings[PowerInx].Trim)
+      else
+        rec.Power := '';
+      if (UserTextInx >= 0) and (UserTextInx < tl.Count) then
         rec.UserText := tl.Strings[UserTextInx].Trim
       else
         rec.UserText := '';
