@@ -386,6 +386,7 @@ var
   MainForm: TMainForm;
   SavedContest: TSimContest = TSimContest(-1);  // used to restore Exch Field sizes
   SaveEdit1Width: integer = 0;
+  SaveEdit2Width: integer = 0;
   SaveEdit3Width: integer = 0;
   SaveLabel3Left: integer = 0;
   SaveEdit3Left: integer = 0;
@@ -1586,6 +1587,7 @@ end;
 procedure TMainForm.SaveRecvFieldSizes;
 begin
   SaveEdit1Width := Edit1.Width;
+  SaveEdit2Width := Edit2.Width;
   SaveEdit3Width := Edit3.Width;
   SaveLabel3Left := Label3.Left;
   SaveEdit3Left := Edit3.Left;
@@ -1598,6 +1600,7 @@ begin
   if SaveEdit3Left <> 0 then
   begin
     Edit1.Width := SaveEdit1Width;
+    Edit2.Width := SaveEdit2Width;
     Edit3.Width := SaveEdit3Width;
     Label3.Left := SaveLabel3Left;
     Edit3.Left := SaveEdit3Left;
@@ -1606,6 +1609,7 @@ begin
     Edit2.Show;
 
     SaveEdit1Width := 0;
+    SaveEdit2Width := 0;
     SaveEdit3Width := 0;
     SaveLabel3Left := 0;
     SaveEdit3Left := 0;
@@ -1615,6 +1619,8 @@ end;
 
 
 procedure TMainForm.ResizeRecvFields;
+const
+  PAD = 1;
 begin
   case SimContest of
     scArrlSS:
@@ -1633,6 +1639,24 @@ begin
         Edit3.Left := Edit2.Left - Reduce1;
         Edit3.Width := Edit3.Width + (SaveEdit3Left - Edit2.Left + Reduce1 + 15);
         Edit1.Width := Edit1.Width - Reduce1;
+      end;
+    scAllJa, scAcag:
+      if SaveEdit3Left = 0 then
+      begin
+        // retain current field sizes
+        SaveRecvFieldSizes;
+
+        // Update Exch1 and Exch2 field widths using field lengths
+        var L1: Integer := Exchange1Settings[RecvExchTypes.Exch1].L + PAD;
+        var L2: Integer := Exchange2Settings[RecvExchTypes.Exch2].L + PAD;
+        var CharWidth: Single := (SaveEdit2Width + SaveEdit3Width) / (L1 + L2);
+        Edit2.Width := Round(CharWidth * L1);
+        Edit3.Width := Round(CharWidth * L2);
+
+        // Adjust Exch2's left edge
+        var Delta: Integer := SaveEdit2Width - Edit2.Width;
+        Label3.Left := Label3.Left - Delta;
+        Edit3.Left := Edit3.Left - Delta;
       end;
   end;
 end;

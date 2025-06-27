@@ -338,6 +338,7 @@ Version 1.85.3 (June 2025)
   - ARRL FD - Update call history file
   - ARRL DX - Use 'ATT' for 100 Watts in Power exchange field (#392) (W7SST)
   - ARRL DX - Update call history file
+  - JARL ACAG - Widen Number exchange field to display long exchange (#416) (W7SST)
 
   Additional Details...
     Delay first callsign sent when running Single Calls mode (#424)
