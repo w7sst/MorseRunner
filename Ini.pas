@@ -73,6 +73,7 @@ type
   TErrMessageCallback = reference to procedure(const aMsg : string);
 
 const
+  UndefSimContest : TSimContest = TSimContest(-1);
   UndefExchType1 : TExchange1Type = TExchange1Type(-1);
   UndefExchType2 : TExchange2Type = TExchange2Type(-1);
 

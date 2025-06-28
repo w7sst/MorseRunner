@@ -158,7 +158,7 @@ object MainForm: TMainForm
     object Label2: TLabel
       Left = 140
       Top = 12
-      Width = 19
+      Width = 20
       Height = 15
       Caption = 'RST'
     end
@@ -746,6 +746,7 @@ object MainForm: TMainForm
         Height = 20
         Hint = '-15.0 dB'
         ShowHint = True
+        HintStep = 0
         Margin = 5
         Value = 0.750000000000000000
         Overloaded = False
@@ -926,7 +927,7 @@ object MainForm: TMainForm
       object Label17: TLabel
         Left = 12
         Top = 47
-        Width = 51
+        Width = 50
         Height = 15
         Caption = 'Exchange'
       end
