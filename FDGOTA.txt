@@ -1,7 +1,7 @@
 !!Order!!,Call,Exch1,Sect,UserText
 # FD
 # FDGOTA
-# LastEdit,2025-06-10
+# LastEdit,2025-06-27
 # Original file from Mike W1MI
 # FDGOTA is the new name/callhistory for both FD and FDGOTA
 # Thanks to
@@ -2837,7 +2837,7 @@ K5TXM,1E,NTX
 K5TXQ,1A,NTX,Wood Co. ARA
 K5TYR,5A,NTX,Tyler ARC
 K5UA,1D,LA,Acadiana ARA 
-K5UAR,1A,NTX,Upshur Area ARC
+K5UAR,2A,NTX,Upshur Area ARC
 K5UDO,1D,UT,Utah Valley ARC
 K5UTA,1A,NTX,Maverick Radio Mentors
 K5UUU,3A,KS,Seneca Area Radio Amateurs
@@ -5332,7 +5332,6 @@ KD0CIV,1D,MO,SLSRC
 KD0CUR,1B,KS
 KD0EAY,1B,MO,Cole Co. Em. Response Team
 KD0ETU,1D,MO,Macon County ARC
-KD0EZS / KE0QJH,4D,KS,Sand Hills ARC
 KD0FAB,1B,CO
 KD0FGV,3A,IA,Warren ARS
 KD0G,1B,CO
@@ -9474,7 +9473,7 @@ N3NR,1D,EPA
 N3NZ,1D,EPA
 N3OA,1D,ME,Ellsworth ARA 
 N3OAW,1D,EPA,State Line RC
-N3OBY-MM,1C,EPA
+N3OBY/MM,1C,EPA
 N3OC,1E,MDC,W3AO Team
 N3ODE,1D,MDC,Antietam RA
 N3OFR,1B,EPA
@@ -14065,7 +14064,6 @@ W4RIN,1D,GA,North Fulton ARL
 W4RJA,1D,NFL,The Villages ARC
 W4RK,1E,MO,Mid-MO ARC
 W4RKC,3A,VA,Shenandoah Valley ARC
-W4RKC`,2D,VA,Shenandoah Valley ARC
 W4RLB,1D,KY,Kentucky Contest Grp.
 W4RLC,1D,VA,Eastern Shore ARC
 W4RM,1D,NC,Tennessee Contest Grp.
