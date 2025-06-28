@@ -1375,11 +1375,6 @@ object MainForm: TMainForm
           Caption = '0 dB'
           OnClick = SelfMonClick
         end
-        object N10dB2: TMenuItem
-          Tag = 20
-          Caption = '+20 dB'
-          OnClick = SelfMonClick
-        end
       end
       object NRDigits1: TMenuItem
         Tag = 3

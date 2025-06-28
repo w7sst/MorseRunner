@@ -171,7 +171,6 @@ type
     N20dB1: TMenuItem;
     N10dB1: TMenuItem;
     N0dB1: TMenuItem;
-    N10dB2: TMenuItem;
     N6: TMenuItem;
     QRN1: TMenuItem;
     QRM1: TMenuItem;
