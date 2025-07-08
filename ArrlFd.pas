@@ -88,6 +88,7 @@ implementation
 uses
   SysUtils, Classes,
   Ini,
+  Math,
   System.Generics.Collections,
 {$ifdef DISTRIBUTION_REPORT}
   Dialogs,      // for ShowMessage
@@ -422,7 +423,9 @@ begin
   case AMsg of
     msgCQ: SendText(AStn, 'CQ FD <my>');
     msgNrQm:
-      case Random(5) of
+      if AStn.MyCall = Me.MyCall then
+        SendText(AStn, 'NR?')
+      else case Floor(AStn.R1*5) of
         0,1: SendText(AStn, 'NR?');
         2: SendText(AStn, 'SECT?');
         3: SendText(AStn, 'CLASS?');

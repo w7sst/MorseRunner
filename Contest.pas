@@ -21,12 +21,11 @@ type
     procedure SwapFilters;
 
   protected
-  const
-    STATION_ID_RATE = 3;  // send Station ID after 3 consecutive QSOs
-
   var
     QsoCountSinceStationID: Integer;  // QSOs since last CQ or Station ID
+    StationIdRate: Integer;       // number of QSOs between a CQ or Station ID
     BFarnsworthEnabled : Boolean; // enables Farnsworth timing (e.g. SST Contest)
+    CallerStartDelayInBlocks: Integer;  // first caller delay in Single Call mode
 
     constructor Create;
     function IsReloadRequired(const AUserCallsign : String) : boolean;
@@ -143,6 +142,7 @@ begin
   NoActivityCnt :=0;
   LastLoadCallsign := '';
   QsoCountSinceStationID := 0;
+  StationIdRate := Ini.StationIdRate;
   BFarnsworthEnabled := false;
 
   Init;
@@ -169,6 +169,7 @@ begin
   LastLoadCallsign := '';
   QsoCountSinceStationID := 0;
   BFarnsworthEnabled := false;
+  CallerStartDelayInBlocks := SecondsToBlocks(Ini.SingleCallStartDelay/1000) + 5;
 end;
 
 
@@ -416,7 +417,8 @@ begin
     msgTU:
       // send station ID after 3 consecutive QSOs (the comparison below uses
       // 2 since the counter is incremented after 'TU <my>' has been sent).
-      if (RunMode <> rmHST) and (QsoCountSinceStationID >= (STATION_ID_RATE-1))
+      if (RunMode in [rmPileup, rmWpx]) and (StationIdRate > 0) and
+        (QsoCountSinceStationID >= (StationIdRate-1))
         then SendText(AStn, 'TU <my>')
         else SendText(AStn, 'TU');
     msgMyCall: SendText(AStn, '<my>');
@@ -831,7 +833,8 @@ begin
   if Ini.RunMode = rmPileUp then
     MainForm.Panel4.Caption := Format('Pile-Up:  %d', [DxCount]);
 
-  if (RunMode = rmSingle) and (DxCount = 0) then begin
+  if (RunMode = rmSingle) and (DxCount = 0) and
+     (BlockNumber > CallerStartDelayInBlocks) then begin
      Me.Msg := [msgCq]; //no need to send cq in this mode
      Stations.AddCaller.ProcessEvent(evMeFinished);
 
@@ -910,7 +913,7 @@ var
 begin
   // reset Station ID counter after sending a CQ or 3 consecutive QSOs
   if (msgCQ in Me.Msg) or
-     ((msgTU in Me.Msg) and (QsoCountSinceStationID >= STATION_ID_RATE)) then
+     ((msgTU in Me.Msg) and (QsoCountSinceStationID >= StationIdRate)) then
     OnStationIDSent;
 
   //the stations heard my CQ and want to call

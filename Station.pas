@@ -69,10 +69,10 @@ type
                       // TStation.Tick() calls ProcessEvent(evTimeout) whenever
                       // Timeout decrements to zero.
     NrWithError: boolean;
-    R1 : Single;    // holds a Random number; used in NrAsText
     procedure Init;
     function NrAsText: string;
   public
+    R1 : Single;            // holds a Random number; used in NrAsText, SendMsg
     Amplitude: Single;
     WpmS: integer;          // Words per minute, sending speed (set by UI)
     WpmC: integer;          // Words per minute, character speed (set via .INI)
@@ -464,7 +464,7 @@ begin
 
     // this function needs to be refactored so it can operate individual
     // parts of the exchange.
-    if (SentExchTypes.Exch2 = etCqZone) then
+    if (SentExchTypes.Exch2 in [etCqZone, etPower]) then
       begin
         if R1 < 0.70 then
           begin

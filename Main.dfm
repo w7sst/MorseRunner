@@ -158,7 +158,7 @@ object MainForm: TMainForm
     object Label2: TLabel
       Left = 140
       Top = 12
-      Width = 19
+      Width = 20
       Height = 15
       Caption = 'RST'
     end
@@ -746,6 +746,7 @@ object MainForm: TMainForm
         Height = 20
         Hint = '-15.0 dB'
         ShowHint = True
+        HintStep = 0
         Margin = 5
         Value = 0.750000000000000000
         Overloaded = False
@@ -926,7 +927,7 @@ object MainForm: TMainForm
       object Label17: TLabel
         Left = 12
         Top = 47
-        Width = 51
+        Width = 50
         Height = 15
         Caption = 'Exchange'
       end
@@ -1079,7 +1080,7 @@ object MainForm: TMainForm
         OnClick = SendClick
       end
       object NRQM: TMenuItem
-        Tag = 16
+        Tag = 19
         Caption = 'NR?'
         ShortCut = 123
         OnClick = SendClick
@@ -1372,11 +1373,6 @@ object MainForm: TMainForm
         end
         object N0dB1: TMenuItem
           Caption = '0 dB'
-          OnClick = SelfMonClick
-        end
-        object N10dB2: TMenuItem
-          Tag = 20
-          Caption = '+20 dB'
           OnClick = SelfMonClick
         end
       end

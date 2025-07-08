@@ -2,7 +2,7 @@
                               Contest Simulator
                                   freeware
 
-                Version 1.85.2 - ARRL Sweepstakes Contest
+                Version 1.85.3 - ARRL Sweepstakes Contest
             The sixth release of the Morse Runner Community Edition
 
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
@@ -192,6 +192,19 @@ CONFIGURATION
       bar (default) or optionally in the label/caption above the exchange entry
       field. Please see the contest rules section below for more information.
 
+    Send Station ID after N consecutive QSOs
+      The user's Station ID will be sent after N consecutive QSOs without
+      sending the Station ID. This will occur when running either Pile-Up mode
+      or WPX Competion mode; it is disabled in Single-Call or HST modes.
+      The Station ID will be added to the 'TU' message after every N-th QSO
+      (e.g. 'TU <call>').  A keyword has been added to specify the number of QSOs
+      between each Station ID. By default, the Station ID will be sent every 3 QSOs.
+      To change this value, you can add the following keyword to the MorseRunner.ini
+      file:
+          [Settings]
+          StationIdRate=N
+      Settings this value to 0 will disable this feature.
+
 
   Responses
     There are five basic responses that you can receive:
@@ -314,8 +327,36 @@ SUBMITTING YOUR SCORE
 
 VERSION HISTORY
 
-Version 1.86-dev (Summer 2025)
+Version 1.86-dev (Fall 2025)
   General bug fixes and improvements...
+
+Version 1.85.3 (July 2025)
+  Bug Fix Release
+  - Send Station ID after 3 QSOs in Pile-Up or WPX Competition modes (#421) (W7SST)
+  - Improve response after operator sends corrected callsign (#420) (W7SST)
+  - F12 Key should send 'NR?', not '<call> <exch>' (#419) (W7SST)
+  - Delay first callsign sent when running Single Call mode (#424) (W7SST)
+
+  Contest-specific Improvements...
+  - ARRL DX - Use 'ATT' for 100 Watts in Power exchange field (#392) (W7SST)
+  - JARL ACAG - Widen Number exchange field to display long exchange (#416) (W7SST)
+  - ARRL FD - Update call history file
+  - ARRL DX - Update call history file
+  - K1USNSST - Update call history file
+
+  Additional Details...
+    Delay first callsign sent when running Single Calls mode (#424)
+      When using bluetooth headsets, users have reported a problem where
+      they will miss the first character sent after starting a contest in
+      Single Calls mode. They must immediately send F7 ('?') to cause the
+      first call to be repeated.  To fix this issue, an additional delay
+      can be added before the first callsign is sent.
+      - The following keyword is provided to specify an additional delay
+        before the first callsign is sent:
+          [Settings]
+          SingleCallStartDelay=NNN
+      - NNN can be any value between 0 and 2500 milliseconds.
+      - The default value is 0.
 
 Version 1.85.2 (April 2025)
   Bug Fix Release

@@ -22,7 +22,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.85+';  { Sets version strings in UI panel. }
+  sVersion: String = '1.85.3+';  { Sets version strings in UI panel. }
 
 type
 
@@ -171,7 +171,6 @@ type
     N20dB1: TMenuItem;
     N10dB1: TMenuItem;
     N0dB1: TMenuItem;
-    N10dB2: TMenuItem;
     N6: TMenuItem;
     QRN1: TMenuItem;
     QRM1: TMenuItem;
@@ -326,6 +325,9 @@ type
     procedure ConfigureExchangeFields;
     procedure SetMyExch1(const AExchType: TExchange1Type; const Avalue: string);
     procedure SetMyExch2(const AExchType: TExchange2Type; const Avalue: string);
+    procedure SaveRecvFieldSizes;
+    procedure RestoreRecvFields;
+    procedure ResizeRecvFields;
     procedure ProcessSpace;
     procedure SendMsg(AMsg: TStationMessage);
     procedure ProcessEnter;
@@ -381,10 +383,12 @@ const
 
 var
   MainForm: TMainForm;
+  SavedContest: TSimContest = TSimContest(-1);  // used to restore Exch Field sizes
   SaveEdit1Width: integer = 0;
+  SaveEdit2Width: integer = 0;
+  SaveEdit3Width: integer = 0;
   SaveLabel3Left: integer = 0;
   SaveEdit3Left: integer = 0;
-  SaveEdit3Width: integer = 0;
 
   { debug switches - set via .INI file or compile-time switches (above) }
   BDebugExchSettings: boolean;    // display parsed Exchange field settings
@@ -526,6 +530,27 @@ procedure TMainForm.SendClick(Sender: TObject);
 var
   Msg: TStationMessage;
 begin
+  // Validate MenuItem tags
+  assert(CQ1.Tag = Ord(msgCQ));               // CQ     F1
+  assert(Exchange1.Tag = Ord(msgNR));         // Exch   F2
+  assert(TU1.Tag = Ord(msgTU));               // TU     F3
+  assert(MyCall1.Tag = Ord(msgMyCall));       // <my>   F4
+  assert(HisCall1.Tag = Ord(msgHisCall));     // <his>  F5
+  assert(QSOB41.Tag = Ord(msgB4));            // B4     F6
+  assert(N1.Tag = Ord(msgQm));                // ?      F7
+  assert(AGN1.Tag = Ord(msgNIL));             // NIL    F8
+  assert(NRQM.Tag = Ord(msgNrQm));            // NR?    F12
+
+  // Validate Control button tags
+  assert(SpeedButton4.Tag = Ord(msgCQ));      // CQ     F1
+  assert(SpeedButton5.Tag = Ord(msgNR));      // Exch   F2
+  assert(SpeedButton6.Tag = Ord(msgTU));      // TU     F3
+  assert(SpeedButton7.Tag = Ord(msgMyCall));  // <my>   F4
+  assert(SpeedButton8.Tag = Ord(msgHisCall)); // <his>  F5
+  assert(SpeedButton9.Tag = Ord(msgB4));      // B4     F6
+  assert(SpeedButton10.Tag = Ord(msgQm));     // ?      F7
+  assert(SpeedButton11.Tag = Ord(msgNIL));    // NIL    F8
+
   Msg := TStationMessage((Sender as TComponent).Tag);
 
   SendMsg(Msg);
@@ -1125,17 +1150,20 @@ begin
   // clear input fields prior to deleting Contest object.
   WipeBoxes;
 
+  // restore Recv Exchange field sizing prior to deleting Contest object.
+  RestoreRecvFields;
+
   // clear any status messages
   sbar.Caption := '';
   sbar.Font.Color := clDefault;
   sbar.Visible := mnuShowCallsignInfo.Checked;
 
-  assert(ContestDefinitions[AContestNum].T = AContestNum,
-    'Contest definitions are out of order');
-
   // drop prior contest
   if Assigned(Tst) then
     FreeAndNil(Tst);
+
+  assert(ContestDefinitions[AContestNum].T = AContestNum,
+    'Contest definitions are out of order');
 
   Ini.SimContest := AContestNum;
   Ini.ActiveContest := @ContestDefinitions[AContestNum];
@@ -1229,19 +1257,9 @@ begin
         sbar.Caption := '';
       end;
 
-    // restore Edit3 if not ARRL Sweepstakes
-    if (SimContest <> scArrlSS) and (SaveEdit3Left <> 0) then
-      begin
-        Edit1.Width := SaveEdit1Width;
-        Label3.Left := SaveLabel3Left;
-        Edit3.Left := SaveEdit3Left;
-        Edit3.Width := SaveEdit3Width;
-        Label2.Show;
-        Edit2.Show;
-        SaveLabel3Left := 0;
-        SaveEdit3Left := 0;
-        SaveEdit3Width := 0;
-      end;
+    // restore Exchange fields if current contest has changed since last run
+    if (SimContest <> SavedContest) and (SaveEdit3Left <> 0) then
+      RestoreRecvFields;
 
     // set contest-specific sent exchange values
     SetMyExch1(SentExchTypes.Exch1, sl[0]);
@@ -1356,6 +1374,9 @@ var
 begin
   // Load Received exchange field types
   RecvExchTypes:= Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall, Trim(Edit1.Text));
+
+  // apply contest-specific exchange field sizing and positioning
+  ResizeRecvFields;
 
   // Optional Contest Exchange label and field
   Visible := AExchangeLabel <> '';
@@ -1553,26 +1574,6 @@ begin
       end;
     etSSCheckSection:
       begin
-        if SaveEdit3Left = 0 then
-          begin
-            // retain current field sizes
-            SaveEdit1Width := Edit1.Width;
-            SaveLabel3Left := Label3.Left;
-            SaveEdit3Left := Edit3.Left;
-            SaveEdit3Width := Edit3.Width;
-
-            // hide Exch1 (Edit2)
-            Edit2.Hide;
-            Label2.Hide;
-
-            // reduce Edit1 width; shift Exch Field 2 to the left and grow
-            var Reduce1: integer := (SaveEdit1Width * 4) div 9;
-            Label3.Left := Label3.Left - (Label3.Left - Label2.Left) - Reduce1;
-            Edit3.Left := Edit2.Left - Reduce1;
-            Edit3.Width := Edit3.Width + (SaveEdit3Left - Edit2.Left + Reduce1 + 15);
-            Edit1.Width := Edit1.Width - Reduce1;
-          end;
-
         Ini.UserExchange2[SimContest] := Avalue; // <check> <sect> (e.g. 72 OR)
         Tst.Me.Exch2 := Avalue;
         if BDebugExchSettings then
@@ -1585,6 +1586,84 @@ begin
       assert(false, Format('Unsupported exchange 2 type: %s.', [ToStr(AExchType)]));
   end;
   Tst.Me.SentExchTypes.Exch2 := AExchType;
+end;
+
+
+procedure TMainForm.SaveRecvFieldSizes;
+begin
+  SaveEdit1Width := Edit1.Width;
+  SaveEdit2Width := Edit2.Width;
+  SaveEdit3Width := Edit3.Width;
+  SaveLabel3Left := Label3.Left;
+  SaveEdit3Left := Edit3.Left;
+  SavedContest := Ini.SimContest;
+end;
+
+
+procedure TMainForm.RestoreRecvFields;
+begin
+  if SaveEdit3Left <> 0 then
+  begin
+    Edit1.Width := SaveEdit1Width;
+    Edit2.Width := SaveEdit2Width;
+    Edit3.Width := SaveEdit3Width;
+    Label3.Left := SaveLabel3Left;
+    Edit3.Left := SaveEdit3Left;
+
+    Label2.Show;
+    Edit2.Show;
+
+    SaveEdit1Width := 0;
+    SaveEdit2Width := 0;
+    SaveEdit3Width := 0;
+    SaveLabel3Left := 0;
+    SaveEdit3Left := 0;
+    SavedContest := UndefSimContest;
+  end;
+end;
+
+
+procedure TMainForm.ResizeRecvFields;
+const
+  PAD = 1;
+begin
+  case SimContest of
+    scArrlSS:
+      if SaveEdit3Left = 0 then
+      begin
+        // retain current field sizes
+        SaveRecvFieldSizes;
+
+        // hide Exch1 (Edit2)
+        Edit2.Hide;
+        Label2.Hide;
+
+        // reduce Edit1 width; shift Exch Field 2 to the left and grow
+        var Reduce1: integer := (SaveEdit1Width * 4) div 9;
+        Label3.Left := Label3.Left - (Label3.Left - Label2.Left) - Reduce1;
+        Edit3.Left := Edit2.Left - Reduce1;
+        Edit3.Width := Edit3.Width + (SaveEdit3Left - Edit2.Left + Reduce1 + 15);
+        Edit1.Width := Edit1.Width - Reduce1;
+      end;
+    scAllJa, scAcag:
+      if SaveEdit3Left = 0 then
+      begin
+        // retain current field sizes
+        SaveRecvFieldSizes;
+
+        // Update Exch1 and Exch2 field widths using field lengths
+        var L1: Integer := Exchange1Settings[RecvExchTypes.Exch1].L + PAD;
+        var L2: Integer := Exchange2Settings[RecvExchTypes.Exch2].L + PAD;
+        var CharWidth: Single := (SaveEdit2Width + SaveEdit3Width) / (L1 + L2);
+        Edit2.Width := Round(CharWidth * L1);
+        Edit3.Width := Round(CharWidth * L2);
+
+        // Adjust Exch2's left edge
+        var Delta: Integer := SaveEdit2Width - Edit2.Width;
+        Label3.Left := Label3.Left - Delta;
+        Edit3.Left := Edit3.Left - Delta;
+      end;
+  end;
 end;
 
 
