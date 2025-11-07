@@ -256,8 +256,8 @@ KEY ASSIGNMENTS
   Alt-Enter        - Saves the QSO without sending anything
   Tab Key          - Moves to Call, RST, CQ-Zone, Station Call, and your exchange
   Shift Tab        - Moves to Call, RST, CQ-Zone, Station Call, and your exchange
-  Up arrow         - Moves the RIT right (reversible in settings)
-  Down arrow       - Moves the RIT left (reversible in settings)
+  Up arrow         - Moves the RIT right (reversible in Settings, see RitStepIncr)
+  Down arrow       - Moves the RIT left (reversible in Settings, see RitStepIncr)
   Mouse wheel      - Moves the RIT
   Left arrow       - Adjusts the RX Bandwidth
   Right arrow      - Adjusts the RX Bandwidth
