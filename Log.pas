@@ -938,17 +938,7 @@ begin
   with QsoList[High(QsoList)] do begin
     // Adding a contest: LastQsoToScreen, add last qso to Score Table
     case Ini.SimContest of
-    scCwt:
-      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-        , Exch1
-        , Exch2
-        , Err, format('%3s', [TrueWpm]));
-    scSst:
-      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
-        , Exch1
-        , Exch2
-        , Err, format('%3s', [TrueWpm]));
-    scFieldDay:
+    scCwt, scSst, scFieldDay:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , Exch1
         , Exch2

@@ -369,29 +369,19 @@ var
 begin
   // Adding a contest: TStation.NrAsText(), converts <#> to exchange (usually '<exch1> <exch2>'). Inject LID errors.
   case SimContest of
-    scCQWW:
-      Result := Format('%s %s', [Exch1, Exch2]);  // <RST> <CQ-Zone>
     scCwt:
       Result := Format('%s  %s', [Exch1, Exch2]); // <Name> <NR|State|Prov|Prefix>
-    scSst:
-      Result := Format('%s %s', [Exch1, Exch2]); // <Name> <State|Prov|DX>
-    scFieldDay:
-      Result := Format('%s %s', [Exch1, Exch2]);
     scNaQp:
       if Exch2.IsEmpty then
         Result := Exch1
       else
         Result := Format('%s %s', [Exch1, Exch2]);  // make this virtual?
-    scArrlDx, scIaruHf:
-      Result := Format('%s %s', [Exch1, Exch2]);
-    scAllJa, scAcag:
-      Result := Format('%s %s', [Exch1, Exch2]);
     scArrlSS:
       if Call = MyCall then
         Result := Format('%d%s %s %s', [NR, Exch1, MyCall, Exch2])
       else
         Result := Format('%s %s %s', [Exch1, MyCall, Exch2]);
-    else
+    scWpx, scHst:
       if Call = MyCall then
         Result := Format('%d%.3d', [RST, NR])
       else begin
@@ -416,6 +406,8 @@ begin
           assert(false);
         end;
       end;
+    else
+      Result := Format('%s %s', [Exch1, Exch2]);
   end;
 
   if NrWithError and (SentExchTypes.Exch2 = etSerialNr) then
