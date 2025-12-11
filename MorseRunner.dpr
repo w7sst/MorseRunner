@@ -51,6 +51,7 @@ uses
   SerNRGen in 'SerNRGen.pas',
   Lexer in 'Util\Lexer.pas',
   ArrlSections in 'Util\ArrlSections.pas',
+  CallsignUtils in 'Util\CallsignUtils.pas',
   SSExchParser in 'Util\SSExchParser.pas';
 
 {$R *.RES}

@@ -19,6 +19,8 @@ uses
   SSExchParser in '..\Util\SSExchParser.pas',
   ExchFields in '..\ExchFields.pas',
   ArrlSections in '..\Util\ArrlSections.pas',
+  CallsignUtils in '..\Util\CallsignUtils.pas',
+  CallsignUtilsTest in 'CallsignUtilsTest.pas',
   LexerTest in 'LexerTest.pas',
   SSLexerTest in 'SSLexerTest.pas',
   MySSExchTest in 'MySSExchTest.pas',

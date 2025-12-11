@@ -31,11 +31,6 @@ procedure SbarUpdateStationInfo(const ACallsign: string);
 procedure SBarUpdateSummary(const AExchSummary: String);
 procedure SBarUpdateDebugMsg(const AMsgText: string);
 procedure DisplayError(const AExchError: string; const AColor: TColor);
-function ExtractCallsign(Call: string): string;
-function ExtractPrefix(Call: string; DeleteTrailingLetters: boolean = True): string;
-{$ifdef DEBUG}
-function ExtractPrefix0(Call: string): string;
-{$endif}
 
 {$ifdef DEBUG}
 // Debugging API patterned after LazLogger.
@@ -138,19 +133,15 @@ var
   Exch2ExColumnInx: Integer;
   CorrectionColumnInx: Integer;
 
-{$ifdef DEBUG}
-  RunUnitTest : boolean;  // run ExtractPrefix unit tests once
-{$endif}
-
-
 implementation
 
 uses
   Windows, SysUtils, RndFunc, Math,
   Graphics,     // for TColor
   ExchFields,   // for exchange field types
+  CallsignUtils,  // for ExtractCallsign, ExtractPrefix
   Controls,
-  StdCtrls, PerlRegEx, StrUtils,
+  StdCtrls, StrUtils,
   Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
 
 const
@@ -681,154 +672,6 @@ begin
   MainForm.PaintBox1.Invalidate;
 end;
 
-// Code by BG4FQD
-function ExtractCallsign(Call: string):string;
-var
-    reg: TPerlRegEx;
-    bMatch: bool;
-begin
-    reg := TPerlRegEx.Create();
-    try
-        Result:= '';
-        reg.Subject := UTF8Encode(Call);
-        reg.RegEx:= '(([0-9][A-Z])|([A-Z]{1,2}))[0-9][A-Z0-9]*[A-Z]';
-        bMatch:= reg.Match;
-        if bMatch then begin
-            if reg.MatchedOffset > 1 then
-                bMatch:= (call[reg.MatchedOffset-1] = '/');
-            if bMatch then begin
-                Result:= String(reg.MatchedText);
-            end;
-        end;
-    finally
-        reg.Free;
-    end;
-end;
-
-
-{$ifdef DEBUG}
-function ExtractPrefix0(Call: string): string;
-var
-    reg: TPerlRegEx;
-begin
-    reg := TPerlRegEx.Create();
-    try
-        Result:= '-';
-        reg.Subject := UTF8String(Call);
-        reg.RegEx:= '(([0-9][A-Z])|([A-Z]{1,2}))[0-9]';
-        if reg.Match then
-            Result:= UTF8ToUnicodeString(reg.MatchedText);
-    finally
-        reg.Free;
-    end;
-end;
-{$endif}
-
-
-function ExtractPrefix(Call: string; DeleteTrailingLetters: boolean): string;
-const
-  DIGITS = ['0'..'9'];
-  LETTERS = ['A'..'Z'];
-var
-  p: integer;
-  S1, S2, Dig: string;
-begin
-{$ifdef DEBUG}
-  if RunUnitTest then begin
-    RunUnitTest := false;
-    // original algorithm
-    assert(ExtractPrefix0('W7SST') = 'W7');
-    assert(ExtractPrefix0('W7SST/6') = 'W7');  // should be 'W6'
-    assert(ExtractPrefix0('N7SST/6') = 'N7');  // should be 'N6'
-    assert(ExtractPrefix0('F6/W7SST') = 'F6');
-    assert(ExtractPrefix0('F6/AB7Q') = 'F6');
-    assert(ExtractPrefix0('W7SST/W') = 'W7');  // should be 'W0'
-    assert(ExtractPrefix0('F6FVY/W7') = 'F6'); // should be 'W7'
-
-    // newer algorithm
-    assert(ExtractPrefix('W7SST') = 'W7');
-    assert(ExtractPrefix('W7SST/6') = 'W6');
-    assert(ExtractPrefix('N7SST/6') = 'N6');
-    assert(ExtractPrefix('F6/W7SST') = 'F6');
-    assert(ExtractPrefix('W7SST/W') = 'W0');
-    assert(ExtractPrefix('F6FVY/W7') = 'W7');
-    assert(ExtractPrefix('F6/W7SST/P') = 'F6');
-    assert(ExtractPrefix('W7SST/W/QRP') = 'W0');
-    assert(ExtractPrefix('F6FVY/W7/MM') = 'W7');
-  end;
-{$endif}
-  //kill modifiers
-  Call := Call + '|';
-  Call := StringReplace(Call, '/QRP|', '', []);
-  Call := StringReplace(Call, '/MM|', '', []);
-  Call := StringReplace(Call, '/M|', '', []);
-  Call := StringReplace(Call, '/P|', '', []);
-  Call := StringReplace(Call, '|', '', []);
-  Call := StringReplace(Call, '//', '/', [rfReplaceAll]);
-  if Length(Call) < 2 then
-  begin
-    Result := '';
-    Exit;
-  end;
-
-  Dig := '';
-
-  //select shorter piece
-  p := Pos('/', Call);
-  if p = 0 then Result := Call
-  else if p = 1 then Result := Copy(Call, 2, MAXINT)
-  else if p = Length(Call) then Result := Copy(Call, 1, p-1)
-  else
-    begin
-    S1 := Copy(Call, 1, p-1);
-    S2 := Copy(Call, p+1, MAXINT);
-
-    if (Length(S1) = 1) and CharInSet(S1[1], DIGITS) then begin
-        Dig := S1; Result := S2;
-    end
-    else
-        if (Length(S2) = 1) and CharInSet(S2[1], DIGITS) then begin
-            Dig := S2;
-            Result := S1;
-        end
-        else
-            if Length(S1) <= Length(S2) then
-                Result := S1
-            else
-                Result := S2;
-    end;
-  if Pos('/', Result) > 0 then begin
-    Result := '';
-    Exit;
-  end;
-
-  // when ARRL.pas (DXCC support) is extracting the prefix, the trailing letters
-  // are NOT removed. This allows longer prefixes to be recognized.
-  // (e.g. The call RC2FX has a prefix RC2F, which is Kaliningrad.
-  // if the trailing 'F' is removed, the prefix matches European Russia)
-  if not DeleteTrailingLetters then
-    Exit;
-
-  //delete trailing letters, retain at least 2 chars
-  for p:= Length(Result) downto 3 do
-//    if Result[p] in DIGITS then
-    if CharInSet(Result[p], DIGITS) then
-      Break
-    else
-      Delete(Result, p, 1);
-
-  //ensure digit
-//  if not (Result[Length(Result)] in DIGITS) then
-  if not CharInSet(Result[Length(Result)], DIGITS) then
-    Result := Result + '0';
-  //replace digit
-  if Dig <> '' then
-    Result[Length(Result)] := Dig[1];
-
-  Result := Copy(Result, 1, 5);
-end;
-
-
 {
   Save QSO data into the Log.
 
@@ -1330,9 +1173,6 @@ initialization
   RawMultList := TMultList.Create;
   VerifiedMultList := TMultList.Create;
   ScaleTableInitialized := False;
-{$ifdef DEBUG}
-  RunUnitTest := true;
-{$endif}
 
 finalization
   RawMultList.Free;
