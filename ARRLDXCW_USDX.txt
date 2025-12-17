@@ -1,4 +1,4 @@
-!!Order!!,Call,Name,State,Power,UserText,
+!!Order!!,Call,Name,State,Power,
 #
 # ARRL International (For DX and US side)
 # ARRLDXCW
