@@ -2055,11 +2055,19 @@ begin
     Log.SBarUpdateStationInfo('');
     Log.SBarUpdateStatusMsg('');
     Log.SBarUpdateDebugMsg('');
+{$ifdef DEBUG}
+    Log.SBarUpdateStatusMsg('Loading call history...');
+{$endif}
     Application.ProcessMessages;  // Force UI update
 
     // load call history and other contest-specific setup before starting
     if not Tst.OnContestPrepareToStart(Ini.Call, ExchangeEdit.Text) then
       Exit;
+
+{$ifdef DEBUG}
+    // display number of callsigns loaded
+    Log.SBarUpdateStatusMsg(format('%d callsigns loaded', [Tst.CallHistoryCount]));
+{$endif}
   end;
 
   BStop := Value = rmStop;
