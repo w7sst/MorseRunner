@@ -20,11 +20,13 @@ uses
   ExchFields in '..\ExchFields.pas',
   ArrlSections in '..\Util\ArrlSections.pas',
   CallsignUtils in '..\Util\CallsignUtils.pas',
+  DXCC in '..\DXCC.pas',
   CallsignUtilsTest in 'CallsignUtilsTest.pas',
   LexerTest in 'LexerTest.pas',
   SSLexerTest in 'SSLexerTest.pas',
   MySSExchTest in 'MySSExchTest.pas',
   SSExchParserTest in 'SSExchParserTest.pas',
+  DxccListTest in 'DxccListTest.pas',
   DxOperTest in 'DxOperTest.pas';
 
 {$IFNDEF TESTINSIGHT}
