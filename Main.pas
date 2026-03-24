@@ -1655,26 +1655,29 @@ end;
 
 procedure TMainForm.SetMyExch2(const AExchType: TExchange2Type;
   const Avalue: string);
+
+  procedure SetupSerialNR(const Avalue: string);
+  begin
+    var S : String := Avalue.Replace('T', '0', [rfReplaceAll])
+                            .Replace('O', '0', [rfReplaceAll])
+                            .Replace('N', '9', [rfReplaceAll]);
+    Ini.UserExchange2[SimContest] := Avalue;
+    if SimContest = scHST then
+      Tst.Me.NR := 1
+    else if S.Contains('#') and (SerialNR in [snMidContest, snEndContest]) then
+      Tst.Me.NR := 1 + (Tst.GetRandomSerialNR div 10) * 10
+    else if IsNum(S) then
+      Tst.Me.Nr := S.ToInteger
+    else
+      Tst.Me.Nr := 1;
+    if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
+  end;
 begin
   assert(RunMode = rmStop);
   // Adding a contest: setup contest-specific exchange field 2
   case AExchType of
     etSerialNr:
-      begin
-        var S : String := Avalue.Replace('T', '0', [rfReplaceAll])
-                                .Replace('O', '0', [rfReplaceAll])
-                                .Replace('N', '9', [rfReplaceAll]);
-        Ini.UserExchange2[SimContest] := Avalue;
-        if SimContest = scHST then
-          Tst.Me.NR := 1
-        else if S.Contains('#') and (SerialNR in [snMidContest, snEndContest]) then
-          Tst.Me.NR := 1 + (Tst.GetRandomSerialNR div 10) * 10
-        else if IsNum(S) then
-          Tst.Me.Nr := S.ToInteger
-        else
-          Tst.Me.Nr := 1;
-        if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
-      end;
+      SetupSerialNr(Avalue);
     etGenericField, etNaQpExch2, etNaQpNonNaExch2:
       begin
         // 'expecting alpha-numeric field'
