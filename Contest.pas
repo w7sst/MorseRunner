@@ -32,6 +32,7 @@ type
     constructor Create;
     function IsReloadRequired(const AUserCallsign : String) : boolean;
     procedure SetLastLoadCallsign(const AUserCallsign : String);
+    function GetCallHistoryCount: Integer; virtual; abstract;
     function ValidateExchField(const FieldDef: PFieldDefinition;
       const Avalue: string) : Boolean;
 
@@ -99,6 +100,8 @@ type
     procedure OnMeStartedSending;
     procedure OnSaveQsoComplete;
     procedure OnStationIDSent;
+
+    property CallHistoryCount: Integer read GetCallHistoryCount;
   end;
 
 var

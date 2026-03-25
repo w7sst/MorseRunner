@@ -57,6 +57,9 @@ private
   FdCallList: TObjectList<TFdCallRec>;
   Comparer: IComparer<TFdCallRec>;
 
+protected
+  function GetCallHistoryCount: Integer; override;
+
 public
   constructor Create;
   destructor Destroy; override;
@@ -360,6 +363,12 @@ begin
     PendingStations.Free;
     if rec <> nil then rec.Free;
   end;
+end;
+
+
+function TArrlFieldDay.GetCallHistoryCount: Integer;
+begin
+  Result := FdCallList.Count;
 end;
 
 

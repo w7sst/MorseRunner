@@ -23,6 +23,9 @@ type
     Comparer: IComparer<TCWSSTRec>;
     procedure Delimit(var AStringList: TStringList; const AText: string);
 
+  protected
+    function GetCallHistoryCount: Integer; override;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -108,9 +111,14 @@ begin
         tl.Free;
         if SST <> nil then SST.Free;
     end;
-
-
 end;
+
+
+function TCWSST.GetCallHistoryCount: Integer;
+begin
+  Result := CWSSTList.Count;
+end;
+
 
 constructor TCWSST.Create;
 begin

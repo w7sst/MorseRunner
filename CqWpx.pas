@@ -22,6 +22,9 @@ private
 
   function GetNR(const station : TDxStation) : integer;
 
+protected
+  function GetCallHistoryCount: Integer; override;
+
 public
   constructor Create;
   destructor Destroy; override;
@@ -94,6 +97,12 @@ begin
   CallLst.LoadCallList;
 
   Result := True;
+end;
+
+
+function TCqWpx.GetCallHistoryCount: Integer;
+begin
+  Result := CallLst.Count;
 end;
 
 

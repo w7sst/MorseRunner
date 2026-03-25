@@ -24,6 +24,9 @@ type
     Comparer: IComparer<TCWOPSRec>;
     procedure Delimit(var AStringList: TStringList; const AText: string);
 
+  protected
+    function GetCallHistoryCount: Integer; override;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -109,6 +112,12 @@ begin
 
 
 end;
+
+function TCWOPS.GetCallHistoryCount: Integer;
+begin
+  Result := CWOPSList.Count;
+end;
+
 
 constructor TCWOPS.Create;
 begin

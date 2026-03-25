@@ -26,6 +26,9 @@ type
     ArrlDxCallList: TObjectList<TArrlDxCallRec>;
     Comparer: IComparer<TArrlDxCallRec>;
 
+  protected
+    function GetCallHistoryCount: Integer; override;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -170,6 +173,12 @@ begin
     tl.Free;
 
   end;
+end;
+
+
+function TArrlDx.GetCallHistoryCount: Integer;
+begin
+  Result := Self.ArrlDxCallList.Count;
 end;
 
 

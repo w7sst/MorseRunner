@@ -24,6 +24,9 @@ private
   FIsCallLocalLastCall: String;     // used to optimize IsCallLocalToContest
   FIsCallLocalLastResult: Boolean;  // used to optimize IsCallLocalToContest
 
+protected
+  function GetCallHistoryCount: Integer; override;
+
 public
   constructor Create;
   destructor Destroy; override;
@@ -165,6 +168,12 @@ begin
     tl.Free;
     if rec <> nil then rec.Free;
   end;
+end;
+
+
+function TNcjNaQp.GetCallHistoryCount: Integer;
+begin
+  Result := NaQpCallList.Count;
 end;
 
 

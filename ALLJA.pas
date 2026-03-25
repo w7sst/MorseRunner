@@ -25,6 +25,9 @@ type
     CallList: TObjectList<TAllJaCallRec>;
     Comparer: IComparer<TAllJaCallRec>;
 
+  protected
+    function GetCallHistoryCount: Integer; override;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -46,6 +49,7 @@ implementation
 
 uses
   SysUtils, Classes;
+
 
 function TALLJA.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
@@ -100,6 +104,12 @@ begin
     tl.Free;
     if rec <> nil then rec.Free;
   end;
+end;
+
+
+function TALLJA.GetCallHistoryCount: Integer;
+begin
+  Result := CallList.Count;
 end;
 
 
