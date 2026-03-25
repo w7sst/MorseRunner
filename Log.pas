@@ -765,7 +765,7 @@ begin
 
   //inc NR
   if (Tst.Me.SentExchTypes.Exch1 in [etSSNrPrecedence]) or
-     (Tst.Me.SentExchTypes.Exch2 in [etSerialNr]) then
+      Tst.Me.SentExchTypes.Exch2AsSerialNR then
     Inc(Tst.Me.NR);
 
   // Notify SaveQso is complete

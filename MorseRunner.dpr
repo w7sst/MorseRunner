@@ -53,6 +53,7 @@ uses
   ArrlSections in 'Util\ArrlSections.pas',
   CallsignUtils in 'Util\CallsignUtils.pas',
   AppPaths in 'Src\Core\AppPaths.pas',
+  Flags in 'Src\Core\Flags.pas',
   ArrlDx.Types in 'Src\Domain\Contests\ArrlDx.Types.pas',
   ContestFileReader in 'Src\Persistence\ContestFileReader.pas',
   ContestFileFormat in 'Src\Persistence\ContestFileFormat.pas',
