@@ -187,6 +187,7 @@ const
   SS_CALL_COL     = 'Call,9,L';
   SS_PREC_COL     = 'Pr,2.5,L';
   SS_CHECK_COL    = 'Chk,3.25,C';
+  ARRL_EXCH_COL   = 'Exch,5,L';
 
 {$ifdef DEBUG}
   DEBUG_INDENT: Integer = 3;
@@ -553,6 +554,8 @@ begin
       ScoreTableInit([UTC_COL, CALL_COL, CQWW_RST_COL, CQ_ZONE_COL, CORRECTIONS_COL, WPM_COL]);
     scArrlDx:
       ScoreTableInit([UTC_COL, CALL_COL, RST_COL, ARRLDX_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
+    scArrl10m:
+      ScoreTableInit([UTC_COL, CALL_COL, RST_COL, ARRL_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scAllJa:
       ScoreTableInit([UTC_COL, CALL_COL, RST_COL, ALLJA_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scAcag:
@@ -823,6 +826,11 @@ begin
         , format('%.3d', [Rst])
         , Exch2
         , Err, format('%3s', [TrueWpm]));
+    scArrl10m:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d', [Rst])
+        , Exch2
+        , Err, format('%3s', [TrueWpm]));
     scAllJa:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
@@ -928,6 +936,19 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
               Exch2Error := leZN
             else
               Exch2Error := leSOC;
+        scArrl10m:
+          if TrueCall.EndsWith('/MM') then
+            begin
+              if TrueExch2 <> Exch2 then
+                Exch2Error := leZN;
+            end
+          else if TrueNR > 0 then
+            begin
+              if (TrueNr <> NR) then
+                Exch2Error := leNR;
+            end
+          else if TrueExch2 <> Exch2 then
+            Exch2Error := leERR;
         else
           if TrueExch2 <> Exch2 then
             Exch2Error := leERR;
@@ -968,6 +989,8 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
       end
       else if (SimContest = scArrlSS) then
         ACorrections.Add(TrueSect)
+      else if (SimContest = scArrl10m) then
+        ACorrections.Add(format('%.3d', [TrueNR]))
       else
         ACorrections.Add(TrueExch2);
     leCHK:

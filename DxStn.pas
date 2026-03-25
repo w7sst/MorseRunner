@@ -260,7 +260,11 @@ begin
     // Adding a contest: copy DxStation's Exch2 qso information into log
     case SentExchTypes.Exch2 of
       etSerialNr: TrueExch2 := IntToStr(Self.NR);
-      etGenericField: TrueExch2 := Self.Exch2;
+      etGenericField:
+        if SentExchTypes.Exch2AsSerialNR then
+          TrueExch2 := IntToStr(Self.NR)
+        else
+          TrueExch2 := Self.Exch2;
       etCqZone: TrueExch2 := Self.Exch2;
       etItuZone: TrueExch2 := Self.Exch2;
       etArrlSection: TrueExch2 := Self.Exch2;

@@ -27,7 +27,7 @@ const
 type
   // Adding a contest: Append new TSimContest enum value for each contest.
   TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW, scArrlDx,
-                 scSst, scAllJa, scAcag, scIaruHf, scArrlSS);
+                 scSst, scAllJa, scAcag, scIaruHf, scArrlSS, scArrl10m);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
   // Serial NR types
@@ -217,6 +217,16 @@ const
      // Fields: NR:numeric, Prec:string, Check:numeric, Section:string
      // N1MM default ordering w/ call history: 72 OR. I type 123A
      // N1MM automatic rendering: 123A <call> 72 OR
+
+   ,(Name: 'ARRL 10M';
+     Key: 'ARRL10M';
+     ExchType1: etRST;
+     ExchType2: etGenericField;
+     ExchCaptions: ('RST', 'Exch');
+     ExchFieldEditable: True;
+     ExchDefault: '5NN OR';
+     Msg: '''RST <State|Province|#|ITU>'' (e.g. 5NN OR)';
+     T:scArrl10m)
   );
 
 var

@@ -54,9 +54,12 @@ type
     Flags: TFlags16;        // Used by etGenericField for contest-specific behaviors
 
     const EXCH2_AS_SERIAL_NR      = $0001;
+    const EXCH2_AS_ITU_REGION     = $0002;
 
     procedure SetSendExch2AsSerialNR(const Val: Boolean);
     function  GetSendExch2AsSerialNR: Boolean;
+    procedure SetSendExch2AsITURegion(const Val: Boolean);
+    function  GetSendExch2AsITURegion: Boolean;
 
   public
     Exch1: TExchange1Type;  // Exchange field 1 type
@@ -65,6 +68,7 @@ type
     // Exch2SubType: TExchSubType;
 
     property Exch2AsSerialNR:  Boolean read GetSendExch2AsSerialNR  write SetSendExch2AsSerialNR;
+    property Exch2AsITURegion: Boolean read GetSendExch2AsITURegion write SetSendExch2AsITURegion;
 
     class operator Initialize(out Dest: TExchTypes);
     class operator Equal(const a,b: TExchTypes) : Boolean;
@@ -209,6 +213,15 @@ begin
   Result := (Exch2 = etSerialNr) or Flags.TestFlag(EXCH2_AS_SERIAL_NR);
 end;
 
+procedure TExchTypes.SetSendExch2AsITURegion(const Val: Boolean);
+begin
+  Flags.SetFlag(TExchTypes.EXCH2_AS_ITU_REGION, Val);
+end;
+
+function TExchTypes.GetSendExch2AsITURegion: Boolean;
+begin
+  Result := Flags.TestFlag(EXCH2_AS_ITU_REGION);
+end;
 
 { TStation }
 
@@ -450,6 +463,11 @@ begin
         Result := Format('%d%s %s %s', [NR, Exch1, MyCall, Exch2])
       else
         Result := Format('%s %s %s', [Exch1, MyCall, Exch2]);
+    scArrl10m:
+      if Self.SentExchTypes.Exch2AsSerialNR then
+        Result := Format('%s %d', [Exch1, NR])
+      else
+        Result := Format('%s %s', [Exch1, Exch2]);
     scWpx, scHst:
       if Call = MyCall then
         Result := Format('%d%.3d', [RST, NR])

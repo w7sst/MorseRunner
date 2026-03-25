@@ -36,6 +36,7 @@ uses
   pcre in 'PerlRegEx\pcre.pas',
   PerlRegEx in 'PerlRegEx\PerlRegEx.pas',
   DXCC in 'DXCC.pas',
+  Arrl10m in 'Arrl10m.pas',
   ArrlFd in 'ArrlFd.pas',
   ArrlSS in 'ArrlSS.pas',
   NaQp in 'NaQp.pas',
@@ -54,9 +55,13 @@ uses
   CallsignUtils in 'Util\CallsignUtils.pas',
   AppPaths in 'Src\Core\AppPaths.pas',
   Flags in 'Src\Core\Flags.pas',
+  Arrl10m.Policy in 'Src\Domain\Contests\Arrl10m.Policy.pas',
+  Arrl10m.Types in 'Src\Domain\Contests\Arrl10m.Types.pas',
   ArrlDx.Types in 'Src\Domain\Contests\ArrlDx.Types.pas',
-  ContestFileReader in 'Src\Persistence\ContestFileReader.pas',
+  CallCorrections in 'Src\Persistence\CallCorrections.pas',
   ContestFileFormat in 'Src\Persistence\ContestFileFormat.pas',
+  ContestFileReader in 'Src\Persistence\ContestFileReader.pas',
+  Arrl10m.Reader in 'Src\Persistence\Contests\Arrl10m.Reader.pas',
   ArrlDx.Reader in 'Src\Persistence\Contests\ArrlDx.Reader.pas',
   SSExchParser in 'Util\SSExchParser.pas';
 
