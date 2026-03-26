@@ -285,7 +285,7 @@ VA-VG,VO,VY;(C[FGJK])|(VY9)|(V[A-GOY])|(X[LM]);Canada;NA;2,3,4,9,75;1-5;001
 VK,AX;(V[I-L])|(AX);Australia;OC;55,58,59;29,30;150
 VK0;VK0;Heard I.;AF;68;39;111
 VK0;VK0;Macquarie I.;OC;60;30;153
-VK9N;(AX9)|(V[IK]9);Norfolk I.;OC;60;32;189
+VK9N;(AX9N)|(V[IK]9N);Norfolk I.;OC;60;32;189
 VK9C;(AS9[CY])|(V[IK]9[CY])|(VK9[FK]C)|(VK9ZY)|(VZ9Y);Cocos(Keeling) Is.;OC;54;29;038
 VK9L;(AX9L)|(VI9L)|(VK9FL)|(VK9L)|(VK9ZL)|(VZ9L);Lord Howe I.;OC;60;30;147
 VK9M;(AS9M)|(V[IKZ]9M);Mellish Reef;OC;56;30;171
