@@ -108,6 +108,12 @@ type
     [TestCase('JW7ABC',             'JW7ABC,Svalbard')]
     [TestCase('JX7ABC',             'JX7ABC,Jan Mayen')]
 
+    // --- Korea has an overlap with Alaska ---
+    [TestCase('KL8KZ',              'KL8KZ,Alaska')]
+    [TestCase('NL1AK',              'NL1AK,Alaska')]
+    [TestCase('WL9AK',              'WL9AK,Alaska')]
+    [TestCase('KL9KZ',              'KL9KZ,Republic of Korea')]
+
     // --- South America (SA) ---
     [TestCase('VP8AB',              'VP8AB,Falkland Is.')]
     [TestCase('VP0SS',              'VP0SS,South Shetland Is.')]
