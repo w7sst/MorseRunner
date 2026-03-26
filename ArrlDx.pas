@@ -14,12 +14,10 @@ type
   TArrlDxCallRec = class
   public
     Call: string;     // call sign
-    Name: string;     // Name
     State: string;    // State/Province (US/Canada)
     Power: string;    // Power (DX Stations)
-    Section: string;  // ARRL/RAC section (e.g. OR)
     UserText: string; // club name
-    function GetString: string; // returns 3A OR [club name]
+    function GetString: string; // returns <State>|<Power> [UserText]
     class function compareCall(const left, right: TArrlDxCallRec) : integer; static;
   end;
 
@@ -81,19 +79,41 @@ var
   slst, tl: TStringList;
   i: integer;
   rec: TArrlDxCallRec;
-  CallInx, NameInx, StateInx, PowerInx, UserTextInx, FieldCount: integer;
+  CallInx, StateInx, PowerInx, UserTextInx: integer;
+
+  { Find the named string. Throw an exception if required field is missing. }
+  function FindIndex(const AFieldName: String; ARequiredField: Boolean) : Integer;
+  begin
+    Result := tl.IndexOf(AFieldName);
+    assert((Result >= 0) or not ARequiredField);
+    if ARequiredField and (Result = -1) then
+      raise Exception.CreateFmt(
+        'Invalid call history file: ''!!Order!!'' record is missing required ''%s'' field. Line %d, File "%s"',
+        [AFieldName, i+1, ParamStr(1) + 'ARRLDXCW_USDX.txt']);
+  end;
+
+  { Get the value of current record at the specified column index, ColumnInx.
+    If index is invalid, either no column name or insufficient columns),
+    then an empty value is return. leading or trailing whitespace is removed
+    using .Trim.
+  }
+  function GetValue(ColumnInx: Integer): String;
+  begin
+    if (ColumnInx >= 0) and (ColumnInx < tl.Count)
+      then Result := tl.Strings[ColumnInx].Trim
+      else Result := '';
+  end;
+
 begin
   slst:= TStringList.Create;
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
   tl.StrictDelimiter := True;
+  rec := nil;
   CallInx := -1;
-  NameInx := -1;
   StateInx := -1;
   PowerInx := -1;
   UserTextInx := -1;
-  FieldCount := 4;
-  rec := nil;
 
   try
     ArrlDxCallList.Clear;
@@ -103,45 +123,35 @@ begin
     for i:= 0 to slst.Count-1 do begin
       tl.DelimitedText := slst.Strings[i];
 
-      if (tl.Count > 1) and (tl.Strings[0] = '!!Order!!') then
+      // skip empty or comment lines
+      if (tl.Count = 0) or tl.Strings[0].TrimLeft.StartsWith('#') then continue;
+
+      if (tl.Strings[0] = '!!Order!!') then
         begin
           // !!Order!!,Call,Name,State,Power,UserText,  // Dx Stations
           // !!Order!!,Call,Name,State,                 // US Stations
           tl.Delete(0); // shifts others down by one
-          FieldCount := tl.Count;
-          CallInx := tl.IndexOf('Call');
-          NameInx := tl.IndexOf('Name');
-          StateInx := tl.IndexOf('State');
-          PowerInx := tl.IndexOf('Power');
-          UserTextInx := tl.IndexOf('UserText');
-          assert(CallInx <> -1);
-          assert(NameInx <> -1);
-          assert(StateInx <> -1);
+
+          // DX sends Call,Power
+          // W/VE sends Call,State
+          CallInx := FindIndex('Call', True);
+          StateInx := FindIndex('State', False);
+          PowerInx := FindIndex('Power', False);
+          UserTextInx := FindIndex('UserText', False);
+
           continue;
         end;
-      if (tl.Count < FieldCount) then continue;
 
       if rec = nil then
         rec := TArrlDxCallRec.Create;
 
       // Using .Trim() to remove unexpected spaces in some records
-      rec.Call := UpperCase(tl.Strings[CallInx].Trim);
-      rec.Name := UpperCase(tl.Strings[NameInx].Trim);
-      rec.State := UpperCase(tl.Strings[StateInx].Trim);
-      if (PowerInx >= 0) and (PowerInx < tl.Count) then
-        rec.Power := UpperCase(tl.Strings[PowerInx].Trim)
-      else
-        rec.Power := '';
-      if (UserTextInx >= 0) and (UserTextInx < tl.Count) then
-        rec.UserText := tl.Strings[UserTextInx].Trim
-      else
-        rec.UserText := '';
+      rec.Call := GetValue(CallInx).ToUpper;
+      rec.State := GetValue(StateInx).ToUpper;
+      rec.Power := GetValue(PowerInx).ToUpper;
+      rec.UserText := GetValue(UserTextInx);
 
       if rec.Call.IsEmpty then continue;
-
-      // a well-formed entry will have either State or Power, but not both.
-      if not (rec.State.IsEmpty xor rec.Power.IsEmpty) then
-        continue;
 
       // W/VE stations work only DX stations (those with non-empty Power field);
       // DX Stations work only W/VE stations (those with non-empty State field)
