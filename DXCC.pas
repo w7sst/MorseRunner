@@ -4,6 +4,7 @@ interface
 
 uses
   Generics.Collections,
+  PerlRegEx,
   Classes;
 
 type
@@ -20,6 +21,7 @@ type
   TDXCC= class
   private
     DXCCList: TObjectList<TDXCCRec>;
+    RegExList: TObjectList<TPerlRegEx>;
     procedure LoadDxCCList;
     procedure Delimit(var AStringList: TStringList; const AText: string);
     function SearchPrefix(out index : integer; const ACallPrefix : string) : Boolean;
@@ -37,7 +39,7 @@ var
 implementation
 
 uses
-    SysUtils, Contnrs, PerlRegEx, CallsignUtils;
+    SysUtils, Contnrs, CallsignUtils;
 
 procedure TDXCC.LoadDxCCList;
 var
@@ -67,6 +69,12 @@ begin
                 DXCCList.Add(AR);
             end;
         end;
+
+        RegExList := TObjectList<TPerlRegEx>.Create;
+
+        // initialize RegExList with nil pointers, one for each DXCC record.
+        RegExList.Count := DXCCList.Count;
+
     finally
         slst.Free;
         tl.Free;
@@ -76,12 +84,16 @@ end;
 constructor TDXCC.Create;
 begin
     inherited Create;
+    DxCCList := nil;
+    RegExList := nil;
+
     LoadDxCCList;
 end;
 
 
 destructor TDXCC.Destroy;
 begin
+  FreeAndNil(RegExList);
   FreeAndNil(DXCCList);
 end;
 
@@ -92,13 +104,25 @@ var
     s: string;
     i: integer;
 begin
-    reg := TPerlRegEx.Create();
+    if ACallPrefix.IsEmpty then Exit(False);
+
     try
         Result:= False;
-        reg.Subject := UTF8Encode(ACallPrefix);
+
+        // scan the DXCCList looking for the first match
         for i:= DXCCList.Count - 1 downto 0 do begin
-            s:= '^(' + TDXCCRec(DXCCList.Items[i]).prefixReg + ')';
-            reg.RegEx:= UTF8Encode(s);
+            reg := RegExList[i];
+            if not Assigned(reg) then begin
+              RegExList[i] := TPerlRegEx.Create;
+              reg := RegExList[i];
+
+              s:= '^(' + DXCCList[i].prefixReg + ')';
+              reg.RegEx:= UTF8Encode(s);
+              reg.Compile;
+              reg.Study;
+            end;
+
+            reg.Subject := UTF8Encode(ACallPrefix);
             if Reg.Match then begin
                 index:= i;
                 Result:= True;
@@ -106,7 +130,6 @@ begin
             end;
         end;
     finally
-        reg.Free;
     end;
 end;
 
