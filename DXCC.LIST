@@ -250,7 +250,7 @@ SV/A;!ignore - hides Greece;Mount Athos;EU;28;20;180
 SV5,J45;(S[V-Z]5)|(J45);Dodecanese;EU;28;20;045
 SV9,J49;(S[V-Z]9)|(J49);Crete;EU;28;20;040
 T2;T2;Tuvalu;OC;65;31;282
-T30;T30;W. Kiribati(Gilbert Is. );OC;65;31;301
+T30;T30;W. Kiribati(Gilbert Is.);OC;65;31;301
 T31;T31;C. Kiribati(British Phoenix Is.);OC;62;31;031
 T32;T32;E. Kiribati(Line Is.);OC;61,63;31;048
 T33;T33;Banaba I.(Ocean I.);OC;65;31;490
