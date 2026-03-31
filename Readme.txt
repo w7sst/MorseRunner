@@ -2,13 +2,13 @@
                               Contest Simulator
                                   freeware
 
-                Version 1.85.3 - ARRL Sweepstakes Contest
+                Version 1.85.4 - ARRL Sweepstakes Contest
             The sixth release of the Morse Runner Community Edition
 
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
                       http://www.dxatlas.com/MorseRunner/
 
-        Copyright (C) 2022-2025 Morse Runner Community Edition Contributors
+        Copyright (C) 2022-2026 Morse Runner Community Edition Contributors
                    https://www.github.com/w7sst/MorseRunner/
 
 
@@ -326,6 +326,18 @@ SUBMITTING YOUR SCORE
   File -> View Score menu command.
 
 VERSION HISTORY
+
+Version 1.85.4 (April 2026)
+  Bug Fix Release
+  - ARRL DX - MR quickly reports duplicate contacts (#437) (W7SST)
+  - CQ WPX - MR sends the SCP version, VER20251126, as a callsign (#440) (W7SST)
+
+  Contest-specific Improvements...
+  - ARRL DX - Update call history file
+
+  General
+  - Improve DXCC pattern matching (W7SST)
+  - Optimize DXCC callsign prefix lookup processing (W7SST)
 
 Version 1.85.3 (July 2025)
   Bug Fix Release
