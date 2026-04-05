@@ -128,7 +128,6 @@ end;
 procedure TTestMySSExch.Test3;
 var
   Reg: TPerlRegEx;
-  S: string;
 begin
   Reg := TPerlRegEx.Create;
 
@@ -181,8 +180,6 @@ var
   Reg1, Reg2, Reg3: TPerlRegEx;
   MatchedReg: TPerlRegEx;
   RegList: TPerlRegExList;
-  R: boolean;
-  S: string;
 begin
   MatchedReg := nil;
   RegList := TPerlRegExList.Create;

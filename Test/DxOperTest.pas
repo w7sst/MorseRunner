@@ -256,9 +256,9 @@ end;
 
 procedure TestDxOperIsMyCall.RunTest(const ADxCall, AEnteredCall, AExpected: string);
 var
-  R, Expected: TCallCheckResult;
+  Expected: TCallCheckResult;
   EnteredCall: String;
-  S, T: string;
+  S: string;
 
   procedure RunAlgo(var S: String; const EnteredCall:string;
     Expected: TCallCheckResult);
@@ -291,6 +291,7 @@ begin
   DbgBreak := False;
 {$endif}
   // TCallCheckResult = (mcNo, mcYes, mcAlmost);
+  Expected := mcNo;
   case AExpected.Trim[1] of
     'N': Expected := mcNo;
     'Y': Expected := mcYes;
@@ -337,10 +338,10 @@ begin
         try
           reg := TPerlRegEx.Create();
           if APattern.EndsWith('?') then
-            reg.RegEx := APattern.Replace('?','.') + '*'
+            reg.RegEx := UTF8String(APattern.Replace('?','.') + '*')
           else
-            reg.RegEx := APattern.Replace('?','.');
-          reg.Subject := C0;
+            reg.RegEx := UTF8String(APattern.Replace('?','.'));
+          reg.Subject := UTF8String(C0);
           if reg.Match then
             begin
               Result := mcAlmost;

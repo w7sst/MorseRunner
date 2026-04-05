@@ -445,7 +445,7 @@ end;
 procedure TestTSSExchParser.ErrorCheck(const AEnteredExchange, AExpected : string);
 var
   R: boolean;
-  S, ExchError: string;
+  ExchError: string;
 begin
   R:= parser.ValidateEnteredExchange('', '', AEnteredExchange, ExchError);
   Assert.IsFalse(R, format('expecting ''%s'' to fail', [AEnteredExchange]));
@@ -456,7 +456,6 @@ end;
 procedure TestTSSExchParser.Test3;
 var
   Reg: TPerlRegEx;
-  S: string;
 begin
   Reg := TPerlRegEx.Create;
 
@@ -509,7 +508,6 @@ var
   Reg1, Reg2, Reg3: TPerlRegEx;
   MatchedReg: TPerlRegEx;
   RegList: TPerlRegExList;
-  R: boolean;
 begin
   MatchedReg := nil;
   RegList := TPerlRegExList.Create;
