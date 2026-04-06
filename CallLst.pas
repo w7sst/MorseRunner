@@ -80,11 +80,13 @@ begin
   try
     //list pointers to calls
     L.Capacity := 20000;
-      P := @Data[1];
+    P := @Data[1];
     Pe := P + Length(Data);
     while P < Pe do
       begin
-      L.Add(TObject(P));
+      // skip version string (e.g. VER2025)
+      if StrLComp(P, 'VER2', 4) <> 0 then
+        L.Add(TObject(P));
       P := P + StrLen(P) + 1;
       end;
     //delete dupes
@@ -95,7 +97,7 @@ begin
     //put calls to Lst
     Calls.Capacity := L.Count;
     for i:=0 to L.Count-1 do
-      if (L[i] <> nil) and (StrLComp(PChar(L[i]), 'VER2', 4) <> 0) then
+      if L[i] <> nil then
         Calls.Add(PChar(L[i]));
   finally
     L.Free;
