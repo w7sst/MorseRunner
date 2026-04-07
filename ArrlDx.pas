@@ -92,16 +92,16 @@ var
         [AFieldName, i+1, ParamStr(1) + 'ARRLDXCW_USDX.txt']);
   end;
 
-  { Get the value of current record at the specified column index, ColumnInx.
-    If index is invalid, either no column name or insufficient columns),
-    then an empty value is return. leading or trailing whitespace is removed
-    using .Trim.
+  { Returns the field value for the specified column index.
+    If the index is invalid or the column is missing, an empty string is returned.
+    Leading and trailing whitespace is removed.
   }
   function GetValue(ColumnInx: Integer): String;
   begin
-    if (ColumnInx >= 0) and (ColumnInx < tl.Count)
-      then Result := tl.Strings[ColumnInx].Trim
-      else Result := '';
+    if Cardinal(ColumnInx) < Cardinal(tl.Count) then
+      Result := tl[ColumnInx].Trim
+    else
+      Result := '';
   end;
 
 begin
@@ -124,9 +124,9 @@ begin
       tl.DelimitedText := slst.Strings[i];
 
       // skip empty or comment lines
-      if (tl.Count = 0) or tl.Strings[0].TrimLeft.StartsWith('#') then continue;
+      if (tl.Count = 0) or tl[0].TrimLeft.StartsWith('#') then continue;
 
-      if (tl.Strings[0] = '!!Order!!') then
+      if (tl[0] = '!!Order!!') then
         begin
           // !!Order!!,Call,Name,State,Power,UserText,  // Dx Stations
           // !!Order!!,Call,Name,State,                 // US Stations
@@ -145,7 +145,6 @@ begin
       if rec = nil then
         rec := TArrlDxCallRec.Create;
 
-      // Using .Trim() to remove unexpected spaces in some records
       rec.Call := GetValue(CallInx).ToUpper;
       rec.State := GetValue(StateInx).ToUpper;
       rec.Power := GetValue(PowerInx).ToUpper;
