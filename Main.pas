@@ -22,7 +22,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.85.3';  { Sets version strings in UI panel. }
+  sVersion: String = '1.85.4';  { Sets version strings in UI panel. }
 
 type
 
@@ -1847,7 +1847,7 @@ const
         'CW CONTEST SIMULATOR'#13#13 +
         'Version %s'#13#13 +
         'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13 +
-        'Copyright ©2022-2025 Morse Runner Community Edition Contributors'#13#13 +
+        'Copyright ©2022-2026 Morse Runner Community Edition Contributors'#13#13 +
         'https://www.github.com/w7sst/MorseRunner/#readme'#13 +
         'https://groups.io/g/MorseRunnerCE';
 begin
