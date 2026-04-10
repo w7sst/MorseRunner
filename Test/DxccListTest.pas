@@ -118,7 +118,7 @@ type
     [TestCase('VU2ABC',             'VU2ABC,India')]
     [TestCase('BY1ABC',             'BY1ABC,China')]
     [TestCase('A9AB',               'A9AB,Bahrain')]
-    [TestCase('BS7H',               'BS7H;Scarborough Reef,China', ';')]
+    [TestCase('BS7H',               'BS7H;Scarborough Reef, China', ';')]
     [TestCase('JY3CW',              'JY3CW,Jordan')]
     [TestCase('EK2DX',              'EK2DX,Armenia')]
     [TestCase('3W0X',               '3W0X,Viet Nam')]
