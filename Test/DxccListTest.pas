@@ -95,7 +95,6 @@ type
     [TestCase('4X4AAA',             '4X4AAA,Israel')]
     [TestCase('VP9AAA',             'VP9AAA,Bermuda')]
     [TestCase('C6AAA',              'C6AAA,Bahamas')]
-    [TestCase('KG4KG',              'KG4KG,Guantanamo Bay')]
     [TestCase('KP4ABC',             'KP4ABC,Puerto Rico')]
     [TestCase('EI9XYZ',             'EI9XYZ,Ireland')]
     [TestCase('OZ1ABC',             'OZ1ABC,Denmark')]
@@ -144,6 +143,21 @@ type
     [TestCase('ZK1NZ',              'ZK1NZ,New Zealand')]
     [TestCase('ZL50AB',             'ZL50AB,New Zealand')]
     [TestCase('ZK3TI',              'ZK3TI,Tokelau Is.')]
+
+    // --- KG4, Guantanamo Bay, is strictly a 2x2 callsign. 2x1 or 2x3 is USA entity
+    [TestCase('KG4KG',              'KG4KG,Guantanamo Bay')]
+    [TestCase('KG4X',               'KG4X,United States of America')]
+    [TestCase('KG4KGX',             'KG4KGX,United States of America')]
+    [TestCase('KG4KGX/7',           'KG4KGX/7,United States of America')]
+    [TestCase('KG4/W7SST',          'KG4/W7SST,Guantanamo Bay')]
+    [TestCase('W7SST/KG4',          'W7SST/KG4,Guantanamo Bay')]
+    [TestCase('KG4X/KG4',           'KG4X/KG4,Guantanamo Bay')]
+    [TestCase('KG4/KG4X',           'KG4/KG4X,Guantanamo Bay')]
+    [TestCase('KP4/KG4KG',          'KP4/KG4KG,Puerto Rico')]
+    [TestCase('KG4KG/KP4',          'KG4KG/KP4,Puerto Rico')]
+    [TestCase('KG44K',              'KG44K,Guantanamo Bay')]
+    [TestCase('KG44KG',             'KG44KG,Guantanamo Bay')]
+    [TestCase('KG44KGX',            'KG44KGX,Guantanamo Bay')]
 
     // Multiple slashes (rare but legal)
     [TestCase('TriplePortable',       'I2/AA1ZZ/MM,Italy')]
