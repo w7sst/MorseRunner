@@ -101,13 +101,21 @@ type
     [TestCase('EI9XYZ',             'EI9XYZ,Ireland')]
     [TestCase('OZ1ABC',             'OZ1ABC,Denmark')]
     [TestCase('I1AAA',              'I1AAA,Italy')]
-
     [TestCase('CT3ABC',             'CT3ABC,Madeira Is.')]
     [TestCase('SV5ABC',             'SV5ABC,Dodecanese')]
     [TestCase('J49N',               'J49N,Crete')]
     [TestCase('OH0A',               'OH0A,Aland Is.')]
     [TestCase('JW7ABC',             'JW7ABC,Svalbard')]
     [TestCase('JX7ABC',             'JX7ABC,Jan Mayen')]
+
+    // --- Malpelo I. and San Andres & Providencia have overlap ---
+    // HK0/a;H[JK]0M;Malpelo I.;SA;12;09;161
+    [TestCase('HK0MX',              'HK0MX,Malpelo I.')]
+    [TestCase('HK0M',               'HK0M,Malpelo I.')]
+    // HK0/m;[5H][JK]0;San Andres & Providencia;NA;11;07;216
+    [TestCase('HK0SX',              'HK0SX,San Andres & Providencia')]
+    [TestCase('HK0X',               'HK0X,San Andres & Providencia')]
+    [TestCase('5J0X',               '5J0X,San Andres & Providencia')]
 
     // --- Korea has an overlap with Alaska ---
     [TestCase('KL8KZ',              'KL8KZ,Alaska')]
