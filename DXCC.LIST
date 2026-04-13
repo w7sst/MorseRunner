@@ -9,7 +9,7 @@ Updated January 2024 by W7SST - added additional regular expression info from:
 
 1A;1A;Sov. Mil. Order of Malta;EU;28;15;246
 3A;3A;Monaco;EU;27;14;260
-3B6,7;3B[6|7];Agalega & St. Brandon Is.;AF;53;39;004
+3B6,7;3B[67];Agalega & St. Brandon Is.;AF;53;39;004
 3B8;3B8;Mauritius;AF;53;39;165
 3B9;3B9;Rodriguez I.;AF;53;39;207
 3C;3C;Equatorial Guinea;AF;47;36;049

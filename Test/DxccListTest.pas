@@ -134,6 +134,8 @@ type
     // --- Africa (AF) ---
     [TestCase('CN8CN',              'CN8CN,Morocco')]
     [TestCase('ZS6ZS',              'ZS6ZS,South Africa')]
+    [TestCase('3B6XY',              '3B6XY,Agalega & St. Brandon Is.')]
+    [TestCase('3B7XY',              '3B7XY,Agalega & St. Brandon Is.')]
 
     // --- Oceania (OC) ---
     [TestCase('VP6PI',              'VP6PI,Pitcairn I.')]
