@@ -134,6 +134,13 @@ begin
       sP := 'K';
     end;
 
+  // special case for Antarctica prefix (CE9/ or KC4/) and patterns...
+  // leading or trailing prefixes of the form CE9/W7SST, W7SST/KC4, KC4/W7SST
+  // and the pattern KC4(AA|US)[A-Z] are hard coded to match KC4AAA.
+  if ((sP.Length = 3) and (sP = 'CE9') or (sP = 'KC4')) or
+     ((sP.Length = 6) and (sP.StartsWith('KC4AA') or sP.StartsWith('KC4US'))) then
+    sP := 'CE9KC4';
+
   Result:= SearchPrefix(index, sP);
   if Result then
     dxrec:= TDXCCRec(DXCCList.Items[index]);

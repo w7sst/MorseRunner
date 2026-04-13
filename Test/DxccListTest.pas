@@ -144,6 +144,16 @@ type
     [TestCase('ZL50AB',             'ZL50AB,New Zealand')]
     [TestCase('ZK3TI',              'ZK3TI,Tokelau Is.')]
 
+    // --- Antarctica (AN) ---
+    // CE9,KC4;CE9KC4|FT8Y|(HL|DT)8|IA0|ZL[05]|RI1AN;Antarctica;AN (w/ special case in DXCC.pas)
+    [TestCase('FT8YJ',              'FT8YJ,Antarctica')]
+    [TestCase('ZL5AN',              'ZL5AN,Antarctica')]
+    [TestCase('KC4/W7SST',          'KC4/W7SST,Antarctica')]
+    [TestCase('W7SST/KC4',          'W7SST/KC4,Antarctica')]
+    [TestCase('KC4USA',             'KC4USA,Antarctica')]
+    [TestCase('DT8A',               'DT8A,Antarctica')]
+    [TestCase('RI1ANA',             'RI1ANA,Antarctica')]
+
     // --- KG4, Guantanamo Bay, is strictly a 2x2 callsign. 2x1 or 2x3 is USA entity
     [TestCase('KG4KG',              'KG4KG,Guantanamo Bay')]
     [TestCase('KG4X',               'KG4X,United States of America')]

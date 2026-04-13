@@ -84,7 +84,7 @@ CA-CE;(3G)|(C[A-E])|(X[QR]);Chile;SA;14,16;12;112
 CE0;((3G)|(C[A-E])|(X[QR]))0;Easter I.;SA;63;12;047
 CE0;((3G)|(C[A-E])|(X[QR]))0Z;Juan Fernandez Is.;SA;14;12;125
 CE0;((3G)|(C[A-E])|(X[QR]))0X;San Felix & San Ambrosio;SA;14;12;217
-CE9/KC4;CE9/KC4;Antarctica;AN;67,69-74;12,13,29,30,32,38,39;013
+#CE9,KC4;CE9KC4|FT8Y|(HL|DT)8|IA0|ZL[05]|RI1AN;Antarctica;AN;67,69-74;12,13,29,30,32,38,39;013
 CM,CO;(C[LMO])|(T4);Cuba;NA;11;08;070
 CN;(CN)|(5[C-G]);Morocco;AF;37;33;446
 CP;CP;Bolivia;SA;12,14;10;104
@@ -347,3 +347,16 @@ ZL9;ZL9;Auckland & Campbell Is.;OC;60;32;016
 ZP;ZP;Paraguay;SA;14;11;132
 ZR-ZU;(Z[R-U])|(H5)|(S4)|(S8)|(V9);South Africa;AF;57;38;462
 ZS8;Z[RSTU]8;Prince Edward & Marion Is.;AF;57;38;201
+# Special case...
+# Antarctica is difficult to match since no country owns the territory.
+# - The following special cases are hard coded in DXCC.pas to match CE9KC4:
+#   - KC4/ and CE9/ are checked for an exact prefix match.
+#   - KC4(AA|US)[A-Z] is handled in DXCC.pas to save 48 compares for any call starting with 'K'.
+# - Otherwise, CE9... will match South Shetland Is.;
+#              KC4... will match USA callsigns.
+# - The other matches are from https://en.wikipedia.org/wiki/Call_signs_in_Antarctica
+# Antarctica prefixes are handled in DXCC.pas - CE9/ or /KC4 are hard wired to 'CE9KC4'.
+CE9,KC4;CE9KC4|FT8Y|(HL|DT)8|IA0|ZL[05]|RI1AN;Antarctica;AN;67,69-74;12,13,29,30,32,38,39;013
+# ZL50 must be checked before Antarctica's ZL[05]
+ZL50;ZL50;New Zealand;OC;60;32;170
+
