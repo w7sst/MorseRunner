@@ -81,7 +81,8 @@ type
     [TestCase('KH6IAA',             'KH6IAA,Hawaii')]
     [TestCase('CE0Z',               'CE0Z,Juan Fernandez Is.')]
     [TestCase('CE1ABC',             'CE1ABC,Chile')]
-    [TestCase('VP6R',               'VP6R,Ducie I.')]
+    [TestCase('VP6D',               'VP6D,Ducie I.')]
+    [TestCase('VP6R',               'VP6R,Pitcairn I.')]
     [TestCase('3C0DX',              '3C0DX,Annobon I.')]
     [TestCase('3C1DX',              '3C1DX,Equatorial Guinea')]
     [TestCase('3D2HQ',              '3D2HQ,Fiji/Conway Reef/Rotuma I.')]
@@ -130,6 +131,7 @@ type
     [TestCase('ZS6ZS',              'ZS6ZS,South Africa')]
 
     // --- Oceania (OC) ---
+    [TestCase('VP6PI',              'VP6PI,Pitcairn I.')]
     [TestCase('VP6DCN',             'VP6DCN,Ducie I.')]
     [TestCase('DU6PH',              'DU6PH,Philippines')]
     [TestCase('4I4PH',              '4I4PH,Philippines')]

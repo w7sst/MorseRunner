@@ -296,7 +296,7 @@ VP2M;VP2M;Montserrat;NA;11;08;096
 VP2V;VP2V;British Virgin Is.;NA;11;08;065
 VP5;V[PQ]5;Turks & Caicos Is.;NA;11;08;089
 VP6;VP6;Pitcairn I.;OC;63;32;172
-VP6;VP6;Ducie I.;OC;63;32;513
+VP6D;VP6D;Ducie I.;OC;63;32;513
 VP8;VP8;Falkland Is.;SA;16;13;141
 VP8,LU;!ignore - VP8 hides Falkland Is.;South Georgia I.;SA;73;13;235
 VP8,LU;!ignore - VP8 hides Falkland Is.;South Orkney Is.;SA;73;13;238
