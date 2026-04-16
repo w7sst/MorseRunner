@@ -126,16 +126,22 @@ begin
   // special case for KG4 prefix...
   // 2x1 and 2x3 callsigns are US; 2x2 calls assumed to be Guantanamo Bay.
   // (Special thanks to F6FVY for a code example on how to solve this.)
-  if     ACallsign.StartsWith('KG4') and
-     not ACallsign.StartsWith('KG44') and
-    ((Length(ACallsign) = 6) or (Length(ACallsign) = 4)) then
+  if     sP.StartsWith('KG4') and
+     not sP.StartsWith('KG44') and
+    ((sP.Length = 6) or (sP.Length = 4)) then
     begin
       // KG4abc problem ... this is hard coded
-      Result:= SearchPrefix(index, 'K');
-    end
-  else
-    Result:= SearchPrefix(index, sP);
+      sP := 'K';
+    end;
 
+  // special case for Antarctica prefix (CE9/ or KC4/) and patterns...
+  // leading or trailing prefixes of the form CE9/W7SST, W7SST/KC4, KC4/W7SST
+  // and the pattern KC4(AA|US)[A-Z] are hard coded to match KC4AAA.
+  if ((sP.Length = 3) and (sP = 'CE9') or (sP = 'KC4')) or
+     ((sP.Length = 6) and (sP.StartsWith('KC4AA') or sP.StartsWith('KC4US'))) then
+    sP := 'CE9KC4';
+
+  Result:= SearchPrefix(index, sP);
   if Result then
     dxrec:= TDXCCRec(DXCCList.Items[index]);
 end;
