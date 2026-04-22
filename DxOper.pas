@@ -424,10 +424,10 @@ begin
         try
           reg := TPerlRegEx.Create();
           if APattern.EndsWith('?') then
-            reg.RegEx := APattern.Replace('?','.') + '*'
+            reg.RegEx := UTF8String(APattern.Replace('?','.') + '*')
           else
-            reg.RegEx := APattern.Replace('?','.');
-          reg.Subject := C0;
+            reg.RegEx := UTF8String(APattern.Replace('?','.'));
+          reg.Subject := UTF8String(C0);
           if reg.Match then
             begin
               Result := mcAlmost;
@@ -711,8 +711,17 @@ begin
           2,3: Result := msgMyCall;     // <my>
           4: Result := msgMyCall2;      // <my> <my>
           5: begin
-              Result := msgMyCallNr1;   // <my> <exch>
-              CorrectedCallAndExchSent := true;
+              if LIDs and (R2 < 0.88) then   // 0.88-0.8333 = 4.67%
+                begin
+                  // LIDS will occasionally send their exchange even though
+                  // they have have not yet copied the CQ Station's exchange.
+                  Result := msgMyCallNr1;   // <my> <exch>
+                  CorrectedCallAndExchSent := true;
+                end
+              else if R2 < 0.95 then    // 0.95 - 0.8333 = 11.67%
+                Result := msgMyCall     // <my>
+              else                      // 1.0  - 0.95 = 5%
+                Result := msgMyCall2;   // <my> <my>
              end;
         end
     else //osNeedEnd:
