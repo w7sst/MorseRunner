@@ -124,12 +124,21 @@ type
     function IsActiveInQso: Boolean;
   end;
 
+function ToStr(const val : TOperatorState) : string; overload;
 
 implementation
 
 uses
   PerlRegEx,        // for regular expression support
+  TypInfo,          // for typeInfo
   SysUtils, Ini, Math, RndFunc, Contest, Log, Main;
+
+
+function ToStr(const val : TOperatorState) : string; overload;
+begin
+  Result := GetEnumName(typeInfo(TOperatorState), Ord(val));
+end;
+
 
 { TDxOperator }
 
