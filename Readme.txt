@@ -335,7 +335,7 @@ Version 1.85.4 (April 2026)
 
   Contest-specific Improvements...
   - ARRL DX - Update call history file
-  - IARU HF - Update call history file, including WRTC 2022 callsigns (N0UI)
+  - IARU HF - Update call history file, including WRTC 2022 callsigns (#445) (N0UI)
 
   General
   - Improve DXCC pattern matching (W7SST)
