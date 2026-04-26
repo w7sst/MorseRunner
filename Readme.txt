@@ -332,6 +332,7 @@ Version 1.85.4 (April 2026)
   - Station gives report before I got the call and give my report (#434) (W7SST)
   - ARRL DX - MR quickly reports duplicate contacts (#437) (W7SST)
   - CQ WPX - MR sends the SCP version, VER20251126, as a callsign (#440) (W7SST)
+  - Fix assertion StnColl.pas, line 128 (#436) (W7SST)
 
   Contest-specific Improvements...
   - ARRL DX - Update call history file

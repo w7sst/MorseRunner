@@ -12,6 +12,7 @@ uses
 
 const
   FULL_PATIENCE = 5;
+  LOW_CONFIDENCE = 2;
 
 type
   {
@@ -101,7 +102,8 @@ type
     RepeatCnt: integer;
     State: TOperatorState;
     CallConfidence: Integer;  // confidence-level of partial call match (0-100%).
-                              // set by IsMyCall.
+                              // set by IsMyCall. 0=No Match, 1=Not used,
+                              // 2=Match against '?' only, 100=Perfect match.
     SendNrQmCnt: Integer;     // Send 'NR?' followed by two 'AGN' messages.
     CorrectedCallAndExchSent: Boolean;  // DxOper has sent callsign correction
                                         // and exchange in one message.
@@ -435,6 +437,9 @@ begin
               P := C0.Length - APattern.Replace('?', '', [rfReplaceAll]).Length;
               // confidence = 100 * correct chars / total length
               CallConfidence := (100 * (C0.Length - P)) div C0.Length;
+              // special case - '?' will match anything. give it low confidence
+              if CallConfidence = 0 then
+                CallConfidence := LOW_CONFIDENCE;
             end
           else
             begin
@@ -484,7 +489,13 @@ begin
           // confidence = 100 * correct chars / total length
           case Result of
             mcYes: CallConfidence := 100;
-            mcAlmost: CallConfidence := 100 * (C0.Length - P) div C0.Length;
+            mcAlmost:
+              begin
+                CallConfidence := 100 * (C0.Length - P) div C0.Length;
+                // special case - '?' will match anything. give it low confidence
+                if CallConfidence = 0 then
+                  CallConfidence := LOW_CONFIDENCE;
+              end;
             mcNo: CallConfidence := 0;
           end;
         end;
@@ -494,7 +505,8 @@ begin
     end;
 
   //accept a wrong call, or reject the correct one
-  if ARandomResult and Ini.Lids and (Length(APattern) > 3) then
+  if ARandomResult and Ini.Lids and (Length(APattern) > 3) and
+     not APattern.Contains('?') then
     begin
       case Result of
         mcYes: if Random < 0.01 then
