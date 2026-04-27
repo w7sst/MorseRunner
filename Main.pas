@@ -950,6 +950,7 @@ end;
 procedure TMainForm.ProcessEnter;
 var
   C, N, R, Q: boolean;
+  ValidCall: Boolean;
   ExchError: string;
 begin
   if ActiveControl = ExchangeEdit then
@@ -1014,6 +1015,11 @@ begin
   // Update CallSent (HisCall has been sent)
   Tst.OnExchangeEditComplete;
 
+  // Has user entered a complete callsign (3 or more characters)?
+  ValidCall := (Pos('?', Edit1.Text) = 0) and
+               Tst.CheckEnteredCallLength(Edit1.Text, ExchError);
+  ExchError := '';
+
   // clear prior error string
   DisplayError('', clDefault);
 
@@ -1034,7 +1040,7 @@ begin
   //send his call if did not send before, or if call changed
   if (not C) or ((not N) and (not R)) then
     SendMsg(msgHisCall);
-  if not N then
+  if not N and ValidCall then
     SendMsg(msgNR);
   if N and (not R or not Q) then
     begin

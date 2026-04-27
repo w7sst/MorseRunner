@@ -333,6 +333,7 @@ Version 1.85.4 (April 2026)
   - ARRL DX - MR quickly reports duplicate contacts (#437) (W7SST)
   - CQ WPX - MR sends the SCP version, VER20251126, as a callsign (#440) (W7SST)
   - Fix assertion StnColl.pas, line 128 (#436) (W7SST)
+  - Improve '?' handling - exchange is no longer sent with partial callsigns (#450) (W7SST)
 
   Contest-specific Improvements...
   - ARRL DX - Update call history file
@@ -341,6 +342,20 @@ Version 1.85.4 (April 2026)
   General
   - Improve DXCC pattern matching (W7SST)
   - Optimize DXCC callsign prefix lookup processing (W7SST)
+
+  Additional Details...
+    Improve '?' handling - exchange is no longer sent with partial callsigns
+      Entering a '?' after a partial callsign and pressing Enter now sends only
+      the callsign with '?'. The user's exchange is no longer sent in this case,
+      aligning with standard contesting practice of sending the exchange only
+      after the full callsign is copied.
+
+      Morse Runner suppresses the exchange whenever a '?' is present in the
+      callsign field.
+
+      As an alternative, operators can use the F5 key (<HisCall>) to send the
+      copied portion of the callsign and prompt a repeat. Once the full callsign
+      is entered, pressing Enter sends both the callsign and exchange.
 
 Version 1.85.3 (July 2025)
   Bug Fix Release
