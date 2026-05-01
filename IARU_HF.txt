@@ -4012,75 +4012,75 @@ ZL6HQ,NZART,
 ZP5AA,RCP,
 ZS9HQ,SARL,
 # 
-I41A,28,WRTC 2022 Official competitors callsigns
-I41D,28,WRTC 2022 Official competitors callsigns
-I41K,28,WRTC 2022 Official competitors callsigns
-I41M,28,WRTC 2022 Official competitors callsigns
-I41N,28,WRTC 2022 Official competitors callsigns
-I41R,28,WRTC 2022 Official competitors callsigns
-I41U,28,WRTC 2022 Official competitors callsigns
-I42A,28,WRTC 2022 Official competitors callsigns
-I42B,28,WRTC 2022 Official competitors callsigns
-I42D,28,WRTC 2022 Official competitors callsigns
-I42F,28,WRTC 2022 Official competitors callsigns
-I42G,28,WRTC 2022 Official competitors callsigns
-I42K,28,WRTC 2022 Official competitors callsigns
-I42L,28,WRTC 2022 Official competitors callsigns
-I42M,28,WRTC 2022 Official competitors callsigns
-I42N,28,WRTC 2022 Official competitors callsigns
-I42R,28,WRTC 2022 Official competitors callsigns
-I42V,28,WRTC 2022 Official competitors callsigns
-I42W,28,WRTC 2022 Official competitors callsigns
-I43B,28,WRTC 2022 Official competitors callsigns
-I43C,28,WRTC 2022 Official competitors callsigns
-I43D,28,WRTC 2022 Official competitors callsigns
-I43G,28,WRTC 2022 Official competitors callsigns
-I43K,28,WRTC 2022 Official competitors callsigns
-I43L,28,WRTC 2022 Official competitors callsigns
-I43O,28,WRTC 2022 Official competitors callsigns
-I43P,28,WRTC 2022 Official competitors callsigns
-I43R,28,WRTC 2022 Official competitors callsigns
-I43U,28,WRTC 2022 Official competitors callsigns
-I43V,28,WRTC 2022 Official competitors callsigns
-I43X,28,WRTC 2022 Official competitors callsigns
-I43Z,28,WRTC 2022 Official competitors callsigns
-I44B,28,WRTC 2022 Official competitors callsigns
-I44C,28,WRTC 2022 Official competitors callsigns
-I44G,28,WRTC 2022 Official competitors callsigns
-I44J,28,WRTC 2022 Official competitors callsigns
-I44O,28,WRTC 2022 Official competitors callsigns
-I44P,28,WRTC 2022 Official competitors callsigns
-I44Q,28,WRTC 2022 Official competitors callsigns
-I44W,28,WRTC 2022 Official competitors callsigns
-I44X,28,WRTC 2022 Official competitors callsigns
-I44Y,28,WRTC 2022 Official competitors callsigns
-I44Z,28,WRTC 2022 Official competitors callsigns
-I46C,28,WRTC 2022 Official competitors callsigns
-I46F,28,WRTC 2022 Official competitors callsigns
-I46J,28,WRTC 2022 Official competitors callsigns
-I46O,28,WRTC 2022 Official competitors callsigns
-I46P,28,WRTC 2022 Official competitors callsigns
-I46Q,28,WRTC 2022 Official competitors callsigns
-I46V,28,WRTC 2022 Official competitors callsigns
-I46W,28,WRTC 2022 Official competitors callsigns
-I46Y,28,WRTC 2022 Official competitors callsigns
-I47B,28,WRTC 2022 Official competitors callsigns
-I47C,28,WRTC 2022 Official competitors callsigns
-I47G,28,WRTC 2022 Official competitors callsigns
-I47K,28,WRTC 2022 Official competitors callsigns
-I47L,28,WRTC 2022 Official competitors callsigns
-I47M,28,WRTC 2022 Official competitors callsigns
-I47O,28,WRTC 2022 Official competitors callsigns
-I47P,28,WRTC 2022 Official competitors callsigns
-I47U,28,WRTC 2022 Official competitors callsigns
-I47V,28,WRTC 2022 Official competitors callsigns
-I47W,28,WRTC 2022 Official competitors callsigns
-I49A,28,WRTC 2022 Official competitors callsigns
-I49D,28,WRTC 2022 Official competitors callsigns
-I49K,28,WRTC 2022 Official competitors callsigns
-I49M,28,WRTC 2022 Official competitors callsigns
-I49N,28,WRTC 2022 Official competitors callsigns
-I49R,28,WRTC 2022 Official competitors callsigns
-I49U,28,WRTC 2022 Official competitors callsigns
+I41A,28,WRTC 2022 Official competitor
+I41D,28,WRTC 2022 Official competitor
+I41K,28,WRTC 2022 Official competitor
+I41M,28,WRTC 2022 Official competitor
+I41N,28,WRTC 2022 Official competitor
+I41R,28,WRTC 2022 Official competitor
+I41U,28,WRTC 2022 Official competitor
+I42A,28,WRTC 2022 Official competitor
+I42B,28,WRTC 2022 Official competitor
+I42D,28,WRTC 2022 Official competitor
+I42F,28,WRTC 2022 Official competitor
+I42G,28,WRTC 2022 Official competitor
+I42K,28,WRTC 2022 Official competitor
+I42L,28,WRTC 2022 Official competitor
+I42M,28,WRTC 2022 Official competitor
+I42N,28,WRTC 2022 Official competitor
+I42R,28,WRTC 2022 Official competitor
+I42V,28,WRTC 2022 Official competitor
+I42W,28,WRTC 2022 Official competitor
+I43B,28,WRTC 2022 Official competitor
+I43C,28,WRTC 2022 Official competitor
+I43D,28,WRTC 2022 Official competitor
+I43G,28,WRTC 2022 Official competitor
+I43K,28,WRTC 2022 Official competitor
+I43L,28,WRTC 2022 Official competitor
+I43O,28,WRTC 2022 Official competitor
+I43P,28,WRTC 2022 Official competitor
+I43R,28,WRTC 2022 Official competitor
+I43U,28,WRTC 2022 Official competitor
+I43V,28,WRTC 2022 Official competitor
+I43X,28,WRTC 2022 Official competitor
+I43Z,28,WRTC 2022 Official competitor
+I44B,28,WRTC 2022 Official competitor
+I44C,28,WRTC 2022 Official competitor
+I44G,28,WRTC 2022 Official competitor
+I44J,28,WRTC 2022 Official competitor
+I44O,28,WRTC 2022 Official competitor
+I44P,28,WRTC 2022 Official competitor
+I44Q,28,WRTC 2022 Official competitor
+I44W,28,WRTC 2022 Official competitor
+I44X,28,WRTC 2022 Official competitor
+I44Y,28,WRTC 2022 Official competitor
+I44Z,28,WRTC 2022 Official competitor
+I46C,28,WRTC 2022 Official competitor
+I46F,28,WRTC 2022 Official competitor
+I46J,28,WRTC 2022 Official competitor
+I46O,28,WRTC 2022 Official competitor
+I46P,28,WRTC 2022 Official competitor
+I46Q,28,WRTC 2022 Official competitor
+I46V,28,WRTC 2022 Official competitor
+I46W,28,WRTC 2022 Official competitor
+I46Y,28,WRTC 2022 Official competitor
+I47B,28,WRTC 2022 Official competitor
+I47C,28,WRTC 2022 Official competitor
+I47G,28,WRTC 2022 Official competitor
+I47K,28,WRTC 2022 Official competitor
+I47L,28,WRTC 2022 Official competitor
+I47M,28,WRTC 2022 Official competitor
+I47O,28,WRTC 2022 Official competitor
+I47P,28,WRTC 2022 Official competitor
+I47U,28,WRTC 2022 Official competitor
+I47V,28,WRTC 2022 Official competitor
+I47W,28,WRTC 2022 Official competitor
+I49A,28,WRTC 2022 Official competitor
+I49D,28,WRTC 2022 Official competitor
+I49K,28,WRTC 2022 Official competitor
+I49M,28,WRTC 2022 Official competitor
+I49N,28,WRTC 2022 Official competitor
+I49R,28,WRTC 2022 Official competitor
+I49U,28,WRTC 2022 Official competitor
  
 
