@@ -2,13 +2,13 @@
                               Contest Simulator
                                   freeware
 
-                Version 1.85.3 - ARRL Sweepstakes Contest
+                Version 1.85.4 - ARRL Sweepstakes Contest
             The sixth release of the Morse Runner Community Edition
 
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
                       http://www.dxatlas.com/MorseRunner/
 
-        Copyright (C) 2022-2025 Morse Runner Community Edition Contributors
+        Copyright (C) 2022-2026 Morse Runner Community Edition Contributors
                    https://www.github.com/w7sst/MorseRunner/
 
 
@@ -327,8 +327,38 @@ SUBMITTING YOUR SCORE
 
 VERSION HISTORY
 
-Version 1.86-dev (Fall 2025)
+Version 1.86-dev (Fall 2026)
   General bug fixes and improvements...
+
+Version 1.85.4 (May 2026)
+  Bug Fix Release
+  - Station gives report before I got the call and give my report (#434) (W7SST)
+  - ARRL DX - MR quickly reports duplicate contacts (#437) (W7SST)
+  - CQ WPX - MR sends the SCP version, VER20251126, as a callsign (#440) (W7SST)
+  - Fix assertion StnColl.pas, line 128 (#436) (W7SST)
+  - Improve '?' handling - exchange is no longer sent with partial callsigns (#450) (W7SST)
+
+  Contest-specific Improvements...
+  - ARRL DX - Update call history file
+  - IARU HF - Update call history file, including WRTC 2022 callsigns (#445) (N0UI)
+
+  General
+  - Improve DXCC pattern matching (W7SST)
+  - Optimize DXCC callsign prefix lookup processing (W7SST)
+
+  Additional Details...
+    Improve '?' handling - exchange is no longer sent with partial callsigns
+      Entering a '?' after a partial callsign and pressing Enter now sends only
+      the callsign with '?'. The user's exchange is no longer sent in this case,
+      aligning with standard contesting practice of sending the exchange only
+      after the full callsign is copied.
+
+      Morse Runner suppresses the exchange whenever a '?' is present in the
+      callsign field.
+
+      As an alternative, operators can use the F5 key (<HisCall>) to send the
+      copied portion of the callsign and prompt a repeat. Once the full callsign
+      is entered, pressing Enter sends both the callsign and exchange.
 
 Version 1.85.3 (July 2025)
   Bug Fix Release

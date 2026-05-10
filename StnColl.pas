@@ -118,7 +118,9 @@ var
   R: TCallCheckResult;
   CallConfidence: Integer;
 begin
-  BestMatchConfidence := 1;   // 1 is used to reject all mcNo (0) values
+  BestMatchConfidence := 1;   // 1 is used to reject all mcNo (0) values.
+                              // this is necessary for TDxOperator.IsActiveInQso
+                              // to reject calls that didn't match (mcNo).
   BestMatchCallsign := '';
   for i:=Self.Count-1 downto 0 do
     if Self[i] is TDxStation then

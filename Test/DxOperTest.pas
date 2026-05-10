@@ -3,6 +3,7 @@ unit DxOperTest;
 interface
 
 uses
+  System.Classes,     // TStringList
   DUnitX.TestFramework;
 
 type
@@ -36,195 +37,203 @@ type
 
     [Test(True)]
     [Category('Wildcard')]
-    [TestCase('Wild.11',  'AA0AA, W?,     N')]
-    [TestCase('Wild.11',  'AA0AA, W?,     N')]
-    [TestCase('Wild.1',   'AA0AA, AA0?,   P')]
-    [TestCase('Wild.2',   'AA0AA, AA0??,  P')]
-    [TestCase('Wild.3',   'AA0AA, ??0??,  P')]
-    [TestCase('Wild.4',   'AA0AA, ??0AA,  P')]
-    [TestCase('Wild.5',   'AA0AA, A?0?A,  P')]
-    [TestCase('Wild.6',   'AA0AA, ?A0A?,  P')]
-    [TestCase('Wild.7',   'AA0AA, A?0?,   P')]
-    [TestCase('Wild.8',   'AA0AA, AA?,    P')]
-    [TestCase('Wild.9',   'AA0AA, A?,     P')]
-    [TestCase('Wild.10',  'AA0AA, ?,      P')]  // interesting. If '?' is sent, we want all stations to almost match
-    [TestCase('Wild.11',  'AA0AA, W?,     N')]
+    [TestCase('Wild.11',  'AA0AA, W?,     N;0')]
+    [TestCase('Wild.11',  'AA0AA, W?,     N;0')]
+    [TestCase('Wild.1',   'AA0AA, AA0?,   P;60')]
+    [TestCase('Wild.2',   'AA0AA, AA0??,  P;60')]
+    [TestCase('Wild.3',   'AA0AA, ??0??,  P;20')]
+    [TestCase('Wild.4',   'AA0AA, ??0AA,  P;60')]
+    [TestCase('Wild.5',   'AA0AA, A?0?A,  P;60')]
+    [TestCase('Wild.6',   'AA0AA, ?A0A?,  P;60')]
+    [TestCase('Wild.7a',  'AA0AA, A?0,    P;40')]
+    [TestCase('Wild.7b',  'AA0AA, A?0?,   P;40')]
+    [TestCase('Wild.8a',  'AA0AA, AA,     P;40')]
+    [TestCase('Wild.8b',  'AA0AA, AA?,    P;40')]
+    [TestCase('Wild.9a',  'AA0AA, A,      P;20')]
+    [TestCase('Wild.9b',  'AA0AA, A?,     P;20')]
+    [TestCase('Wild.10a', 'AA0AA, ?,      P;2')]  // interesting. If '?' is sent, we want all stations to almost match
+    [TestCase('Wild.10b', 'AA0AA, ??,     P;2')]
+    [TestCase('Wild.10c', 'AA0AA, ???,    P;2')]
+    [TestCase('Wild.10c', 'A0A,   ????,   P;2')]
+    [TestCase('Wild.11',  'AA0AA, W?,     N;0')]
     [TestCase('Wild.12',  'AA0AA, W7?,    N')]
     [TestCase('Wild.13',  'AA0AA, W7S?,   N')]
     [TestCase('Wild.14',  'AA0AA, W7SS?,  N')]
     [TestCase('Wild.15',  'AA0AA, W7SST?, N')]
     [TestCase('Wild.16',  'AA0AA, W7SST?, N')]
+    [TestCase('Wild.17',  '4U73B, ?,      P;2')]
+    [TestCase('Wild.18',  ', ?,           N;0')]  // matching an empty call
 
     [Test(True)]
     [Category('1x1 Calls')]
-    [TestCase('1x1.1',   'W7S,    W7S,    Y')]
+    [TestCase('1x1.1',   'W7S,    W7S,    Y;100')]
     [TestCase('1x1.2',   'W7S,    A0X,    N')]
-    [TestCase('1x1.3',   'W7S,    W7,     P')]
-    [TestCase('1x1.4',   'W7S,    W7X,    P')]
-    [TestCase('1x1.5',   'W7S,    W7XX,   N')]
-    [TestCase('1x1.6',   'W7S,    W7XXX,  N')]
-    [TestCase('1x1.7',   'W7S,    W6S,    P')]
-    [TestCase('1x1.8',   'W7S,    W6X,    N')]
-    [TestCase('1x1.9',   'W7S,    A7S,    P')]
-    [TestCase('1x1.10',  'W7S,    W7SSS,  N')]
-    [TestCase('1x1.11',  'W7S,    W7S,    Y')]
-    [TestCase('1x1.12',  'W7S,    W7S,    Y')]
+    [TestCase('1x1.3',   'W7S,    W7,     P;66')]
+    [TestCase('1x1.4',   'W7S,    W7X,    P;66')]
+    [TestCase('1x1.5',   'W7S,    W7XX,   N;0')]
+    [TestCase('1x1.6',   'W7S,    W7XXX,  N;0')]
+    [TestCase('1x1.7',   'W7S,    W6S,    P;66')]
+    [TestCase('1x1.8',   'W7S,    W6X,    N;0')]
+    [TestCase('1x1.9',   'W7S,    A7S,    P;66')]
+    [TestCase('1x1.10',  'W7S,    W7SSS,  N;0')]
+    [TestCase('1x1.11',  'W7S,    W7S,    Y;100')]
+    [TestCase('1x1.12',  'W7S,    W7S,    Y;100')]
 
     [Category('1x2 Calls')]
     [TestCase('1x2.1',   'W7SS,   W7SS,   Y')]
-    [TestCase('1x2.2',   'W7SS,   W7S,    P')]
-    [TestCase('1x2.3',   'W7SS,   W7,     P')]
-    [TestCase('1x2.4',   'W7SS,   W7SST,  P')]
-    [TestCase('1x2.5',   'W7SS,   A7SS,   P')]
-    [TestCase('1x2.6',   'W7SS,   A7SST,  N')]
-    [TestCase('1x2.7',   'W7SS,   S,      P')]
-    [TestCase('1x2.8',   'W7SS,   SS,     P')]
-    [TestCase('1x2.9',   'W7SS,   7SS,    P')]
-    [TestCase('1x2.10',  'W7SS,   W7SS,   Y')]
-    [TestCase('1x2.11',  'W7AU,   W7AB,   P')]
+    [TestCase('1x2.2',   'W7SS,   W7S,    P;75')]
+    [TestCase('1x2.3',   'W7SS,   W7,     P;50')]
+    [TestCase('1x2.4',   'W7SS,   W7SST,  P;75')]
+    [TestCase('1x2.5',   'W7SS,   A7SS,   P;75')]
+    [TestCase('1x2.6',   'W7SS,   A7SST,  N;0')]
+    [TestCase('1x2.7',   'W7SS,   S,      P;25')]
+    [TestCase('1x2.8',   'W7SS,   SS,     P;50')]
+    [TestCase('1x2.9',   'W7SS,   7SS,    P;75')]
+    [TestCase('1x2.10',  'W7SS,   W7SS,   Y;100')]
+    [TestCase('1x2.11',  'W7AU,   W7AB,   P;75')]
 
     [Category('1x3 Calls')]
     [TestCase('1x3.1',   'W7SST,  W7SST,  Y')]
-    [TestCase('1x3.1b',  'W7SST,  W7SSTT, P')]
-    [TestCase('1x3.2',   'W7SST,  W7,     P')]
-    [TestCase('1x3.3',   'W7SST,  W7S,    P')]
-    [TestCase('1x3.4',   'W7SST,  W7SS,   P')]
-    [TestCase('1x3.5',   'W7SST,  W7SSS,  P')]
-    [TestCase('1x3.6',   'W7SST,  A7SST,  P')]
+    [TestCase('1x3.1b',  'W7SST,  W7SSTT, P;80')]
+    [TestCase('1x3.2',   'W7SST,  W7,     P;40')]
+    [TestCase('1x3.3',   'W7SST,  W7S,    P;60')]
+    [TestCase('1x3.4',   'W7SST,  W7SS,   P;80')]
+    [TestCase('1x3.5',   'W7SST,  W7SSS,  P;80')]
+    [TestCase('1x3.6',   'W7SST,  A7SST,  P;80')]
     [TestCase('1x3.7',   'W7SST,  W7ABC,  N')]
-    [TestCase('1x3.8',   'W7SST,  T,      P')]
-    [TestCase('1x3.8',   'W7SST,  ST,     P')]
-    [TestCase('1x3.9',   'W7SST,  SST,    P')]
-    [TestCase('1x3.10',  'W7SST,  7SS,    P')]
-    [TestCase('1x3.11',  'W7SST,  W7XST,  P')]
-    [TestCase('1x3.12',  'W7SST,  W7??T,  P')]
+    [TestCase('1x3.8',   'W7SST,  T,      P;20')]
+    [TestCase('1x3.8b',  'W7SST,  ST,     P;40')]
+    [TestCase('1x3.9',   'W7SST,  SST,    P;60')]
+    [TestCase('1x3.10',  'W7SST,  7SS,    P;60')]
+    [TestCase('1x3.11',  'W7SST,  W7XST,  P;80')]
+    [TestCase('1x3.12',  'W7SST,  W7??T,  P;60')]
 
     [Category('1x3/9 Calls')]
     [TestCase('1x3/9.1',   'W7SST/9,  W7SST/9,  Y')]
-    [TestCase('1x3/9.1b',  'W7SST/9,  W7SSTT/9, P')]
-    [TestCase('1x3/9.1c',  'W7SST/9,  W7SST/8, P')]
-    [TestCase('1x3/9.2',   'W7SST/9,  W7,     P')]
-    [TestCase('1x3/9.3',   'W7SST/9,  W7S,    P')]
-    [TestCase('1x3/9.4',   'W7SST/9,  W7SS,   P')]
-    [TestCase('1x3/9.5',   'W7SST/9,  W7SSS,  P')]
-    [TestCase('1x3/9.6',   'W7SST/9,  A7SST,  P')]
+    [TestCase('1x3/9.1b',  'W7SST/9,  W7SSTT/9, P;85')]
+    [TestCase('1x3/9.1c',  'W7SST/9,  W7SST/8, P;85')]
+    [TestCase('1x3/9.2',   'W7SST/9,  W7,     P;28')]
+    [TestCase('1x3/9.3',   'W7SST/9,  W7S,    P;42')]
+    [TestCase('1x3/9.4',   'W7SST/9,  W7SS,   P;57')]
+    [TestCase('1x3/9.5',   'W7SST/9,  W7SSS,  P;57')]
+    [TestCase('1x3/9.6',   'W7SST/9,  A7SST,  P;57')]
     [TestCase('1x3/9.7',   'W7SST/9,  W7ABC,  N')]
-    [TestCase('1x3/9.8',   'W7SST/9,  T,      P')]
-    [TestCase('1x3/9.8',   'W7SST/9,  ST,     P')]
-    [TestCase('1x3/9.9',   'W7SST/9,  SST,    P')]
-    [TestCase('1x3/9.10',  'W7SST/9,  7SS,    P')]
-    [TestCase('1x3/9.11',  'W7SST/9,  W7XST,  P')]
-    [TestCase('1x3/9.12',  'W7SST/9,  W7??T,  P')]
-    [TestCase('1x3/9.13',  'W7SST/9,  W7??T?, P')]
-    [TestCase('1x3/9.14',  'W7SST/9,  W7??T/?,P')]
-    [TestCase('1x3/9.15',  'W7SST/9,  W7SST?, P')]
-    [TestCase('1x3/9.16',  'W7ABU/9,  W7AB,   P')]
+    [TestCase('1x3/9.8',   'W7SST/9,  T,      P;14')]
+    [TestCase('1x3/9.8b',  'W7SST/9,  ST,     P;28')]
+    [TestCase('1x3/9.9',   'W7SST/9,  SST,    P;42')]
+    [TestCase('1x3/9.10',  'W7SST/9,  7SS,    P;42')]
+    [TestCase('1x3/9.11',  'W7SST/9,  W7XST,  P;57')]
+    [TestCase('1x3/9.12',  'W7SST/9,  W7??T,  P;42')]
+    [TestCase('1x3/9.13',  'W7SST/9,  W7??T?, P;42')]
+    [TestCase('1x3/9.14',  'W7SST/9,  W7??T/?,P;57')]
+    [TestCase('1x3/9.15',  'W7SST/9,  W7SST?, P;71')]
+    [TestCase('1x3/9.16',  'W7ABU/9,  W7AB,   P;57')]
 
     [Category('2x2 Calls')]
-    [TestCase('2x2.1',   'AA0AA,  AA0AA,  Y')]
-    [TestCase('2x2.2',   'AA0AA,  AA0A,   P')]
-    [TestCase('2x2.3',   'AA0AA,  AA0,    P')]
-    [TestCase('2x2.4',   'AA0AA,  AA,     P')]
-    [TestCase('2x2.5',   'AA0AA,  A,      P')]
-    [TestCase('2x2.6',   'AA0AA,  A0AA,   P')]
-    [TestCase('2x2.7',   'AA0AA,  0AA,    P')]
-    [TestCase('2x2.8',   'AA0AA,  AA,     P')]
-    [TestCase('2x2.9',   'AA0AA,  A,      P')]
-    [TestCase('2x2.10',  'AA0AA,  A0A,    P')]
-    [TestCase('2x2.11',  'AA0AA,  0A,     P')]
-    [TestCase('2x2.12',  'AA0AA,  A0,     P')]
-    [TestCase('2x2.13',  'AA0AA,  AA7AA,  P')]
+    [TestCase('2x2.1',   'AA0AA,  AA0AA,  Y;100')]
+    [TestCase('2x2.2',   'AA0AA,  AA0A,   P;80')]
+    [TestCase('2x2.3',   'AA0AA,  AA0,    P;60')]
+    [TestCase('2x2.4',   'AA0AA,  AA,     P;40')]
+    [TestCase('2x2.5',   'AA0AA,  A,      P;20')]
+    [TestCase('2x2.6',   'AA0AA,  A0AA,   P;80')]
+    [TestCase('2x2.7',   'AA0AA,  0AA,    P;60')]
+    [TestCase('2x2.8',   'AA0AA,  AA,     P;40')]
+    [TestCase('2x2.9',   'AA0AA,  A,      P;20')]
+    [TestCase('2x2.10',  'AA0AA,  A0A,    P;60')]
+    [TestCase('2x2.11',  'AA0AA,  0A,     P;40')]
+    [TestCase('2x2.12',  'AA0AA,  A0,     P;40')]
+    [TestCase('2x2.13',  'AA0AA,  AA7AA,  P;80')]
     [TestCase('2x2.14',  'AA0AA,  AA7BB,  N')]
     [TestCase('2x2.15',  'AA0AA,  AA7BBB, N')]
     [TestCase('2x2.16',  'AA0AA,  AB7CD,  N')]
-    [TestCase('2x2.17',  'AA0AA,  AA0AA/7,  P')]
+    [TestCase('2x2.17',  'AA0AA,  AA0AA/7,  P;60')]
     [TestCase('2x2.18',  'AA0AA,     FY/AA0AA, N')]  // 3 extra chars; 2 wrong chars allowed for 5 character call
     [TestCase('2x2.19',  'AA0AA,     FY,       N')]
-    [TestCase('2x2.19',  'FY/AA0AA,  FY,       P')]
-    [TestCase('2x2.20',  'FY/AA0AA,  FY/,      P')]
-    [TestCase('2x2.21',  'FY/AA0AA,  FY/AA,    P')]
+    [TestCase('2x2.19',  'FY/AA0AA,  FY,       P;25')]
+    [TestCase('2x2.20',  'FY/AA0AA,  FY/,      P;37')]
+    [TestCase('2x2.21',  'FY/AA0AA,  FY/AA,    P;62')]
 
     [Category('2x3 Calls')]
     [TestCase('2x3.1',   'WN7SST, WN7SST, Y')]
-    [TestCase('2x3.2',   'WN7SST, WN,     P')]
-    [TestCase('2x3.3',   'WN7SST, WN7,    P')]
-    [TestCase('2x3.4',   'WN7SST, WN7S,   P')]
-    [TestCase('2x3.5',   'WN7SST, WN7SS,  P')]
-    [TestCase('2x3.6',   'WN7SST, WN7SSS, P')]
-    [TestCase('2x3.7',   'WN7SST, AN7SST, P')]
-    [TestCase('2x3.8',   'WN7SST, WN7ABC, N')]
-    [TestCase('2x3.9',   'WN7SST, T,      P')]
-    [TestCase('2x3.10',  'WN7SST, ST,     P')]
-    [TestCase('2x3.11',  'WN7SST, SST,    P')]
-    [TestCase('2x3.12',  'WN7SST, 7SS,    P')]
-    [TestCase('2x3.13',  'WN7SST, WN7XST, P')]
-    [TestCase('2x3.14',  'WN7SST, WN7??T, P')]
-    [TestCase('2x3.15',  'WN7SST, W7SST,  P')]
-    [TestCase('2x3.16',  'WN7SST, W7ST,   P')]
-    [TestCase('2x3.17',  'WN7SST, WN7ST,  P')]
+    [TestCase('2x3.2',   'WN7SST, WN,     P;33')]
+    [TestCase('2x3.3',   'WN7SST, WN7,    P;50')]
+    [TestCase('2x3.4',   'WN7SST, WN7S,   P;66')]
+    [TestCase('2x3.5',   'WN7SST, WN7SS,  P;83')]
+    [TestCase('2x3.6',   'WN7SST, WN7SSS, P;83')]
+    [TestCase('2x3.7',   'WN7SST, AN7SST, P;83')]
+    [TestCase('2x3.8',   'WN7SST, WN7ABC, N;0')]
+    [TestCase('2x3.9',   'WN7SST, T,      P;16')]
+    [TestCase('2x3.10',  'WN7SST, ST,     P;33')]
+    [TestCase('2x3.11',  'WN7SST, SST,    P;50')]
+    [TestCase('2x3.12',  'WN7SST, 7SS,    P;50')]
+    [TestCase('2x3.13',  'WN7SST, WN7XST, P;83')]
+    [TestCase('2x3.14',  'WN7SST, WN7??T, P;66')]
+    [TestCase('2x3.15',  'WN7SST, W7SST,  P;83')]
+    [TestCase('2x3.16',  'WN7SST, W7ST,   P;66')]
+    [TestCase('2x3.17',  'WN7SST, WN7ST,  P;83')]
     [TestCase('2x3.18',  'WN7SST, W7AB,   N')]
     [TestCase('2x3.19',  'WN7SST, W7ABC,  N')]
-    [TestCase('2x3.20',  'WN7SST, 7,      P')]
+    [TestCase('2x3.20',  'WN7SST, 7,      P;16')]
 
     [Category('FY/2x3 Calls')]
     [TestCase('FY/2x3.1',   'FY/WN7SST, FY/WN7SST, Y')]
     [TestCase('FY/2x3.1b',  'FY/WN7SST, FY/WN7SST, Y')]
-    [TestCase('FY/2x3.2',   'FY/WN7SST, WN,     P')]
-    [TestCase('FY/2x3.3',   'FY/WN7SST, WN7,    P')]
-    [TestCase('FY/2x3.4',   'FY/WN7SST, WN7S,   P')]
-    [TestCase('FY/2x3.5',   'FY/WN7SST, WN7SS,  P')]
-    [TestCase('FY/2x3.6',   'FY/WN7SST, WN7SSS, P')]
-    [TestCase('FY/2x3.7',   'FY/WN7SST, AN7SST, P')]
+    [TestCase('FY/2x3.2',   'FY/WN7SST, WN,     P;22')]
+    [TestCase('FY/2x3.3',   'FY/WN7SST, WN7,    P;33')]
+    [TestCase('FY/2x3.4',   'FY/WN7SST, WN7S,   P;44')]
+    [TestCase('FY/2x3.5',   'FY/WN7SST, WN7SS,  P;55')]
+    [TestCase('FY/2x3.6',   'FY/WN7SST, WN7SSS, P;55')]
+    [TestCase('FY/2x3.7',   'FY/WN7SST, AN7SST, P;55')]
     [TestCase('FY/2x3.8',   'FY/WN7SST, WN7ABC, N')]
-    [TestCase('FY/2x3.9',   'FY/WN7SST, T,      P')]
-    [TestCase('FY/2x3.10',  'FY/WN7SST, ST,     P')]
-    [TestCase('FY/2x3.11',  'FY/WN7SST, SST,    P')]
-    [TestCase('FY/2x3.12',  'FY/WN7SST, 7SS,    P')]
-    [TestCase('FY/2x3.13',  'FY/WN7SST, WN7XST, P')]
-    [TestCase('FY/2x3.14',  'FY/WN7SST, WN7??T, P')]
-    [TestCase('FY/2x3.15',  'FY/WN7SST, W7SST,  P')]
+    [TestCase('FY/2x3.9',   'FY/WN7SST, T,      P;11')]
+    [TestCase('FY/2x3.10',  'FY/WN7SST, ST,     P;22')]
+    [TestCase('FY/2x3.11',  'FY/WN7SST, SST,    P;33')]
+    [TestCase('FY/2x3.12',  'FY/WN7SST, 7SS,    P;33')]
+    [TestCase('FY/2x3.13',  'FY/WN7SST, WN7XST, P;55')]
+    [TestCase('FY/2x3.14',  'FY/WN7SST, WN7??T, P;44')]
+    [TestCase('FY/2x3.15',  'FY/WN7SST, W7SST,  P;55')]
     [TestCase('FY/2x3.16',  'FY/WN7SST, W7ST,   N')]
-    [TestCase('FY/2x3.17',  'FY/WN7SST, WN7ST,  P')]
+    [TestCase('FY/2x3.17',  'FY/WN7SST, WN7ST,  P;55')]
     [TestCase('FY/2x3.18',  'FY/WN7SST, W7AB,   N')]
     [TestCase('FY/2x3.19',  'FY/WN7SST, W7ABC,  N')]
-    [TestCase('FY/2x3.20',  'FY/WN7SST, FY,     P')]
-    [TestCase('FY/2x3.21',  'FY/WN7SST, FY?,    P')]
-    [TestCase('FY/2x3.22',  'FY/WN7SST, FY/WN7, P')]
-    [TestCase('FY/2x3.23',  'FY/WN7SST, FY/,    P')]
-    [TestCase('FY/2x3.24',  'FY/WN7SST, FY/W?7, P')]
-    [TestCase('FY/2x3.25',  'FY/WN7SST, FX/W7SST, P')]
+    [TestCase('FY/2x3.20',  'FY/WN7SST, FY,     P;22')]
+    [TestCase('FY/2x3.21',  'FY/WN7SST, FY?,    P;22')]
+    [TestCase('FY/2x3.22',  'FY/WN7SST, FY/WN7, P;66')]
+    [TestCase('FY/2x3.23',  'FY/WN7SST, FY/,    P;33')]
+    [TestCase('FY/2x3.24',  'FY/WN7SST, FY/W?7, P;55')]
+    [TestCase('FY/2x3.25',  'FY/WN7SST, FX/W7SST, P;77')]
 
     [Category('2x3/9 Calls')]
     [TestCase('2x3/9.1',   'WN7SST/9, WN7SST/9, Y')]
-    [TestCase('2x3/9.2',   'WN7SST/9, WN,     P')]
-    [TestCase('2x3/9.3',   'WN7SST/9, WN7,    P')]
-    [TestCase('2x3/9.4',   'WN7SST/9, WN7S,   P')]
-    [TestCase('2x3/9.5',   'WN7SST/9, WN7SS,  P')]
-    [TestCase('2x3/9.6',   'WN7SST/9, WN7SSS, P')]
-    [TestCase('2x3/9.7',   'WN7SST/9, AN7SST, P')]
+    [TestCase('2x3/9.2',   'WN7SST/9, WN,     P;25')]
+    [TestCase('2x3/9.3',   'WN7SST/9, WN7,    P;37')]
+    [TestCase('2x3/9.4',   'WN7SST/9, WN7S,   P;50')]
+    [TestCase('2x3/9.5',   'WN7SST/9, WN7SS,  P;62')]
+    [TestCase('2x3/9.6',   'WN7SST/9, WN7SSS, P;62')]
+    [TestCase('2x3/9.7',   'WN7SST/9, AN7SST, P;62')]
     [TestCase('2x3/9.8',   'WN7SST/9, WN7ABC, N')]
-    [TestCase('2x3/9.9',   'WN7SST/9, T,      P')]
-    [TestCase('2x3/9.10',  'WN7SST/9, ST,     P')]
-    [TestCase('2x3/9.11',  'WN7SST/9, SST,    P')]
-    [TestCase('2x3/9.12',  'WN7SST/9, 7SS,    P')]
-    [TestCase('2x3/9.13',  'WN7SST/9, WN7XST, P')]
-    [TestCase('2x3/9.14',  'WN7SST/9, WN7??T, P')]
-    [TestCase('2x3/9.15',  'WN7SST/9, W7SST,  P')]
+    [TestCase('2x3/9.9',   'WN7SST/9, T,      P;12')]
+    [TestCase('2x3/9.10',  'WN7SST/9, ST,     P;25')]
+    [TestCase('2x3/9.11',  'WN7SST/9, SST,    P;37')]
+    [TestCase('2x3/9.12',  'WN7SST/9, 7SS,    P;37')]
+    [TestCase('2x3/9.13',  'WN7SST/9, WN7XST, P;62')]
+    [TestCase('2x3/9.14',  'WN7SST/9, WN7??T, P;50')]
+    [TestCase('2x3/9.15',  'WN7SST/9, W7SST,  P;62')]
     [TestCase('2x3/9.16',  'WN7SST/9, W7ST,   N')]
-    [TestCase('2x3/9.17',  'WN7SST/9, WN7ST,  P')]
+    [TestCase('2x3/9.17',  'WN7SST/9, WN7ST,  P;62')]
     [TestCase('2x3/9.18',  'WN7SST/9, W7AB,   N')]
     [TestCase('2x3/9.19',  'WN7SST/9, W7ABC,  N')]
     [TestCase('2x3/9.20',  'WN7SST/9, FY,     N')]
     [TestCase('2x3/9.21',  'WN7SST/9, FY?,    N')]
-    [TestCase('2x3/9.22',  'WN7SST/9, /9,     P')]
-    [TestCase('2x3/9.23',  'WN7SST/9, 9,      P')]
+    [TestCase('2x3/9.22',  'WN7SST/9, /9,     P;25')]
+    [TestCase('2x3/9.23',  'WN7SST/9, 9,      P;12')]
     [TestCase('2x3/9.23b', 'WN7SST/9, 6,      N')]
-    [TestCase('2x3/9.23c', 'WN7SST/9, 7,      P')]
-    [TestCase('2x3/9.24',  'WN7SST/9, T/9,    P')]
-    [TestCase('2x3/9.25',  'WN7SST/9, SST/9,  P')]
-    [TestCase('2x3/9.26',  'WN7SST/9, 7SST/9, P')]
+    [TestCase('2x3/9.23c', 'WN7SST/9, 7,      P;12')]
+    [TestCase('2x3/9.24',  'WN7SST/9, T/9,    P;37')]
+    [TestCase('2x3/9.25',  'WN7SST/9, SST/9,  P;62')]
+    [TestCase('2x3/9.26',  'WN7SST/9, 7SST/9, P;75')]
     [TestCase('2x3/9.27',  'WN7SST/9, WN7?/9, N')]
-    [TestCase('2x3/9.28',  'WN7SST/9, WN7???/9, P')]
+    [TestCase('2x3/9.28',  'WN7SST/9, WN7???/9, P;62')]
 
     procedure RunTest(const ADxCall, AEnteredCall, AExpected: string);
   end;
@@ -236,6 +245,9 @@ uses
   TypInfo,          // for typeInfo
   PerlRegEx,        // for regular expression support
   System.SysUtils;
+
+const
+  LOW_CONFIDENCE = 2;
 
 function ToStr(const val : TCallCheckResult) : string; overload;
 begin
@@ -256,12 +268,14 @@ end;
 
 procedure TestDxOperIsMyCall.RunTest(const ADxCall, AEnteredCall, AExpected: string);
 var
-  R, Expected: TCallCheckResult;
+  Expected: TCallCheckResult;
   EnteredCall: String;
-  S, T: string;
+  S, ExpectedResult: string;
+  ExpectedConfidence: Integer;
+  slst: TStringList;
 
   procedure RunAlgo(var S: String; const EnteredCall:string;
-    Expected: TCallCheckResult);
+    Expected: TCallCheckResult; ExpectedConfidence: Integer);
   var
     R: TCallCheckResult;
     Confidence: Integer;
@@ -272,7 +286,7 @@ var
     CallConfidence := 0;
     T := '';
     R := IsMyCall(EnteredCall, False, @Confidence);
-    if R <> Expected then
+    if (R <> Expected) or ((ExpectedConfidence <> -1) and (Confidence <> ExpectedConfidence)) then
       begin
     {$ifdef DEBUG}
         DbgBreak := True;
@@ -281,17 +295,35 @@ var
         //LastCheckedCall := '';
         //R := IsMyCall(EnteredCall, False, @Confidence);
     {$endif}
-        T := format('    %s, Entered: ''%s'' --> %s, %s expected, P=%d.',
-          [Self.Call, EnteredCall, ToStr(R), ToStr(Expected), Self.Penalty]);
+        if ExpectedConfidence = -1 then
+          T := format('    %s, Entered: ''%s'' --> %s, %s expected; P=%d.',
+            [Self.Call, EnteredCall, ToStr(R), ToStr(Expected), Self.Penalty])
+        else
+          T := format('    %s, Entered: ''%s'' --> %s, %s expected; Confidence %d, %d expected; P=%d.',
+            [Self.Call, EnteredCall, ToStr(R), ToStr(Expected),
+             Confidence, ExpectedConfidence, Self.Penalty]);
         S := S + #10 + T;
       end;
   end;
 begin
+  slst:= TStringList.Create;
+  try
 {$ifdef DEBUG}
   DbgBreak := False;
 {$endif}
+
+  slst.Delimiter := ';';
+  slst.StrictDelimiter := True;
+  slst.DelimitedText := AExpected.Trim;
+
+  ExpectedResult := slst[0].Trim;
+  ExpectedConfidence := -1;
+  if slst.Count > 1 then
+    ExpectedConfidence := StrToInt(slst[1].Trim);
+
   // TCallCheckResult = (mcNo, mcYes, mcAlmost);
-  case AExpected.Trim[1] of
+  Expected := mcNo;
+  case ExpectedResult[1] of
     'N': Expected := mcNo;
     'Y': Expected := mcYes;
     'P': Expected := mcAlmost;
@@ -300,8 +332,12 @@ begin
   Self.Call := ADxCall.Trim;
   EnteredCall := AEnteredCall.Trim;
 
-  RunAlgo(S, EnteredCall, Expected);    // Revised RegEx and DP Algorithm (1.85.2)
+  RunAlgo(S, EnteredCall, Expected, ExpectedConfidence);    // Revised RegEx and DP Algorithm (1.85.2)
   if S <> '' then Assert.Fail(S);
+
+  finally
+    slst.Free;
+  end;
 end;
 
 
@@ -337,10 +373,10 @@ begin
         try
           reg := TPerlRegEx.Create();
           if APattern.EndsWith('?') then
-            reg.RegEx := APattern.Replace('?','.') + '*'
+            reg.RegEx := UTF8String(APattern.Replace('?','.') + '*')
           else
-            reg.RegEx := APattern.Replace('?','.');
-          reg.Subject := C0;
+            reg.RegEx := UTF8String(APattern.Replace('?','.'));
+          reg.Subject := UTF8String(C0);
           if reg.Match then
             begin
               Result := mcAlmost;
@@ -349,6 +385,9 @@ begin
               Self.Penalty := p;
               // confidence = 100 * correct chars / total length
               CallConfidence := (100 * (C0.Length - P)) div C0.Length;
+              // special case - '?' will match anything. give it low confidence
+              if CallConfidence = 0 then
+                CallConfidence := LOW_CONFIDENCE;
             end
           else
             begin
@@ -400,7 +439,13 @@ begin
           // confidence = 100 * correct chars / total length
           case Result of
             mcYes: CallConfidence := 100;
-            mcAlmost: CallConfidence := 100 * (C0.Length - P) div C0.Length;
+            mcAlmost:
+              begin
+                CallConfidence := 100 * (C0.Length - P) div C0.Length;
+                // special case - '?' will match anything. give it low confidence
+                if CallConfidence = 0 then
+                  CallConfidence := LOW_CONFIDENCE;
+              end;
             mcNo: CallConfidence := 0;
           end;
         end;
@@ -410,7 +455,8 @@ begin
     end;
 
   //accept a wrong call, or reject the correct one
-  if ARandomResult and Ini.Lids and (Length(APattern) > 3) then
+  if ARandomResult and Ini.Lids and (Length(APattern) > 3) and
+     not APattern.Contains('?') then
     begin
       case Result of
         mcYes: if Random < 0.01 then

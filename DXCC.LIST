@@ -9,12 +9,14 @@ Updated January 2024 by W7SST - added additional regular expression info from:
 
 1A;1A;Sov. Mil. Order of Malta;EU;28;15;246
 3A;3A;Monaco;EU;27;14;260
-3B6,7;3B[6|7];Agalega & St. Brandon Is.;AF;53;39;004
+3B6,7;3B[67];Agalega & St. Brandon Is.;AF;53;39;004
 3B8;3B8;Mauritius;AF;53;39;165
 3B9;3B9;Rodriguez I.;AF;53;39;207
 3C;3C;Equatorial Guinea;AF;47;36;049
 3C0;3C0;Annobon I.;AF;52;36;195
-3D2;3D2;Fiji/Conway Reef/Rotuma I.;OC;56;32;176
+3D2;3D2;Fiji;OC;56;32;176
+3D2C;3D2C;Conway Reef;OC;56;32;176
+3D2R;3D2R;Rotuma I.;OC;56;32;176
 3DA;3DA;Swaziland;AF;57;38;468
 3V;(3V)|(TS);Tunisia;AF;37;33;474
 3W;(3W)|(XV);Viet Nam;AS;49;26;293
@@ -72,7 +74,7 @@ A7;A7;Qatar;AS;39;21;376
 A9;A9;Bahrain;AS;39;21;304
 AP;[6A][P-S];Pakistan;AS;41;21;372
 B;B;China;AS;33,42-44,47,48;23,24;318
-BS7;BS7;Scarborough Reef,China;AS;50;27;506
+BS7;BS7;Scarborough Reef, China;AS;50;27;506
 BU-BX;B[M-QU-X];Taiwan;AS;44;24;386
 BV9P;B[MNOPQUVWX]9P;Pratas I. China;AS;44;24;505
 C2;C2;Nauru;OC;65;31;157
@@ -84,7 +86,7 @@ CA-CE;(3G)|(C[A-E])|(X[QR]);Chile;SA;14,16;12;112
 CE0;((3G)|(C[A-E])|(X[QR]))0;Easter I.;SA;63;12;047
 CE0;((3G)|(C[A-E])|(X[QR]))0Z;Juan Fernandez Is.;SA;14;12;125
 CE0;((3G)|(C[A-E])|(X[QR]))0X;San Felix & San Ambrosio;SA;14;12;217
-CE9/KC4;CE9/KC4;Antarctica;AN;67,69-74;12,13,29,30,32,38,39;013
+#CE9,KC4;CE9KC4|FT8Y|(HL|DT)8|IA0|ZL[05]|RI1AN;Antarctica;AN;67,69-74;12,13,29,30,32,38,39;013
 CM,CO;(C[LMO])|(T4);Cuba;NA;11;08;070
 CN;(CN)|(5[C-G]);Morocco;AF;37;33;446
 CP;CP;Bolivia;SA;12,14;10;104
@@ -160,8 +162,8 @@ HC8-HD8;H[C-D]8;Galapagos Is.;SA;12;10;071
 HH;(4V)|(HH);Haiti;NA;11;08;078
 HI;HI;Dominican Republic;NA;11;08;072
 HJ-HK,5J-5K;(H[J-K])|(5[JK]);Colombia;SA;12;09;116
-HK0/a;H[JK]0M;Malpelo I.;SA;12;09;161
 HK0/m;[5H][JK]0;San Andres & Providencia;NA;11;07;216
+HK0/a;H[JK]0M;Malpelo I.;SA;12;09;161
 HL,6K-6N;(HL)|(6[K-N])|(D[789ST])|(KL9K);Republic of Korea;AS;44;25;137
 HO-HP;(3[EF])|(H[389OP]);Panama;NA;11;07;088
 HQ-HR;H[Q-R];Honduras;NA;11;07;080
@@ -198,6 +200,7 @@ KH8;[AKNW]H8;American Samoa;OC;62;32;009
 KH8;KH8S;Swains I.;OC;62;32;515
 KH9;[AKNW]H9;Wake I.;OC;65;31;297
 KL;[KANW]L;Alaska;NA;1,2;1;006
+KL9K;KL9K;Republic of Korea;AS;44;25;137
 KP1;[KNW]P1;Navassa I.;NA;11;08;182
 KP2;[KNW]P2;Virgin Is.;NA;11;08;285
 KP4;[KNW]P[3-4];Puerto Rico;NA;11;08;202
@@ -247,7 +250,7 @@ SV/A;!ignore - hides Greece;Mount Athos;EU;28;20;180
 SV5,J45;(S[V-Z]5)|(J45);Dodecanese;EU;28;20;045
 SV9,J49;(S[V-Z]9)|(J49);Crete;EU;28;20;040
 T2;T2;Tuvalu;OC;65;31;282
-T30;T30;W. Kiribati(Gilbert Is. );OC;65;31;301
+T30;T30;W. Kiribati(Gilbert Is.);OC;65;31;301
 T31;T31;C. Kiribati(British Phoenix Is.);OC;62;31;031
 T32;T32;E. Kiribati(Line Is.);OC;61,63;31;048
 T33;T33;Banaba I.(Ocean I.);OC;65;31;490
@@ -285,7 +288,7 @@ VA-VG,VO,VY;(C[FGJK])|(VY9)|(V[A-GOY])|(X[LM]);Canada;NA;2,3,4,9,75;1-5;001
 VK,AX;(V[I-L])|(AX);Australia;OC;55,58,59;29,30;150
 VK0;VK0;Heard I.;AF;68;39;111
 VK0;VK0;Macquarie I.;OC;60;30;153
-VK9N;(AX9)|(V[IK]9);Norfolk I.;OC;60;32;189
+VK9N;(AX9N)|(V[IK]9N);Norfolk I.;OC;60;32;189
 VK9C;(AS9[CY])|(V[IK]9[CY])|(VK9[FK]C)|(VK9ZY)|(VZ9Y);Cocos(Keeling) Is.;OC;54;29;038
 VK9L;(AX9L)|(VI9L)|(VK9FL)|(VK9L)|(VK9ZL)|(VZ9L);Lord Howe I.;OC;60;30;147
 VK9M;(AS9M)|(V[IKZ]9M);Mellish Reef;OC;56;30;171
@@ -296,7 +299,7 @@ VP2M;VP2M;Montserrat;NA;11;08;096
 VP2V;VP2V;British Virgin Is.;NA;11;08;065
 VP5;V[PQ]5;Turks & Caicos Is.;NA;11;08;089
 VP6;VP6;Pitcairn I.;OC;63;32;172
-VP6;VP6;Ducie I.;OC;63;32;513
+VP6D;VP6D;Ducie I.;OC;63;32;513
 VP8;VP8;Falkland Is.;SA;16;13;141
 VP8,LU;!ignore - VP8 hides Falkland Is.;South Georgia I.;SA;73;13;235
 VP8,LU;!ignore - VP8 hides Falkland Is.;South Orkney Is.;SA;73;13;238
@@ -346,3 +349,16 @@ ZL9;ZL9;Auckland & Campbell Is.;OC;60;32;016
 ZP;ZP;Paraguay;SA;14;11;132
 ZR-ZU;(Z[R-U])|(H5)|(S4)|(S8)|(V9);South Africa;AF;57;38;462
 ZS8;Z[RSTU]8;Prince Edward & Marion Is.;AF;57;38;201
+# Special case...
+# Antarctica is difficult to match since no country owns the territory.
+# - The following special cases are hard coded in DXCC.pas to match CE9KC4:
+#   - KC4/ and CE9/ are checked for an exact prefix match.
+#   - KC4(AA|US)[A-Z] is handled in DXCC.pas to save 48 compares for any call starting with 'K'.
+# - Otherwise, CE9... will match South Shetland Is.;
+#              KC4... will match USA callsigns.
+# - The other matches are from https://en.wikipedia.org/wiki/Call_signs_in_Antarctica
+# Antarctica prefixes are handled in DXCC.pas - CE9/ or /KC4 are hard wired to 'CE9KC4'.
+CE9,KC4;CE9KC4|FT8Y|(HL|DT)8|IA0|ZL[05]|RI1AN;Antarctica;AN;67,69-74;12,13,29,30,32,38,39;013
+# ZL50 must be checked before Antarctica's ZL[05]
+ZL50;ZL50;New Zealand;OC;60;32;170
+

@@ -42,7 +42,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
-        <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
+        <DCC_ExeOutput>..\</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
         <DCC_S>false</DCC_S>
@@ -99,10 +99,14 @@
         <DCCReference Include="..\Util\SSExchParser.pas"/>
         <DCCReference Include="..\ExchFields.pas"/>
         <DCCReference Include="..\Util\ArrlSections.pas"/>
+        <DCCReference Include="..\Util\CallsignUtils.pas"/>
+        <DCCReference Include="..\DXCC.pas"/>
+        <DCCReference Include="CallsignUtilsTest.pas"/>
         <DCCReference Include="LexerTest.pas"/>
         <DCCReference Include="SSLexerTest.pas"/>
         <DCCReference Include="MySSExchTest.pas"/>
         <DCCReference Include="SSExchParserTest.pas"/>
+        <DCCReference Include="DxccListTest.pas"/>
         <DCCReference Include="DxOperTest.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
@@ -145,7 +149,19 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="..\UnitTests.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>UnitTests.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="Win32\Debug\UnitTests.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>UnitTests.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Release\UnitTests.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>UnitTests.exe</RemoteName>
                         <Overwrite>true</Overwrite>

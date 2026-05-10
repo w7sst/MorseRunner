@@ -22,7 +22,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.85.3+';  { Sets version strings in UI panel. }
+  sVersion: String = '1.85.4+';  { Sets version strings in UI panel. }
 
 type
 
@@ -952,6 +952,7 @@ end;
 procedure TMainForm.ProcessEnter;
 var
   C, N, R, Q: boolean;
+  ValidCall: Boolean;
   ExchError: string;
 begin
   if ActiveControl = ExchangeEdit then
@@ -1016,6 +1017,11 @@ begin
   // Update CallSent (HisCall has been sent)
   Tst.OnExchangeEditComplete;
 
+  // Has user entered a complete callsign (3 or more characters)?
+  ValidCall := (Pos('?', Edit1.Text) = 0) and
+               Tst.CheckEnteredCallLength(Edit1.Text, ExchError);
+  ExchError := '';
+
   // clear prior error string
   DisplayError('', clDefault);
 
@@ -1036,7 +1042,7 @@ begin
   //send his call if did not send before, or if call changed
   if (not C) or ((not N) and (not R)) then
     SendMsg(msgHisCall);
-  if not N then
+  if not N and ValidCall then
     SendMsg(msgNR);
   if N and (not R or not Q) then
     begin
@@ -1863,7 +1869,7 @@ const
         'CW CONTEST SIMULATOR'#13#13 +
         'Version %s'#13#13 +
         'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'#13 +
-        'Copyright ©2022-2025 Morse Runner Community Edition Contributors'#13#13 +
+        'Copyright ©2022-2026 Morse Runner Community Edition Contributors'#13#13 +
         'https://www.github.com/w7sst/MorseRunner/#readme'#13 +
         'https://groups.io/g/MorseRunnerCE';
 begin

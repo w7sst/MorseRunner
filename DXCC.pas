@@ -4,6 +4,7 @@ interface
 
 uses
   Generics.Collections,
+  PerlRegEx,
   Classes;
 
 type
@@ -20,6 +21,7 @@ type
   TDXCC= class
   private
     DXCCList: TObjectList<TDXCCRec>;
+    RegExList: TObjectList<TPerlRegEx>;
     procedure LoadDxCCList;
     procedure Delimit(var AStringList: TStringList; const AText: string);
     function SearchPrefix(out index : integer; const ACallPrefix : string) : Boolean;
@@ -37,7 +39,7 @@ var
 implementation
 
 uses
-    SysUtils, Contnrs, log, PerlRegEx, Ini;
+    SysUtils, Contnrs, CallsignUtils;
 
 procedure TDXCC.LoadDxCCList;
 var
@@ -67,6 +69,12 @@ begin
                 DXCCList.Add(AR);
             end;
         end;
+
+        RegExList := TObjectList<TPerlRegEx>.Create;
+
+        // initialize RegExList with nil pointers, one for each DXCC record.
+        RegExList.Count := DXCCList.Count;
+
     finally
         slst.Free;
         tl.Free;
@@ -76,12 +84,16 @@ end;
 constructor TDXCC.Create;
 begin
     inherited Create;
+    DxCCList := nil;
+    RegExList := nil;
+
     LoadDxCCList;
 end;
 
 
 destructor TDXCC.Destroy;
 begin
+  FreeAndNil(RegExList);
   FreeAndNil(DXCCList);
 end;
 
@@ -92,13 +104,25 @@ var
     s: string;
     i: integer;
 begin
-    reg := TPerlRegEx.Create();
+    if ACallPrefix.IsEmpty then Exit(False);
+
     try
         Result:= False;
-        reg.Subject := UTF8Encode(ACallPrefix);
+
+        // scan the DXCCList looking for the first match
         for i:= DXCCList.Count - 1 downto 0 do begin
-            s:= '^(' + TDXCCRec(DXCCList.Items[i]).prefixReg + ')';
-            reg.RegEx:= UTF8Encode(s);
+            reg := RegExList[i];
+            if not Assigned(reg) then begin
+              RegExList[i] := TPerlRegEx.Create;
+              reg := RegExList[i];
+
+              s:= '^(' + DXCCList[i].prefixReg + ')';
+              reg.RegEx:= UTF8Encode(s);
+              reg.Compile;
+              reg.Study;
+            end;
+
+            reg.Subject := UTF8Encode(ACallPrefix);
             if Reg.Match then begin
                 index:= i;
                 Result:= True;
@@ -106,7 +130,6 @@ begin
             end;
         end;
     finally
-        reg.Free;
     end;
 end;
 
@@ -126,16 +149,22 @@ begin
   // special case for KG4 prefix...
   // 2x1 and 2x3 callsigns are US; 2x2 calls assumed to be Guantanamo Bay.
   // (Special thanks to F6FVY for a code example on how to solve this.)
-  if     ACallsign.StartsWith('KG4') and
-     not ACallsign.StartsWith('KG44') and
-    ((Length(ACallsign) = 6) or (Length(ACallsign) = 4)) then
+  if     sP.StartsWith('KG4') and
+     not sP.StartsWith('KG44') and
+    ((sP.Length = 6) or (sP.Length = 4)) then
     begin
       // KG4abc problem ... this is hard coded
-      Result:= SearchPrefix(index, 'K');
-    end
-  else
-    Result:= SearchPrefix(index, sP);
+      sP := 'K';
+    end;
 
+  // special case for Antarctica prefix (CE9/ or KC4/) and patterns...
+  // leading or trailing prefixes of the form CE9/W7SST, W7SST/KC4, KC4/W7SST
+  // and the pattern KC4(AA|US)[A-Z] are hard coded to match KC4AAA.
+  if ((sP.Length = 3) and (sP = 'CE9') or (sP = 'KC4')) or
+     ((sP.Length = 6) and (sP.StartsWith('KC4AA') or sP.StartsWith('KC4US'))) then
+    sP := 'CE9KC4';
+
+  Result:= SearchPrefix(index, sP);
   if Result then
     dxrec:= TDXCCRec(DXCCList.Items[index]);
 end;
