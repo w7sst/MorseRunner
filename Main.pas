@@ -638,7 +638,7 @@ begin
       if Tst.OnExchangeEdit(Edit1.Text, Edit2.Text, Edit3.Text,
         ExchSummary, ExchError) then
         begin
-          Log.SBarUpdateSummary(ExchSummary);
+          Log.SetExchangeSummaryText(ExchSummary);
           if not Log.SBarErrorMsg.IsEmpty and ExchError.IsEmpty then
             Log.DisplayError('', clDefault);
         end;
@@ -1822,7 +1822,7 @@ begin
   ActiveControl := Edit1;
 
   if SimContest = scArrlSS then
-    Log.SBarUpdateSummary('');
+    Log.SetExchangeSummaryText('');
 
   if Assigned(Tst) then
     Tst.OnWipeBoxes;
