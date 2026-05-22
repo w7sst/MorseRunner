@@ -32,6 +32,7 @@ uses
   ContestFileFormat in '..\Src\Persistence\ContestFileFormat.pas',
   ContestFileReader in '..\Src\Persistence\ContestFileReader.pas',
   ArrlDx.Reader in '..\Src\Persistence\Contests\ArrlDx.Reader.pas',
+  Test.ArrlSections in 'Test.ArrlSections.pas',
   Test.AppPaths in 'Core\Test.AppPaths.pas',
   Test.ContestFileFormat in 'Persistence\Test.ContestFileFormat.pas',
   Test.ContestFileReader in 'Persistence\Test.ContestFileReader.pas',

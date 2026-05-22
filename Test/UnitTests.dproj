@@ -112,6 +112,7 @@
         <DCCReference Include="..\Src\Persistence\ContestFileFormat.pas"/>
         <DCCReference Include="..\Src\Persistence\ContestFileReader.pas"/>
         <DCCReference Include="..\Src\Persistence\Contests\ArrlDx.Reader.pas"/>
+        <DCCReference Include="Test.ArrlSections.pas"/>
         <DCCReference Include="Core\Test.AppPaths.pas"/>
         <DCCReference Include="Persistence\Test.ContestFileFormat.pas"/>
         <DCCReference Include="Persistence\Test.ContestFileReader.pas"/>
