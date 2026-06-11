@@ -1423,6 +1423,11 @@ object MainForm: TMainForm
         Caption = 'LIDS'
         OnClick = LIDS1Click
       end
+      object NilInstantRemove1: TMenuItem
+        Caption = 'NIL instantly removes caller'
+        Checked = True
+        OnClick = NilInstantRemove1Click
+      end
       object Activity1: TMenuItem
         Caption = 'Activity'
         object N11: TMenuItem

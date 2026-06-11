@@ -911,6 +911,8 @@ var
   z: integer;
   Dx : integer;
   Msg: TStationMessages;
+  Call: string;
+  Active: Boolean;
 begin
   Msg := [];
 
@@ -948,9 +950,14 @@ begin
   if msgHisCall in Tst.Me.Msg then
     Stations.FindBestMatches(Tst.Me.HisCall);
 
-  if msgNil in Me.Msg then
+  if Ini.NilInstantRemove and (msgNil in Me.Msg) then
     begin
-      Stations.DropCallerForNil;
+      if Stations.DropCallerForNil(Call, Active) then
+        if Active or (RunMode = rmSingle) then
+          begin
+            MainForm.sbar.Font.Color := clDefault;
+            MainForm.sbar.Caption := 'Skipped ' + Call;
+          end;
       Msg := Me.Msg;
       Me.Msg := [msgGarbage];
     end;
@@ -1002,4 +1009,3 @@ end;
 
 
 end.
-

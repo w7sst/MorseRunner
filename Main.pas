@@ -177,6 +177,7 @@ type
     QSB1: TMenuItem;
     Flutter1: TMenuItem;
     LIDS1: TMenuItem;
+    NilInstantRemove1: TMenuItem;
     Activity1: TMenuItem;
     N11: TMenuItem;
     N21: TMenuItem;
@@ -291,6 +292,7 @@ type
     procedure SelfMonClick(Sender: TObject);
     procedure Settings1Click(Sender: TObject);
     procedure LIDS1Click(Sender: TObject);
+    procedure NilInstantRemove1Click(Sender: TObject);
     procedure CWMaxRxSpeedClick(Sender: TObject);
     procedure CWMinRxSpeedClick(Sender: TObject);
     procedure NRDigitsClick(Sender: TObject);
@@ -2553,6 +2555,7 @@ begin
   QSB1.Checked := Ini.Qsb;
   Flutter1.Checked := Ini.Flutter;
   LIDS1.Checked := Ini.Lids;
+  NilInstantRemove1.Checked := Ini.NilInstantRemove;
 end;
 
 
@@ -2703,6 +2706,13 @@ begin
 end;
 
 
+procedure TMainForm.NilInstantRemove1Click(Sender: TObject);
+begin
+  with Sender as TMenuItem do Checked := not Checked;
+  Ini.NilInstantRemove := NilInstantRemove1.Checked;
+end;
+
+
 procedure TMainForm.ListView2CustomDrawSubItem(Sender: TCustomListView;
   Item: TListItem; SubItem: Integer; State: TCustomDrawState;
   var DefaultDraw: Boolean);
@@ -2780,4 +2790,3 @@ begin
 end;
 
 end.
-
