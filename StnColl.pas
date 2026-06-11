@@ -24,6 +24,7 @@ type
     function AddCaller: TStation;
     function AddQrn: TStation;
     function AddQrm: TStation;
+    function DropCallerForNil: Boolean;
 
     procedure FindBestMatches(const AEnteredCall: String);
 
@@ -100,6 +101,56 @@ function TStations.AddQrm: TStation;
 begin
   Result := TQrmStation.CreateStation;
   Result.Collection := Self;
+end;
+
+
+function TStations.DropCallerForNil: Boolean;
+var
+  i: Integer;
+  DxStn, Target: TDxStation;
+
+  procedure Pick(ADxStn: TDxStation);
+  begin
+    if (Target = nil) or (ADxStn.Amplitude > Target.Amplitude) then
+      Target := ADxStn;
+  end;
+
+begin
+  Target := nil;
+
+  for i:=Self.Count-1 downto 0 do
+    if Self[i] is TDxStation then
+      begin
+        DxStn := Self[i] as TDxStation;
+        if DxStn.Oper.State in [osNeedNr, osNeedCall, osNeedCallNr, osNeedEnd] then
+          Pick(DxStn);
+      end;
+
+  if Target = nil then
+    for i:=Self.Count-1 downto 0 do
+      if Self[i] is TDxStation then
+        begin
+          DxStn := Self[i] as TDxStation;
+          if DxStn.State = stSending then
+            Pick(DxStn);
+        end;
+
+  if Target = nil then
+    for i:=Self.Count-1 downto 0 do
+      if Self[i] is TDxStation then
+        begin
+          DxStn := Self[i] as TDxStation;
+          if DxStn.Oper.State in [osNeedQso, osNeedPrevEnd] then
+            Pick(DxStn);
+        end;
+
+  Result := Target <> nil;
+  if Result then
+    begin
+      Target.Envelope := nil;
+      Target.Oper.State := osFailed;
+      Target.Free;
+    end;
 end;
 
 
