@@ -109,8 +109,11 @@
         <DCCReference Include="DxccListTest.pas"/>
         <DCCReference Include="..\Src\Core\AppPaths.pas"/>
         <DCCReference Include="..\Src\Persistence\ContestFileFormat.pas"/>
+        <DCCReference Include="..\Src\Persistence\ContestFileReader.pas"/>
         <DCCReference Include="Core\Test.AppPaths.pas"/>
         <DCCReference Include="Persistence\Test.ContestFileFormat.pas"/>
+        <DCCReference Include="Persistence\Test.ContestFileReader.pas"/>
+        <DCCReference Include="Persistence\Test.ContestReader.Base.pas"/>
         <DCCReference Include="DxOperTest.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

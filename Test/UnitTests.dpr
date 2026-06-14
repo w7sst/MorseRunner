@@ -29,8 +29,11 @@ uses
   DxccListTest in 'DxccListTest.pas',
   AppPaths in '..\Src\Core\AppPaths.pas',
   ContestFileFormat in '..\Src\Persistence\ContestFileFormat.pas',
+  ContestFileReader in '..\Src\Persistence\ContestFileReader.pas',
   Test.AppPaths in 'Core\Test.AppPaths.pas',
   Test.ContestFileFormat in 'Persistence\Test.ContestFileFormat.pas',
+  Test.ContestFileReader in 'Persistence\Test.ContestFileReader.pas',
+  Test.ContestReader.Base in 'Persistence\Test.ContestReader.Base.pas',
   DxOperTest in 'DxOperTest.pas';
 
 {$IFNDEF TESTINSIGHT}
