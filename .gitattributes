@@ -1,6 +1,9 @@
 # Auto detect text files and perform LF normalization.
 # This will use LF in index and repo and use CRLF in Windows working tree.
 # Sets the default behavior, in case people don't have core.autocrlf set.
+#
+# Delphi/Lazarus source files are treated as text and normalized in the
+# repository. Developers receive the native line ending for their platform.
 * text=auto
 
 # Explicitly declare text files you want to always be normalized and converted
