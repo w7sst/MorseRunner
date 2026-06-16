@@ -8,19 +8,10 @@ interface
 
 uses
   Generics.Defaults, Generics.Collections, Classes, DualExchContest, DxStn,
+  ArrlDx.Types,
   Log;
 
 type
-  TArrlDxCallRec = class
-  public
-    Call: string;     // call sign
-    State: string;    // State/Province (US/Canada)
-    Power: string;    // Power (DX Stations)
-    UserText: string; // club name
-    function GetString: string; // returns <State>|<Power> [UserText]
-    class function compareCall(const left, right: TArrlDxCallRec) : integer; static;
-  end;
-
   TArrlDx = class(TDualExchContest)
   private
     ArrlDxCallList: TObjectList<TArrlDxCallRec>;
@@ -371,20 +362,6 @@ begin
            Exit;
        end;
    end;
-end;
-
-
-class function TArrlDxCallRec.compareCall(const left, right: TArrlDxCallRec) : integer;
-begin
-  Result := CompareStr(left.Call, right.Call);
-end;
-
-
-function TArrlDxCallRec.GetString: string; // returns <State>|<Power> [UserText]
-begin
-  Result := Format(' - %s%s', [State, Power]);
-  if UserText <> '' then
-    Result := Result + ' ' + UserText;
 end;
 
 

@@ -172,6 +172,7 @@
         <DCCReference Include="Util\ArrlSections.pas"/>
         <DCCReference Include="Util\CallsignUtils.pas"/>
         <DCCReference Include="Src\Core\AppPaths.pas"/>
+        <DCCReference Include="Src\Domain\Contests\ArrlDx.Types.pas"/>
         <DCCReference Include="Util\SSExchParser.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
