@@ -983,6 +983,10 @@ object MainForm: TMainForm
         Caption = 'Audio Recording Enabled'
         OnClick = AudioRecordingEnabled1Click
       end
+      object ChooseAudioRecordingFolder1: TMenuItem
+        Caption = 'Choose Audio Recording Folder...'
+        OnClick = ChooseAudioRecordingFolder1Click
+      end
       object PlayRecordedAudio1: TMenuItem
         Caption = 'Play Recorded Audio'
         Enabled = False

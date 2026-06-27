@@ -268,6 +268,7 @@ var
 
   MonLevel: Integer = 0;             // Self Monitor Level in dB; range [-60,0]
   SaveWav: boolean = false;
+  RecordingFolder: string = '';
   FarnsworthCharRate: integer = 25;
   AllStationsWpmS: integer = 0;      // force all stations to this Wpm
   CallsFromKeyer: boolean = false;
@@ -445,6 +446,7 @@ begin
       MonLevel := V;
       MainForm.VolumeSlider1.Db := MonLevel;
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
+      RecordingFolder := ReadString(SEC_STN, 'RecordingFolder', RecordingFolder);
 
       // [Settings]
       FarnsworthCharRate := ReadInteger(SEC_SET, 'FarnsworthCharacterRate', FarnsworthCharRate);
@@ -531,6 +533,7 @@ begin
       // [Station]
       WriteInteger(SEC_STN, 'SelfMonVolume', MonLevel);
       WriteBool(SEC_STN, 'SaveWav', SaveWav);
+      WriteString(SEC_STN, 'RecordingFolder', RecordingFolder);
 
       // [Settings]
       WriteInteger(SEC_SET, 'FarnsworthCharacterRate', FarnsworthCharRate);
@@ -655,4 +658,3 @@ end;
 
 
 end.
-
