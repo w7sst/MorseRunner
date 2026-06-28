@@ -177,6 +177,7 @@ type
     QSB1: TMenuItem;
     Flutter1: TMenuItem;
     LIDS1: TMenuItem;
+    Faster5nn1: TMenuItem;
     Activity1: TMenuItem;
     N11: TMenuItem;
     N21: TMenuItem;
@@ -291,6 +292,7 @@ type
     procedure SelfMonClick(Sender: TObject);
     procedure Settings1Click(Sender: TObject);
     procedure LIDS1Click(Sender: TObject);
+    procedure Faster5nn1Click(Sender: TObject);
     procedure CWMaxRxSpeedClick(Sender: TObject);
     procedure CWMinRxSpeedClick(Sender: TObject);
     procedure NRDigitsClick(Sender: TObject);
@@ -2553,6 +2555,7 @@ begin
   QSB1.Checked := Ini.Qsb;
   Flutter1.Checked := Ini.Flutter;
   LIDS1.Checked := Ini.Lids;
+  Faster5nn1.Checked := Ini.Faster5nn > 0;
 end;
 
 
@@ -2700,6 +2703,20 @@ begin
   CheckBox6.Checked := LIDS1.Checked;
 
   ReadCheckboxes;
+end;
+
+
+procedure TMainForm.Faster5nn1Click(Sender: TObject);
+begin
+  if Ini.Faster5nn = 0 then
+    Ini.Faster5nn := Ini.Faster5nnMem
+  else
+    begin
+    Ini.Faster5nnMem := Ini.Faster5nn;
+    Ini.Faster5nn := 0;
+    end;
+
+  Faster5nn1.Checked := Ini.Faster5nn > 0;
 end;
 
 

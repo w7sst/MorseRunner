@@ -241,7 +241,8 @@ end;
 }
 procedure TStation.SendText(AMsg: string);
 var
-  P : integer;
+  P, FastSteps: integer;
+  Nr, Nr2, DebugMsg: string;
 
   // Modifies AMsg by replacing AToken at position P with ANewText and
   // advances the token offset P to the start of the next token.
@@ -265,20 +266,37 @@ var
     Result := (P = 0);
   end;
 
-begin
-  if Pos('<#>', AMsg) > 0 then
-    begin
-    //with error
-    AMsg := StringReplace(AMsg, '<#>', NrAsText, []);
-    //error cleared
-    AMsg := StringReplace(AMsg, '<#>', NrAsText, [rfReplaceAll]);
-    end;
+  function IsFastReport(const AExchange: string): boolean;
+  var
+    Report: string;
+  begin
+    Report := Copy(AExchange, 1, 3);
+    Result := (SentExchTypes.Exch1 = etRST) and
+      ((Report = '5NN') or (Report = '599'));
+  end;
 
+  function MarkReport(const AExchange: string): string;
+  begin
+    Result := AExchange;
+    if (FastSteps = 0) or not IsFastReport(AExchange) then Exit;
+
+    Result := StringOfChar(CW_SPEED_UP, FastSteps) + Copy(AExchange, 1, 3) +
+      StringOfChar(CW_SPEED_DOWN, FastSteps) + Copy(AExchange, 4, MaxInt);
+  end;
+
+begin
   // replace tokens with actual values
   P := Pos('<', AMsg);
   while (P > 0) do
     begin
       var Q: Integer := P;
+      // Leave <#> until the other tokens have been expanded.
+      if PosEx('<#>', AMsg, P) = P then
+        begin
+        P := PosEx('<', AMsg, P + 1);
+        Continue;
+        end;
+
       if ReplaceTokenAt(AMsg, P, '<my>', MyCall) then Break;
       if ReplaceTokenAt(AMsg, P, '<exch1>', Exch1) then Break;
       if ReplaceTokenAt(AMsg, P, '<exch2>', Exch2) then Break;
@@ -288,6 +306,24 @@ begin
         raise Exception.CreateFmt(
           'Internal error: TStation.SendText: unrecognized token in msg: "%s"',
           [AMsg]);
+    end;
+
+  if Pos('<#>', AMsg) > 0 then
+    begin
+    Nr := NrAsText;
+    Nr2 := NrAsText;
+    FastSteps := 0;
+    if (IsFastReport(Nr) or IsFastReport(Nr2)) and
+      (Ini.Faster5nn > 0) and not Tst.IsFarnsworthAllowed then
+      if Self = Tst.Me then
+        FastSteps := 5
+      else if Random(100) < Ini.Faster5nn then
+        FastSteps := 3 + Random(3);
+
+    //with error
+    AMsg := StringReplace(AMsg, '<#>', MarkReport(Nr), []);
+    //error cleared
+    AMsg := StringReplace(AMsg, '<#>', MarkReport(Nr2), [rfReplaceAll]);
     end;
 
 {
@@ -302,7 +338,11 @@ begin
 
   // during debug, use status bar to show CW stream
   if BDebugCwDecoder and not (self is TQrmStation) then
-    Log.SBarUpdateDebugMsg(MsgText);
+    begin
+    DebugMsg := StringReplace(MsgText, CW_SPEED_UP, '', [rfReplaceAll]);
+    DebugMsg := StringReplace(DebugMsg, CW_SPEED_DOWN, '', [rfReplaceAll]);
+    Log.SBarUpdateDebugMsg(DebugMsg);
+    end;
 
   SendMorse(Keyer.Encode(MsgText));
 end;
