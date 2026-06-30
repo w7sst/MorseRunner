@@ -52,6 +52,7 @@ uses
   Lexer in 'Util\Lexer.pas',
   ArrlSections in 'Util\ArrlSections.pas',
   CallsignUtils in 'Util\CallsignUtils.pas',
+  AppPaths in 'Src\Core\AppPaths.pas',
   SSExchParser in 'Util\SSExchParser.pas';
 
 {$R *.RES}

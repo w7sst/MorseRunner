@@ -50,6 +50,7 @@ implementation
 
 uses
   SysUtils, PerlRegEx, DXCC, CallLst,
+  AppPaths,
   Ini, Main;
 
 
@@ -105,7 +106,7 @@ begin
   try
     IaruHfCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'IARU_HF.txt');
+    slst.LoadFromFile(TAppPaths.ContestDataFile('IARU_HF.txt'));
 
     for i:= 0 to slst.Count-1 do begin
       tl.DelimitedText := slst.Strings[i];

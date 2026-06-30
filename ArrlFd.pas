@@ -94,6 +94,7 @@ uses
   Dialogs,      // for ShowMessage
   Vcl.Clipbrd,  // for TClipBoard
 {$endif}
+  AppPaths,
   DXCC;
 
 var
@@ -221,7 +222,7 @@ begin
   try
     FdCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'FDGOTA.TXT');
+    slst.LoadFromFile(TAppPaths.ContestDataFile('FDGOTA.TXT'));
 
     // Pass 1 - find and process all club stations (class A, C or F).
     //        - deffer all home/portable stations w/ a club name to Pass 2.
