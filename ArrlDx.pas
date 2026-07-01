@@ -1,3 +1,8 @@
+//------------------------------------------------------------------------------
+//This Source Code Form is subject to the terms of the Mozilla Public
+//License, v. 2.0. If a copy of the MPL was not distributed with this
+//file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//------------------------------------------------------------------------------
 unit ARRLDX;
 
 {$ifdef FPC}
@@ -42,6 +47,9 @@ implementation
 uses
   SysUtils, DXCC, CallLst,
   ExchFields,
+  ContestFileFormat,
+  ContestFileReader,        // for TRecordConsumer<>
+  ArrlDx.Reader,
   AppPaths,
   Ini, Main;
 
@@ -65,102 +73,28 @@ end;
 // load call history file iff user's callsign has changed.
 // for US/CA calls, load DX callsigns; for DX calls, load US/CA calls.
 function TArrlDx.LoadCallHistory(const AUserCallsign: string) : boolean;
-const
-  DelimitChar: char = ',';
 var
-  slst, tl: TStringList;
-  i: integer;
-  rec: TArrlDxCallRec;
-  CallInx, StateInx, PowerInx, UserTextInx: integer;
-
-  { Find the named string. Throw an exception if required field is missing. }
-  function FindIndex(const AFieldName: String; ARequiredField: Boolean) : Integer;
-  begin
-    Result := tl.IndexOf(AFieldName);
-    assert((Result >= 0) or not ARequiredField);
-    if ARequiredField and (Result = -1) then
-      raise Exception.CreateFmt(
-        'Invalid call history file: ''!!Order!!'' record is missing required ''%s'' field. Line %d, File "%s"',
-        [AFieldName, i+1, ParamStr(1) + 'ARRLDXCW_USDX.txt']);
-  end;
-
-  { Returns the field value for the specified column index.
-    If the index is invalid or the column is missing, an empty string is returned.
-    Leading and trailing whitespace is removed.
-  }
-  function GetValue(ColumnInx: Integer): String;
-  begin
-    if Cardinal(ColumnInx) < Cardinal(tl.Count) then
-      Result := tl[ColumnInx].Trim
-    else
-      Result := '';
-  end;
-
+  Reader: TArrlDxContestFileReader;
+  FileName: String;
 begin
-  slst:= TStringList.Create;
-  tl:= TStringList.Create;
-  tl.Delimiter := DelimitChar;
-  tl.StrictDelimiter := True;
-  rec := nil;
-  CallInx := -1;
-  StateInx := -1;
-  PowerInx := -1;
-  UserTextInx := -1;
+  Reader := TArrlDxContestFileReader.Create(Self.HomeCallIsLocal);
 
   try
     ArrlDxCallList.Clear;
 
-    slst.LoadFromFile(TAppPaths.ContestDataFile('ARRLDXCW_USDX.txt'));
+    FileName := 'ARRLDXCW_USDX.txt';
 
-    for i:= 0 to slst.Count-1 do begin
-      tl.DelimitedText := slst.Strings[i];
+    Reader.ReadFile(TAppPaths.ContestDataFile(FileName),
+      procedure(rec: TArrlDxCallRec)
+      begin
+        ArrlDxCallList.Add(rec);
+      end);
 
-      // skip empty or comment lines
-      if (tl.Count = 0) or tl[0].TrimLeft.StartsWith('#') then continue;
-
-      if (tl[0] = '!!Order!!') then
-        begin
-          // !!Order!!,Call,Name,State,Power,UserText,  // Dx Stations
-          // !!Order!!,Call,Name,State,                 // US Stations
-          tl.Delete(0); // shifts others down by one
-
-          // DX sends Call,Power
-          // W/VE sends Call,State
-          CallInx := FindIndex('Call', True);
-          StateInx := FindIndex('State', False);
-          PowerInx := FindIndex('Power', False);
-          UserTextInx := FindIndex('UserText', False);
-
-          continue;
-        end;
-
-      if rec = nil then
-        rec := TArrlDxCallRec.Create;
-
-      rec.Call := GetValue(CallInx).ToUpper;
-      rec.State := GetValue(StateInx).ToUpper;
-      rec.Power := GetValue(PowerInx).ToUpper;
-      rec.UserText := GetValue(UserTextInx);
-
-      if rec.Call.IsEmpty then continue;
-
-      // W/VE stations work only DX stations (those with non-empty Power field);
-      // DX Stations work only W/VE stations (those with non-empty State field)
-      if (    HomeCallIsLocal and not rec.Power.IsEmpty) or
-         (not HomeCallIsLocal and not rec.State.IsEmpty) then
-        begin
-          ArrlDxCallList.Add(rec);
-          rec := nil;
-        end;
-    end;
-
+    ArrlDxCallList.Sort(Self.Comparer);
     Result := True;
 
   finally
-    if rec <> nil then rec.Free;
-    slst.Free;
-    tl.Free;
-
+    Reader.Free;
   end;
 end;
 

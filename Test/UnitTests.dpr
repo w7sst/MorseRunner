@@ -28,12 +28,16 @@ uses
   SSExchParserTest in 'SSExchParserTest.pas',
   DxccListTest in 'DxccListTest.pas',
   AppPaths in '..\Src\Core\AppPaths.pas',
+  ArrlDx.Types in '..\Src\Domain\Contests\ArrlDx.Types.pas',
   ContestFileFormat in '..\Src\Persistence\ContestFileFormat.pas',
   ContestFileReader in '..\Src\Persistence\ContestFileReader.pas',
+  ArrlDx.Reader in '..\Src\Persistence\Contests\ArrlDx.Reader.pas',
   Test.AppPaths in 'Core\Test.AppPaths.pas',
   Test.ContestFileFormat in 'Persistence\Test.ContestFileFormat.pas',
   Test.ContestFileReader in 'Persistence\Test.ContestFileReader.pas',
   Test.ContestReader.Base in 'Persistence\Test.ContestReader.Base.pas',
+  Test.ContestReader.Contracts in 'Persistence\Test.ContestReader.Contracts.pas',
+  Test.ArrlDx.Reader in 'Persistence\Contests\Test.ArrlDx.Reader.pas',
   DxOperTest in 'DxOperTest.pas';
 
 {$IFNDEF TESTINSIGHT}
