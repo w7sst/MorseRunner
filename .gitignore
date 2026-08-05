@@ -116,3 +116,4 @@ dunitx-results.xml
 
 # Ignore my project's .ini file. This user file is regenerated at runtime.
 MorseRunner.ini
+CLAUDE.md
