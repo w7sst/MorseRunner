@@ -37,7 +37,7 @@ public
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
   function GetCall(id : integer): string; override; // returns station callsign
-  procedure GetExchange(id : integer; out station : TDxStation); override;
+  procedure GetExchange(id : integer; var station : TDxStation); override;
   function ExtractMultiplier(Qso: PQso) : string; override;
   function IsCallLocalToContest(const ACallsign: string) : boolean;
 
@@ -92,7 +92,7 @@ begin
   try
     NaQpCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'NAQPCW.TXT');
+    slst.LoadFromFile(ParamStr(1) + 'NAQPCW.txt');
 
     for i:= 0 to slst.Count-1 do begin
       if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
@@ -215,7 +215,7 @@ begin
     inherited Create(etOpName, etNaQpExch2,     // NA station exchange
                      etOpName, etNaQpNonNaExch2); // non-NA station exchange
     NaQpCallList := TObjectList<TNaQpCallRec>.Create;
-    Comparer := TComparer<TNaQpCallRec>.Construct(TNaQpCallRec.compareCall);
+    Comparer := TComparer<TNaQpCallRec>.Construct({$IFDEF FPC}@{$ENDIF}TNaQpCallRec.compareCall);
 
   FIsCallLocalLastCall := '';
   FIsCallLocalLastResult := False;
@@ -329,7 +329,11 @@ end;
 function TNcjNaQp.FindCallRec(out recOut: TNaQpCallRec; const ACall: string): Boolean;
 var
   rec: TNaQpCallRec;
+{$ifdef FPC}
+  index: int64;
+{$else}
   index: integer;
+{$endif}
 begin
   rec := TNaQpCallRec.Create();
   rec.Call := ACall;
@@ -427,7 +431,7 @@ begin
 end;
 
 
-procedure TNcjNaQp.GetExchange(id : integer; out station : TDxStation);
+procedure TNcjNaQp.GetExchange(id : integer; var station : TDxStation);
 begin
   station.Exch1 := getExch1(station.Operid);
   station.OpName := station.Exch1; // TODO - refactor etOpName to use Exch1

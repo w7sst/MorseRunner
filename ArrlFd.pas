@@ -65,7 +65,7 @@ public
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
   function GetCall(id : integer): string; override; // returns station callsign
-  procedure GetExchange(id : integer; out station : TDxStation); override;
+  procedure GetExchange(id : integer; var station : TDxStation); override;
 
   function getExch1(id:integer): string;    // returns station info (e.g. 3A)
   function getExch2(id:integer): string;    // returns section info (e.g. OR)
@@ -89,10 +89,9 @@ uses
   SysUtils, Classes,
   Ini,
   Math,
-  System.Generics.Collections,
 {$ifdef DISTRIBUTION_REPORT}
   Dialogs,      // for ShowMessage
-  Vcl.Clipbrd,  // for TClipBoard
+  Clipbrd,  // for TClipBoard
 {$endif}
   DXCC;
 
@@ -162,7 +161,7 @@ end;
 constructor TPendingStations.Create;
 begin
   inherited Create([doOwnsValues]);
-  PendingCallComparer := TComparer<TPendingCall>.Construct(TPendingCall.comparePendingCall);
+  PendingCallComparer := TComparer<TPendingCall>.Construct({$IFDEF FPC}@{$ENDIF}TPendingCall.comparePendingCall);
 end;
 
 destructor TPendingStations.Destroy;
@@ -221,7 +220,7 @@ begin
   try
     FdCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'FDGOTA.TXT');
+    slst.LoadFromFile(ParamStr(1) + 'FDGOTA.txt');
 
     // Pass 1 - find and process all club stations (class A, C or F).
     //        - deffer all home/portable stations w/ a club name to Pass 2.
@@ -366,7 +365,7 @@ end;
 constructor TArrlFieldDay.Create;
 begin
     inherited Create;
-    Comparer := TComparer<TFdCallRec>.Construct(TFdCallRec.compareCall);
+    Comparer := TComparer<TFdCallRec>.Construct({$IFDEF FPC}@{$ENDIF}TFdCallRec.compareCall);
     FdCallList:= TObjectList<TFdCallRec>.Create(Comparer);
 end;
 
@@ -494,7 +493,7 @@ begin
 end;
 
 
-procedure TArrlFieldDay.GetExchange(id : integer; out station : TDxStation);
+procedure TArrlFieldDay.GetExchange(id : integer; var station : TDxStation);
 begin
   station.Exch1 := getExch1(id);
   station.Exch2 := getExch2(id);

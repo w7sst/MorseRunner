@@ -34,7 +34,7 @@ public
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
   function GetCall(id:integer): string; override;     // returns station callsign
-  procedure GetExchange(id : integer; out station : TDxStation); override;
+  procedure GetExchange(id : integer; var station : TDxStation); override;
 
   function getExch1(id:integer): string;    // returns RST (e.g. 5NN)
   function getExch2(id:integer): string;    // returns section info (e.g. 3)
@@ -73,7 +73,7 @@ begin
   try
     CqWwCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'CQWWCW.TXT');
+    slst.LoadFromFile(ParamStr(1) + 'CQWWCW.txt');
 
     for i:= 0 to slst.Count-1 do begin
       if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
@@ -127,7 +127,7 @@ constructor TCqWw.Create;
 begin
     inherited Create;
     CqWwCallList := TObjectList<TCqWwCallRec>.Create;
-    Comparer := TComparer<TCqWwCallRec>.Construct(TCqWwCallRec.compareCall);
+    Comparer := TComparer<TCqWwCallRec>.Construct({$IFDEF FPC}@{$ENDIF}TCqWwCallRec.compareCall);
 end;
 
 
@@ -273,7 +273,7 @@ begin
 end;
 
 
-procedure TCqWw.GetExchange(id : integer; out station : TDxStation);
+procedure TCqWw.GetExchange(id : integer; var station : TDxStation);
 begin
   station.Exch1 := getExch1(station.Operid);  // RST
   station.Exch2 := getExch2(station.Operid);

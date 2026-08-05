@@ -7,7 +7,7 @@ unit Crc32;
 
 interface
 
-uses SysUtils, Windows;
+uses SysUtils{$IFDEF MSWINDOWS}, Windows{$ENDIF};
 
 function CalculateCRC32(AStr: string; ACrc: DWord): DWord;
 

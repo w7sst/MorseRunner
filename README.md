@@ -1,6 +1,104 @@
 # Morse Runner Community Edition
 > Click [here](https://github.com/w7sst/MorseRunner/releases/latest) to install the latest release.
 
+## Building on Linux (Lazarus/FPC)
+
+The Delphi project files (`MorseRunner.dpr`/`.dproj`) remain authoritative for the
+Windows build. Linux uses the Lazarus project `MorseRunner.lpi` alongside them;
+all platform differences are `{$IFDEF MSWINDOWS}` / `{$IFDEF FPC}` splits in the
+shared sources, so both builds come from the same tree.
+
+### Prerequisites
+
+Free Pascal 3.2.x and Lazarus 4.x, plus the LCL gtk2 widgetset. On Fedora:
+
+```sh
+sudo dnf install fpc fpc-src lazarus lazarus-lcl-gtk2 \
+                 pcre pulseaudio-libs openssl-libs
+```
+
+The last three are runtime libraries, opened with `dlopen` rather than linked, so
+the binary builds without them but needs them to run:
+
+| Library | Used for | Fedora package |
+| --- | --- | --- |
+| `libpcre.so.1` | regular expressions | `pcre` — **PCRE1 (8.x)**, not `pcre2` |
+| `libpulse-simple.so.0`, `libpulse.so.0` | audio output | `pulseaudio-libs` (pipewire-pulse serves this too) |
+| `libssl.so.3`, `libcrypto.so.3` | HTTPS score upload / call-history download | `openssl-libs` |
+
+### Build and run
+
+```sh
+lazbuild MorseRunner.lpi     # compiled units land in lib/x86_64-linux/
+./MorseRunner
+```
+
+Run it from the repository root, or from a directory holding the data files
+(`MASTER.DTA`, `DXCC.LIST`, the per-contest `.txt` call histories). Note that the
+program uses its **first command-line argument as a data-directory prefix**, so
+passing any other argument will break data loading.
+
+### Unit tests
+
+FPC cannot parse the Delphi custom attributes that encode the DUnitX test cases,
+so a generator emits attribute-stripped copies first. `Test/*.pas` stays the
+single source of truth for both compilers — see `Test/fpc/README.md`.
+
+```sh
+python3 tools/gen-fpc-tests.py     # writes Test/fpc/gen/ (git-ignored)
+lazbuild Test/fpc/UnitTests.lpi    # builds ./UnitTests in the repository root
+./UnitTests
+```
+
+> **Gotcha:** `lazbuild` does not notice edits to a `.lfm` form file on its own
+> and will silently link the previous form resource. Always `lazbuild -B` after
+> changing `Main.lfm` or `ScoreDlg.lfm`.
+
+## Building on Windows (Delphi)
+
+The Windows build uses the Delphi project `MorseRunner.dpr`/`.dproj` from the
+same source tree — no branch switching, no separate copies. Verified with
+Delphi 13 (Embarcadero Studio 37.0); older versions back to the one upstream
+uses should work too, as the only version-specific code is guarded by
+`CompilerVersion` conditionals. The free
+[Delphi Community Edition](https://www.embarcadero.com/products/delphi/starter)
+is sufficient. The Lazarus project (`MorseRunner.lpi`) targets Linux — on
+Windows, build with Delphi.
+
+### From the IDE
+
+Open `MorseRunner.dproj`, pick the *Debug* or *Release* configuration and
+build/run (F9). The program must be started from the repository root (or a
+directory holding the data files — `MASTER.DTA`, `DXCC.LIST`, the per-contest
+`.txt` call histories, and for SOTA also `SOTA_Calls_CW.txt`,
+`summitslist.txt` and `cty.dat`).
+
+### From the command line
+
+```bat
+call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat"
+msbuild MorseRunner.dproj /t:Build /p:Config=Release /p:Platform=Win32
+```
+
+> **Gotcha:** on a Windows account that has never started the Delphi IDE,
+> msbuild cannot find the VCL resource files (`Controls.res` etc.) because
+> `%APPDATA%\Embarcadero\BDS\37.0\EnvOptions.proj` does not exist yet. Either
+> run the IDE once, or add
+> `"/p:DCC_ResourcePath=C:\Program Files (x86)\Embarcadero\Studio\37.0\lib\win32\release"`
+> to the msbuild line.
+
+### Unit tests
+
+`Test\UnitTests.dproj` is a DUnitX console application (DUnitX ships with
+Delphi). Build it the same way — the runner is written to the repository
+root — then:
+
+```bat
+UnitTests.exe
+```
+
+Both platforms run the same 897 test cases from the same `Test\*.pas` sources.
+
 ### Notice - 100-person limit on groups.io has been removed
 We have recently removed the 100-person limit from the [MRCE user's group](https://groups.io/g/MorseRunnerCE) on groups.io.
 If you were unable to subscribe in the past, please visit our user group page and try again.

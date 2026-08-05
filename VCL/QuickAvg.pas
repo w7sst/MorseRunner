@@ -8,7 +8,7 @@ unit QuickAvg;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  {$IFDEF MSWINDOWS}Windows, Messages,{$ENDIF} SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Math, SndTypes;
 
 type

@@ -16,9 +16,12 @@ type
   TExchange1Type = (etRST, etOpName, etFdClass, etSSNrPrecedence);
 
   // Exchange Field #2 Types
+  // etSotaRef is a SOTA summit reference (e.g. G/LD-001). It is the only
+  // exchange field that may legitimately be left empty: a caller who is not
+  // himself on a summit sends no reference at all.
   TExchange2Type = (etSerialNr, etGenericField, etArrlSection, etStateProv,
                     etCqZone, etItuZone, etAge, etPower, etJaPref, etJaCity,
-                    etNaQpExch2, etNaQpNonNaExch2, etSSCheckSection);
+                    etNaQpExch2, etNaQpNonNaExch2, etSSCheckSection, etSotaRef);
 
   {
     Defines the characteristics and behaviors of an exchange field.
@@ -67,6 +70,10 @@ const
    ,(C: 'State';      R: '()|([0-9A-Z/]*)';                L: 6; T:Ord(etNaQpNonNaExch2))
    ,(C: 'Nr Prec CK Sect';
                       R: '[0-9ONT]{1,2} +[A-Z]{2,3}';      L: 32; T:Ord(etSSCheckSection))
+    // SOTA summit reference, e.g. G/LD-001 or W7O/CN-123 (longest is 10).
+    // The empty alternative is required: most callers are not on a summit.
+   ,(C: 'Ref';        R: '()|([A-Z0-9]{1,3}/[A-Z]{2}-[0-9]{3})';
+                                                           L: 10; T:Ord(etSotaRef))
   );
 
 implementation

@@ -103,8 +103,16 @@ lib/
 VCL/Win32/
 VCL/Win64/
 MorseRunner.obj
+# Linux/Lazarus build output (the executable has no extension)
+/MorseRunner
 MorseRunner.res
 MorseRunner.stat
+
+# Linux/Lazarus unit-test runner and its generated sources.
+# Test/fpc/gen/ is produced from Test/*.pas by tools/gen-fpc-tests.py.
+/UnitTests
+Test/fpc/gen/
+dunitx-results.xml
 
 # Ignore my project's .ini file. This user file is regenerated at runtime.
 MorseRunner.ini

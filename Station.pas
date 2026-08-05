@@ -19,7 +19,13 @@ type
   TStationMessage =  (msgNone, msgCQ, msgNR, msgTU, msgMyCall, msgHisCall,
     msgB4, msgQm, msgNil, msgGarbage, msgR_NR, msgR_NR2, msgDeMyCall1, msgDeMyCall2,
     msgDeMyCallNr1, msgDeMyCallNr2, msgMyCallNr1, msgMyCallNr2, msgMyCall2,
-    msgNrQm, msgLongCQ, msgQrl, msgQrl2, msqQsy, msgAgn);
+    msgNrQm, msgLongCQ, msgQrl, msgQrl2, msqQsy, msgAgn,
+    // SOTA summit-reference sub-protocol:
+    //   msgSotaRef  - I send my own summit reference (F6)
+    //   msgRefQm    - caller asks for it ('REF?')
+    //   msgAgnQm    - caller could not copy it ('AGN?')
+    //   msgTu73     - caller got it ('TU 73')
+    msgSotaRef, msgRefQm, msgAgnQm, msgTu73);
 
   TStationMessages = set of TStationMessage;
 
@@ -120,11 +126,11 @@ type
     property Bfo: Single read GetBfo;
   end;
 
-const
-  ExchTypesUndef : TExchTypes = (
-    Exch1: TExchange1Type(-1);
-    Exch2: TExchange2Type(-1);
-  );
+var
+  //Sentinel "not set" value, assigned in the initialization section: casting
+  //-1 to an enum is not a valid constant expression under FPC.
+  //See also Ini.UndefExchType1.
+  ExchTypesUndef : TExchTypes;
 
 function ToStr(const val : TStationMessage) : string; overload;
 function ToStr(const val : TStationMessages) : string; overload;
@@ -241,6 +247,7 @@ end;
 }
 procedure TStation.SendText(AMsg: string);
 var
+  Q: Integer;
   P : integer;
 
   // Modifies AMsg by replacing AToken at position P with ANewText and
@@ -278,7 +285,7 @@ begin
   P := Pos('<', AMsg);
   while (P > 0) do
     begin
-      var Q: Integer := P;
+      Q := P;
       if ReplaceTokenAt(AMsg, P, '<my>', MyCall) then Break;
       if ReplaceTokenAt(AMsg, P, '<exch1>', Exch1) then Break;
       if ReplaceTokenAt(AMsg, P, '<exch2>', Exch2) then Break;
@@ -366,6 +373,7 @@ var
   Idx: integer;
   digits : integer;
   IsDxStation: boolean;
+  pRange : PSerialNRSettings;
 begin
   // Adding a contest: TStation.NrAsText(), converts <#> to exchange (usually '<exch1> <exch2>'). Inject LID errors.
   case SimContest of
@@ -376,6 +384,17 @@ begin
         Result := Exch1
       else
         Result := Format('%s %s', [Exch1, Exch2]);  // make this virtual?
+    scSota:
+      begin
+      // Report as it is keyed (599 -> 5NN, 579 -> 57N), followed by this
+      // station's own summit reference twice when it is a summit-to-summit
+      // QSO. Returns directly: the serial-number and '599' rewriting below
+      // would corrupt the digits inside a reference such as G/LD-599.
+      Result := StringReplace(Exch1, '9', 'N', [rfReplaceAll]);
+      if Exch2 <> '' then
+        Result := Result + ' ' + Exch2 + ' ' + Exch2;
+      Exit;
+      end;
     scArrlSS:
       if Call = MyCall then
         Result := Format('%d%s %s %s', [NR, Exch1, MyCall, Exch2])
@@ -385,7 +404,7 @@ begin
       if Call = MyCall then
         Result := Format('%d%.3d', [RST, NR])
       else begin
-        var pRange : PSerialNRSettings := @Ini.SerialNRSettings[Ini.SerialNR];
+        pRange := @Ini.SerialNRSettings[Ini.SerialNR];
         // R1 is a random number assigned when this station was created.
         // It provides a consistent result since this function is called
         // multiple times.
@@ -495,5 +514,8 @@ begin
     Result:= Format('%3d', [WpmS]);
 end;
 
-end.
+initialization
+  ExchTypesUndef.Exch1 := TExchange1Type(-1);
+  ExchTypesUndef.Exch2 := TExchange2Type(-1);
 
+end.

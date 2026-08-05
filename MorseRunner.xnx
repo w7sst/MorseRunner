@@ -1,0 +1,55 @@
+[System]
+BufSize=3
+ShowCallsignInfo=1
+
+[Contest]
+SimContest=12
+DefaultRunMode=1
+Duration=10
+HiScore=0
+CompetitionDuration=60
+
+[Station]
+CqWpxExchange=5NN #
+CwtExchange=DAVID 123
+ArrlFdExchange=3A OR
+NAQPExchange=ALEX ON
+HSTExchange=5NN #
+CQWWExchange=5NN 3
+ArrlDxExchange=5NN ON
+SstExchange=BRUCE MA
+AllJaExchange=5NN 10H
+AcagExchange=5NN 1002H
+IaruHfExchange=5NN 6
+SSCWExchange=A 72 OR
+ArrlClass=3A
+ArrlSection=ON
+Call=PE1EEC/P
+Pitch=3
+BandWidth=9
+Wpm=20
+Qsk=0
+CWMaxRxSpeed=10
+CWMinRxSpeed=10
+SerialNR=0
+SerialNrCustomRange=01-99
+SelfMonVolume=0
+SaveWav=0
+SotaExchange=PA/PA-003
+
+[Band]
+Activity=3
+Qrn=1
+Qrm=0
+Qsb=1
+Flutter=1
+Lids=1
+
+[Settings]
+FarnsworthCharacterRate=25
+WpmStepRate=2
+RitStepIncr=50
+ShowCheckSection=50
+ShowExchangeSummary=1
+StationIdRate=3
+SingleCallStartDelay=2000

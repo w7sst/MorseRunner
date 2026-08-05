@@ -94,7 +94,7 @@ type
 implementation
 
 uses
-  System.Classes;
+  Classes;
 
 constructor TLexer.TTokenRule.init(AType: Integer; ARegEx: TPerlRegEx);
 begin

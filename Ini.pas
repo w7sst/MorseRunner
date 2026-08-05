@@ -27,7 +27,7 @@ const
 type
   // Adding a contest: Append new TSimContest enum value for each contest.
   TSimContest = (scWpx, scCwt, scFieldDay, scNaQp, scHst, scCQWW, scArrlDx,
-                 scSst, scAllJa, scAcag, scIaruHf, scArrlSS);
+                 scSst, scAllJa, scAcag, scIaruHf, scArrlSS, scSota);
   TRunMode = (rmStop, rmPileup, rmSingle, rmWpx, rmHst);
 
   // Serial NR types
@@ -70,13 +70,19 @@ type
 
   PContestDefinition = ^TContestDefinition;
 
-  TErrMessageCallback = reference to procedure(const aMsg : string);
+  //a plain procedure type rather than an anonymous one: FPC 3.2 has no
+  //'reference to', and no call site captures anything from its scope
+  TErrMessageCallback = procedure(const aMsg : string);
+
+var
+  //Sentinel "not set" values. Assigned in the initialization section rather
+  //than declared as initialized constants because casting -1 to an enum is
+  //not a valid constant expression under FPC.
+  UndefSimContest : TSimContest;
+  UndefExchType1 : TExchange1Type;
+  UndefExchType2 : TExchange2Type;
 
 const
-  UndefSimContest : TSimContest = TSimContest(-1);
-  UndefExchType1 : TExchange1Type = TExchange1Type(-1);
-  UndefExchType2 : TExchange2Type = TExchange2Type(-1);
-
   SerialNrMidContestDef : string = '50-500';
   SerialNrEndContestDef : string = '500-5000';
   SerialNrCustomRangeDef : string = '01-99';
@@ -210,13 +216,27 @@ const
      ExchFieldEditable: True;
      ExchDefault: 'A 72 OR';
      Msg: '''[#|123] <precedence> <check> <section>'' (e.g. A 72 OR)';
-     T:scArrlSS)
+     T:scArrlSS),
      // Entered Exchange: # <precedence> * <check> <section>
      // where precedence={Q,A,B,U,M,S}, check='year licenced', ARRL/RAC section.
      // Sent Exchange: # A W7SST 72 OR
      // Fields: NR:numeric, Prec:string, Check:numeric, Section:string
      // N1MM default ordering w/ call history: 72 OR. I type 123A
      // N1MM automatic rendering: 123A <call> 72 OR
+
+    (Name: 'SOTA Activation';
+     Key: 'Sota';
+     ExchType1: etRST;
+     ExchType2: etSotaRef;
+     ExchCaptions: ('RST', 'Ref');
+     ExchFieldEditable: True;
+     ExchDefault: 'G/LD-001';
+     Msg: 'your own summit reference (e.g. G/LD-001)';
+     T:scSota)
+     // Not a contest: a summit activation. The Exchange box holds only my own
+     // summit reference -- the report I send is generated per caller from
+     // their signal strength, not typed. Received exchange is their report
+     // plus, for a summit-to-summit QSO, their reference (empty otherwise).
   );
 
 var
@@ -326,6 +346,7 @@ var
   C: PContestDefinition;
   SC: TSimContest;
   KeyName: String;
+  IniFile: TCustomIniFile;
 
   procedure ReadSerialNRSetting(
     IniFile: TCustomIniFile;
@@ -334,8 +355,9 @@ var
   var
     Err : string;
     ValueStr : string;
+    pRange : PSerialNRSettings;
   begin
-    var pRange : PSerialNRSettings := @Ini.SerialNRSettings[snt];
+    pRange := @Ini.SerialNRSettings[snt];
     ValueStr := IniFile.ReadString(SEC_STN, pRange.Key, DefaultVal);
     if not pRange.ParseSerialNR(ValueStr, Err) then
       begin
@@ -350,7 +372,7 @@ var
   end;
 
 begin
-  var IniFile: TCustomIniFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
+  IniFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
   with IniFile do
     try
       // initial Contest pick will be CQ WPX (original 1.68 contest).
@@ -654,5 +676,9 @@ begin
 end;
 
 
-end.
+initialization
+  UndefSimContest := TSimContest(-1);
+  UndefExchType1 := TExchange1Type(-1);
+  UndefExchType2 := TExchange2Type(-1);
 
+end.

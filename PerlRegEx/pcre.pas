@@ -42,10 +42,30 @@ interface
 *       Perl-Compatible Regular Expressions      *
 *************************************************)
 
+// Delphi 13 (compiler version 37) rejects $WEAKPACKAGEUNIT in a unit with
+// global data (E2203); the directive only matters when the unit is built into
+// a package, which MorseRunner never does.
+{$IFDEF FPC}
 {$WEAKPACKAGEUNIT ON}
+{$ELSE}
+  {$IF CompilerVersion < 37}
+{$WEAKPACKAGEUNIT ON}
+  {$IFEND}
+{$ENDIF}
 
 // Define PCRE_STATICLINK to link the OBJ files with PCRE 7.9.
+// The OBJ files are Delphi/Win32 only; on other platforms bind to the system
+// shared library instead (see libpcremodulename below).
+{$IFDEF MSWINDOWS}
 {$DEFINE PCRE_STATICLINK}
+{$ELSE}
+// Resolve the entry points with dlsym at run time. FPC does not accept the
+// abbreviated 'function foo; external lib name ...;' form that Delphi uses to
+// attach an external body to an interface declaration, so the function-pointer
+// route is the one that works here. LoadPCRE is called from the initialization
+// section below.
+{$DEFINE PCRE_LINKONREQUEST}
+{$ENDIF}
 
 // Define PCRE_LINKDLL to use pcrelib.dll
 {.$DEFINE PCRE_LINKDLL}
@@ -566,6 +586,10 @@ var
   pcre_version: pcre_version_func = nil;
   {$EXTERNALSYM pcre_version}
 
+// pcre_free is a pointer exported by the library rather than a function, so
+// blocks are released through the free callback instead.
+procedure pcre_dispose(pattern, hints, chartable: Pointer);
+
 {$ENDIF ~PCRE_LINKONREQUEST}
 
 function IsPCRELoaded: Boolean;
@@ -737,7 +761,9 @@ const
   libpcremodulename = 'pcrelib.dll';
   {$ENDIF MSWINDOWS}
   {$IFDEF UNIX}
-  libpcremodulename = 'libpcre.so.0';
+  //current distributions ship PCRE1 with this soname (Fedora: the 'pcre'
+  //package); ancient ones used libpcre.so.0
+  libpcremodulename = 'libpcre.so.1';
   {$ENDIF UNIX}
   PCRECompileExportName = 'pcre_compile';
   PCRECompile2ExportName = 'pcre_compile2';
@@ -1117,6 +1143,20 @@ begin
 end;
 {$ENDIF PCRE_STATICLINK}
 
+{$IFDEF PCRE_LINKONREQUEST}
+procedure pcre_dispose(pattern, hints, chartable: Pointer);
+var
+  FreeBlock: pcre_free_callback;
+begin
+  FreeBlock := GetPCREFreeCallback;
+  if not Assigned(FreeBlock) then Exit;
+
+  if pattern <> nil then FreeBlock(pattern);
+  if hints <> nil then FreeBlock(hints);
+  if chartable <> nil then FreeBlock(chartable);
+end;
+{$ENDIF PCRE_LINKONREQUEST}
+
 {$IFDEF PCRE_LINKDLL}
 function pcre_compile; external libpcremodulename name PCRECompileExportName;
 function pcre_compile2; external libpcremodulename name PCRECompile2ExportName;
@@ -1140,6 +1180,21 @@ function pcre_study; external libpcremodulename name PCREStudyExportName;
 function pcre_version; external libpcremodulename name PCREVersionExportName;
 procedure pcre_dispose; external libpcremodulename name 'pcre_dispose';
 {$ENDIF PCRE_LINKDLL}
+
+{$IFDEF PCRE_LINKONREQUEST}
+initialization
+  //Bind the entry points up front. Reporting the problem here is much clearer
+  //than letting the first regular expression call through a nil pointer.
+  if not LoadPCRE then
+    raise Exception.CreateFmt(
+      'Cannot load %s.'#10 +
+      'Morse Runner needs the PCRE1 runtime library.'#10 +
+      'On Fedora install it with:  sudo dnf install pcre',
+      [libpcremodulename]);
+
+finalization
+  UnloadPCRE;
+{$ENDIF PCRE_LINKONREQUEST}
 
 end.
 
