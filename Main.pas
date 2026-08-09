@@ -332,6 +332,9 @@ type
     procedure SendMsg(AMsg: TStationMessage);
     procedure ProcessEnter;
     procedure EnableCtl(Ctl: TWinControl; AEnable: boolean);
+    procedure WmSysKeyDown(var Msg: TWMKeyDown); message WM_SYSKEYDOWN;
+    procedure WmSysChar(var Msg: TWMChar); message WM_SYSCHAR;
+    procedure WmMenuChar(var Msg: TMessage); message WM_MENUCHAR;
     procedure WmTbDown(var Msg: TMessage); message WM_TBDOWN;
     procedure SetToolbuttonDown(Toolbutton: TToolbutton; ADown: boolean);
     procedure IncRit(dF: integer);
@@ -886,6 +889,52 @@ begin
     VK_INSERT, VK_RETURN:
       Key := 0;
     end;
+end;
+
+
+procedure TMainForm.WmSysKeyDown(var Msg: TWMKeyDown);
+begin
+  case Msg.CharCode of
+    Ord('W'), Ord('w'):
+      begin
+        WipeBoxes;
+        Msg.Result := 0;
+      end;
+
+    VK_RETURN:
+      begin
+        ProcessEnter;
+        Msg.Result := 0;
+      end;
+
+    else
+      inherited;
+  end;
+end;
+
+
+procedure TMainForm.WmSysChar(var Msg: TWMChar);
+begin
+  // Alt+W and enter need to be swallowed so they don't act like menu shortcuts
+  case Msg.CharCode of
+    Ord('W'), Ord('w'), VK_RETURN:
+      Msg.Result := 0;
+    else
+      inherited;
+  end;
+end;
+
+
+procedure TMainForm.WmMenuChar(var Msg: TMessage);
+const
+  MNC_CLOSE = 1 shl 16; // close menu processing without the default beep
+begin
+  case LoWord(Msg.WParam) of
+    Ord('W'), Ord('w'), VK_RETURN:
+      Msg.Result := MNC_CLOSE;
+    else
+      inherited;
+  end;
 end;
 
 
