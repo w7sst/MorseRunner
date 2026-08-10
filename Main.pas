@@ -325,7 +325,7 @@ type
     UserExchangeDirty: boolean; // SetMyExchange is called after exchange edits
     CWSpeedDirty: boolean;      // SetWpm is called after CW Speed edits
     RitLocal: integer;          // tracks incremented RIT Value
-    function EnsureRecordingFolder: Boolean;
+    function EnsureRecordingFolder(ReportError: Boolean = True): Boolean;
     function RecordingFileName: string;
     function CreateContest(AContestId : TSimContest) : TContest;
     procedure ConfigureExchangeFields;
@@ -411,7 +411,7 @@ uses
   IARUHF, ARRLSS,
   MorseKey, FarnsKeyer, CallLst,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
-  Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils,
+  Dialogs, Vcl.FileCtrl, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils,
   DateUtils, ShlObj;
 
 {$R *.DFM}
@@ -435,7 +435,7 @@ begin
 end;
 
 
-function TMainForm.EnsureRecordingFolder: Boolean;
+function TMainForm.EnsureRecordingFolder(ReportError: Boolean): Boolean;
 var
   ProfilePath: array[0..MAX_PATH] of Char;
 begin
@@ -454,7 +454,7 @@ begin
     Result := False;
   end;
 
-  if not Result then
+  if not Result and ReportError then
     Application.MessageBox(
       PChar(Format('Unable to create audio recording folder:'#13'%s',
         [Ini.RecordingFolder])),
@@ -2134,9 +2134,22 @@ begin
 
     if Ini.SaveWav then
     begin
-      if not EnsureRecordingFolder then Exit;
-      AlWavFile1.FileName := RecordingFileName;
-      AlWavFile1.OpenWrite;
+      if not EnsureRecordingFolder then
+        Ini.SaveWav := False
+      else
+      begin
+        AlWavFile1.FileName := RecordingFileName;
+        try
+          AlWavFile1.OpenWrite;
+        except
+          Ini.SaveWav := False;
+          Application.MessageBox(PChar(Format(
+            'Audio recording could not be started in %s.'#13#13 +
+            'The session will start without audio recording. ' +
+            'Try choosing another folder.', [Ini.RecordingFolder])),
+            'Audio Recording Error', MB_OK or MB_ICONERROR);
+        end;
+      end;
     end;
   end;
 
@@ -2672,23 +2685,59 @@ end;
 
 
 procedure TMainForm.ChooseAudioRecordingFolder1Click(Sender: TObject);
-begin
-  if not EnsureRecordingFolder then Exit;
+var
+  SavedFolder, InitialFolder: string;
+  TempFile: array[0..MAX_PATH] of Char;
 
-  with TFileOpenDialog.Create(Self) do
-    try
-      Title := 'Choose Audio Recording Folder';
-      Options := [fdoPickFolders, fdoPathMustExist, fdoForceFileSystem];
-      DefaultFolder := Ini.RecordingFolder;
-      FileName := Ini.RecordingFolder;
-      if Execute then
-      begin
-        Ini.RecordingFolder := FileName;
-        Ini.SaveWav := True;
-      end;
-    finally
-      Free;
+  function SelectRecordingFolder(var Folder: string): Boolean;
+  begin
+    if CheckWin32Version(6) then
+      with TFileOpenDialog.Create(Self) do
+        try
+          Title := 'Choose Audio Recording Folder';
+          Options := [fdoPickFolders, fdoPathMustExist, fdoForceFileSystem];
+          DefaultFolder := Folder;
+          FileName := Folder;
+          Result := Execute;
+          if Result then Folder := FileName;
+        finally
+          Free;
+        end
+    else
+    begin
+      // xp only because we somehow still support this?
+      Result := SelectDirectory('Choose Audio Recording Folder', '', Folder,
+        [sdNewUI, sdNewFolder], Self);
     end;
+  end;
+
+begin
+  SavedFolder := Ini.RecordingFolder;
+  if not EnsureRecordingFolder(False) then
+  begin
+    Ini.RecordingFolder := '';
+    EnsureRecordingFolder(False);
+  end;
+  InitialFolder := Ini.RecordingFolder;
+  if not DirectoryExists(InitialFolder) then
+    InitialFolder := ExtractFileDir(InitialFolder);
+  Ini.RecordingFolder := SavedFolder;
+
+  while SelectRecordingFolder(InitialFolder) do
+  begin
+    if Windows.GetTempFileName(PChar(InitialFolder), 'MRC', 0,
+      PChar(@TempFile[0])) <> 0 then
+    begin
+      Windows.DeleteFile(PChar(@TempFile[0]));
+      Ini.RecordingFolder := InitialFolder;
+      Ini.SaveWav := True;
+      Exit;
+    end;
+    Application.MessageBox(PChar(Format(
+      'Audio recording is not available in %s.'#13#13 +
+      'Try choosing another folder.', [InitialFolder])),
+      'Audio Recording Error', MB_OK or MB_ICONERROR);
+  end;
 end;
 
 
