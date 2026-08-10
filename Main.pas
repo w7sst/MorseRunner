@@ -2682,7 +2682,10 @@ begin
       DefaultFolder := Ini.RecordingFolder;
       FileName := Ini.RecordingFolder;
       if Execute then
+      begin
         Ini.RecordingFolder := FileName;
+        Ini.SaveWav := True;
+      end;
     finally
       Free;
     end;
