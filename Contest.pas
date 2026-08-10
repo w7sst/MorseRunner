@@ -963,7 +963,12 @@ var
   i: integer;
   z: integer;
   Dx : integer;
+  Msg: TStationMessages;
+  Call: string;
+  Active: Boolean;
 begin
+  Msg := [];
+
   // reset Station ID counter after sending a CQ or 3 consecutive QSOs
   if (msgCQ in Me.Msg) or
      ((msgTU in Me.Msg) and (QsoCountSinceStationID >= StationIdRate)) then
@@ -999,9 +1004,24 @@ begin
   if msgHisCall in Tst.Me.Msg then
     Stations.FindBestMatches(Tst.Me.HisCall);
 
+  if Ini.NilInstantRemove and (msgNil in Me.Msg) then
+    begin
+      if Stations.DropCallerForNil(Call, Active) then
+        if Active or (RunMode = rmSingle) then
+          begin
+            MainForm.sbar.Font.Color := clDefault;
+            MainForm.sbar.Caption := 'Skipped ' + Call;
+          end;
+      Msg := Me.Msg;
+      Me.Msg := [msgGarbage];
+    end;
+
   //tell callers that I finished sending
   for i:=Stations.Count-1 downto 0 do
     Stations[i].ProcessEvent(evMeFinished);
+
+  if Msg <> [] then
+    Me.Msg := Msg;
 end;
 
 
@@ -1043,4 +1063,3 @@ end;
 
 
 end.
-

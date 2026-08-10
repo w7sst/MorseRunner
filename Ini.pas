@@ -254,6 +254,7 @@ var
   Qsb: boolean = false;
   Flutter: boolean = false;
   Lids: boolean = false;
+  NilInstantRemove: boolean = true;
   NoActivityCnt: integer=0;
   NoStopActivity: integer=0;
   GetWpmUsesGaussian: boolean = false;
@@ -456,6 +457,7 @@ begin
       StationIdRate := ReadInteger(SEC_SET, 'StationIdRate', StationIdRate);
       SingleCallStartDelay := ReadInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
       SingleCallStartDelay := Max(0, Min(SingleCallStartDelay, 2500));
+      NilInstantRemove := ReadBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
 
       // [Debug]
       DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
@@ -540,6 +542,7 @@ begin
       WriteBool(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
       WriteInteger(SEC_SET, 'StationIdRate', StationIdRate);
       WriteInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
+      WriteBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
 
     finally
       Free;
@@ -655,4 +658,3 @@ end;
 
 
 end.
-

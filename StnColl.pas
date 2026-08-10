@@ -24,6 +24,7 @@ type
     function AddCaller: TStation;
     function AddQrn: TStation;
     function AddQrm: TStation;
+    function DropCallerForNil(out ACall: string; out AActive: Boolean): Boolean;
 
     procedure FindBestMatches(const AEnteredCall: String);
 
@@ -103,6 +104,62 @@ begin
 end;
 
 
+function TStations.DropCallerForNil(out ACall: string; out AActive: Boolean): Boolean;
+var
+  i: Integer;
+  DxStn, Target: TDxStation;
+
+  procedure Pick(ADxStn: TDxStation; AAct: Boolean);
+  begin
+    if (Target = nil) or (ADxStn.Amplitude > Target.Amplitude) then
+    begin
+      Target := ADxStn;
+      AActive := AAct;
+    end;
+  end;
+
+begin
+  Target := nil;
+  ACall := '';
+  AActive := False;
+
+  for i:=Self.Count-1 downto 0 do
+    if Self[i] is TDxStation then
+      begin
+        DxStn := Self[i] as TDxStation;
+        if DxStn.Oper.State in [osNeedNr, osNeedCall, osNeedCallNr, osNeedEnd] then
+          Pick(DxStn, True);
+      end;
+
+  if Target = nil then
+    for i:=Self.Count-1 downto 0 do
+      if Self[i] is TDxStation then
+        begin
+          DxStn := Self[i] as TDxStation;
+          if DxStn.State = stSending then
+            Pick(DxStn, False);
+        end;
+
+  if Target = nil then
+    for i:=Self.Count-1 downto 0 do
+      if Self[i] is TDxStation then
+        begin
+          DxStn := Self[i] as TDxStation;
+          if DxStn.Oper.State in [osNeedQso, osNeedPrevEnd] then
+            Pick(DxStn, False);
+        end;
+
+  Result := Target <> nil;
+  if Result then
+    begin
+      ACall := Target.MyCall;
+      Target.Envelope := nil;
+      Target.Oper.State := osFailed;
+      Target.Free;
+    end;
+end;
+
+
 {
   Called by TContest.OnMeFinishedSending after the user's station finishes
   sending an entered callsign. This method will visit all DxStations looking
@@ -138,4 +195,3 @@ end;
 
 
 end.
-
