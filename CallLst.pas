@@ -57,7 +57,7 @@ var
 begin
   Calls.Clear;
 
-  FileName := ExtractFilePath(ParamStr(0)) + 'Master.dta';
+  FileName := ExtractFilePath(ParamStr(0)) + 'MASTER.DTA';
   if not FileExists(FileName) then Exit;
 
   with TFileStream.Create(FileName, fmOpenRead) do

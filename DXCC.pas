@@ -51,7 +51,7 @@ begin
     tl:= TStringList.Create;
     try
         DXCCList:= TObjectList<TDXCCRec>.Create;
-        slst.LoadFromFile(ParamStr(1) + 'DXCC.LIST');
+        slst.LoadFromFile(ExtractFilePath(ParamStr(0)) + 'DXCC.LIST');
 
         // The search algorithm walks this list in reverse order.
         for i:= 0 to slst.Count-1 do begin

@@ -1,0 +1,73 @@
+program MorseRunner;
+
+{$MODE DELPHI}
+
+uses
+  {$IFDEF UNIX}
+  cthreads,          // required for TThread on Unix; must come first
+  {$ENDIF}
+  Interfaces,        // initializes the LCL widgetset
+  Forms,
+  Main in 'Main.pas' {MainForm},
+  Contest in 'Contest.pas',
+  DualExchContest in 'DualExchContest.pas',
+  RndFunc in 'RndFunc.pas',
+  Ini in 'Ini.pas',
+  Station in 'Station.pas',
+  MorseKey in 'VCL/MorseKey.pas',
+  FarnsKeyer in 'VCL/FarnsKeyer.pas',
+  StnColl in 'StnColl.pas',
+  DxStn in 'DxStn.pas',
+  MyStn in 'MyStn.pas',
+  CallLst in 'CallLst.pas',
+  QrmStn in 'QrmStn.pas',
+  Log in 'Log.pas',
+  Qsb in 'Qsb.pas',
+  DxOper in 'DxOper.pas',
+  QrnStn in 'QrnStn.pas',
+  ScoreDlg in 'ScoreDlg.pas' {ScoreDialog},
+  PermHint in 'VCL/PermHint.pas',
+  Crc32 in 'VCL/Crc32.pas',
+  SndPulse in 'VCL/SndPulse.pas',
+  SndCustm in 'VCL/SndCustm.pas',
+  SndTypes in 'VCL/SndTypes.pas',
+  SndOut in 'VCL/SndOut.pas',
+  MorseTbl in 'VCL/MorseTbl.pas',
+  QuickAvg in 'VCL/QuickAvg.pas',
+  MovAvg in 'VCL/MovAvg.pas',
+  Mixers in 'VCL/Mixers.pas',
+  VolumCtl in 'VCL/VolumCtl.pas',
+  VolmSldr in 'VCL/VolmSldr.pas',
+  WavFile in 'VCL/WavFile.pas',
+  pcre in 'PerlRegEx/pcre.pas',
+  PerlRegEx in 'PerlRegEx/PerlRegEx.pas',
+  DXCC in 'DXCC.pas',
+  ArrlFd in 'ArrlFd.pas',
+  ArrlSS in 'ArrlSS.pas',
+  NaQp in 'NaQp.pas',
+  CWOPS in 'CWOPS.pas',
+  CqWW in 'CqWW.pas',
+  CqWpx in 'CqWpx.pas',
+  ArrlDx in 'ArrlDx.pas',
+  CWSST in 'CWSST.pas',
+  ALLJA in 'ALLJA.pas',
+  ACAG in 'ACAG.pas',
+  IaruHf in 'IaruHf.pas',
+  Sota in 'Sota.pas',
+  ExchFields in 'ExchFields.pas',
+  SerNRGen in 'SerNRGen.pas',
+  Lexer in 'Util/Lexer.pas',
+  ArrlSections in 'Util/ArrlSections.pas',
+  CallsignUtils in 'Util/CallsignUtils.pas',
+  SSExchParser in 'Util/SSExchParser.pas';
+
+begin
+  // Scale the form to the screen DPI. The layout is designed at 96 dpi
+  // (DesignTimePPI in the .lfm); without this the window renders at its
+  // literal pixel size and is tiny on a high-resolution display.
+  Application.Scaled := True;
+  Application.Initialize;
+  Application.Title := 'Morse Runner';
+  Application.CreateForm(TMainForm, MainForm);
+  Application.Run;
+end.

@@ -27,7 +27,7 @@ unit PerlRegEx;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes,
+  {$IFDEF MSWINDOWS}Windows, Messages,{$ENDIF} SysUtils, Classes,
   pcre;
 
 type
@@ -233,6 +233,22 @@ implementation
 
 
          { ********* Unit support routines ********* }
+
+{$IFNDEF MSWINDOWS}
+{ Stands in for the Win32 API of the same name: uppercases Count characters
+  of the buffer in place. }
+procedure CharUpperBuffA(P: PAnsiChar; Count: Integer);
+var
+  I: Integer;
+  Ch: AnsiString;
+begin
+  for I := 0 to Count-1 do
+    begin
+    Ch := AnsiUpperCase(AnsiString(P[I]));
+    if Length(Ch) = 1 then P[I] := Ch[1];
+    end;
+end;
+{$ENDIF}
 
 function FirstCap(const S: string): string;
 begin

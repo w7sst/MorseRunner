@@ -77,9 +77,16 @@ type
                       - [DE] <callsign>
                       - [DE] <callsign> <callsign>
                       -      <callsign> <exch>
+    osNeedMyRef     SOTA only. The DxStation has sent its exchange and asked
+                    'REF?' -- it wants my summit reference before finishing.
+                    It stays here, re-asking, until the user presses F6.
+                    On receiving it the operator answers 'TU 73' and moves to
+                    osNeedEnd, or 'AGN?' and stays put. Deliberately never
+                    reaches osDone directly: only the user's TU may do that,
+                    because TContest.GetAudio logs the QSO off osDone.
   }
   TOperatorState = (osNeedPrevEnd, osNeedQso, osNeedNr, osNeedCall,
-    osNeedCallNr, osNeedEnd, osDone, osFailed);
+    osNeedCallNr, osNeedEnd, osNeedMyRef, osDone, osFailed);
 
   TCallCheckResult = (mcNo, mcYes, mcAlmost);
 
@@ -91,7 +98,11 @@ type
     LastCallCheck: TCallCheckResult;    // IsMyCall()'s last result
     procedure DecPatience;
     procedure MorePatience(AValue: integer = 0);
+    function IsWeakCopier: Boolean;
   public
+    // the TDxStation this operator belongs to; set by TDxStation.CreateStation.
+    // Gives the state machine access to what the station sends (report, ref).
+    Station: TStation;
     Call: string;
     Skills: integer;
     Patience: integer;  // Number of times operator will retry before leaving.
@@ -107,6 +118,11 @@ type
     SendNrQmCnt: Integer;     // Send 'NR?' followed by two 'AGN' messages.
     CorrectedCallAndExchSent: Boolean;  // DxOper has sent callsign correction
                                         // and exchange in one message.
+    // SOTA summit-reference sub-protocol (osNeedMyRef)
+    PendingReply: TStationMessage;      // reply chosen by MsgReceived, consumed
+                                        // by the next GetReply (msgNone = none)
+    RefAsked: Boolean;                  // 'REF?' has been sent at least once,
+                                        // so a repeat is asked as 'AGN?'
     constructor Create(const ACall: string; AState: TOperatorState);
     function IsGhosting: boolean;
     function GetSendDelay: integer;
@@ -137,6 +153,7 @@ uses
 constructor TDxOperator.Create(const ACall: string; AState: TOperatorState);
 begin
   R2 := Random;     // assigned at creation for consistent responses
+  Station := nil;
   Call := ACall;
   Skills := 1 + Random(3); //1..3
   Patience := 0;
@@ -147,6 +164,8 @@ begin
   CallConfidence := 0;
   SendNrQmCnt := 0;
   CorrectedCallAndExchSent := false;
+  PendingReply := msgNone;
+  RefAsked := false;
 end;
 
 
@@ -555,8 +574,26 @@ begin
 end;
 
 
-procedure TDxOperator.MsgReceived(AMsg: TStationMessages);
+{
+  SOTA: a caller that reports me 339 can barely hear me. He mis-copies what I
+  send more often and therefore asks for more repeats. False everywhere else.
+}
+function TDxOperator.IsWeakCopier: Boolean;
 begin
+  Result := (SimContest = scSota) and Assigned(Station) and
+    (Station.RST = 339);
+end;
+
+
+procedure TDxOperator.MsgReceived(AMsg: TStationMessages);
+var
+  CopyGate: Single;   // probability this operator copied what was just sent
+begin
+  // a weak-signal caller (he reported me 339) mis-copies more often
+  if IsWeakCopier then
+    CopyGate := 0.65
+  else
+    CopyGate := 0.9;
 
   //if CQ received, we can call no matter what else was sent
   if msgCQ in AMsg then
@@ -565,7 +602,7 @@ begin
       osNeedPrevEnd: SetState(osNeedQso);
       osNeedQso: DecPatience;
       osNeedNr, osNeedCall, osNeedCallNr: State := osFailed;
-      osNeedEnd: State := osDone;
+      osNeedEnd, osNeedMyRef: State := osDone;
       end;
     Exit;
     end;
@@ -575,7 +612,8 @@ begin
     case State of
       osNeedPrevEnd: SetState(osNeedQso);
       osNeedQso: DecPatience;
-      osNeedNr, osNeedCall, osNeedCallNr, osNeedEnd: State := osFailed;
+      osNeedNr, osNeedCall, osNeedCallNr, osNeedEnd, osNeedMyRef:
+        State := osFailed;
      end;
     Exit;
     end;
@@ -585,7 +623,7 @@ begin
       mcYes:
         if State in [osNeedPrevEnd, osNeedQso] then SetState(osNeedNr)
         else if State = osNeedCallNr then SetState(osNeedNr)
-        else if State in [osNeedNr, osNeedEnd] then MorePatience
+        else if State in [osNeedNr, osNeedEnd, osNeedMyRef] then MorePatience
         else if State = osNeedCall then SetState(osNeedEnd);
 
       mcAlmost:
@@ -593,19 +631,19 @@ begin
         else if State = osNeedCallNr then MorePatience
         else if State = osNeedCall then MorePatience
         else if State = osNeedNr then SetState(osNeedCallNr)
-        else if State = osNeedEnd then SetState(osNeedCall);
+        else if State in [osNeedEnd, osNeedMyRef] then SetState(osNeedCall);
 
       mcNo:
         if State = osNeedQso then State := osNeedPrevEnd
         else if State in [osNeedNr, osNeedCall, osNeedCallNr] then
           State := osNeedPrevEnd
-        else if State = osNeedEnd then State := osDone;
+        else if State in [osNeedEnd, osNeedMyRef] then State := osDone;
      end;
 
   if msgB4 in AMsg then
     case State of
       osNeedPrevEnd, osNeedQso: SetState(osNeedQso);
-      osNeedNr, osNeedEnd: State := osFailed;
+      osNeedNr, osNeedEnd, osNeedMyRef: State := osFailed;
       osNeedCall, osNeedCallNr: ; //same state: correct the call
       end;
 
@@ -613,8 +651,19 @@ begin
     case State of
       osNeedPrevEnd: ;
       osNeedQso: State := osNeedPrevEnd;
-      osNeedNr: if (Random < 0.9) or (RunMode in [rmHst, rmSingle]) then
-          SetState(osNeedEnd)
+      osNeedNr: if (Random < CopyGate) or (RunMode in [rmHst, rmSingle]) then
+          begin
+          // SOTA: a summit-to-summit caller needs the activator's reference
+          // for his own log, so after sending his own exchange he asks for it
+          // -- GetReply answers 'R <#> REF?'. A plain chaser only
+          // occasionally wants it. The QSO can be copied either way.
+          if (SimContest = scSota) and
+             ((Assigned(Station) and (Station.Exch2 <> '')) or
+              (Random < 0.08)) then
+            SetState(osNeedMyRef)
+          else
+            SetState(osNeedEnd);
+          end
         else
           MorePatience;
       osNeedCall: MorePatience;
@@ -622,7 +671,7 @@ begin
           SetState(osNeedCall)
         else
           MorePatience;
-      osNeedEnd: MorePatience;
+      osNeedEnd, osNeedMyRef: MorePatience;
       end;
 
   if msgTU in AMsg then
@@ -638,10 +687,11 @@ begin
       osNeedCallNr: if IsActiveInQso and CorrectedCallAndExchSent
         then State := osDone              // we are done
         else SetState(osNeedQso);         // start over with new QSO
-      osNeedEnd: State := osDone;
+      osNeedEnd, osNeedMyRef: State := osDone;
       end;
 
-  if msgQm in AMsg then
+  // msgRefQm is the user's F8 in SOTA ('REF?'); like '?' it asks for a repeat
+  if (msgQm in AMsg) or (msgRefQm in AMsg) then
   begin
     case State of
       osNeedPrevEnd: if Mainform.Edit1.Text = '' then SetState(osNeedQso);
@@ -649,9 +699,28 @@ begin
       osNeedNr: MorePatience;
       osNeedCall: MorePatience;
       osNeedCallNr: MorePatience;
-      osNeedEnd: MorePatience;
+      osNeedEnd, osNeedMyRef: MorePatience;
     end;
   end;
+
+  // SOTA: the user pressed F6 and sent his own summit reference
+  if msgSotaRef in AMsg then
+    case State of
+      osNeedMyRef:
+        if Random < CopyGate then
+          begin
+          // copied: acknowledge and wait for the user's TU as usual
+          PendingReply := msgTu73;
+          SetState(osNeedEnd);
+          end
+        else
+          begin
+          // not copied: ask again, this time as 'AGN?'
+          PendingReply := msgAgnQm;
+          MorePatience;
+          end;
+      osNeedNr, osNeedCall, osNeedCallNr, osNeedEnd: MorePatience;
+      end;
 
   //msgGarbage is received when Station was sending and missed part/all of the message
   if (not Ini.Lids) and (AMsg = [msgGarbage]) then
@@ -662,6 +731,7 @@ begin
       osNeedCall: MorePatience;   // has Exch, waiting for call correction
       osNeedCallNr: MorePatience; // waiting for call and Exch
       osNeedEnd: ;                // waiting for TU
+      osNeedMyRef: ;              // waiting for my summit reference
       osDone: ;                   // QSO complete; no state change
       osFailed: ;                 // QSO failed; no state change
       else
@@ -683,10 +753,29 @@ begin
   assert(not IsGhosting, 'this should not be called when ghosting');
   if IsGhosting then
     Result := msgNone
+  // a reply chosen while the message was being copied ('TU 73', 'AGN?')
+  else if PendingReply <> msgNone then
+    begin
+    Result := PendingReply;
+    PendingReply := msgNone;
+    end
   else
   case State of
     osNeedPrevEnd, osDone, osFailed: Result := msgNone;
     osNeedQso: Result := msgMyCall;
+
+    // osNeedMyRef - SOTA. Waiting for the user's own summit reference.
+    // The first ask carries the exchange too ('R <#> REF?'), so pressing F8
+    // here re-sends the caller's reference along with the request.
+    osNeedMyRef:
+      if RefAsked and (Random < 0.3) then
+        Result := msgAgnQm
+      else
+        begin
+        RefAsked := True;
+        Result := msgRefQm;
+        end;
+
     osNeedNr:
       if (Patience = (FULL_PATIENCE-1)) or      // on first occurance,
         ((PostInc(SendNrQmCnt) mod 3) = 0) or   // every 3rd subsequent occurance,

@@ -46,7 +46,7 @@ public
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
   function GetCall(id : integer): string; override; // returns station callsign
-  procedure GetExchange(id: integer; out station: TDxStation); override;
+  procedure GetExchange(id: Integer; station: TDxStation); override;
 
   function FindCallRec(out ssrec: TSweepstakesCallRec; const ACall: string): Boolean;
   procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
@@ -97,7 +97,7 @@ begin
   rec := nil;
 
   try
-    slst.LoadFromFile(ParamStr(1) + 'SSCW.TXT');
+    slst.LoadFromFile(ParamStr(1) + 'SSCW.txt');
 
     for i:= 0 to slst.Count-1 do begin
       tl.DelimitedText := slst.Strings[i];
@@ -138,7 +138,7 @@ var
   I: integer;
 begin
   inherited Create;
-  Comparer := TComparer<TSweepstakesCallRec>.Construct(TSweepstakesCallRec.compareCall);
+  Comparer := TComparer<TSweepstakesCallRec>.Construct({$IFDEF FPC}@{$ENDIF}TSweepstakesCallRec.compareCall);
   SweepstakesCallList := TObjectList<TSweepstakesCallRec>.Create(Comparer);
   ExchValidator := TSSExchParser.Create;
   Sections2Idx := TDictionary<string, integer>.Create;
@@ -294,8 +294,10 @@ end;
   - sets Log.CallSent to False if the callsign should be sent.
 }
 procedure TSweepstakes.SetHisCall(const ACall: string);
+var
+  CorrectedCallsign: string;
 begin
-  var CorrectedCallsign: string := ExchValidator.Call;
+  CorrectedCallsign := ExchValidator.Call;
   if CorrectedCallsign <> '' then
     begin
       // resend Callsign if it has changed since last time it was sent
@@ -410,16 +412,18 @@ end;
   Constructs the Exchange values for this station.
   Overriden for complex exchanges.
 }
-procedure TSweepstakes.GetExchange(id : integer; out station : TDxStation);
+procedure TSweepstakes.GetExchange(id: Integer; station: TDxStation);
 const
   PrecedenceTbl: array[0..5] of string = ('A', 'B', 'U', 'Q', 'M', 'S');
+var
+  R: Single;
 begin
   station.NR := GetRandomSerialNR;  // serial number
 
   // Mark, KD0EE, recommends 50% calls are A, 20% B, 20% U, 10% for the rest.
   // Jim, K6OK, reported     37% calls are A, 19% B, 36% U, 10% for the rest.
   // Using the average ...             43% A, 19% B, 28% U, 10% for Q, M and S.
-  var R: Single := Random;
+  R := Random;
   if R < 0.43 then
     station.Prec := PrecedenceTbl[0]
   else if R < 0.62 then

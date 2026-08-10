@@ -3,9 +3,15 @@ unit VolmSldr;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  System.Types,
+  {$IFDEF MSWINDOWS}Windows, Messages,{$ELSE}LCLType, LCLIntf, LMessages,{$ENDIF} SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Types,
   Math, PermHint;
+
+{$IFDEF FPC}
+type
+  //the LCL calls the Win32 message record TLMessage and defines no TMessage
+  TMessage = TLMessage;
+{$ENDIF}
 
 type
   TVolumeSlider = class(TGraphicControl)
@@ -237,6 +243,8 @@ begin
 end;
 
 procedure TVolumeSlider.UpdateHint;
+var
+  V: Single;
 begin
   case FHintStep of
   0:
@@ -248,7 +256,7 @@ begin
       Hint := Format('%.1f dB', [dB]);
   else
     begin
-    var V: Single := FHintStep*round(dB/FHintStep);
+    V := FHintStep*round(dB/FHintStep);
     //-60..+20 dB
     if V >= 0.5 then
       Hint := Format('+%.0f dB', [min(FDbMax, V)])

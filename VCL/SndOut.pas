@@ -5,8 +5,16 @@
 //------------------------------------------------------------------------------
 unit SndOut;
 
+{$IFDEF FPC}
+{$MODE DELPHI}
+{$ENDIF}
+
 interface
 
+{$IFDEF MSWINDOWS}
+//==============================================================================
+//                    Win32 waveOut implementation (Delphi)
+//==============================================================================
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   MMSystem, SndTypes, SndCustm, Math;
@@ -38,6 +46,38 @@ type
     property OnBufAvailable: TNotifyEvent read FOnBufAvailable write FOnBufAvailable;
   end;
 
+{$ELSE}
+//==============================================================================
+//                   PulseAudio implementation (FPC/Lazarus)
+//==============================================================================
+uses
+  SysUtils, Classes, Controls, Forms, Math, SndTypes, SndCustm;
+
+type
+  TAlSoundOut = class(TCustomSoundInOut)
+  private
+    FOnBufAvailable: TNotifyEvent;
+    FCloseWhenDone: boolean;
+  protected
+    procedure BufferDone(ABuf: PWaveBuffer); override;
+    procedure Start; override;
+    procedure Stop; override;
+  public
+    function PutData(Data: TSingleArray): boolean;
+    procedure Purge;
+  published
+    property Enabled;
+    property DeviceID;
+    property SamplesPerSec;
+    property BufsAdded;
+    property BufsDone;
+    property BufCount;
+    property CloseWhenDone: boolean read FCloseWhenDone write FCloseWhenDone default false;
+    property OnBufAvailable: TNotifyEvent read FOnBufAvailable write FOnBufAvailable;
+  end;
+
+{$ENDIF}
+
 procedure Register;
 
 
@@ -49,6 +89,7 @@ begin
   RegisterComponents('Al', [TAlSoundOut]);
 end;
 
+{$IFDEF MSWINDOWS}
 
 { TAlSoundOut }
 
@@ -198,6 +239,96 @@ begin
   Stop; Start;
 end;
 
+{$ELSE}
 
+{ TAlSoundOut }
+
+//------------------------------------------------------------------------------
+//                               start/stop
+//------------------------------------------------------------------------------
+procedure TAlSoundOut.Start;
+var
+  i: integer;
+begin
+  OpenStream;
+
+  //prime the queue: ask the application for one chunk per buffer
+  if Assigned(FOnBufAvailable) then
+    for i:=0 to High(Buffers) do
+      FOnBufAvailable(Self);
+end;
+
+
+procedure TAlSoundOut.Stop;
+begin
+  //the writer thread has already been stopped by DoSetEnabled
+  CloseStream;
+  ResetQueue;
+end;
+
+
+//------------------------------------------------------------------------------
+//                                Buffers
+//------------------------------------------------------------------------------
+function TAlSoundOut.PutData(Data: TSingleArray): boolean;
+var
+  Buf: PWaveBuffer;
+  i: integer;
+begin
+  Result := false;
+  if (not Enabled) or (Length(Buffers) = 0) then Exit;
+
+  FLock.Acquire;
+  try
+    //no free slot: the sound server is still busy with what it has
+    if FCount >= Length(Buffers) then Exit;
+    Buf := @Buffers[FWriteIdx];
+  finally
+    FLock.Release;
+  end;
+
+  //filled outside the lock: this slot is not yet visible to the writer thread
+  //data to buffer  (Single -> SmallInt)
+  Buf.Data := nil;
+  SetLength(Buf.Data, Length(Data));
+  for i:=0 to High(Data) do
+    Buf.Data[i] := SmallInt(Max(-32767, Min(32767, Round(Data[i]))));
+
+  //publish the slot
+  FLock.Acquire;
+  try
+    FWriteIdx := (FWriteIdx + 1) mod Length(Buffers);
+    Inc(FCount);
+  finally
+    FLock.Release;
+  end;
+
+  Inc(FBufsAdded);
+  FDataReady.SetEvent;
+  Result := true;
+end;
+
+
+//------------------------------------------------------------------------------
+//                              events
+//------------------------------------------------------------------------------
+//called on the main thread once the sound server has accepted a chunk
+procedure TAlSoundOut.BufferDone(ABuf: PWaveBuffer);
+begin
+  Inc(FBufsDone);
+
+  if FCloseWhenDone and (FBufsDone = FBufsAdded)
+    then Enabled := false
+    else if Assigned(FOnBufAvailable) then FOnBufAvailable(Self);
+end;
+
+
+procedure TAlSoundOut.Purge;
+begin
+  Enabled := false;
+  Enabled := true;
+end;
+
+{$ENDIF}
 
 end.

@@ -12,13 +12,24 @@ unit Main;
 interface
 
 uses
-  Windows, Messages, Classes, Graphics, Controls, Forms,
+  {$IFDEF MSWINDOWS}
+  Windows, Messages,
+  System.ImageList, Vcl.ToolWin, Vcl.ImgList,
+  {$ELSE}
+  LCLType, LCLIntf, LMessages,
+  {$ENDIF}
+  Classes, Graphics, Controls, Forms,
   Buttons, SndCustm, SndOut, Contest, Ini,
   VolmSldr, VolumCtl, StdCtrls, Station, Menus, ExtCtrls,
   ComCtrls, Spin, SndTypes,
   WavFile,
-  ExchFields,   // for TFieldDefinition
-  System.ImageList, Vcl.ToolWin, Vcl.ImgList;
+  ExchFields;   // for TFieldDefinition
+
+{$IFDEF FPC}
+type
+  //the LCL calls the Win32 message record TLMessage and defines no TMessage
+  TMessage = TLMessage;
+{$ENDIF}
 
 const
   WM_TBDOWN = WM_USER+1;
@@ -69,7 +80,12 @@ type
     Panel5: TPanel;
     Exit1: TMenuItem;
     Panel6: TPanel;
+    {$IFDEF FPC}
+    // the LCL build has no TRichEdit; Main.lfm streams a TMemo here
+    RichEdit1: TMemo;
+    {$ELSE}
     RichEdit1: TRichEdit;
+    {$ENDIF}
     Label12: TLabel;
     Label13: TLabel;
     Label14: TLabel;
@@ -357,6 +373,7 @@ type
     procedure PopupScoreHst;
     procedure Advance;
     procedure SetContest(AContestNum: TSimContest);
+    procedure ReportCannotStart;
     function SetMyExchange(const AExchange: string) : Boolean;
     procedure SetDefaultRunMode(V : Integer);
     procedure SetMySerialNR;
@@ -372,8 +389,12 @@ type
     procedure UpdSerialNRCustomRange(const ARange: string);
     procedure UpdCWMinRxSpeed(minspd: integer);
     procedure UpdCWMaxRxSpeed(Maxspd: integer);
+    {$IFNDEF FPC}
     procedure ClientHTTP1Redirect(Sender: TObject; var dest: string;
       var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
+    {$ELSE}
+    procedure BuildScoreSummaryRows;
+    {$ENDIF}
   end;
 
 function ToStr(const val : TExchange1Type): string; overload;
@@ -386,7 +407,7 @@ const
 
 var
   MainForm: TMainForm;
-  SavedContest: TSimContest = TSimContest(-1);  // used to restore Exch Field sizes
+  SavedContest: TSimContest;  // used to restore Exch Field sizes; see initialization
   SaveEdit1Width: integer = 0;
   SaveEdit2Width: integer = 0;
   SaveEdit3Width: integer = 0;
@@ -402,12 +423,57 @@ implementation
 
 uses
   DXCC, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, CWSST, ALLJA, ACAG,
-  IARUHF, ARRLSS,
+  IARUHF, ARRLSS, SOTA,
   MorseKey, FarnsKeyer, CallLst,
-  SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
-  Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
+  {$IFDEF MSWINDOWS}
+  ShellApi, Idhttp, System.UITypes,
+  {$ELSE}
+  fphttpclient, opensslsockets,
+  {$ENDIF}
+  SysUtils, Crc32, Math, IniFiles,
+  Dialogs, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
+
+{$IFDEF FPC}
+{ Creates the three fixed rows of the score summary list (Pts / Mult / Score),
+  each with a Raw and a Verified sub-item. Delphi loads these from the form
+  resource; the LCL cannot parse that blob, so they are created in code. }
+procedure TMainForm.BuildScoreSummaryRows;
+const
+  RowCaptions: array[0..2] of string = ('Pts', 'Mult', 'Score');
+var
+  I: integer;
+  Item: TListItem;
+begin
+  if ListView1.Items.Count > 0 then Exit;
+
+  ListView1.Items.BeginUpdate;
+  try
+    for I := Low(RowCaptions) to High(RowCaptions) do
+      begin
+      Item := ListView1.Items.Add;
+      Item.Caption := RowCaptions[I];
+      Item.SubItems.Add('');   // Raw
+      Item.SubItems.Add('');   // Verified
+      end;
+  finally
+    ListView1.Items.EndUpdate;
+  end;
+end;
+{$ENDIF}
+
+
+{ reports an .INI parsing error; passed to Ini.FromIni as a callback }
+procedure ShowIniError(const aMsg : string);
+begin
+  Application.MessageBox(PChar(aMsg), 'Error', MB_OK or MB_ICONERROR);
+end;
+
 
 function ToStr(const val : TExchange1Type) : string; overload;
 begin
@@ -427,12 +493,20 @@ begin
   Result := MainForm.RecvExchTypes.Exch1 = etRST;
 end;
 
+
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-{$ifdef DEBUG}
+{$if defined(DEBUG) and not defined(FPC)}
   // detect/report memory leaks while in debug mode
+  // (on FPC the same job is done by the -gh heaptrace switch)
   System.ReportMemoryLeaksOnShutdown := True;
 {$endif}
+{$IFDEF FPC}
+  // The score summary rows come from the binary Items blob in Main.dfm on
+  // Delphi, which the LCL cannot read; build them here instead. Log.UpdateStats
+  // and friends index these three rows directly, so they must always exist.
+  BuildScoreSummaryRows;
+{$ENDIF}
   Randomize;
 
   Panel2.DoubleBuffered := True;
@@ -464,14 +538,7 @@ begin
   VolumeSlider1.Db := 0;            // sets value = 1.0 (0dB)
 
   // Read settings from .INI file
-  FromIni(
-    procedure (const aMsg : string)
-    begin
-      Application.MessageBox(PChar(aMsg),
-        'Error',
-        MB_OK or MB_ICONERROR);
-    end
-  );
+  FromIni(ShowIniError);
 
   // populate and sort SimContestCombo after reading .ini file settings
   SimContestComboRefresh;
@@ -494,7 +561,11 @@ begin
   ToIni;
   gDXCCList.Free;
   Histo.Free;
-  Tst.Free;
+  // FreeAndNil, not Free: Tst is a global that outlives this form, and
+  // AlSoundOut1 is torn down after it. FormClose already disables the
+  // sound output, so nothing should call back in -- this makes that a
+  // nil check rather than a use-after-free if it ever does.
+  FreeAndNil(Tst);
   DestroyKeyer;
 end;
 
@@ -516,6 +587,7 @@ begin
   scAcag:       Result := TACAG.Create;
   scIaruHf:     Result := TIaruHf.Create;
   scArrlSS:     Result := TSweepstakes.Create;
+  scSota:       Result := TSota.Create;
   else
     assert(false);
   end;
@@ -524,7 +596,7 @@ end;
 
 procedure TMainForm.AlSoundOut1BufAvailable(Sender: TObject);
 begin
-  if AlSoundOut1.Enabled then
+  if AlSoundOut1.Enabled and Assigned(Tst) then
     AlSoundOut1.PutData(Tst.GetAudio);
 end;
 
@@ -569,6 +641,14 @@ begin
   // a key or function key (which do not cause a leave-focus event).
   if SpinEdit1.Focused then
     SpinEdit1Exit(SpinEdit1);
+
+  // SOTA has no use for 'QSO B4' or 'NIL', so F6 sends 'REF <my reference>'
+  // and F8 asks the caller for his reference with 'REF?'. F7 keeps its
+  // usual '?'. Remapped here rather than by retagging the buttons and menu
+  // items, which are shared with every other contest.
+  if SimContest = scSota then
+    if AMsg = msgB4 then AMsg := msgSotaRef
+    else if AMsg = msgNil then AMsg := msgRefQm;
 
   if AMsg = msgHisCall then begin
     // retain current callsign, including ''.
@@ -632,10 +712,11 @@ end;
 }
 procedure TMainForm.Edit3KeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
+var
+  ExchSummary, ExchError: string;
 begin
   // some contests have additional processing (e.g. ARRL SS)
   // (exclude function keys so we can use the debugger)
-  var ExchSummary, ExchError: string;
   if (SimContest in [scArrlSS]) and ((Key < VK_F1) or (Key > VK_F12)) then
     begin
       if Tst.OnExchangeEdit(Edit1.Text, Edit2.Text, Edit3.Text,
@@ -739,6 +820,12 @@ begin
         // valid NR/Prec/Call/Check/Section characters
         if not CharInSet(Key, ['0'..'9', 'A'..'Z', 'a'..'z', '/', #32, #8]) then
           Key := #0;
+      end;
+    etSotaRef:
+      begin
+        // valid summit reference characters (e.g. G/LD-001)
+        if not CharInSet(Key, ['0'..'9', 'A'..'Z', 'a'..'z', '/', '-', #8]) then
+          Key := #0;
       end
     else
       assert(false, Format('invalid exchange field 2 type: %s',
@@ -748,6 +835,8 @@ end;
 
 
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: Char);
+var
+  ExchError: string;
 begin
   case Key of
 {
@@ -794,7 +883,6 @@ begin
     '.', '+', '[', ',': //TU & Save
       begin
         // verify callsign using simple length-based check
-        var ExchError: string;
         if not Tst.CheckEnteredCallLength(Edit1.Text, ExchError) then
           begin
             DisplayError(ExchError, clRed);
@@ -952,7 +1040,23 @@ procedure TMainForm.ProcessSpace;
 begin
   MustAdvance := false;
 
-  if Edit2IsRST then
+  if SimContest = scSota then
+    begin
+      { SOTA reports are real and have to be typed, so the RST field is a
+        stop on the way rather than something to skip past:
+        call -> RST (middle digit selected by Edit2Enter) -> Ref -> call }
+      if ActiveControl = Edit1 then
+        begin
+          if Edit2.Text = '' then
+            Edit2.Text := '599';
+          ActiveControl := Edit2;
+        end
+      else if ActiveControl = Edit2 then
+        ActiveControl := Edit3
+      else
+        ActiveControl := Edit1;
+    end
+  else if Edit2IsRST then
     begin
       if ActiveControl = Edit1 then
         begin
@@ -1084,6 +1188,10 @@ begin
     scNaQp:
       // for NAQP, Exch2 can be empty because Non-NA (DX) Stations do not send State.
       R := (Edit3.Text <> '') or (not (Tst as TNcjNaQp).IsCallLocalToContest(Edit1.Text));
+    scSota:
+      // a caller who is not on a summit sends no reference at all, so the
+      // report alone completes the exchange
+      R := (Edit2.Text <> '');
     else
       R := (Edit3.Text <> '');
   end;
@@ -1189,18 +1297,54 @@ begin
     SetMyExchange(Trim(ExchangeEdit.Text));
 end;
 
+{
+  Explain why Run refused to start. The exchange/callsign errors are normally
+  written to the status bar, but that bar is hidden unless 'Show callsign
+  info' is on -- without this the Run button simply appears to do nothing.
+}
+procedure TMainForm.ReportCannotStart;
+var
+  S: string;
+begin
+  S := Log.SBarErrorMsg;
+  if S = '' then
+    S := 'The station callsign or exchange is not valid.';
+  Application.MessageBox(
+    PChar(S + #13#13 + 'Correct it in the Station box and try again.'),
+    'Cannot start', MB_OK or MB_ICONERROR);
+end;
+
+
 procedure TMainForm.SetContest(AContestNum: TSimContest);
 begin
   // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
   if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst,
-    scCQWW, scArrlDx, scSst, scAllJa, scAcag, scIaruHf, scArrlSS]) then
+    scCQWW, scArrlDx, scSst, scAllJa, scAcag, scIaruHf, scArrlSS, scSota]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex :=
         SimContestCombo.Items.IndexOf(ActiveContest.Name);
     Exit;
   end;
+
+  // SOTA repurposes F6 to send my own summit reference and F8 to ask for
+  // the caller's (see SendMsg), so label them accordingly. Every other
+  // contest keeps 'QSO B4' and 'NIL'; F7 is '?' everywhere.
+  if AContestNum = scSota then
+    begin
+    SpeedButton9.Caption := 'F6  REF';
+    QSOB41.Caption := 'Send My Ref';
+    SpeedButton11.Caption := 'F8  REF?';
+    AGN1.Caption := 'Ask For Ref';
+    end
+  else
+    begin
+    SpeedButton9.Caption := 'F6  B4';
+    QSOB41.Caption := 'QSO B4';
+    SpeedButton11.Caption := 'F8  NIL';
+    AGN1.Caption := 'NIL';
+    end;
 
   // clear input fields prior to deleting Contest object.
   WipeBoxes;
@@ -1284,6 +1428,7 @@ function TMainForm.SetMyExchange(const AExchange: string) : Boolean;
 var
   sl: TStringList;
   ExchError: string;
+  ExchangeText: string;
   SentExchTypes : TExchTypes;
 begin
   sl:= TStringList.Create;
@@ -1302,6 +1447,10 @@ begin
         // update the Sent Exchange field value
         ExchangeEdit.Text := AExchange;
         Ini.UserExchangeTbl[SimContest]:= AExchange;
+
+        // stay dirty so that Run re-checks this and refuses out loud rather
+        // than appearing to do nothing
+        UserExchangeDirty := True;
         exit;
       end
     else
@@ -1321,9 +1470,15 @@ begin
     SetMyExch2(SentExchTypes.Exch2, sl[1]);
     assert(Tst.Me.SentExchTypes = SentExchTypes);
 
-    // update the Sent Exchange field value
-    ExchangeEdit.Text := AExchange;
-    Ini.UserExchangeTbl[SimContest]:= AExchange;
+    // Update the Sent Exchange field value. A contest may normalise what
+    // was typed (SOTA rewrites 'PA-PA003' as 'PA/PA-003'), so show the form
+    // that will actually be sent rather than the raw entry.
+    if (SimContest = scSota) and (sl[1] <> '') then
+      ExchangeText := sl[1]
+    else
+      ExchangeText := AExchange;
+    ExchangeEdit.Text := ExchangeText;
+    Ini.UserExchangeTbl[SimContest]:= ExchangeText;
 
     // update application's title bar
     UpdateTitleBar;
@@ -1559,13 +1714,15 @@ end;
 
 procedure TMainForm.SetMyExch2(const AExchType: TExchange2Type;
   const Avalue: string);
+var
+  S : String;
 begin
   assert(RunMode = rmStop);
   // Adding a contest: setup contest-specific exchange field 2
   case AExchType of
     etSerialNr:
       begin
-        var S : String := Avalue.Replace('T', '0', [rfReplaceAll])
+        S := Avalue.Replace('T', '0', [rfReplaceAll])
                                 .Replace('O', '0', [rfReplaceAll])
                                 .Replace('N', '9', [rfReplaceAll]);
         Ini.UserExchange2[SimContest] := Avalue;
@@ -1637,6 +1794,14 @@ begin
             Edit2.Text := '';
           end;
       end;
+    etSotaRef:
+      begin
+        // SOTA - my own summit reference, sent on F6. The report I send is
+        // generated per caller by TSota, not taken from the Exchange box.
+        Ini.UserExchange2[SimContest] := Avalue;
+        Tst.Me.Exch2 := Avalue;
+        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+      end;
     else
       assert(false, Format('Unsupported exchange 2 type: %s.', [ToStr(AExchType)]));
   end;
@@ -1667,6 +1832,8 @@ begin
 
     Label2.Show;
     Edit2.Show;
+    Label3.Show;
+    Edit3.Show;
 
     SaveEdit1Width := 0;
     SaveEdit2Width := 0;
@@ -1681,6 +1848,9 @@ end;
 procedure TMainForm.ResizeRecvFields;
 const
   PAD = 1;
+var
+  Reduce1, L1, L2, Delta: Integer;
+  CharWidth: Single;
 begin
   case SimContest of
     scArrlSS:
@@ -1694,11 +1864,25 @@ begin
         Label2.Hide;
 
         // reduce Edit1 width; shift Exch Field 2 to the left and grow
-        var Reduce1: integer := (SaveEdit1Width * 4) div 9;
+        Reduce1 := (SaveEdit1Width * 4) div 9;
         Label3.Left := Label3.Left - (Label3.Left - Label2.Left) - Reduce1;
         Edit3.Left := Edit2.Left - Reduce1;
         Edit3.Width := Edit3.Width + (SaveEdit3Left - Edit2.Left + Reduce1 + 15);
         Edit1.Width := Edit1.Width - Reduce1;
+      end;
+    scSota:
+      if SaveEdit3Left = 0 then
+      begin
+        // retain current field sizes
+        SaveRecvFieldSizes;
+
+        // a summit reference needs 10 characters; take the room from the
+        // RST field, which only ever holds three
+        Reduce1 := SaveEdit2Width div 2;
+        Edit2.Width := SaveEdit2Width - Reduce1;
+        Label3.Left := Label3.Left - Reduce1;
+        Edit3.Left := Edit3.Left - Reduce1;
+        Edit3.Width := SaveEdit3Width + Reduce1;
       end;
     scAllJa, scAcag:
       if SaveEdit3Left = 0 then
@@ -1707,14 +1891,14 @@ begin
         SaveRecvFieldSizes;
 
         // Update Exch1 and Exch2 field widths using field lengths
-        var L1: Integer := Exchange1Settings[RecvExchTypes.Exch1].L + PAD;
-        var L2: Integer := Exchange2Settings[RecvExchTypes.Exch2].L + PAD;
-        var CharWidth: Single := (SaveEdit2Width + SaveEdit3Width) / (L1 + L2);
+        L1 := Exchange1Settings[RecvExchTypes.Exch1].L + PAD;
+        L2 := Exchange2Settings[RecvExchTypes.Exch2].L + PAD;
+        CharWidth := (SaveEdit2Width + SaveEdit3Width) / (L1 + L2);
         Edit2.Width := Round(CharWidth * L1);
         Edit3.Width := Round(CharWidth * L2);
 
         // Adjust Exch2's left edge
-        var Delta: Integer := SaveEdit2Width - Edit2.Width;
+        Delta := SaveEdit2Width - Edit2.Width;
         Label3.Left := Label3.Left - Delta;
         Edit3.Left := Edit3.Left - Delta;
       end;
@@ -1932,8 +2116,12 @@ procedure TMainForm.Readme1Click(Sender: TObject);
 var
     FileName: string;
 begin
-    FileName := ExtractFilePath(ParamStr(0)) + 'readme.txt';
+    FileName := ExtractFilePath(ParamStr(0)) + 'Readme.txt';
+    {$IFDEF FPC}
+    OpenDocument(FileName);
+    {$ELSE}
     ShellExecute(GetDesktopWindow, 'open', PChar(FileName), '', '', SW_SHOWNORMAL);
+    {$ENDIF}
 end;
 
 
@@ -1994,7 +2182,7 @@ const
     ('', 'Pile-Up', 'Single Calls', 'COMPETITION', 'H S T');
 var
   BCompet, BStop: boolean;
-  //S: string;
+  S: string;
 begin
   if Value = Ini.RunMode then
     Exit;
@@ -2027,17 +2215,17 @@ begin
     }
     if UserCallsignDirty then
        if not SetMyCall(Trim(Edit4.Text)) then
-         Exit;
+         begin ReportCannotStart; Exit; end;
     if UserExchangeDirty then
        if not SetMyExchange(Trim(ExchangeEdit.Text)) then
-         Exit;
+         begin ReportCannotStart; Exit; end;
 
     // if requesting an HST run, verify the correct contest and serial NR
     // mode is selected.
     if (Value = rmHst) and
        ((SimContest <> scHst) or (Ini.SerialNR <> snStartContest)) then
     begin
-      var S : string :=
+      S :=
         'Error: HST Competition mode requires the following settings:'#13 +
         '  1. ''HST (High Speed Test)'' in the Contest dropdown.'#13 +
         '  2. ''Start of Contest'' in the ''Settings | Serial NR'' menu.'#13 +
@@ -2203,7 +2391,11 @@ end;
 procedure TMainForm.SetToolbuttonDown(Toolbutton: TToolbutton;
   ADown: boolean);
 begin
+    {$IFDEF FPC}
+    PostMessage(Handle, WM_TBDOWN, PtrInt(ADown), PtrInt(Toolbutton));
+    {$ELSE}
     Windows.PostMessage(Handle, WM_TBDOWN, Integer(ADown), Integer(Toolbutton));
+    {$ENDIF}
 end;
 
 
@@ -2287,7 +2479,11 @@ end;
 
 procedure OpenWebPage(Url: string);
 begin
+  {$IFDEF FPC}
+  OpenURL(Url);
+  {$ELSE}
   ShellExecute(GetDesktopWindow, 'open', PChar(Url), '', '', SW_SHOWNORMAL);
+  {$ENDIF}
 end;
 
 
@@ -2344,12 +2540,14 @@ begin
     end;
 end;
 
+{$IFNDEF FPC}
 procedure TMainForm.ClientHTTP1Redirect(Sender: TObject; var dest: string;
   var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
 begin
   (Sender as TIdHTTP).Tag:= 1;
   Handled:= true;
 end;
+{$ENDIF}
 
 
 procedure TMainForm.IncRit(dF: integer);
@@ -2396,6 +2594,8 @@ end;
   next exchange field.
 }
 procedure TMainForm.Advance;
+var
+  S: string;
 begin
   if not MustAdvance then
     Exit;
@@ -2414,8 +2614,9 @@ begin
     end
   else
     begin
-      { otherwise advance to next field, skipping RST }
-      if Edit2IsRST or not Edit2.Showing then
+      { otherwise advance to next field, skipping RST -- except in SOTA,
+        where the report is real and has to be typed }
+      if (SimContest <> scSota) and (Edit2IsRST or not Edit2.Showing) then
         ActiveControl := Edit3
       else
         ActiveControl := Edit2;
@@ -2426,7 +2627,7 @@ begin
         (Random < (ShowCheckSection/100)) then
           begin
             // inject a Section error 10% of the time
-            var S: string := (Tst as TSweepstakes).GetCheckSection(Edit1.Text, 0.10);
+            S := (Tst as TSweepstakes).GetCheckSection(Edit1.Text, 0.10);
             if not S.IsEmpty then
               S := S + ' ';
             Edit3.Text := S;
@@ -2464,6 +2665,82 @@ begin
 end;
 
 
+{$IFDEF FPC}
+{ The Delphi build posts the high score with Indy, which is not available under
+  Lazarus; TFPHTTPClient from fcl-web is used instead. The score server signals
+  that it accepted the submission by issuing a redirect, so a redirect handler
+  records that fact -- the same signal the Indy version keys off. }
+type
+  THiScoreRedirectWatcher = class
+  public
+    Redirected: Boolean;
+    procedure OnRedirect(Sender: TObject; const ASrc: String; var ADest: String);
+  end;
+
+procedure THiScoreRedirectWatcher.OnRedirect(Sender: TObject;
+  const ASrc: String; var ADest: String);
+begin
+  Redirected := True;
+end;
+
+
+procedure TMainForm.PostHiScore(const sScore: string);
+var
+  HttpClient: TFPHTTPClient;
+  Watcher: THiScoreRedirectWatcher;
+  ParamList: TStringList;
+  s, sUrl, sp: string;
+  response: TMemoryStream;
+  p: integer;
+begin
+  HttpClient:= TFPHTTPClient.Create(nil);
+  Watcher:= THiScoreRedirectWatcher.Create;
+  response:= TMemoryStream.Create;
+  s:= format(SubmitHiScoreURL, [sScore]);
+  s:= StringReplace(s, ' ', '%20', [rfReplaceAll]);
+  try
+    HttpClient.AllowRedirect:= true;
+    HttpClient.OnRedirect:= Watcher.OnRedirect;
+    HttpClient.AddHeader('Content-Type', 'application/x-www-form-urlencoded');
+    HttpClient.AddHeader('Cache-Control', 'no-cache');
+    HttpClient.AddHeader('User-Agent',
+      'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)');
+    HttpClient.AddHeader('Accept', '*/*');
+
+    if PostMethod<>'POST' then
+    begin // Method = Get
+      s:= StringReplace(s, '[', '%5B', [rfReplaceAll]);
+      s:= StringReplace(s, ']', '%5D', [rfReplaceAll]);
+      HttpClient.Get(s, response);
+    end
+    else
+    begin // Method = Post
+      p:= pos('?', s);
+      sUrl:= copy(s, 0, p-1);
+      sp:= copy(s, p + 1, MaxInt);
+      ParamList:= TStringList.Create;
+      try
+        ParamList.Delimiter:= '&';
+        ParamList.DelimitedText:= sp;
+        // procedure TStrings.SetDelimitedText(const Value: string); has a bug
+        ParamList.Text:= StringReplace(ParamList.Text, '%20', ' ', [rfReplaceAll]);
+        s:= HttpClient.FormPost(sUrl, ParamList);
+      finally
+        ParamList.Free;
+      end;
+    end;
+
+    if Watcher.Redirected then
+      ShowMessage('Sent!')
+    else
+      ShowMessage('Error!');
+  finally
+    response.Free;
+    Watcher.Free;
+    HttpClient.Free;
+  end;
+end;
+{$ELSE}
 procedure TMainForm.PostHiScore(const sScore: string);
 var
   HttpClient: TIdHttp;
@@ -2511,6 +2788,7 @@ begin
     HttpClient.Free;
   end;
 end;
+{$ENDIF}
 
 //------------------------------------------------------------------------------
 //                              accessibility
@@ -2578,7 +2856,11 @@ var
   FileName: string;
 begin
   FileName := ChangeFileExt(ParamStr(0), '.wav');
+  {$IFDEF FPC}
+  OpenDocument(FileName);
+  {$ELSE}
   ShellExecute(GetDesktopWindow, 'open', PChar(FileName), '', '', SW_SHOWNORMAL);
+  {$ENDIF}
 end;
 
 
@@ -2704,13 +2986,15 @@ end;
 
 
 procedure TMainForm.UpdSerialNR(V: integer);
+var
+  snt : TSerialNrTypes;
 begin
   assert(Ord(snStartContest) = SerialNRSet1.Tag);
   assert(Ord(snMidContest) = SerialNRSet2.Tag);
   assert(Ord(snEndContest) = SerialNRSet3.Tag);
   assert(Ord(snCustomRange) = SerialNRCustomRange.Tag);
 
-  var snt : TSerialNrTypes := TSerialNrTypes(V);
+  snt := TSerialNrTypes(V);
 
   // validate custom serial number range; if invalid, set to Start of Contest
   if not Ini.SerialNRSettings[snt].IsValid then
@@ -2758,6 +3042,7 @@ procedure TMainForm.ListView2CustomDrawSubItem(Sender: TCustomListView;
 var
   View: TListView;
   Qso: PQso;
+  ColumnFlag: integer;
 begin
   if Length(QsoList) = 0 then Exit;
 
@@ -2767,7 +3052,7 @@ begin
   if Log.ShowCorrections then
   begin
     // column errors are stored as individual bits in Qso.ColumnErrorFlags
-    const ColumnFlag: integer = (1 shl SubItem);
+    ColumnFlag := (1 shl SubItem);
     if (Qso.Err <> '   ') and ((Qso.ColumnErrorFlags and ColumnFlag) <> 0) then
       View.Canvas.Font.Color := clRed
     else
@@ -2828,5 +3113,7 @@ begin
   Tst.FStopPressed := true;
 end;
 
-end.
+initialization
+  SavedContest := UndefSimContest;
 
+end.

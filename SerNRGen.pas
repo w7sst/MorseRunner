@@ -119,7 +119,7 @@ end;
 implementation
 
 uses
-  Generics.Defaults, System.Math;
+  Generics.Defaults, Math;
 
 constructor TSerialNRGen.Create;
 begin
@@ -148,6 +148,7 @@ procedure TSerialNRGen.AddDistribution(const aRange : TSerialNRSettings;
   const aSampleTbl : array of TSerNRSampleBin);
 var
   I : integer;
+  pItem : PSerNRItem;
 begin
   Sum := 0;
   // note - the following is hardwired. This will replaced in the future
@@ -167,7 +168,7 @@ begin
 
   I := HighIdx - LowIdx + 1;
   SetLength(SerialNRTbl, I);
-  var pItem : PSerNRItem := @SerialNRTbl[0];
+  pItem := @SerialNRTbl[0];
   for I := LowIdx to HighIdx do
     begin
       Inc(Sum, aSampleTbl[I].C);
@@ -192,22 +193,33 @@ begin
 end;
 
 
+{ Orders serial number bins by their accumulated total.
+  A named function rather than an anonymous one: FPC 3.2 has no 'reference to'. }
+function CompareByCummulativeCnt(const Left, Right: TSerialNRGen.TSerialNRItem): Integer;
+begin
+  Result := CompareValue(Left.CummulativeCnt, Right.CummulativeCnt);
+end;
+
+
 function TSerialNRGen.FindBin(count: UInt16) : integer;
 var
   Item : TSerialNRItem;
-  FoundIdx : integer;
+  //the out parameter of the generic binary search is SizeInt under FPC
+  {$IFDEF FPC}FoundIdx : SizeInt;{$ELSE}FoundIdx : integer;{$ENDIF}
 begin
   assert(count <= SerialNRTbl[High(SerialNRTbl)].CummulativeCnt);
   assert(Sum = SerialNRTbl[High(SerialNRTbl)].CummulativeCnt);
   count := Min(count, SerialNRTbl[High(SerialNRTbl)].CummulativeCnt);
   Item.Init(0, 0, count);  // find bin with this accumulated total
+  //Delphi puts the generic parameter on the method (TArray.BinarySearch<T>),
+  //FPC on a separate helper class (TArrayHelper<T>.BinarySearch)
+  {$IFDEF FPC}
+  TArrayHelper<TSerialNRItem>.BinarySearch(SerialNRTbl, Item, FoundIdx,
+    TComparer<TSerialNRItem>.Construct(@CompareByCummulativeCnt));
+  {$ELSE}
   TArray.BinarySearch<TSerialNRItem>(SerialNRTbl, Item, FoundIdx,
-    TComparer<TSerialNRItem>.Construct(
-      function (const Left, Right: TSerialNRItem): Integer
-      begin
-        Result := CompareValue(Left.CummulativeCnt, Right.CummulativeCnt);
-      end
-      ));
+    TComparer<TSerialNRItem>.Construct(CompareByCummulativeCnt));
+  {$ENDIF}
   assert(FoundIdx < Length(SerialNRTbl));
   Result := FoundIdx;
 end;

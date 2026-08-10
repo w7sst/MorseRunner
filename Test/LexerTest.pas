@@ -57,11 +57,12 @@ procedure TestTLexerBase.RunTest(const AValue, ExpectedTokens: string);
 var
   token: TExchToken;
   tokenStr, expected: string;
+  I: integer;
 begin
   try
     sl.DelimitedText := ExpectedTokens;
 
-    var I: integer := 0;
+    I := 0;
     aLexer.Input(AValue);
     try
       while aLexer.NextToken(token) do
@@ -95,8 +96,10 @@ end;
 
 // returns: '<TokenType>(<Value>) at <Pos>' (e.g. 'ttAlpha(ABC) at 3')
 function TestTLexerBase.ToStr(const AToken: TExchToken): string;
+var
+  tokName: string;
 begin
-  var tokName: string := GetEnumName(Info, AToken.TokenType);
+  tokName := GetEnumName(Info, AToken.TokenType);
   Result := format('%s(%s) at %d', [tokName, AToken.Value, AToken.Pos]);
 end;
 

@@ -55,6 +55,7 @@ begin
   MyCall := Tst.GetCall(Operid);
 
   Oper := TDxOperator.Create(MyCall, osNeedPrevEnd);
+  Oper.Station := Self;
   NrWithError := Ini.Lids and (Random < 0.1);
 
   // DX's speed, {WpmS,WpmC}, is set once at creation time
@@ -67,10 +68,13 @@ begin
   // load dynamic exchange field information into this DxStation.
   Tst.GetExchange(Operid, Self);
 
-  if Ini.Lids and (Random < 0.03) then
-    RST := 559 + 10 * Random(4)
-  else
-    RST := 599;
+  // SOTA reports are realistic and already set by TSota.GetExchange above;
+  // everywhere else the report is 599 apart from the occasional lid.
+  if SimContest <> scSota then
+    if Ini.Lids and (Random < 0.03) then
+      RST := 559 + 10 * Random(4)
+    else
+      RST := 599;
 
   Qsb := TQsb.Create;
 
@@ -276,7 +280,8 @@ begin
       etSSCheckSection: begin
         TrueCheck := Self.Chk;    // check (e.g. 72)
         TrueSect := Self.Sect;    // section (e.g. OR)
-      end
+      end;
+      etSotaRef: TrueExch2 := Self.Exch2;  // '' unless summit-to-summit
       else
         assert(false);
     end;

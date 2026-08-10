@@ -8,7 +8,7 @@ unit Contest;
 interface
 
 uses
-  SndTypes, Station, StnColl, MyStn, Ini, Log, System.Classes,
+  SndTypes, Station, StnColl, MyStn, Ini, Log, Classes,
   ExchFields,
   MovAvg, Mixers, VolumCtl, DxStn;
 
@@ -52,7 +52,7 @@ type
     function PickStation : integer; virtual; abstract;
     procedure DropStation(id : integer); virtual; abstract;
     function GetCall(id : integer) : string; virtual; abstract;
-    procedure GetExchange(id : integer; out station : TDxStation); virtual; abstract;
+    procedure GetExchange(id: Integer; station: TDxStation); virtual; abstract;
     function GetRandomSerialNR: Integer; virtual;
     function GetStationInfo(const ACallsign : string) : string; virtual;
     function PickCallOnly : string;
@@ -110,7 +110,7 @@ implementation
 uses
   SysUtils, RndFunc, Math, DxOper,
   PerlRegEx,
-  VCL.Graphics,       // clDefault
+  Graphics,       // clDefault
   Main, CallLst, DXCC;
 
 { TContest }
@@ -485,6 +485,14 @@ begin
     msgQrl2: SendText(AStn, 'QRL?   QRL?');
     msqQsy: SendText(AStn, '<his>  QSY QSY');                // QrmStation only
     msgAgn: SendText(AStn, 'AGN');
+    // SOTA summit-reference sub-protocol (see TSota.SendMsg).
+    // msgSotaRef is only ever sent by the user (F6); the reference is keyed
+    // twice, as on the air. A caller's own doubled reference is rendered in
+    // TStation.NrAsText and is not affected by this template.
+    msgSotaRef: SendText(AStn, 'REF <exch2> <exch2>');
+    msgRefQm: SendText(AStn, 'REF?');
+    msgAgnQm: SendText(AStn, 'AGN?');
+    msgTu73: SendText(AStn, 'TU 73');
   end;
 end;
 
@@ -634,6 +642,8 @@ function TContest.ValidateEnteredExchange(const ACall, AExch1, AExch2: string;
       etJaCity:      Result := Length(text) > 3;
       etNaQpExch2:   Result := Length(text) > 0;
       etNaQpNonNaExch2: Result := Length(text) >= 0;
+      // a reference is only sent by a caller who is himself on a summit
+      etSotaRef:     Result := True;
       else
         assert(false, 'missing case');
     end;
@@ -688,12 +698,17 @@ begin
           Qso.Exch2 := 'DX'
         else
           Qso.Exch2 := AExch2;
+      etSotaRef: Qso.Exch2 := AExch2;
       else
         assert(false, 'missing case');
     end;
 
+  // an empty exchange is normally a copying failure, worth flagging as '?'.
+  // Two field types may legitimately be empty: a non-NA station sends no
+  // location, and a caller not on a summit sends no reference.
   if Qso.Exch1.IsEmpty then Qso.Exch1 := '?';
-  if Qso.Exch2.IsEmpty and (Mainform.RecvExchTypes.Exch2 <> etNaQpNonNaExch2) then
+  if Qso.Exch2.IsEmpty and
+     not (Mainform.RecvExchTypes.Exch2 in [etNaQpNonNaExch2, etSotaRef]) then
     Qso.Exch2 := '?';
 end;
 

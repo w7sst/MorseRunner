@@ -8,7 +8,8 @@ unit PermHint;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Controls, Forms;
+  {$IFDEF MSWINDOWS}Windows,{$ELSE}LCLType, LCLIntf, Types,{$ENDIF}
+  SysUtils, Classes, Graphics, Controls, Forms;
 
 type
   TPermanentHintWindow = class(THintWindow)
@@ -66,6 +67,19 @@ begin
 end;
 
 
+
+{$IFNDEF MSWINDOWS}
+
+{ The Windows version below measures the actual cursor bitmap, which has no
+  equivalent here: X11/Wayland cursor themes are not introspectable through the
+  LCL. Fall back to a fixed drop that clears a normal-sized pointer, which is
+  what the LCL's own hint positioning does. }
+function GetCursorHeightMargin: Integer;
+begin
+  Result := 20;
+end;
+
+{$ELSE}
 
 //copied from Forms.pas
 
@@ -130,6 +144,8 @@ begin
     if IconInfo.hbmMask <> 0 then DeleteObject(IconInfo.hbmMask);
   end;
 end;
+
+{$ENDIF}
 
 
 

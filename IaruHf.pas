@@ -34,7 +34,7 @@ type
     function PickStation(): integer; override;
     procedure DropStation(id : integer); override;
     function GetCall(id:integer): string; override;  // returns station callsign
-    procedure GetExchange(id : integer; out station : TDxStation); override;
+    procedure GetExchange(id: Integer; station: TDxStation); override;
 
     function getExch1(id:integer): string;    // returns default RST value
     function getExch2(id:integer): string;    // returns Society (Headquarters, etc) or ITU Zone (others)
@@ -57,7 +57,7 @@ constructor TIaruHf.Create;
 begin
   inherited Create;
   IaruHfCallList:= TObjectList<TIaruHfCallRec>.Create;
-  Comparer := TComparer<TIaruHfCallRec>.Construct(TIaruHfCallRec.compareCall);
+  Comparer := TComparer<TIaruHfCallRec>.Construct({$IFDEF FPC}@{$ENDIF}TIaruHfCallRec.compareCall);
 end;
 
 
@@ -96,7 +96,15 @@ begin
   tl:= TStringList.Create;
   tl.Delimiter := DelimitChar;
   tl.StrictDelimiter := True;
+  //FPC's TStringList has no (Duplicates, Sorted, CaseSensitive) constructor
+  {$IFDEF FPC}
+  dupList:= TStringList.Create;
+  dupList.Duplicates := dupIgnore;
+  dupList.Sorted := True;
+  dupList.CaseSensitive := False;
+  {$ELSE}
   dupList:= TStringList.Create(dupIgnore, {Sorted} True, {CaseSensitive} False);
+  {$ENDIF}
   CallInx := -1;
   SectInx := -1;
   UserTextInx := -1;
@@ -277,7 +285,7 @@ begin
 end;
 
 
-procedure TIaruHf.GetExchange(id : integer; out station : TDxStation);
+procedure TIaruHf.GetExchange(id: Integer; station: TDxStation);
 begin
   station.Exch1 := getExch1(id);
   station.Exch2 := getExch2(id);

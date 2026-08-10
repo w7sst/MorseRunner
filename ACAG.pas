@@ -7,7 +7,7 @@ unit ACAG;
 interface
 
 uses
-  System.StrUtils,
+  StrUtils,
   Generics.Defaults, Generics.Collections, Contest, DxStn, Log;
 
 type
@@ -33,7 +33,7 @@ type
     function PickStation(): integer; override;
     procedure DropStation(id : integer); override;
     function GetCall(id:integer): string; override;     // returns station callsign
-    procedure GetExchange(id : integer; out station : TDxStation); override;
+    procedure GetExchange(id: Integer; station: TDxStation); override;
 
     function getExch1(id:integer): string;    // returns RST (e.g. 5NN)
     function getExch2(id:integer): string;    // return <city|gun|ku><power> (e.g. 1002H)
@@ -107,7 +107,7 @@ constructor TACAG.Create;
 begin
     inherited Create;
     CallList := TObjectList<TAcagCallRec>.Create;
-    Comparer := TComparer<TAcagCallRec>.Construct(TAcagCallRec.compareCall);
+    Comparer := TComparer<TAcagCallRec>.Construct({$IFDEF FPC}@{$ENDIF}TAcagCallRec.compareCall);
 end;
 
 
@@ -212,7 +212,7 @@ begin
   result := CallList.Items[id].Call;
 end;
 
-procedure TACAG.GetExchange(id : integer; out station : TDxStation);
+procedure TACAG.GetExchange(id: Integer; station: TDxStation);
 begin
   station.Exch1 := getExch1(station.Operid);  // RST
   station.Exch2 := getExch2(station.Operid);  // <city|gun|ku><power>

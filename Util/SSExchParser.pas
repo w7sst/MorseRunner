@@ -4,8 +4,8 @@ interface
 
 uses
   Lexer,
-  System.Generics.Collections,    // TObjectList
-  System.Classes,                 // TStringList
+  Generics.Collections,    // TObjectList
+  Classes,                 // TStringList
   PerlRegEx;      // for regular expression support (TPerlRegEx, TPerlRegExList)
 
 type
@@ -126,7 +126,7 @@ uses
   ArrlSections,   // for ARRL/RAC Sections
   TypInfo,        // for typeInfo
   StrUtils,
-  System.SysUtils;
+  SysUtils;
 
 const
   MyExchRegExpr: string = '^ *(?P<exch1>(?P<nr>[0-9]+|#)? *(?P<prec>[QABUMS])) +'
@@ -193,7 +193,9 @@ begin
   Sections.Capacity := High(SectionsTbl) - Low(SectionsTbl);
   for I := Low(SectionsTbl) to High(SectionsTbl) do
     Sections.Append(SectionsTbl[I]);
-  Sections.Sort;
+  // Sorted (rather than a one-shot Sort) because Find requires it: FPC's
+  // TStringList.Find raises EListError on an unsorted list.
+  Sections.Sorted := True;
 end;
 
 destructor TSSLexer.Destroy;
@@ -279,8 +281,10 @@ end;
 
 
 function TMyExchParser.GroupByName(const name: string): string;
+var
+  Index: Integer;
 begin
-  var Index: Integer := Reg.NamedGroup(UTF8String(name));
+  Index := Reg.NamedGroup(UTF8String(name));
   assert(Index >= 0);
   Result := String(Reg.Groups[Index]);
 end;
@@ -364,6 +368,9 @@ var
   token: TSSExchToken;
   NrIsBound: Boolean;   // 1, 3, or 4-digit <NR> has been entered,
                         // or bound with <Precedence> or implied with <Section>
+  token0: TExchToken;
+  SkipNextToken: Boolean;
+  I: Integer;
 begin
   // optimization - return if user-entered exchange has not changed
   if (ACall = PreviousCall) and
@@ -387,7 +394,6 @@ begin
 
     // Pass 1 -- build tokens array; grab callsign
     begin
-      var token0: TExchToken;
       while Lexer.NextToken(token0) do begin
         case TExchTokenType(token0.TokenType) of
           ttCallsign:
@@ -399,8 +405,7 @@ begin
     end;
 
     // Pass 2 -- process each token
-    var SkipNextToken: Boolean := False;
-    var I: Integer;
+    SkipNextToken := False;
     for I := 0 to Tokens.Count-1 do begin
       if SkipNextToken then begin
         SkipNextToken := False;

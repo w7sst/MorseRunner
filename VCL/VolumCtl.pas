@@ -11,7 +11,7 @@ interface
 {$UNDEF DEBUG}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  {$IFDEF MSWINDOWS}Windows, Messages,{$ENDIF} SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   SndTypes, Math;
 
 type

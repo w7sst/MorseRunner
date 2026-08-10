@@ -8,7 +8,7 @@ unit ScoreDlg;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  {$IFDEF MSWINDOWS}Windows, Messages,{$ENDIF} SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ini;
 
 type
@@ -33,7 +33,11 @@ implementation
 
 uses Main;
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
 
 procedure TScoreDialog.Button1Click(Sender: TObject);
 begin

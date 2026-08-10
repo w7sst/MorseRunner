@@ -33,7 +33,7 @@ type
     procedure DropStation(id : integer); override;
     function GetCall(id : integer): string; override;
     function FindCallRec(out outrec: TCWOPSRec; const ACall: string): Boolean;
-    procedure GetExchange(id : integer; out station : TDxStation); override;
+    procedure GetExchange(id: Integer; station: TDxStation); override;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
     function GetStationInfo(const ACallsign: string) : string; override;
     function ExtractMultiplier(Qso: PQso) : string; override;
@@ -114,7 +114,7 @@ constructor TCWOPS.Create;
 begin
     inherited Create;
     CWOPSList:= TObjectList<TCWOPSRec>.Create;
-    Comparer := TComparer<TCWOPSRec>.Construct(TCWOPSRec.compareCall);
+    Comparer := TComparer<TCWOPSRec>.Construct({$IFDEF FPC}@{$ENDIF}TCWOPSRec.compareCall);
 end;
 
 destructor TCWOPS.Destroy;
@@ -165,7 +165,7 @@ begin
 end;
 
 
-procedure TCWOPS.GetExchange(id : integer; out station : TDxStation);
+procedure TCWOPS.GetExchange(id: Integer; station: TDxStation);
 begin
   station.OpName := CWOPSList.Items[id].Exch1;
   station.Exch1 := CWOPSList.Items[id].Exch1;

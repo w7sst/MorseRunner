@@ -8,7 +8,7 @@ unit Log;
 interface
 
 uses
-  System.UITypes,     // TColor
+  {$IFDEF FPC}Graphics{$ELSE}System.UITypes{$ENDIF},     // TColor
   Classes, ExtCtrls;
 
 procedure SaveQso;
@@ -137,8 +137,8 @@ var
 implementation
 
 uses
-  Windows, SysUtils, RndFunc, Math,
-  Graphics,     // for TColor
+  {$IFDEF MSWINDOWS}Windows,{$ENDIF} SysUtils, RndFunc, Math,
+  {$IFNDEF FPC}Graphics,{$ENDIF}     // for TColor (already in the interface uses under FPC)
   ExchFields,   // for exchange field types
   CallsignUtils,  // for ExtractCallsign, ExtractPrefix
   Controls,
@@ -183,6 +183,7 @@ const
   HST_EXCH_COL    = 'Exch,6,L';
   CQWW_RST_COL    = 'RST,4,L';
   CQ_ZONE_COL     = 'Zone,4,L';
+  SOTA_REF_COL    = 'Ref,10,L';
   SS_CALL_COL     = 'Call,9,L';
   SS_PREC_COL     = 'Pr,2.5,L';
   SS_CHECK_COL    = 'Chk,3.25,C';
@@ -223,15 +224,21 @@ begin
     Inc(Histo[x]);
   end;
 
-  with Self.PaintBoxH, Self.PaintBoxH.Canvas do begin
+  // Only the paint box is listed here; Canvas members are qualified instead.
+  // LCL's TCanvas publishes Width and Height (Delphi's VCL TCanvas does not),
+  // and the last entry of a with-list wins, so listing the canvas as well made
+  // Width/Height resolve to it on FPC. A TPaintBox is a TGraphicControl with no
+  // window of its own, so its canvas is the parent's DC and reports the parent's
+  // size -- the bars were laid out against Panel3, not against the paint box.
+  with Self.PaintBoxH do begin
     w:= Trunc(ClientWidth / 48);
-    Brush.Color := Color;
-    FillRect(RECT(0,0, Width, Height));
+    Canvas.Brush.Color := Color;
+    Canvas.FillRect(RECT(0,0, Width, Height));
     for i:=0 to High(Histo) do begin
-      Brush.Color := clGreen;
+      Canvas.Brush.Color := clGreen;
       x := i * w;
       y := Height - 3 - Histo[i] * 2;
-      FillRect(Rect(x, y, x+w-1, Height-2));
+      Canvas.FillRect(Rect(x, y, x+w-1, Height-2));
     end;
   end;
 end;
@@ -298,8 +305,22 @@ var
   end;
 
 begin
+  //FPC's TStringList has no (QuoteChar, Delimiter) constructor
+  {$IFDEF FPC}
+  tl := TStringList.Create;
+  tl.QuoteChar := '''';
+  tl.Delimiter := ',';
+  {$ELSE}
   tl := TStringList.Create('''',',');
-  FS := TFormatSettings.Create('en-US');  // DecimalPoint = '.'
+  {$ENDIF}
+  // DecimalPoint = '.' -- the column widths below are written with a dot
+  // regardless of the user's locale
+  {$IFDEF FPC}
+  FS := DefaultFormatSettings;
+  FS.DecimalSeparator := '.';
+  {$ELSE}
+  FS := TFormatSettings.Create('en-US');
+  {$ENDIF}
   try
     // retain initial log column widths (used to restore column widths)
     if not ScaleTableInitialized then
@@ -351,9 +372,13 @@ begin
         CorrectionColumnInx := I;
     end;
 
-    // delete unused columns
-    while I < MainForm.ListView2.Columns.Count do
-      MainForm.ListView2.Columns.Delete(I);
+    // delete unused columns.
+    // Counted from the end rather than from the for-loop variable above: the
+    // value of a loop counter after the loop is not defined by the language,
+    // and FPC leaves it at High(ColDefs) where this code assumed High+1 --
+    // which silently deleted the last declared column (Wpm) in every contest.
+    while MainForm.ListView2.Columns.Count > Length(ColDefs) do
+      MainForm.ListView2.Columns.Delete(MainForm.ListView2.Columns.Count-1);
 
     // By default, exchance fields 1 and 2 are displayed in columns 2 and 3
     Log.SetExchColumns(2, 3);
@@ -396,7 +421,13 @@ begin
   end;
   MainForm.ListView2.Items.EndUpdate;
 
+  {$IFDEF FPC}
+  //the LCL has no SB_BOTTOM scroll message; scroll by revealing the last row
+  if MainForm.ListView2.Items.Count > 0 then
+    MainForm.ListView2.Items[MainForm.ListView2.Items.Count-1].MakeVisible(False);
+  {$ELSE}
   MainForm.ListView2.Perform(WM_VSCROLL, SB_BOTTOM, 0);
+  {$ENDIF}
 end;
 
 //Update Callsign info
@@ -507,7 +538,12 @@ begin
   with MainForm.ListView2 do begin
     if CorrectionColumnInx > 0 then
       Items[Items.Count-1].SubItems[CorrectionColumnInx-1] := QsoList[High(QsoList)].Err;
+    {$IFDEF FPC}
+    //TListItem has no Update in the LCL; repaint the control instead
+    Invalidate;
+    {$ELSE}
     Items[Items.Count-1].Update;
+    {$ENDIF}
   end;
 end;
 
@@ -527,7 +563,12 @@ begin
 
   Tst.Stations.Clear;
   MainForm.RichEdit1.Lines.Clear;
+  {$IFDEF FPC}
+  //RichEdit1 is a TMemo in the LCL build, which styles the whole control
+  MainForm.RichEdit1.Font.Name:= 'Consolas';
+  {$ELSE}
   MainForm.RichEdit1.DefAttributes.Name:= 'Consolas';
+  {$ENDIF}
   MainForm.ListView2.Clear;
 
   // Adding a contest: set Score Table titles
@@ -555,6 +596,8 @@ begin
       ScoreTableInit([UTC_COL, CALL_COL, RST_COL, ACAG_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scIaruHf:
       ScoreTableInit([UTC_COL, CALL_COL, RST_COL, IARU_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
+    scSota:
+      ScoreTableInit([UTC_COL, CALL_COL, RST_COL, SOTA_REF_COL, CORRECTIONS_COL, WPM_COL]);
     scWpx:
       ScoreTableInit([UTC_COL, CALL_COL, RST_COL, WPX_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scHst:
@@ -791,6 +834,11 @@ begin
         , Exch2
         , Pfx
         , Err, format('%3s', [TrueWpm]));
+    scSota:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d', [Rst])
+        , Exch2                              // summit reference, or blank
+        , Err, format('%3s', [TrueWpm]));
     scWpx:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
@@ -862,7 +910,7 @@ begin
       // For ARRL SS, exchange 1 tests the raw NR and Prec values
       if TrueNR <> NR then Exch1Error := leNR;
       if TruePrec <> Prec then Exch1ExError := lePrec;
-    end
+    end;
     else
       assert(false, 'missing exchange 1 case');
   end;
@@ -949,7 +997,10 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
     etSSCheckSection: begin
       if TrueCheck <> Check then Exch2Error := leCHK;
       if TrueSect <> Sect then Exch2ExError := leSEC;
-    end
+    end;
+    // SOTA: an empty reference is correct for a caller not on a summit,
+    // so a plain mismatch is the right test in both directions
+    etSotaRef: if TrueExch2 <> Exch2 then Exch2Error := leERR;
     else
       assert(false, 'missing exchange 2 case');
   end;

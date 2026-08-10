@@ -233,8 +233,10 @@ begin
 end;
 
 procedure TestTSSLexer.InitTokenTest;
+var
+  token: TSSExchToken;
 begin
-  var token: TSSExchToken := TSSExchToken.Create;
+  token := TSSExchToken.Create;
   try
     Assert.IsFalse(token.IsValid);
     token.TokenType := ttEOS;
@@ -263,6 +265,8 @@ begin
   badCalls.Delimiter := ',';
   badCalls.StrictDelimiter := True;
   badCalls.DelimitedText := Exceptions;
+  // Find requires a sorted list; FPC raises EListError otherwise.
+  badCalls.Sorted := True;
 
   CallInx := -1;
   SectInx := -1;
@@ -271,7 +275,10 @@ begin
   Section := '';
 
   try
-    slst.LoadFromFile('C:\Users\mikeb\Documents\Code\w7sst\MorseRunnerCE\' + FileName);
+    // Call history files sit next to the executable, which both the Delphi
+    // and the Lazarus test project build into the repository root. This is
+    // the same convention the application itself uses (see DXCC.pas).
+    slst.LoadFromFile(ExtractFilePath(ParamStr(0)) + FileName);
 
     for i:= 0 to slst.Count-1 do begin
       if (slst.Strings[i].StartsWith('#')) then continue;

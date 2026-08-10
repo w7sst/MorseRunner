@@ -47,6 +47,7 @@ uses
   ALLJA in 'ALLJA.pas',
   ACAG in 'ACAG.pas',
   IaruHf in 'IaruHf.pas',
+  Sota in 'Sota.pas',
   ExchFields in 'ExchFields.pas',
   SerNRGen in 'SerNRGen.pas',
   Lexer in 'Util\Lexer.pas',
