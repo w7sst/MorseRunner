@@ -100,6 +100,12 @@ lib/
 *.swp
 
 # Specific folders and files to ignore
+save/
+foo*
+bar*
+Test/Temp/
+Test/Win32/
+Test/Win64/
 VCL/Win32/
 VCL/Win64/
 MorseRunner.obj

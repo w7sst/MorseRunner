@@ -27,8 +27,9 @@ procedure ScoreTableInsert(const ACol1, ACol2, ACol3, ACol4, ACol5, ACol6: strin
 procedure ScoreTableUpdateCheck;
 function FormatScore(const AScore: integer):string;
 procedure UpdateSbar;
+procedure UpdateExchangeSummaryLabel;
 procedure SbarUpdateStationInfo(const ACallsign: string);
-procedure SBarUpdateSummary(const AExchSummary: String);
+procedure SetExchangeSummaryText(const AExchSummary: String);
 procedure SBarUpdateDebugMsg(const AMsgText: string);
 procedure DisplayError(const AExchError: string; const AColor: TColor);
 
@@ -120,7 +121,7 @@ var
   ShowCorrections: boolean;   // show exchange correction column.
   SBarDebugMsg: String;         // sbar debug message
   SBarStationInfo: String;    // sbar station info (UserText from call history file)
-  SBarSummaryMsg: String;     // sbar exchange summary (ARRL SS)
+  ExchangeSummaryText: String;  // exchange summary (ARRL SS)
   SBarErrorMsg: String;       // sbar exchange error
   SBarErrorColor: TColor;     // sbar exchange error color
   Histo: THisto;
@@ -421,14 +422,25 @@ begin
 end;
 
 
-procedure SBarUpdateSummary(const AExchSummary: String);
+// Set ARRL SS dynamic exchange summary field
+// (renders in the caption label above exchange entry fields)
+procedure SetExchangeSummaryText(const AExchSummary: String);
 begin
-  if SBarSummaryMsg = AExchSummary then Exit;
+  if ExchangeSummaryText = AExchSummary then Exit;
 
-  SBarSummaryMsg := AExchSummary;
-  UpdateSbar;
+  ExchangeSummaryText := AExchSummary;
+  UpdateExchangeSummaryLabel;
 end;
 
+
+// Refresh ARRL SS dynamic exchange field summary
+procedure UpdateExchangeSummaryLabel;
+begin
+  if ExchangeSummaryText.IsEmpty or (not Ini.ShowExchangeSummary) then
+    MainForm.Label3.Caption := Exchange2Settings[ActiveContest.ExchType2].C
+  else
+    MainForm.Label3.Caption := ExchangeSummaryText;
+end;
 
 
 procedure SBarUpdateDebugMsg(const AMsgText: string);
@@ -443,24 +455,11 @@ begin
 end;
 
 // Refresh Status Bar
-// [<Exchange Summary> --] [(Error | UserText)] [>> Debug]
+// [(Error | UserText)] [>> Debug stream]
 procedure UpdateSbar;
 var
   S: String;
 begin
-  // optional exchange summary...
-  if Ini.ShowExchangeSummary <> 0 then
-    if SimContest in [scArrlSS] then
-      case Ini.ShowExchangeSummary of
-        1:
-          if SBarSummaryMsg.IsEmpty then
-            Mainform.Label3.Caption := Exchange2Settings[etSSCheckSection].C
-          else
-            Mainform.Label3.Caption := SBarSummaryMsg;
-        2:
-          S := SBarSummaryMsg;
-      end;
-
   // error or UserText...
   if not SBarErrorMsg.IsEmpty then
     begin

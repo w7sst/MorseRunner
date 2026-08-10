@@ -322,7 +322,7 @@ end;
 function TSweepstakes.OnExchangeEdit(const ACall, AExch1, AExch2: string;
   out AExchSummary: string; out AExchError: string) : Boolean;
 begin
-  if Ini.ShowExchangeSummary <> 0 then
+  if Ini.ShowExchangeSummary then
     begin
       // incrementally parse the exchange with each keystroke
       ExchValidator.ValidateEnteredExchange(ACall, AExch1, AExch2, AExchError);

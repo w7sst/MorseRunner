@@ -1520,6 +1520,11 @@ object MainForm: TMainForm
         Caption = 'HST Operator'
         OnClick = Operator1Click
       end
+      object NilInstantRemove1: TMenuItem
+        Caption = 'NIL Instantly Removes Caller'
+        Checked = True
+        OnClick = NilInstantRemove1Click
+      end
       object mnuShowCallsignInfo: TMenuItem
         Caption = 'Show Callsign Info'
         OnClick = mnuShowCallsignInfoClick

@@ -254,11 +254,12 @@ var
   Qsb: boolean = false;
   Flutter: boolean = false;
   Lids: boolean = false;
+  NilInstantRemove: boolean = true;
   NoActivityCnt: integer=0;
   NoStopActivity: integer=0;
   GetWpmUsesGaussian: boolean = false;
   ShowCheckSection: integer=50;
-  ShowExchangeSummary: integer = 1; // 0=Off, 1=Above Field, 2=Status Bar
+  ShowExchangeSummary: boolean = True;  // show dynamic exchange summary (ARRL SS)
 
   Duration: integer = 30;
   RunMode: TRunMode = rmStop;
@@ -454,10 +455,11 @@ begin
       RitStepIncr := ReadInteger(SEC_SET, 'RitStepIncr', RitStepIncr);
       RitStepIncr := Max(-500, Min(500, RitStepIncr));
       ShowCheckSection := ReadInteger(SEC_SET, 'ShowCheckSection', ShowCheckSection);
-      ShowExchangeSummary := ReadInteger(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
+      ShowExchangeSummary := ReadBool(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
       StationIdRate := ReadInteger(SEC_SET, 'StationIdRate', StationIdRate);
       SingleCallStartDelay := ReadInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
       SingleCallStartDelay := Max(0, Min(SingleCallStartDelay, 2500));
+      NilInstantRemove := ReadBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
 
       // [Debug]
       DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
@@ -540,9 +542,10 @@ begin
       WriteInteger(SEC_SET, 'WpmStepRate', WpmStepRate);
       WriteInteger(SEC_SET, 'RitStepIncr', RitStepIncr);
       WriteInteger(SEC_SET, 'ShowCheckSection', ShowCheckSection);
-      WriteInteger(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
+      WriteBool(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
       WriteInteger(SEC_SET, 'StationIdRate', StationIdRate);
       WriteInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
+      WriteBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
 
     finally
       Free;

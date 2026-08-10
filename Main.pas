@@ -177,6 +177,7 @@ type
     QSB1: TMenuItem;
     Flutter1: TMenuItem;
     LIDS1: TMenuItem;
+    NilInstantRemove1: TMenuItem;
     Activity1: TMenuItem;
     N11: TMenuItem;
     N21: TMenuItem;
@@ -293,6 +294,7 @@ type
     procedure SelfMonClick(Sender: TObject);
     procedure Settings1Click(Sender: TObject);
     procedure LIDS1Click(Sender: TObject);
+    procedure NilInstantRemove1Click(Sender: TObject);
     procedure CWMaxRxSpeedClick(Sender: TObject);
     procedure CWMinRxSpeedClick(Sender: TObject);
     procedure NRDigitsClick(Sender: TObject);
@@ -336,6 +338,9 @@ type
     procedure SendMsg(AMsg: TStationMessage);
     procedure ProcessEnter;
     procedure EnableCtl(Ctl: TWinControl; AEnable: boolean);
+    procedure WmSysKeyDown(var Msg: TWMKeyDown); message WM_SYSKEYDOWN;
+    procedure WmSysChar(var Msg: TWMChar); message WM_SYSCHAR;
+    procedure WmMenuChar(var Msg: TMessage); message WM_MENUCHAR;
     procedure WmTbDown(var Msg: TMessage); message WM_TBDOWN;
     procedure SetToolbuttonDown(Toolbutton: TToolbutton; ADown: boolean);
     procedure IncRit(dF: integer);
@@ -716,7 +721,7 @@ begin
       if Tst.OnExchangeEdit(Edit1.Text, Edit2.Text, Edit3.Text,
         ExchSummary, ExchError) then
         begin
-          Log.SBarUpdateSummary(ExchSummary);
+          Log.SetExchangeSummaryText(ExchSummary);
           if not Log.SBarErrorMsg.IsEmpty and ExchError.IsEmpty then
             Log.DisplayError('', clDefault);
         end;
@@ -964,6 +969,52 @@ begin
     VK_INSERT, VK_RETURN:
       Key := 0;
     end;
+end;
+
+
+procedure TMainForm.WmSysKeyDown(var Msg: TWMKeyDown);
+begin
+  case Msg.CharCode of
+    Ord('W'), Ord('w'):
+      begin
+        WipeBoxes;
+        Msg.Result := 0;
+      end;
+
+    VK_RETURN:
+      begin
+        ProcessEnter;
+        Msg.Result := 0;
+      end;
+
+    else
+      inherited;
+  end;
+end;
+
+
+procedure TMainForm.WmSysChar(var Msg: TWMChar);
+begin
+  // Alt+W and enter need to be swallowed so they don't act like menu shortcuts
+  case Msg.CharCode of
+    Ord('W'), Ord('w'), VK_RETURN:
+      Msg.Result := 0;
+    else
+      inherited;
+  end;
+end;
+
+
+procedure TMainForm.WmMenuChar(var Msg: TMessage);
+const
+  MNC_CLOSE = 1 shl 16; // close menu processing without the default beep
+begin
+  case LoWord(Msg.WParam) of
+    Ord('W'), Ord('w'), VK_RETURN:
+      Msg.Result := MNC_CLOSE;
+    else
+      inherited;
+  end;
 end;
 
 
@@ -1900,7 +1951,7 @@ begin
   ActiveControl := Edit1;
 
   if SimContest = scArrlSS then
-    Log.SBarUpdateSummary('');
+    Log.SetExchangeSummaryText('');
 
   if Assigned(Tst) then
     Tst.OnWipeBoxes;
@@ -2652,6 +2703,7 @@ begin
   QSB1.Checked := Ini.Qsb;
   Flutter1.Checked := Ini.Flutter;
   LIDS1.Checked := Ini.Lids;
+  NilInstantRemove1.Checked := Ini.NilInstantRemove;
 end;
 
 
@@ -2799,6 +2851,13 @@ begin
   CheckBox6.Checked := LIDS1.Checked;
 
   ReadCheckboxes;
+end;
+
+
+procedure TMainForm.NilInstantRemove1Click(Sender: TObject);
+begin
+  with Sender as TMenuItem do Checked := not Checked;
+  Ini.NilInstantRemove := NilInstantRemove1.Checked;
 end;
 
 
