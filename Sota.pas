@@ -87,7 +87,7 @@ type
     function PickStation: integer; override;
     procedure DropStation(id : integer); override;
     function GetCall(id : integer): string; override;
-    procedure GetExchange(id : integer; var station : TDxStation); override;
+    procedure GetExchange(id: Integer; station: TDxStation); override;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
     function ValidateMyExchange(const AExchange: string;
       ATokens: TStringList; out AExchError: string): boolean; override;
@@ -527,7 +527,7 @@ begin
 end;
 
 
-procedure TSota.GetExchange(id : integer; var station : TDxStation);
+procedure TSota.GetExchange(id: Integer; station: TDxStation);
 begin
   // The caller's report of me, drawn at random (see WeakFraction above).
   station.RST := MakeRst(Random < WeakFraction);

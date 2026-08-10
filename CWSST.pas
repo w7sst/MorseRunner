@@ -32,7 +32,7 @@ type
     procedure DropStation(id : integer); override;
     function GetCall(id : integer): string; override;
     function FindCallRec(out outrec: TCWSSTRec; const ACall: string): Boolean;
-    procedure GetExchange(id : integer; var station : TDxStation); override;
+    procedure GetExchange(id: Integer; station: TDxStation); override;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
     procedure SendText(const AStn: TStation; const AMsg: string); override;
     function GreetingAsText(const AStn: TStation) : string;
@@ -169,7 +169,7 @@ begin
 end;
 
 
-procedure TCWSST.GetExchange(id : integer; var station : TDxStation);
+procedure TCWSST.GetExchange(id: Integer; station: TDxStation);
 begin
   station.OpName := CWSSTList.Items[id].Exch1;
   station.Exch1 := CWSSTList.Items[id].Exch1;

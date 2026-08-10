@@ -34,7 +34,7 @@ public
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
   function GetCall(id:integer): string; override;     // returns station callsign
-  procedure GetExchange(id : integer; var station : TDxStation); override;
+  procedure GetExchange(id: Integer; station: TDxStation); override;
 
   function getExch1(id:integer): string;    // returns RST (e.g. 5NN)
   function getExch2(id:integer): string;    // returns section info (e.g. 3)
@@ -273,7 +273,7 @@ begin
 end;
 
 
-procedure TCqWw.GetExchange(id : integer; var station : TDxStation);
+procedure TCqWw.GetExchange(id: Integer; station: TDxStation);
 begin
   station.Exch1 := getExch1(station.Operid);  // RST
   station.Exch2 := getExch2(station.Operid);

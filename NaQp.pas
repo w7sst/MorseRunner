@@ -37,7 +37,7 @@ public
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
   function GetCall(id : integer): string; override; // returns station callsign
-  procedure GetExchange(id : integer; var station : TDxStation); override;
+  procedure GetExchange(id: Integer; station: TDxStation); override;
   function ExtractMultiplier(Qso: PQso) : string; override;
   function IsCallLocalToContest(const ACallsign: string) : boolean;
 
@@ -431,7 +431,7 @@ begin
 end;
 
 
-procedure TNcjNaQp.GetExchange(id : integer; var station : TDxStation);
+procedure TNcjNaQp.GetExchange(id: Integer; station: TDxStation);
 begin
   station.Exch1 := getExch1(station.Operid);
   station.OpName := station.Exch1; // TODO - refactor etOpName to use Exch1

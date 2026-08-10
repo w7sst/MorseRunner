@@ -34,7 +34,7 @@ type
     function PickStation(): integer; override;
     procedure DropStation(id : integer); override;
     function GetCall(id:integer): string; override;  // returns station callsign
-    procedure GetExchange(id : integer; var station : TDxStation); override;
+    procedure GetExchange(id: Integer; station: TDxStation); override;
 
     function getExch1(id:integer): string;    // returns default RST value
     function getExch2(id:integer): string;    // returns State/Prov (US/Canada) or Power (DX)
@@ -304,7 +304,7 @@ begin
 end;
 
 
-procedure TArrlDx.GetExchange(id : integer; var station : TDxStation);
+procedure TArrlDx.GetExchange(id: Integer; station: TDxStation);
 begin
   station.Exch1 := getExch1(id);
   station.Exch2 := getExch2(id);

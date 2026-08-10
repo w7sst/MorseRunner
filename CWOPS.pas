@@ -33,7 +33,7 @@ type
     procedure DropStation(id : integer); override;
     function GetCall(id : integer): string; override;
     function FindCallRec(out outrec: TCWOPSRec; const ACall: string): Boolean;
-    procedure GetExchange(id : integer; var station : TDxStation); override;
+    procedure GetExchange(id: Integer; station: TDxStation); override;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
     function GetStationInfo(const ACallsign: string) : string; override;
     function ExtractMultiplier(Qso: PQso) : string; override;
@@ -165,7 +165,7 @@ begin
 end;
 
 
-procedure TCWOPS.GetExchange(id : integer; var station : TDxStation);
+procedure TCWOPS.GetExchange(id: Integer; station: TDxStation);
 begin
   station.OpName := CWOPSList.Items[id].Exch1;
   station.Exch1 := CWOPSList.Items[id].Exch1;
