@@ -519,7 +519,7 @@ end;
 procedure TContest.OnWipeBoxes;
 begin
   Log.NrSent := False;
-  Log.DisplayError('', clDefault);
+  Log.ClearError;
 end;
 
 
@@ -866,7 +866,7 @@ begin
                   in VCL/SndCustm.pas for more details.
 
               // clear any errors/status from last QSO
-              Log.DisplayError('', clDefault);
+              Log.ClearError;
               Log.SBarUpdateSummary('');
 }
             end;

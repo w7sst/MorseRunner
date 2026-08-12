@@ -1074,7 +1074,7 @@ begin
   ExchError := '';
 
   // clear prior error string
-  DisplayError('', clDefault);
+  Log.ClearError;
 
   //current state
   C := CallSent;
@@ -2049,6 +2049,10 @@ begin
         MB_OK or MB_ICONERROR);
       Exit;
     end;
+
+    // clear existing status messages
+    Log.ClearError;
+    Application.ProcessMessages;  // Force UI update
 
     // load call history and other contest-specific setup before starting
     if not Tst.OnContestPrepareToStart(Ini.Call, ExchangeEdit.Text) then

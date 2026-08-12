@@ -31,6 +31,7 @@ procedure UpdateExchangeSummaryLabel;
 procedure SbarUpdateStationInfo(const ACallsign: string);
 procedure SetExchangeSummaryText(const AExchSummary: String);
 procedure SBarUpdateDebugMsg(const AMsgText: string);
+procedure ClearError;
 procedure DisplayError(const AExchError: string; const AColor: TColor = clRed);
 
 {$ifdef DEBUG}
@@ -483,6 +484,12 @@ begin
     Mainform.sbar.Font.Color := SBarErrorColor;
 
   MainForm.sbar.Caption := S;
+end;
+
+
+procedure ClearError;
+begin
+  DisplayError('', clDefault);
 end;
 
 
