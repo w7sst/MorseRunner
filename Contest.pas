@@ -1008,10 +1008,7 @@ begin
     begin
       if Stations.DropCallerForNil(Call, Active) then
         if Active or (RunMode = rmSingle) then
-          begin
-            MainForm.sbar.Font.Color := clDefault;
-            MainForm.sbar.Caption := 'Skipped ' + Call;
-          end;
+          Log.SBarUpdateStatusMsg('Skipped ' + Call);
       Msg := Me.Msg;
       Me.Msg := [msgGarbage];
     end;

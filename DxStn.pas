@@ -132,9 +132,7 @@ begin
         if Oper.State = osFailed then begin
           // during debug, use status bar to show CW stream
           if BDebugCwDecoder or BDebugGhosting then
-            Mainform.sbar.Caption :=
-              (Format('[%s-osFailed], Stn deleted',[MyCall]) + '; ' +
-              Mainform.sbar.Caption).Substring(0, 80);
+            SBarUpdateStatusMsg(Format('[%s-osFailed], Stn deleted',[MyCall]));
           Free;
           Exit;
           end;
@@ -176,9 +174,7 @@ begin
             begin
               // during debug, use status bar to show CW stream
               if BDebugCwDecoder or BDebugGhosting then
-                Mainform.sbar.Caption :=
-                  (Format('[%s-osFailed, Stn deleted]',[MyCall]) + '; ' +
-                  Mainform.sbar.Caption).Substring(0, 80);
+                SBarUpdateStatusMsg(Format('[%s-osFailed], Stn deleted',[MyCall]));
               Free;
               Exit;
             end;

@@ -2184,6 +2184,8 @@ begin
       }
     if AlWavFile1.IsOpen then
       AlWavFile1.Close;
+
+    SBarUpdateStatusMsg('');
   end
   else begin
     AlWavFile1.FileName := ChangeFileExt(ParamStr(0), '.wav');
