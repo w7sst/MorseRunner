@@ -14,7 +14,7 @@
 
 JOIN OUR COMMUNITY
   You are invited to join our community effort.
-  For more information on the Morse Runner Community Edition project,
+  For more information on the Morse Runner Community Edition (MRCE) project,
   please visit https://github.com/w7sst/MorseRunner#readme.
   Feedback can be left in our discussions area.
 
@@ -124,10 +124,11 @@ CONFIGURATION
           that a zero value will disable this feature and is not recommended.
           HST Competition mode ignores this setting and defaults to 50Hz/Step.
 
-    Audio Recording Enabled - You can record yourself under "File" menu
-      "Audio Recording Enabled". When this menu option is checked, MR saves
-      the audio as "MorseRunner.wav" in the same folder. If this file already
-      exists, MR overwrites it.
+    Audio Recording - Under File, "Choose Audio Recording Folder..." selects
+      a persistent folder and enables recording. MRCE defaults to "Morse Runner
+      CE Recordings" in your user folder. "Audio Recording Enabled" switches
+      recording on or off. Each session gets a separate WAV file named with its
+      UTC start time, your call sign and contest, preserving earlier recordings.
 
     Audio buffer size
       You can adjust the audio buffer size by changing the BufSize value in the
@@ -211,7 +212,11 @@ CONFIGURATION
        1. Nothing
           If calling CQ, no one heard you call CQ again.
           If you responded to someone and you got silence, the call sent was incorrect.
-          Send F8 NIL (Not In Log) to have them respond again and/or restart the pile-up.
+          To abandon the QSO, send F8 NIL (Not In Log). By default, "NIL
+          Instantly Removes Caller" under Settings makes MRCE remove one targeted
+          caller immediately. Disable it for more realistic behaviour, which may
+          require several NIL messages and cost QSO time; the default favours
+          training over realism.
        2. Corrected Call
           If you sent a partial call or if you were off a little they may respond with
           "de" (from) and their call or just their call again. Sometimes just the call
