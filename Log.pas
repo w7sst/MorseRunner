@@ -8,7 +8,7 @@ unit Log;
 interface
 
 uses
-  System.UITypes,     // TColor
+  Graphics,           // for TColor
   Classes, ExtCtrls;
 
 procedure SaveQso;
@@ -31,7 +31,7 @@ procedure UpdateExchangeSummaryLabel;
 procedure SbarUpdateStationInfo(const ACallsign: string);
 procedure SetExchangeSummaryText(const AExchSummary: String);
 procedure SBarUpdateDebugMsg(const AMsgText: string);
-procedure DisplayError(const AExchError: string; const AColor: TColor);
+procedure DisplayError(const AExchError: string; const AColor: TColor = clRed);
 
 {$ifdef DEBUG}
 // Debugging API patterned after LazLogger.
@@ -138,7 +138,6 @@ implementation
 
 uses
   Windows, SysUtils, RndFunc, Math,
-  Graphics,     // for TColor
   ExchFields,   // for exchange field types
   CallsignUtils,  // for ExtractCallsign, ExtractPrefix
   Controls,
@@ -693,7 +692,7 @@ begin
     if not Tst.CheckEnteredCallLength(Call, ExchError) then
       begin
         {Beep;}
-        DisplayError(ExchError, clRed);
+        DisplayError(ExchError);
         Exit;
       end;
 

@@ -799,7 +799,7 @@ begin
         var ExchError: string;
         if not Tst.CheckEnteredCallLength(Edit1.Text, ExchError) then
           begin
-            DisplayError(ExchError, clRed);
+            DisplayError(ExchError);
             Exit;
           end;
 
@@ -1036,7 +1036,7 @@ begin
     // verify callsign before calling SaveQSO
     if not Tst.CheckEnteredCallLength(Edit1.Text, ExchError) then
       begin
-        DisplayError(ExchError, clRed);
+        DisplayError(ExchError);
         Exit;
       end;
 
@@ -1106,7 +1106,7 @@ begin
     // validate Exchange before sending TU and logging the QSO
     if not Tst.ValidateEnteredExchange(Edit1.Text, Edit2.Text, Edit3.Text, ExchError) then
       begin
-        DisplayError(ExchError, clRed);
+        DisplayError(ExchError);
         Exit;
       end;
 
@@ -1299,7 +1299,7 @@ begin
     if not Tst.ValidateMyExchange(AExchange, sl, ExchError) then
       begin
         Result := False;
-        DisplayError(ExchError, clRed);
+        DisplayError(ExchError);
 
         // update the Sent Exchange field value
         ExchangeEdit.Text := AExchange;
