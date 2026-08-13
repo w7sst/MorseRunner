@@ -53,7 +53,7 @@ type
     function PickStation : integer; virtual; abstract;
     procedure DropStation(id : integer); virtual; abstract;
     function GetCall(id : integer) : string; virtual; abstract;
-    procedure GetExchange(id : integer; out station : TDxStation); virtual; abstract;
+    procedure GetExchange(id: Integer; station: TDxStation); virtual; abstract;
     function GetRandomSerialNR: Integer; virtual;
     function GetStationInfo(const ACallsign : string) : string; virtual;
     function PickCallOnly : string;

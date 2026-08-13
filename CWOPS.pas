@@ -36,7 +36,7 @@ type
     procedure DropStation(id : integer); override;
     function GetCall(id : integer): string; override;
     function FindCallRec(out outrec: TCWOPSRec; const ACall: string): Boolean;
-    procedure GetExchange(id : integer; out station : TDxStation); override;
+    procedure GetExchange(id : integer; station : TDxStation); override;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
     function GetStationInfo(const ACallsign: string) : string; override;
     function ExtractMultiplier(Qso: PQso) : string; override;
@@ -48,7 +48,8 @@ type
 implementation
 
 uses
-    SysUtils, DXCC;
+  AppPaths,
+  SysUtils, DXCC;
 
 function TCWOPS.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
@@ -74,7 +75,7 @@ begin
     try
         CWOPSList.Clear;
 
-        slst.LoadFromFile(ParamStr(1) + 'CWOPS.LIST');
+        slst.LoadFromFile(TAppPaths.ContestDataFile('CWOPS.LIST'));
 
         for i:= 0 to slst.Count-1 do begin
             if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
@@ -174,7 +175,7 @@ begin
 end;
 
 
-procedure TCWOPS.GetExchange(id : integer; out station : TDxStation);
+procedure TCWOPS.GetExchange(id : integer; station : TDxStation);
 begin
   station.OpName := CWOPSList.Items[id].Exch1;
   station.Exch1 := CWOPSList.Items[id].Exch1;

@@ -107,6 +107,17 @@
         <DCCReference Include="MySSExchTest.pas"/>
         <DCCReference Include="SSExchParserTest.pas"/>
         <DCCReference Include="DxccListTest.pas"/>
+        <DCCReference Include="..\Src\Core\AppPaths.pas"/>
+        <DCCReference Include="..\Src\Domain\Contests\ArrlDx.Types.pas"/>
+        <DCCReference Include="..\Src\Persistence\ContestFileFormat.pas"/>
+        <DCCReference Include="..\Src\Persistence\ContestFileReader.pas"/>
+        <DCCReference Include="..\Src\Persistence\Contests\ArrlDx.Reader.pas"/>
+        <DCCReference Include="Core\Test.AppPaths.pas"/>
+        <DCCReference Include="Persistence\Test.ContestFileFormat.pas"/>
+        <DCCReference Include="Persistence\Test.ContestFileReader.pas"/>
+        <DCCReference Include="Persistence\Test.ContestReader.Base.pas"/>
+        <DCCReference Include="Persistence\Test.ContestReader.Contracts.pas"/>
+        <DCCReference Include="Persistence\Contests\Test.ArrlDx.Reader.pas"/>
         <DCCReference Include="DxOperTest.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
@@ -155,13 +166,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\UnitTests.exe" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>UnitTests.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="Win32\Release\UnitTests.exe" Configuration="Release" Class="ProjectOutput">
+                <DeployFile LocalName="..\UnitTests.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>UnitTests.exe</RemoteName>
                         <Overwrite>true</Overwrite>

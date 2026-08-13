@@ -30,6 +30,7 @@ type
 implementation
 
 uses
+  AppPaths,
   SysUtils, Ini;
 
 function CompareCalls(Item1, Item2: Pointer): Integer;
@@ -58,7 +59,7 @@ var
 begin
   Calls.Clear;
 
-  FileName := ExtractFilePath(ParamStr(0)) + 'Master.dta';
+  FileName := TAppPaths.ContestDataFile('Master.dta');
   if not FileExists(FileName) then Exit;
 
   with TFileStream.Create(FileName, fmOpenRead) do

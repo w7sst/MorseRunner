@@ -37,7 +37,7 @@ type
     function PickStation(): integer; override;
     procedure DropStation(id : integer); override;
     function GetCall(id:integer): string; override;  // returns station callsign
-    procedure GetExchange(id : integer; out station : TDxStation); override;
+    procedure GetExchange(id : integer; station : TDxStation); override;
 
     function getExch1(id:integer): string;    // returns default RST value
     function getExch2(id:integer): string;    // returns Society (Headquarters, etc) or ITU Zone (others)
@@ -53,6 +53,7 @@ implementation
 
 uses
   SysUtils, PerlRegEx, DXCC, CallLst,
+  AppPaths,
   Ini, Main;
 
 
@@ -108,7 +109,7 @@ begin
   try
     IaruHfCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'IARU_HF.txt');
+    slst.LoadFromFile(TAppPaths.ContestDataFile('IARU_HF.txt'));
 
     for i:= 0 to slst.Count-1 do begin
       tl.DelimitedText := slst.Strings[i];
@@ -286,7 +287,7 @@ begin
 end;
 
 
-procedure TIaruHf.GetExchange(id : integer; out station : TDxStation);
+procedure TIaruHf.GetExchange(id : integer; station : TDxStation);
 begin
   station.Exch1 := getExch1(id);
   station.Exch2 := getExch2(id);

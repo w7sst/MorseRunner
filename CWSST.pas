@@ -35,7 +35,7 @@ type
     procedure DropStation(id : integer); override;
     function GetCall(id : integer): string; override;
     function FindCallRec(out outrec: TCWSSTRec; const ACall: string): Boolean;
-    procedure GetExchange(id : integer; out station : TDxStation); override;
+    procedure GetExchange(id : integer; station : TDxStation); override;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
     procedure SendText(const AStn: TStation; const AMsg: string); override;
     function GreetingAsText(const AStn: TStation) : string;
@@ -50,6 +50,7 @@ implementation
 
 uses
     Math,
+    AppPaths,
     SysUtils, StrUtils, DXCC;
 
 function TCWSST.LoadCallHistory(const AUserCallsign : string) : boolean;
@@ -76,7 +77,7 @@ begin
     try
         CWSSTList.Clear;
 
-        slst.LoadFromFile(ParamStr(1) + 'K1USNSST.txt');
+        slst.LoadFromFile(TAppPaths.ContestDataFile('K1USNSST.txt'));
         slst.Sort;
 
         for i:= 0 to slst.Count-1 do begin
@@ -177,7 +178,7 @@ begin
 end;
 
 
-procedure TCWSST.GetExchange(id : integer; out station : TDxStation);
+procedure TCWSST.GetExchange(id : integer; station : TDxStation);
 begin
   station.OpName := CWSSTList.Items[id].Exch1;
   station.Exch1 := CWSSTList.Items[id].Exch1;

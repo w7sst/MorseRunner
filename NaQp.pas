@@ -40,7 +40,7 @@ public
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
   function GetCall(id : integer): string; override; // returns station callsign
-  procedure GetExchange(id : integer; out station : TDxStation); override;
+  procedure GetExchange(id : integer; station : TDxStation); override;
   function ExtractMultiplier(Qso: PQso) : string; override;
   function IsCallLocalToContest(const ACallsign: string) : boolean;
 
@@ -59,6 +59,7 @@ implementation
 uses
   SysUtils, Classes, Contnrs, PerlRegEx,
   ExchFields,
+  AppPaths,
   Ini, DXCC, Contest;
 
 function TNcjNaQp.LoadCallHistory(const AUserCallsign : string) : boolean;
@@ -95,7 +96,7 @@ begin
   try
     NaQpCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'NAQPCW.TXT');
+    slst.LoadFromFile(TAppPaths.ContestDataFile('NAQPCW.TXT'));
 
     for i:= 0 to slst.Count-1 do begin
       if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
@@ -436,7 +437,7 @@ begin
 end;
 
 
-procedure TNcjNaQp.GetExchange(id : integer; out station : TDxStation);
+procedure TNcjNaQp.GetExchange(id : integer; station : TDxStation);
 begin
   station.Exch1 := getExch1(station.Operid);
   station.OpName := station.Exch1; // TODO - refactor etOpName to use Exch1

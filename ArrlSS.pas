@@ -49,7 +49,7 @@ public
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
   function GetCall(id : integer): string; override; // returns station callsign
-  procedure GetExchange(id: integer; out station: TDxStation); override;
+  procedure GetExchange(id: integer; station: TDxStation); override;
 
   function FindCallRec(out ssrec: TSweepstakesCallRec; const ACall: string): Boolean;
   procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); override;
@@ -76,6 +76,7 @@ uses
   PerlRegEx,      // for regular expression support
   Ini,            // for ActiveContest
   ArrlSections,   // SectionsTbl
+  AppPaths,
   DXCC;
 
 function TSweepstakes.LoadCallHistory(const AUserCallsign : string) : boolean;
@@ -100,7 +101,7 @@ begin
   rec := nil;
 
   try
-    slst.LoadFromFile(ParamStr(1) + 'SSCW.TXT');
+    slst.LoadFromFile(TAppPaths.ContestDataFile('SSCW.TXT'));
 
     for i:= 0 to slst.Count-1 do begin
       tl.DelimitedText := slst.Strings[i];
@@ -419,7 +420,7 @@ end;
   Constructs the Exchange values for this station.
   Overriden for complex exchanges.
 }
-procedure TSweepstakes.GetExchange(id : integer; out station : TDxStation);
+procedure TSweepstakes.GetExchange(id : integer; station : TDxStation);
 const
   PrecedenceTbl: array[0..5] of string = ('A', 'B', 'U', 'Q', 'M', 'S');
 begin
