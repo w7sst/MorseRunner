@@ -223,11 +223,15 @@ end;
   user's home callsign is required when loading some contests
   (don't load if user callsign is empty or is the same as last time).
 
+  If RunMode=rmHST, always reload the CallList. This is done because
+  calls are deleted as they are used.
+
   return whether the call history file is valid. This varies by contest.
 }
 function TContest.IsReloadRequired(const AUserCallsign : string) : boolean;
 begin
-  Result := not (AUserCallsign.IsEmpty or (LastLoadCallsign = AUserCallsign));
+  Result := (Ini.RunMode = rmHST) or
+            not (AUserCallsign.IsEmpty or (LastLoadCallsign = AUserCallsign));
 end;
 
 
