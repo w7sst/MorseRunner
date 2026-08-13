@@ -33,7 +33,7 @@ type
     function PickStation(): integer; override;
     procedure DropStation(id : integer); override;
     function GetCall(id:integer): string; override;     // returns station callsign
-    procedure GetExchange(id : integer; out station : TDxStation); override;
+    procedure GetExchange(id : integer; station : TDxStation); override;
 
     function getExch1(id:integer): string;    // returns RST (e.g. 5NN)
     function getExch2(id:integer): string;    // return <city|gun|ku><power> (e.g. 1002H)
@@ -213,7 +213,7 @@ begin
   result := CallList.Items[id].Call;
 end;
 
-procedure TACAG.GetExchange(id : integer; out station : TDxStation);
+procedure TACAG.GetExchange(id : integer; station : TDxStation);
 begin
   station.Exch1 := getExch1(station.Operid);  // RST
   station.Exch2 := getExch2(station.Operid);  // <city|gun|ku><power>
