@@ -2052,6 +2052,9 @@ begin
 
     // clear existing status messages
     Log.ClearError;
+    Log.SBarUpdateStationInfo('');
+    Log.SBarUpdateStatusMsg('');
+    Log.SBarUpdateDebugMsg('');
     Application.ProcessMessages;  // Force UI update
 
     // load call history and other contest-specific setup before starting
@@ -2181,6 +2184,8 @@ begin
       }
     if AlWavFile1.IsOpen then
       AlWavFile1.Close;
+
+    SBarUpdateStatusMsg('');
   end
   else begin
     AlWavFile1.FileName := ChangeFileExt(ParamStr(0), '.wav');
