@@ -39,6 +39,7 @@ var
 implementation
 
 uses
+    AppPaths,
     SysUtils, Contnrs, CallsignUtils;
 
 procedure TDXCC.LoadDxCCList;
@@ -51,7 +52,7 @@ begin
     tl:= TStringList.Create;
     try
         DXCCList:= TObjectList<TDXCCRec>.Create;
-        slst.LoadFromFile(ParamStr(1) + 'DXCC.LIST');
+        slst.LoadFromFile(TAppPaths.ContestDataFile('DXCC.LIST'));
 
         // The search algorithm walks this list in reverse order.
         for i:= 0 to slst.Count-1 do begin

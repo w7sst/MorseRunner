@@ -51,6 +51,7 @@ implementation
 uses
   SysUtils, DXCC, CallLst,
   ExchFields,
+  AppPaths,
   Ini, Main;
 
 
@@ -118,7 +119,7 @@ begin
   try
     ArrlDxCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'ARRLDXCW_USDX.txt');
+    slst.LoadFromFile(TAppPaths.ContestDataFile('ARRLDXCW_USDX.txt'));
 
     for i:= 0 to slst.Count-1 do begin
       tl.DelimitedText := slst.Strings[i];

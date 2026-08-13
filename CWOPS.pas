@@ -45,7 +45,8 @@ type
 implementation
 
 uses
-    SysUtils, DXCC;
+  AppPaths,
+  SysUtils, DXCC;
 
 function TCWOPS.LoadCallHistory(const AUserCallsign : string) : boolean;
 const
@@ -71,7 +72,7 @@ begin
     try
         CWOPSList.Clear;
 
-        slst.LoadFromFile(ParamStr(1) + 'CWOPS.LIST');
+        slst.LoadFromFile(TAppPaths.ContestDataFile('CWOPS.LIST'));
 
         for i:= 0 to slst.Count-1 do begin
             if (slst.Strings[i].StartsWith('!!Order!!')) then continue;

@@ -107,6 +107,8 @@
         <DCCReference Include="MySSExchTest.pas"/>
         <DCCReference Include="SSExchParserTest.pas"/>
         <DCCReference Include="DxccListTest.pas"/>
+        <DCCReference Include="Core\Test.AppPaths.pas"/>
+        <DCCReference Include="..\Src\Core\AppPaths.pas"/>
         <DCCReference Include="DxOperTest.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

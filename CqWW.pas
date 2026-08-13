@@ -48,6 +48,7 @@ end;
 implementation
 
 uses
+  AppPaths,
   SysUtils, Classes, DXCC;
 
 function TCqWw.LoadCallHistory(const AUserCallsign : string) : boolean;
@@ -73,7 +74,7 @@ begin
   try
     CqWwCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'CQWWCW.TXT');
+    slst.LoadFromFile(TAppPaths.ContestDataFile('CQWWCW.TXT'));
 
     for i:= 0 to slst.Count-1 do begin
       if (slst.Strings[i].StartsWith('!!Order!!')) then continue;

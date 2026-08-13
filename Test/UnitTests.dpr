@@ -27,6 +27,8 @@ uses
   MySSExchTest in 'MySSExchTest.pas',
   SSExchParserTest in 'SSExchParserTest.pas',
   DxccListTest in 'DxccListTest.pas',
+  AppPaths in '..\Src\Core\AppPaths.pas',
+  Test.AppPaths in 'Core\Test.AppPaths.pas',
   DxOperTest in 'DxOperTest.pas';
 
 {$IFNDEF TESTINSIGHT}

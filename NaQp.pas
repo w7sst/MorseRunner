@@ -56,6 +56,7 @@ implementation
 uses
   SysUtils, Classes, Contnrs, PerlRegEx,
   ExchFields,
+  AppPaths,
   Ini, DXCC, Contest;
 
 function TNcjNaQp.LoadCallHistory(const AUserCallsign : string) : boolean;
@@ -92,7 +93,7 @@ begin
   try
     NaQpCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'NAQPCW.TXT');
+    slst.LoadFromFile(TAppPaths.ContestDataFile('NAQPCW.TXT'));
 
     for i:= 0 to slst.Count-1 do begin
       if (slst.Strings[i].StartsWith('!!Order!!')) then continue;

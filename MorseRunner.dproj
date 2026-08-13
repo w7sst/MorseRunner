@@ -171,6 +171,7 @@
         <DCCReference Include="Util\Lexer.pas"/>
         <DCCReference Include="Util\ArrlSections.pas"/>
         <DCCReference Include="Util\CallsignUtils.pas"/>
+        <DCCReference Include="Src\Core\AppPaths.pas"/>
         <DCCReference Include="Util\SSExchParser.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

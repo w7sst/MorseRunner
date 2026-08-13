@@ -47,6 +47,7 @@ implementation
 
 uses
     Math,
+    AppPaths,
     SysUtils, StrUtils, DXCC;
 
 function TCWSST.LoadCallHistory(const AUserCallsign : string) : boolean;
@@ -73,7 +74,7 @@ begin
     try
         CWSSTList.Clear;
 
-        slst.LoadFromFile(ParamStr(1) + 'K1USNSST.txt');
+        slst.LoadFromFile(TAppPaths.ContestDataFile('K1USNSST.txt'));
         slst.Sort;
 
         for i:= 0 to slst.Count-1 do begin
