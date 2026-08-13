@@ -124,11 +124,11 @@ CONFIGURATION
           that a zero value will disable this feature and is not recommended.
           HST Competition mode ignores this setting and defaults to 50Hz/Step.
 
-    Audio Recording - Under File, "Choose Audio Recording Folder..." selects
-      a persistent folder and enables recording. MRCE defaults to "Morse Runner
-      CE Recordings" in your user folder. "Audio Recording Enabled" switches
-      recording on or off. Each session gets a separate WAV file named with its
-      UTC start time, your call sign and contest, preserving earlier recordings.
+    Audio Recording - "Audio Recording Enabled" under File switches recording
+      on or off. MRCE saves each session as a unique WAV in "Morse Runner CE
+      Recordings" in your user folder. Use "Choose Audio Recording Folder..." to
+      select another destination and "Open Audio Recording Folder" to open it.
+      The status bar reports when a recording is saved.
 
     Audio buffer size
       You can adjust the audio buffer size by changing the BufSize value in the

@@ -65,7 +65,7 @@ public
   function PickStation(): integer; override;
   procedure DropStation(id : integer); override;
   function GetCall(id : integer): string; override; // returns station callsign
-  procedure GetExchange(id : integer; out station : TDxStation); override;
+  procedure GetExchange(id : integer; station : TDxStation); override;
 
   function getExch1(id:integer): string;    // returns station info (e.g. 3A)
   function getExch2(id:integer): string;    // returns section info (e.g. OR)
@@ -94,6 +94,7 @@ uses
   Dialogs,      // for ShowMessage
   Vcl.Clipbrd,  // for TClipBoard
 {$endif}
+  AppPaths,
   DXCC;
 
 var
@@ -221,7 +222,7 @@ begin
   try
     FdCallList.Clear;
 
-    slst.LoadFromFile(ParamStr(1) + 'FDGOTA.TXT');
+    slst.LoadFromFile(TAppPaths.ContestDataFile('FDGOTA.TXT'));
 
     // Pass 1 - find and process all club stations (class A, C or F).
     //        - deffer all home/portable stations w/ a club name to Pass 2.
@@ -494,7 +495,7 @@ begin
 end;
 
 
-procedure TArrlFieldDay.GetExchange(id : integer; out station : TDxStation);
+procedure TArrlFieldDay.GetExchange(id : integer; station : TDxStation);
 begin
   station.Exch1 := getExch1(id);
   station.Exch2 := getExch2(id);

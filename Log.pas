@@ -8,7 +8,7 @@ unit Log;
 interface
 
 uses
-  System.UITypes,     // TColor
+  Graphics,           // for TColor
   Classes, ExtCtrls;
 
 procedure SaveQso;
@@ -30,8 +30,10 @@ procedure UpdateSbar;
 procedure UpdateExchangeSummaryLabel;
 procedure SbarUpdateStationInfo(const ACallsign: string);
 procedure SetExchangeSummaryText(const AExchSummary: String);
+procedure SBarUpdateStatusMsg(const AMsg: string);
 procedure SBarUpdateDebugMsg(const AMsgText: string);
-procedure DisplayError(const AExchError: string; const AColor: TColor);
+procedure ClearError;
+procedure DisplayError(const AExchError: string; const AColor: TColor = clRed);
 
 {$ifdef DEBUG}
 // Debugging API patterned after LazLogger.
@@ -120,8 +122,8 @@ var
   NrSent: boolean;   // msgNR has been sent; cleared after qso is completed.
   ShowCorrections: boolean;   // show exchange correction column.
   SBarDebugMsg: String;         // sbar debug message
-  SBarStationInfo: String;    // sbar station info (UserText from call history file)
   ExchangeSummaryText: String;  // exchange summary (ARRL SS)
+  SBarStatusMsg: String;      // sbar status message (e.g. # callsigns loaded)
   SBarErrorMsg: String;       // sbar exchange error
   SBarErrorColor: TColor;     // sbar exchange error color
   Histo: THisto;
@@ -138,7 +140,6 @@ implementation
 
 uses
   Windows, SysUtils, RndFunc, Math,
-  Graphics,     // for TColor
   ExchFields,   // for exchange field types
   CallsignUtils,  // for ExtractCallsign, ExtractPrefix
   Controls,
@@ -399,7 +400,7 @@ begin
   MainForm.ListView2.Perform(WM_VSCROLL, SB_BOTTOM, 0);
 end;
 
-//Update Callsign info
+//Update Callsign info for the given callsign
 procedure SbarUpdateStationInfo(const ACallsign: string);
 var
   s: string;
@@ -412,13 +413,9 @@ begin
   begin
     // Adding a contest: SbarUpdateStationInfo - update status bar with station info (e.g. FD shows UserText)
     s := Tst.GetStationInfo(ACallsign);
-
-    // '&' are suppressed in this control; replace with '&&'
-    s:= StringReplace(s, '&', '&&', [rfReplaceAll]);
   end;
 
-  SBarStationInfo := s;
-  UpdateSbar;
+  SBarUpdateStatusMsg(s);
 end;
 
 
@@ -443,6 +440,15 @@ begin
 end;
 
 
+procedure SBarUpdateStatusMsg(const AMsg: string);
+begin
+  if SBarStatusMsg = AMsg then Exit;
+
+  SBarStatusMsg := AMsg;
+  UpdateSbar;
+end;
+
+
 procedure SBarUpdateDebugMsg(const AMsgText: string);
 begin
   if SBarDebugMsg = AMsgText then Exit;
@@ -455,35 +461,37 @@ begin
 end;
 
 // Refresh Status Bar
-// [(Error | UserText)] [>> Debug stream]
+// [(Error | (Status | UserText))] [>> Debug stream]
 procedure UpdateSbar;
 var
   S: String;
 begin
-  // error or UserText...
   if not SBarErrorMsg.IsEmpty then
-    begin
-      if not S.IsEmpty then
-        S := S + ' -- ';
-      S := S + SBarErrorMsg;
-    end
-  else if not SBarStationInfo.IsEmpty then
-    begin
-      if not S.IsEmpty then
-        S := S + ' -- ';
-      S := S + SBarStationInfo;
-    end;
+    S := SBarErrorMsg
+  else if not SBarStatusMsg.IsEmpty then
+    S := SBarStatusMsg
+  else
+    S := '';
 
   // during debug, use status bar to show CW stream
   if not SBarDebugMsg.IsEmpty then
-    S := format('  %-45s >> %-40s', [S, SBarDebugMsg]);
+    S := format('%-45s >> %-40s', [S, SBarDebugMsg]);
 
   if SBarErrorMsg.IsEmpty then
     Mainform.sbar.Font.Color := clDefault
   else
     Mainform.sbar.Font.Color := SBarErrorColor;
 
-  MainForm.sbar.Caption := S;
+  // the '&' character is suppressed in this control; replace with '&&'
+  S:= StringReplace(S, '&', '&&', [rfReplaceAll]);
+
+  MainForm.sbar.Caption := '  ' + S;
+end;
+
+
+procedure ClearError;
+begin
+  DisplayError('', clDefault);
 end;
 
 
@@ -693,7 +701,7 @@ begin
     if not Tst.CheckEnteredCallLength(Call, ExchError) then
       begin
         {Beep;}
-        DisplayError(ExchError, clRed);
+        DisplayError(ExchError);
         Exit;
       end;
 
