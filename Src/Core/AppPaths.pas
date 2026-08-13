@@ -114,18 +114,18 @@ begin
     TAppPaths.FRepositoryRootDir := '';
 
   // Detect installed layout
+{$IFDEF FUTURE_CONTEST_DATA_SUBDIR}
   if TDirectory.Exists(TPath.Combine(FExecutableDir, 'ContestData')) then
     TAppPaths.FIsInstalledLayout := True
-{$IFDEF FUTURE_CONTEST_DATA_SUBDIR}
   else if TDirectory.Exists(
     TPath.Combine([FRepositoryRootDir, 'Src', 'Domain', 'Contests', 'Data'])) then
     TAppPaths.FIsInstalledLayout := False
-{$ELSE}
-  else if not FRepositoryRootDir.IsEmpty then
-    TAppPaths.FIsInstalledLayout := False
-{$ENDIF}
   else
     raise Exception.Create('Invalid configuration');
+{$ELSE}
+  // current release still needs contest data besid the exe
+  TAppPaths.FIsInstalledLayout := TAppPaths.FRepositoryRootDir.IsEmpty;
+{$ENDIF}
 
   // location of contest history files
 {$IFDEF FUTURE_CONTEST_DATA_SUBDIR}

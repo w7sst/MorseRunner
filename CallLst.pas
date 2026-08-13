@@ -58,7 +58,7 @@ var
 begin
   Calls.Clear;
 
-  FileName := ExtractFilePath(TAppPaths.ContestDataFile('Master.dta'));
+  FileName := TAppPaths.ContestDataFile('Master.dta');
   if not FileExists(FileName) then Exit;
 
   with TFileStream.Create(FileName, fmOpenRead) do
