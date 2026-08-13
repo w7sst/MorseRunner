@@ -199,7 +199,6 @@ var
 {$ifdef DEBUG}
   Indent: Integer = 0;    // used by DebugLnEnter/DebugLnExit
 {$endif}
-  SBarLastCallsign: String;       // used to optimize SBrSetStationInfo
 
 constructor THisto.Create(APaintBox: TPaintBOx);
 begin
@@ -405,9 +404,6 @@ procedure SbarUpdateStationInfo(const ACallsign: string);
 var
   s: string;
 begin
-  if ACallSign = SBarLastCallsign then Exit;
-  SBarLastCallsign := ACallsign;
-
   s:= '';
   if not ACallsign.IsEmpty then
   begin
