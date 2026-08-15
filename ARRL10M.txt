@@ -2,10 +2,27 @@
 #
 # ARRL10M
 # Current contest: ARRL10M
-# Last Edit,2025-12-13  
+# Last Edit,2025-12-13
 # Send new info/Corr. DIRECT to ve2fk@arrl.net
 # Thanks Bjorn/SM7IUN for his help
 # Updated from log of Ron/WV4P and VE2FK 2024/25
+#
+# Callsign Distribution...
+# Total Calls     11643 (100.0%)
+# Local...        11637 ( 99.9%)
+#  - USA          10794 ( 92.7%)
+#  - Canada         607 (  5.2%)
+#  - Mexico         123 (  1.1%)
+#  - Alaska          60 (  0.5%)
+#  - Hawaii          53 (  0.5%)
+# DX...               6 (  0.1%)
+#  - N. America       5 (  0.0%)
+#  - S. America       0 (  0.0%)
+#  - Europe           0 (  0.0%)
+#  - Asia             0 (  0.0%)
+#  - Africa           0 (  0.0%)
+#  - Oceania          1 (  0.0%)
+#
 AA0A,MO,
 AA0AA,NE,
 AA0AW,MN,

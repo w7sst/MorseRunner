@@ -75,6 +75,149 @@ uses
   AppPaths,
   Ini, Main;
 
+{$ifdef DEBUG}
+type
+  // Callsign Distribution Report
+  TDistributionReport = class
+    const
+      LocalKeys: array[0..4] of string = (
+        'United States of America',
+        'Canada', 'Mexico', 'Alaska', 'Hawaii');
+      DxKeys: array[0..6] of String = (
+        'NA', 'SA', 'EU', 'AS', 'AF', 'OC', 'MM');
+
+    private
+      FContest: TArrl10m;
+      FDetails: TDictionary<String, integer>;
+      FContinentNames: TDictionary<String, String>;
+      TurkeyCnt: Integer;     // Turkey splits between Europe and Asia
+      MaldivesCnt: Integer;   // Maldives splits between Asia and Africa
+      FTotal: Integer;
+
+    public
+      constructor Create(const AContest: TArrl10m);
+      destructor Destroy; override;
+
+      procedure AddCall(const Call: String; const dxcc: TDxccRec);
+      procedure WriteReport;
+  end;
+
+constructor TDistributionReport.Create(const AContest: TArrl10m);
+var
+  Key: String;
+begin
+  FContest := AContest;
+  FDetails := TDictionary<String, integer>.Create;
+  for Key in LocalKeys do
+    FDetails.Add(Key, 0);
+  for Key in DxKeys do
+    FDetails.Add(Key, 0);
+  TurkeyCnt := 0;
+  MaldivesCnt := 0;
+  FTotal := 0;
+
+  FContinentNames := TDictionary<String, String>.Create;
+  FContinentNames.Add('AF', 'Africa');
+  FContinentNames.Add('AS', 'Asia');
+  FContinentNames.Add('EU', 'Europe');
+  FContinentNames.Add('NA', 'N. America');
+  FContinentNames.Add('NA/Other', 'NA/Other');
+  FContinentNames.Add('SA', 'S. America');
+  FContinentNames.Add('OC', 'Oceania');
+  FContinentNames.Add('MM', 'Maritime');
+end;
+
+destructor TDistributionReport.Destroy;
+begin
+  FDetails.Free;
+  FContinentNames.Free;
+  inherited;
+end;
+
+procedure TDistributionReport.AddCall(const Call: String; const dxcc: TDxccRec);
+var
+  Key: String;
+  Count: Integer;
+begin
+  assert(dxcc <> nil);
+  if dxcc = nil then Exit;
+
+  if Call.Contains('/MM') then
+    Key := 'MM'
+  else if FContest.IsEntityLocalToContest(dxcc) then
+    Key := dxcc.Entity
+  else if dxcc.Continent = 'EU/AS' then
+    begin
+      assert(dxcc.Entity = 'Turkey');
+      Inc(TurkeyCnt, 1);
+      Key := IfThen((TurkeyCnt mod 2) = 1, 'EU', 'AS');
+    end
+  else if dxcc.Continent = 'AS/AF' then
+    begin
+      assert(dxcc.Entity = 'Maldives');
+      Inc(MaldivesCnt, 1);
+      Key := IfThen((MaldivesCnt mod 2) = 1, 'AS', 'AF');
+    end
+  else
+    Key := dxcc.Continent;
+
+  if FDetails.TryGetValue(Key, Count) then
+    FDetails[Key] := Count + 1
+  else
+    FDetails.Add(Key, 1);
+
+  Inc(FTotal, 1);
+end;
+
+procedure TDistributionReport.WriteReport;
+var
+  Key: String;
+  Count, SubTotal: Integer;
+  Pair: TPair<String, Integer>;
+begin
+  DebugLn('# Callsign Distribution...');
+  DebugLn('# %-13s   %5d (%5.1f%%)', ['Total Calls', FTotal, 100.0]);
+
+  // Write Local keys...
+  SubTotal := 0;
+  for Key in LocalKeys do
+    Inc(SubTotal, FDetails[Key]);
+  DebugLn('# %-12s    %5d (%5.1f%%)',
+    ['Local...', SubTotal, 100.0*SubTotal/FTotal]);
+  for Key in LocalKeys do
+  begin
+    Count := FDetails[Key];
+    DebugLn('#  - %-12s %5d (%5.1f%%)',
+      [IfThen(Key = 'United States of America', 'USA', Key),
+      Count, 100.0*Count/FTotal]);
+  end;
+
+  // Write DX keys...
+  SubTotal := 0;
+  for Key in DxKeys do
+    Inc(SubTotal, FDetails[Key]);
+  DebugLn('# %-12s    %5d (%5.1f%%)',
+    ['DX...', SubTotal, 100.0*SubTotal/FTotal]);
+  for Key in DxKeys do
+  begin
+    Count := FDetails[Key];
+    DebugLn('#  - %-12s %5d (%5.1f%%)',
+      [FContinentNames[Key], Count, 100.0*Count/FTotal]);
+  end;
+
+  // print missing keys
+  for Pair in FDetails do
+  begin
+    if not MatchText(Pair.Key, LocalKeys) and
+       not MatchText(Pair.Key, DxKeys) then
+      DebugLn('# ** %-12s %5d (%5.1f%%) missing',
+        [Pair.Key, Pair.Value, 100.0*Pair.Value/FTotal]);
+  end;
+end;
+{$endif}
+
+// --- TArrl10m ---
+
 constructor TArrl10m.Create;
 begin
   inherited Create;
@@ -99,8 +242,19 @@ var
   Reader: TArrl10mContestFileReader;
   FileName: String;
   ConsumeCallRec: TRecordConsumer<TArrl10mCallRec>;
+{$ifdef DEBUG}
+  Report: TDistributionReport;
+  dict: TDictionary<string,integer>;
+  dxcc: TDxCCRec;
+  R: TArrl10mCallRec;
+{$endif}
+
 begin
   Reader := TArrl10mContestFileReader.Create;
+{$ifdef DEBUG}
+  Report := TDistributionReport.Create(Self);;
+  dict := TDictionary<string,integer>.Create;
+{$endif}
 
   try
     Arrl10mCallList.Clear;
@@ -111,6 +265,18 @@ begin
 
     ConsumeCallRec := procedure(rec: TArrl10mCallRec)
       begin
+{$ifdef DEBUG}
+        if not gDXCCList.FindRec(dxcc, rec.Call) then
+        begin
+          rec.Free;
+          Exit;
+        end;
+        Report.AddCall(rec.Call, dxcc);
+
+        assert(not Dict.ContainsKey(rec.Call));
+        Dict.Add(rec.Call, 0);
+{$endif}
+
         Arrl10mCallList.Add(rec);
       end;
 
@@ -120,8 +286,24 @@ begin
 
     Result := True;
 
+{$ifdef DEBUG}
+    // Write Callsign Distribution Report
+    Report.WriteReport;
+
+    // check for callsigns that did not end up in the calllist
+    for R in Self.Arrl10mCallList do
+    begin
+      if not dict.ContainsKey(R.Call) then
+        DebugLn('"%s" not in TDict!', [R.Call]);
+    end;
+{$endif}
+
   finally
     Reader.Free;
+{$ifdef DEBUG}
+    Report.Free;
+    dict.Free;
+{$endif}
   end;
 end;
 

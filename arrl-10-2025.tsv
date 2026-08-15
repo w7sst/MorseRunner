@@ -1,3 +1,20 @@
+# Callsign Distribution...
+# Total Calls      6342 (100.0%)
+# Local...         2883 ( 45.5%)
+#  - USA           2607 ( 41.1%)
+#  - Canada         206 (  3.2%)
+#  - Mexico          47 (  0.7%)
+#  - Alaska          13 (  0.2%)
+#  - Hawaii          10 (  0.2%)
+# DX...            3459 ( 54.5%)
+#  - N. America      67 (  1.1%)
+#  - S. America     380 (  6.0%)
+#  - Europe        2100 ( 33.1%)
+#  - Asia           706 ( 11.1%)
+#  - Africa          43 (  0.7%)
+#  - Oceania        132 (  2.1%)
+#  - Maritime        31 (  0.5%)
+
 cabrillo_id	year	call	host	cat	section	dxcc	score	qso	mult	late_log_flag	club	minutes_on	ops
 ARRL-10	2025	2E0CVN	2E0CVN	SO-CW-LP		G	21996	120	47	0		358	2E0CVN
 ARRL-10	2025	2E0GKW	2E0GKW	SO-PH-LP		G	1320	36	20	0		198	2E0GKW
