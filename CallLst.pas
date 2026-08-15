@@ -20,6 +20,7 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure LoadCallList;
+    function Count : Integer;
     function IsEmpty : Boolean;
     procedure Clear();
     function PickCall : string;
@@ -103,6 +104,12 @@ begin
   finally
     L.Free;
   end;
+end;
+
+
+function TCallList.Count : Integer;
+begin
+  Result := Calls.Count;
 end;
 
 

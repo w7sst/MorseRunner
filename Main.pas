@@ -2147,6 +2147,7 @@ begin
     Log.SBarUpdateStationInfo('');
     Log.SBarUpdateStatusMsg('');
     Log.SBarUpdateDebugMsg('');
+    Log.SBarUpdateStatusMsg('Loading call history...');
     Application.ProcessMessages;  // Force UI update
 
     // load call history and other contest-specific setup before starting
@@ -2154,6 +2155,9 @@ begin
     sbar.Visible := mnuShowCallsignInfo.Checked;
     if not Tst.OnContestPrepareToStart(Ini.Call, ExchangeEdit.Text) then
       Exit;
+
+    // display number of callsigns loaded
+    Log.SBarUpdateStatusMsg(format('%d callsigns loaded', [Tst.CallHistoryCount]));
 
     if Ini.SaveWav then
     begin
