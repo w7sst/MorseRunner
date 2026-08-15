@@ -25,6 +25,9 @@ type
     CallList: TObjectList<TAcagCallRec>;
     Comparer: IComparer<TAcagCallRec>;
 
+  protected
+    function GetCallHistoryCount: Integer; override;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -101,6 +104,12 @@ begin
     tl.Free;
     if rec <> nil then rec.Free;
   end;
+end;
+
+
+function TACAG.GetCallHistoryCount: Integer;
+begin
+  Result := CallList.Count;
 end;
 
 

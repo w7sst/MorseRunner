@@ -26,6 +26,9 @@ type
     Comparer: IComparer<TIaruHfCallRec>;
     MyContinent: string;  // set by OnSetMyCall
 
+  protected
+    function GetCallHistoryCount: Integer; override;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -163,6 +166,12 @@ begin
     tl.Free;
     dupList.Free;
   end;
+end;
+
+
+function TIaruHf.GetCallHistoryCount: Integer;
+begin
+  Result := IaruHfCallList.Count;
 end;
 
 

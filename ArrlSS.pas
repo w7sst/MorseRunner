@@ -34,6 +34,9 @@ private
 
   function GetAlternateSection(const ASection: string): string;
 
+protected
+  function GetCallHistoryCount: Integer; override;
+
 public
   constructor Create;
   destructor Destroy; override;
@@ -131,6 +134,12 @@ begin
     tl.Free;
     if rec <> nil then rec.Free;
   end;
+end;
+
+
+function TSweepstakes.GetCallHistoryCount: Integer;
+begin
+  Result := SweepstakesCallList.Count;
 end;
 
 
