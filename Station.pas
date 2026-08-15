@@ -134,7 +134,7 @@ function ToStr(const val : TStationEvent) : string; overload;
 implementation
 
 uses
-  Main,     // for Mainform.sbar.Caption, BDebugCwDecoder
+  Main,     // for Mainform.Edit2.Text, BDebugCwDecoder
   QrmStn,   // for TQrmStation.ClassType
   Contest,  // for Tst (TContest), Tst.Me.OpName
   Log,      // for SBarUpdateDebugMsg

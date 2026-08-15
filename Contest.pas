@@ -16,8 +16,10 @@ type
   TContest = class
   private
     LastLoadCallsign : String;  // used to minimize call history file reloads
+    EndSessionDrainDeadlineBlock: Integer;
 
     function DxCount: integer;
+    function ShouldDrainEndSessionQso: Boolean;
     procedure SwapFilters;
 
   protected
@@ -50,7 +52,7 @@ type
     function PickStation : integer; virtual; abstract;
     procedure DropStation(id : integer); virtual; abstract;
     function GetCall(id : integer) : string; virtual; abstract;
-    procedure GetExchange(id : integer; out station : TDxStation); virtual; abstract;
+    procedure GetExchange(id: Integer; station: TDxStation); virtual; abstract;
     function GetRandomSerialNR: Integer; virtual;
     function GetStationInfo(const ACallsign : string) : string; virtual;
     function PickCallOnly : string;
@@ -144,6 +146,7 @@ begin
   QsoCountSinceStationID := 0;
   StationIdRate := Ini.StationIdRate;
   BFarnsworthEnabled := false;
+  EndSessionDrainDeadlineBlock := -1;
 
   Init;
 end;
@@ -169,7 +172,47 @@ begin
   LastLoadCallsign := '';
   QsoCountSinceStationID := 0;
   BFarnsworthEnabled := false;
+  EndSessionDrainDeadlineBlock := -1;
   CallerStartDelayInBlocks := SecondsToBlocks(Ini.SingleCallStartDelay/1000) + 5;
+end;
+
+
+function TContest.ShouldDrainEndSessionQso: Boolean;
+const
+  END_SESSION_DRAIN_SECONDS = 15;
+
+  function HasPendingEndSessionQso: Boolean;
+  var
+    i: Integer;
+  begin
+    Result := (QsoList <> nil) and
+              (QsoList[High(QsoList)].TrueCall = '') and
+              (msgTU in Me.Msg);
+    if not Result then
+      Exit;
+
+    for i := Stations.Count-1 downto 0 do
+      if Stations[i] is TDxStation then
+        with Stations[i] as TDxStation do
+          if Oper.CallConfidenceCheck(QsoList[High(QsoList)].Call, False)
+            in [mcYes, mcAlmost] then
+            Exit;
+
+    Result := False;
+  end;
+
+begin
+  Result := HasPendingEndSessionQso;
+  if not Result then
+    begin
+    EndSessionDrainDeadlineBlock := -1;
+    Exit;
+    end;
+
+  if EndSessionDrainDeadlineBlock < 0 then
+    EndSessionDrainDeadlineBlock := BlockNumber + SecondsToBlocks(END_SESSION_DRAIN_SECONDS);
+
+  Result := BlockNumber <= EndSessionDrainDeadlineBlock;
 end;
 
 
@@ -476,7 +519,7 @@ end;
 procedure TContest.OnWipeBoxes;
 begin
   Log.NrSent := False;
-  Log.DisplayError('', clDefault);
+  Log.ClearError;
 end;
 
 
@@ -688,6 +731,7 @@ var
   i, Stn: integer;
   Bfo: Single;
   Smg, Rfg: Single;
+  TimeExpired: Boolean;
 begin
   //minimize audio output delay
   SetLength(Result, 1);
@@ -822,7 +866,7 @@ begin
                   in VCL/SndCustm.pas for more details.
 
               // clear any errors/status from last QSO
-              Log.DisplayError('', clDefault);
+              Log.ClearError;
               Log.SBarUpdateSummary('');
 }
             end;
@@ -833,7 +877,10 @@ begin
   if Ini.RunMode = rmPileUp then
     MainForm.Panel4.Caption := Format('Pile-Up:  %d', [DxCount]);
 
-  if (RunMode = rmSingle) and (DxCount = 0) and
+  TimeExpired := BlocksToSeconds(BlockNumber) >= Duration * 60;
+
+  if (not TimeExpired) and
+     (RunMode = rmSingle) and (DxCount = 0) and
      (BlockNumber > CallerStartDelayInBlocks) then begin
      Me.Msg := [msgCq]; //no need to send cq in this mode
      Stations.AddCaller.ProcessEvent(evMeFinished);
@@ -850,15 +897,21 @@ begin
 {$endif}
   end
   else
-    if (RunMode = rmHst) and (DxCount < Activity) then begin
+    if (not TimeExpired) and
+       (RunMode = rmHst) and (DxCount < Activity) then begin
       Me.Msg := [msgCq];
       for i:=DxCount+1 to Activity do
         Stations.AddCaller.ProcessEvent(evMeFinished);
     end;
 
 
-  if (BlocksToSeconds(BlockNumber) >= (Duration * 60)) or FStopPressed then
+  if TimeExpired or FStopPressed then
     begin
+    if TimeExpired and (not FStopPressed) and ShouldDrainEndSessionQso then
+      Exit;
+
+    EndSessionDrainDeadlineBlock := -1;
+
     if RunMode = rmHst then
       begin
       MainForm.Run(rmStop);
@@ -910,14 +963,20 @@ var
   i: integer;
   z: integer;
   Dx : integer;
+  Msg: TStationMessages;
+  Call: string;
+  Active: Boolean;
 begin
+  Msg := [];
+
   // reset Station ID counter after sending a CQ or 3 consecutive QSOs
   if (msgCQ in Me.Msg) or
      ((msgTU in Me.Msg) and (QsoCountSinceStationID >= StationIdRate)) then
     OnStationIDSent;
 
   //the stations heard my CQ and want to call
-  if (not (RunMode in [rmSingle, RmHst])) then
+  if (not (RunMode in [rmSingle, RmHst])) and
+     (BlocksToSeconds(BlockNumber) < Duration * 60) then
     if (msgCQ in Me.Msg) or
        ((QsoList <> nil) and ((msgTU in Me.Msg) or (msgMyCall in Me.Msg))) then
        begin
@@ -945,9 +1004,21 @@ begin
   if msgHisCall in Tst.Me.Msg then
     Stations.FindBestMatches(Tst.Me.HisCall);
 
+  if Ini.NilInstantRemove and (msgNil in Me.Msg) then
+    begin
+      if Stations.DropCallerForNil(Call, Active) then
+        if Active or (RunMode = rmSingle) then
+          Log.SBarUpdateStatusMsg('Skipped ' + Call);
+      Msg := Me.Msg;
+      Me.Msg := [msgGarbage];
+    end;
+
   //tell callers that I finished sending
   for i:=Stations.Count-1 downto 0 do
     Stations[i].ProcessEvent(evMeFinished);
+
+  if Msg <> [] then
+    Me.Msg := Msg;
 end;
 
 
@@ -989,4 +1060,3 @@ end;
 
 
 end.
-

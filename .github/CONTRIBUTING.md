@@ -311,6 +311,14 @@ We are open to design proposals and changes, but we do request that such changes
 are discussed early. Please open an Issue do we can let the design discussion occur
 and allow the design idea/proposal to evolve into something that we can agree to.
 
+1. **Check for CR/LF Issues.** We have noticed the occasional CR/LF issues appearing
+at the end of some lines in the code. 
+Before committing source changes, please run:
+```
+  tools/normalize-crlf.sh --git --summary
+```
+to detect malformed line endings introduced by editors or copy/paste operations.
+
 ## Styleguides
 
 ### Changelog entries

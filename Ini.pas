@@ -254,11 +254,12 @@ var
   Qsb: boolean = false;
   Flutter: boolean = false;
   Lids: boolean = false;
+  NilInstantRemove: boolean = true;
   NoActivityCnt: integer=0;
   NoStopActivity: integer=0;
   GetWpmUsesGaussian: boolean = false;
   ShowCheckSection: integer=50;
-  ShowExchangeSummary: integer = 1; // 0=Off, 1=Above Field, 2=Status Bar
+  ShowExchangeSummary: boolean = True;  // show dynamic exchange summary (ARRL SS)
 
   Duration: integer = 30;
   RunMode: TRunMode = rmStop;
@@ -268,6 +269,7 @@ var
 
   MonLevel: Integer = 0;             // Self Monitor Level in dB; range [-60,0]
   SaveWav: boolean = false;
+  RecordingFolder: string = '';
   FarnsworthCharRate: integer = 25;
   AllStationsWpmS: integer = 0;      // force all stations to this Wpm
   CallsFromKeyer: boolean = false;
@@ -447,6 +449,7 @@ begin
       MonLevel := V;
       MainForm.VolumeSlider1.Db := MonLevel;
       SaveWav := ReadBool(SEC_STN, 'SaveWav', SaveWav);
+      RecordingFolder := ReadString(SEC_STN, 'RecordingFolder', RecordingFolder);
 
       // [Settings]
       FarnsworthCharRate := ReadInteger(SEC_SET, 'FarnsworthCharacterRate', FarnsworthCharRate);
@@ -454,10 +457,11 @@ begin
       RitStepIncr := ReadInteger(SEC_SET, 'RitStepIncr', RitStepIncr);
       RitStepIncr := Max(-500, Min(500, RitStepIncr));
       ShowCheckSection := ReadInteger(SEC_SET, 'ShowCheckSection', ShowCheckSection);
-      ShowExchangeSummary := ReadInteger(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
+      ShowExchangeSummary := ReadBool(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
       StationIdRate := ReadInteger(SEC_SET, 'StationIdRate', StationIdRate);
       SingleCallStartDelay := ReadInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
       SingleCallStartDelay := Max(0, Min(SingleCallStartDelay, 2500));
+      NilInstantRemove := ReadBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
       Faster5nn := Max(0, Min(100, ReadInteger(SEC_SET, 'Faster5nn', Faster5nn)));
       if Faster5nn > 0 then Faster5nnMem := Faster5nn;
 
@@ -535,15 +539,17 @@ begin
       // [Station]
       WriteInteger(SEC_STN, 'SelfMonVolume', MonLevel);
       WriteBool(SEC_STN, 'SaveWav', SaveWav);
+      WriteString(SEC_STN, 'RecordingFolder', RecordingFolder);
 
       // [Settings]
       WriteInteger(SEC_SET, 'FarnsworthCharacterRate', FarnsworthCharRate);
       WriteInteger(SEC_SET, 'WpmStepRate', WpmStepRate);
       WriteInteger(SEC_SET, 'RitStepIncr', RitStepIncr);
       WriteInteger(SEC_SET, 'ShowCheckSection', ShowCheckSection);
-      WriteInteger(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
+      WriteBool(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
       WriteInteger(SEC_SET, 'StationIdRate', StationIdRate);
       WriteInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
+      WriteBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
       WriteInteger(SEC_SET, 'Faster5nn', Faster5nn);
 
     finally
@@ -660,4 +666,3 @@ end;
 
 
 end.
-

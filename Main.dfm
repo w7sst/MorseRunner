@@ -983,6 +983,14 @@ object MainForm: TMainForm
         Caption = 'Audio Recording Enabled'
         OnClick = AudioRecordingEnabled1Click
       end
+      object ChooseAudioRecordingFolder1: TMenuItem
+        Caption = 'Choose Audio Recording Folder...'
+        OnClick = ChooseAudioRecordingFolder1Click
+      end
+      object OpenAudioRecordingFolder1: TMenuItem
+        Caption = 'Open Audio Recording Folder'
+        OnClick = OpenAudioRecordingFolder1Click
+      end
       object PlayRecordedAudio1: TMenuItem
         Caption = 'Play Recorded Audio'
         Enabled = False
@@ -1519,6 +1527,11 @@ object MainForm: TMainForm
       object Operator1: TMenuItem
         Caption = 'HST Operator'
         OnClick = Operator1Click
+      end
+      object NilInstantRemove1: TMenuItem
+        Caption = 'NIL Instantly Removes Caller'
+        Checked = True
+        OnClick = NilInstantRemove1Click
       end
       object mnuShowCallsignInfo: TMenuItem
         Caption = 'Show Callsign Info'

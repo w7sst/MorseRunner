@@ -177,6 +177,7 @@ type
     QSB1: TMenuItem;
     Flutter1: TMenuItem;
     LIDS1: TMenuItem;
+    NilInstantRemove1: TMenuItem;
     Faster5nn1: TMenuItem;
     Activity1: TMenuItem;
     N11: TMenuItem;
@@ -200,6 +201,8 @@ type
     PlayRecordedAudio1: TMenuItem;
     N8: TMenuItem;
     AudioRecordingEnabled1: TMenuItem;
+    ChooseAudioRecordingFolder1: TMenuItem;
+    OpenAudioRecordingFolder1: TMenuItem;
     Panel11: TPanel;
     ListView1: TListView;
     Operator1: TMenuItem;
@@ -289,9 +292,12 @@ type
     procedure File1Click(Sender: TObject);
     procedure PlayRecordedAudio1Click(Sender: TObject);
     procedure AudioRecordingEnabled1Click(Sender: TObject);
+    procedure ChooseAudioRecordingFolder1Click(Sender: TObject);
+    procedure OpenAudioRecordingFolder1Click(Sender: TObject);
     procedure SelfMonClick(Sender: TObject);
     procedure Settings1Click(Sender: TObject);
     procedure LIDS1Click(Sender: TObject);
+    procedure NilInstantRemove1Click(Sender: TObject);
     procedure Faster5nn1Click(Sender: TObject);
     procedure CWMaxRxSpeedClick(Sender: TObject);
     procedure CWMinRxSpeedClick(Sender: TObject);
@@ -323,6 +329,9 @@ type
     UserExchangeDirty: boolean; // SetMyExchange is called after exchange edits
     CWSpeedDirty: boolean;      // SetWpm is called after CW Speed edits
     RitLocal: integer;          // tracks incremented RIT Value
+    function DefaultRecordingFolder: string;
+    function EnsureRecordingFolder(ReportError: Boolean = True): Boolean;
+    function RecordingFileName: string;
     function CreateContest(AContestId : TSimContest) : TContest;
     procedure ConfigureExchangeFields;
     procedure SetMyExch1(const AExchType: TExchange1Type; const Avalue: string);
@@ -334,6 +343,9 @@ type
     procedure SendMsg(AMsg: TStationMessage);
     procedure ProcessEnter;
     procedure EnableCtl(Ctl: TWinControl; AEnable: boolean);
+    procedure WmSysKeyDown(var Msg: TWMKeyDown); message WM_SYSKEYDOWN;
+    procedure WmSysChar(var Msg: TWMChar); message WM_SYSCHAR;
+    procedure WmMenuChar(var Msg: TMessage); message WM_MENUCHAR;
     procedure WmTbDown(var Msg: TMessage); message WM_TBDOWN;
     procedure SetToolbuttonDown(Toolbutton: TToolbutton; ADown: boolean);
     procedure IncRit(dF: integer);
@@ -404,7 +416,8 @@ uses
   IARUHF, ARRLSS,
   MorseKey, FarnsKeyer, CallLst,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
-  Dialogs, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils;
+  Dialogs, Vcl.FileCtrl, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils,
+  DateUtils, ShlObj;
 
 {$R *.DFM}
 
@@ -425,6 +438,87 @@ begin
     (MainForm.RecvExchTypes.Exch1 = etRST));
   Result := MainForm.RecvExchTypes.Exch1 = etRST;
 end;
+
+
+function TMainForm.DefaultRecordingFolder: string;
+var
+  ProfilePath: array[0..MAX_PATH] of Char;
+begin
+  Result := '';
+  if SHGetFolderPath(0, CSIDL_PROFILE, 0, SHGFP_TYPE_CURRENT,
+    PChar(@ProfilePath[0])) = S_OK then
+    Result := IncludeTrailingPathDelimiter(
+      PChar(@ProfilePath[0])) + 'Morse Runner CE Recordings';
+end;
+
+
+function TMainForm.EnsureRecordingFolder(ReportError: Boolean): Boolean;
+var
+  Folder: string;
+begin
+  Folder := Ini.RecordingFolder;
+  if Folder.IsEmpty then
+    Folder := DefaultRecordingFolder;
+
+  Result := False;
+  try
+    if not Folder.IsEmpty then
+      Result := DirectoryExists(Folder) or ForceDirectories(Folder);
+  except
+    Result := False;
+  end;
+
+  if Result then
+    Ini.RecordingFolder := Folder
+  else if ReportError then
+    Application.MessageBox(
+      PChar(Format('Unable to create audio recording folder:'#13'%s',
+        [Folder])),
+      'Error', MB_OK or MB_ICONERROR);
+end;
+
+
+function FileNamePart(const Value: string): string;
+var
+  C: Char;
+begin
+  Result := '';
+  for C in Value do
+    if CharInSet(C, ['A'..'Z', 'a'..'z', '0'..'9']) then
+      Result := Result + C
+    else if not Result.IsEmpty and (Result[Length(Result)] <> '-') then
+      Result := Result + '-';
+
+  while not Result.IsEmpty and (Result[Length(Result)] = '-') do
+    Delete(Result, Length(Result), 1);
+end;
+
+
+function TMainForm.RecordingFileName: string;
+var
+  BaseName, CallPart, ContestName, ContestPart: string;
+  I, ParenPos: Integer;
+begin
+  CallPart := FileNamePart(Ini.Call);
+
+  ContestName := ActiveContest.Name;
+  ParenPos := Pos('(', ContestName);
+  if ParenPos > 0 then Delete(ContestName, ParenPos, MaxInt);
+  ContestPart := LowerCase(FileNamePart(ContestName));
+
+  BaseName := IncludeTrailingPathDelimiter(Ini.RecordingFolder) +
+    FormatDateTime('yyyy-mm-dd--hh-nn-ss',
+      TTimeZone.Local.ToUniversalTime(Now)) + 'Z--' +
+    CallPart + '--' + ContestPart;
+  Result := BaseName + '.wav';
+  I := 2;
+  while FileExists(Result) do
+  begin
+    Result := Format('%s--%d.wav', [BaseName, I]);
+    Inc(I);
+  end;
+end;
+
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
@@ -471,6 +565,9 @@ begin
         MB_OK or MB_ICONERROR);
     end
   );
+
+  if Ini.SaveWav and not EnsureRecordingFolder then
+    Ini.SaveWav := False;
 
   // populate and sort SimContestCombo after reading .ini file settings
   SimContestComboRefresh;
@@ -640,7 +737,7 @@ begin
       if Tst.OnExchangeEdit(Edit1.Text, Edit2.Text, Edit3.Text,
         ExchSummary, ExchError) then
         begin
-          Log.SBarUpdateSummary(ExchSummary);
+          Log.SetExchangeSummaryText(ExchSummary);
           if not Log.SBarErrorMsg.IsEmpty and ExchError.IsEmpty then
             Log.DisplayError('', clDefault);
         end;
@@ -796,7 +893,7 @@ begin
         var ExchError: string;
         if not Tst.CheckEnteredCallLength(Edit1.Text, ExchError) then
           begin
-            DisplayError(ExchError, clRed);
+            DisplayError(ExchError);
             Exit;
           end;
 
@@ -888,6 +985,52 @@ begin
     VK_INSERT, VK_RETURN:
       Key := 0;
     end;
+end;
+
+
+procedure TMainForm.WmSysKeyDown(var Msg: TWMKeyDown);
+begin
+  case Msg.CharCode of
+    Ord('W'), Ord('w'):
+      begin
+        WipeBoxes;
+        Msg.Result := 0;
+      end;
+
+    VK_RETURN:
+      begin
+        ProcessEnter;
+        Msg.Result := 0;
+      end;
+
+    else
+      inherited;
+  end;
+end;
+
+
+procedure TMainForm.WmSysChar(var Msg: TWMChar);
+begin
+  // Alt+W and enter need to be swallowed so they don't act like menu shortcuts
+  case Msg.CharCode of
+    Ord('W'), Ord('w'), VK_RETURN:
+      Msg.Result := 0;
+    else
+      inherited;
+  end;
+end;
+
+
+procedure TMainForm.WmMenuChar(var Msg: TMessage);
+const
+  MNC_CLOSE = 1 shl 16; // close menu processing without the default beep
+begin
+  case LoWord(Msg.WParam) of
+    Ord('W'), Ord('w'), VK_RETURN:
+      Msg.Result := MNC_CLOSE;
+    else
+      inherited;
+  end;
 end;
 
 
@@ -987,7 +1130,7 @@ begin
     // verify callsign before calling SaveQSO
     if not Tst.CheckEnteredCallLength(Edit1.Text, ExchError) then
       begin
-        DisplayError(ExchError, clRed);
+        DisplayError(ExchError);
         Exit;
       end;
 
@@ -1025,7 +1168,7 @@ begin
   ExchError := '';
 
   // clear prior error string
-  DisplayError('', clDefault);
+  Log.ClearError;
 
   //current state
   C := CallSent;
@@ -1057,7 +1200,7 @@ begin
     // validate Exchange before sending TU and logging the QSO
     if not Tst.ValidateEnteredExchange(Edit1.Text, Edit2.Text, Edit3.Text, ExchError) then
       begin
-        DisplayError(ExchError, clRed);
+        DisplayError(ExchError);
         Exit;
       end;
 
@@ -1250,7 +1393,7 @@ begin
     if not Tst.ValidateMyExchange(AExchange, sl, ExchError) then
       begin
         Result := False;
-        DisplayError(ExchError, clRed);
+        DisplayError(ExchError);
 
         // update the Sent Exchange field value
         ExchangeEdit.Text := AExchange;
@@ -1824,7 +1967,7 @@ begin
   ActiveControl := Edit1;
 
   if SimContest = scArrlSS then
-    Log.SBarUpdateSummary('');
+    Log.SetExchangeSummaryText('');
 
   if Assigned(Tst) then
     Tst.OnWipeBoxes;
@@ -2001,9 +2144,38 @@ begin
       Exit;
     end;
 
+    // clear existing status messages
+    Log.ClearError;
+    Log.SBarUpdateStationInfo('');
+    Log.SBarUpdateStatusMsg('');
+    Log.SBarUpdateDebugMsg('');
+    Application.ProcessMessages;  // Force UI update
+
     // load call history and other contest-specific setup before starting
+    sbar.Hint := '';
+    sbar.Visible := mnuShowCallsignInfo.Checked;
     if not Tst.OnContestPrepareToStart(Ini.Call, ExchangeEdit.Text) then
       Exit;
+
+    if Ini.SaveWav then
+    begin
+      if not EnsureRecordingFolder then
+        Ini.SaveWav := False
+      else
+      begin
+        AlWavFile1.FileName := RecordingFileName;
+        try
+          AlWavFile1.OpenWrite;
+        except
+          Ini.SaveWav := False;
+          Application.MessageBox(PChar(Format(
+            'Audio recording could not be started in %s.'#13#13 +
+            'The session will start without audio recording. ' +
+            'Try choosing another folder.', [Ini.RecordingFolder])),
+            'Audio Recording Error', MB_OK or MB_ICONERROR);
+        end;
+      end;
+    end;
   end;
 
   BStop := Value = rmStop;
@@ -2127,12 +2299,18 @@ begin
       end;
       }
     if AlWavFile1.IsOpen then
+    begin
       AlWavFile1.Close;
-  end
-  else begin
-    AlWavFile1.FileName := ChangeFileExt(ParamStr(0), '.wav');
-    if SaveWav then
-      AlWavFile1.OpenWrite;
+      Log.ClearError;
+      Log.SbarUpdateStationInfo('');
+      Log.SBarUpdateStatusMsg('Audio recording saved: ' +
+        AlWavFile1.FileName);
+      sbar.Hint := 'Audio recording saved: ' + AlWavFile1.FileName;
+      sbar.ShowHint := True;
+      sbar.Visible := True;
+    end
+    else
+      Log.SBarUpdateStatusMsg('');
   end;
 
   AlSoundOut1.Enabled := not BStop;
@@ -2521,23 +2699,86 @@ begin
   Stp := RunMode = rmStop;
 
   AudioRecordingEnabled1.Enabled := Stp;
-  PlayRecordedAudio1.Enabled := Stp and FileExists(ChangeFileExt(ParamStr(0), '.wav'));
+  ChooseAudioRecordingFolder1.Enabled := Stp;
+  OpenAudioRecordingFolder1.Enabled := DirectoryExists(Ini.RecordingFolder);
+  PlayRecordedAudio1.Enabled := Stp and FileExists(AlWavFile1.FileName);
 
   AudioRecordingEnabled1.Checked := Ini.SaveWav;
 end;
 
 procedure TMainForm.PlayRecordedAudio1Click(Sender: TObject);
-var
-  FileName: string;
 begin
-  FileName := ChangeFileExt(ParamStr(0), '.wav');
-  ShellExecute(GetDesktopWindow, 'open', PChar(FileName), '', '', SW_SHOWNORMAL);
+  ShellExecute(GetDesktopWindow, 'open', PChar(AlWavFile1.FileName), '', '', SW_SHOWNORMAL);
 end;
 
 
 procedure TMainForm.AudioRecordingEnabled1Click(Sender: TObject);
 begin
-  Ini.SaveWav := not Ini.SaveWav;
+  if Ini.SaveWav then
+    Ini.SaveWav := False
+  else
+    Ini.SaveWav := EnsureRecordingFolder;
+end;
+
+
+procedure TMainForm.ChooseAudioRecordingFolder1Click(Sender: TObject);
+var
+  InitialFolder: string;
+  TempFile: array[0..MAX_PATH] of Char;
+
+  function SelectRecordingFolder(var Folder: string): Boolean;
+  begin
+    if CheckWin32Version(6) then
+      with TFileOpenDialog.Create(Self) do
+        try
+          Title := 'Choose Audio Recording Folder';
+          Options := [fdoPickFolders, fdoPathMustExist, fdoForceFileSystem];
+          DefaultFolder := Folder;
+          FileName := Folder;
+          Result := Execute;
+          if Result then Folder := FileName;
+        finally
+          Free;
+        end
+    else
+    begin
+      // xp only because we somehow still support this?
+      Result := SelectDirectory('Choose Audio Recording Folder', '', Folder,
+        [sdNewUI, sdNewFolder], Self);
+    end;
+  end;
+
+begin
+  InitialFolder := Ini.RecordingFolder;
+  if InitialFolder.IsEmpty then
+    InitialFolder := DefaultRecordingFolder;
+  if not DirectoryExists(InitialFolder) then
+    InitialFolder := ExtractFileDir(InitialFolder);
+  if not DirectoryExists(InitialFolder) then
+    InitialFolder := ExtractFileDir(DefaultRecordingFolder);
+
+  while SelectRecordingFolder(InitialFolder) do
+  begin
+    if Windows.GetTempFileName(PChar(InitialFolder), 'MRC', 0,
+      PChar(@TempFile[0])) <> 0 then
+    begin
+      Windows.DeleteFile(PChar(@TempFile[0]));
+      Ini.RecordingFolder := InitialFolder;
+      Ini.SaveWav := True;
+      Exit;
+    end;
+    Application.MessageBox(PChar(Format(
+      'Audio recording is not available in %s.'#13#13 +
+      'Try choosing another folder.', [InitialFolder])),
+      'Audio Recording Error', MB_OK or MB_ICONERROR);
+  end;
+end;
+
+
+procedure TMainForm.OpenAudioRecordingFolder1Click(Sender: TObject);
+begin
+  ShellExecute(GetDesktopWindow, 'open', PChar(Ini.RecordingFolder), '', '',
+    SW_SHOWNORMAL);
 end;
 
 
@@ -2555,6 +2796,7 @@ begin
   QSB1.Checked := Ini.Qsb;
   Flutter1.Checked := Ini.Flutter;
   LIDS1.Checked := Ini.Lids;
+  NilInstantRemove1.Checked := Ini.NilInstantRemove;
   Faster5nn1.Checked := Ini.Faster5nn > 0;
 end;
 
@@ -2706,6 +2948,13 @@ begin
 end;
 
 
+procedure TMainForm.NilInstantRemove1Click(Sender: TObject);
+begin
+  with Sender as TMenuItem do Checked := not Checked;
+  Ini.NilInstantRemove := NilInstantRemove1.Checked;
+end;
+
+
 procedure TMainForm.Faster5nn1Click(Sender: TObject);
 begin
   if Ini.Faster5nn = 0 then
@@ -2797,4 +3046,3 @@ begin
 end;
 
 end.
-
