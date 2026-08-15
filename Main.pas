@@ -2305,8 +2305,8 @@ begin
       AlWavFile1.Close;
       Log.ClearError;
       Log.SbarUpdateStationInfo('');
-      Log.SBarUpdateStatusMsg('Audio recording saved: ' +
-        AlWavFile1.FileName);
+      Log.SBarUpdateStatusMsg('Saved: ' +
+        ExtractFileName(AlWavFile1.FileName));
       sbar.Hint := 'Audio recording saved: ' + AlWavFile1.FileName;
       sbar.ShowHint := True;
       sbar.Visible := True;
@@ -2766,7 +2766,6 @@ begin
     begin
       Windows.DeleteFile(PChar(@TempFile[0]));
       Ini.RecordingFolder := InitialFolder;
-      Ini.SaveWav := True;
       Exit;
     end;
     Application.MessageBox(PChar(Format(
