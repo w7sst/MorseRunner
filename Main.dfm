@@ -1478,10 +1478,10 @@ object MainForm: TMainForm
           Caption = '9'
           OnClick = Activity1Click
         end
-        object Faster5nn1: TMenuItem
-          Caption = 'Faster 5NN'
-          OnClick = Faster5nn1Click
-        end
+      end
+      object Faster5nn1: TMenuItem
+        Caption = 'Faster 5NN'
+        OnClick = Faster5nn1Click
       end
       object N7: TMenuItem
         Caption = '-'
