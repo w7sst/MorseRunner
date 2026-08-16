@@ -1479,10 +1479,6 @@ object MainForm: TMainForm
           OnClick = Activity1Click
         end
       end
-      object Faster5nn1: TMenuItem
-        Caption = 'Faster 5NN'
-        OnClick = Faster5nn1Click
-      end
       object N7: TMenuItem
         Caption = '-'
       end
@@ -1532,6 +1528,10 @@ object MainForm: TMainForm
         Caption = 'NIL Instantly Removes Caller'
         Checked = True
         OnClick = NilInstantRemove1Click
+      end
+      object Faster5nn1: TMenuItem
+        Caption = 'Faster 5NN'
+        OnClick = Faster5nn1Click
       end
       object mnuShowCallsignInfo: TMenuItem
         Caption = 'Show Callsign Info'
