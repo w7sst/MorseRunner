@@ -83,6 +83,8 @@ CONFIGURATION
             over.
      Activity - band activity, determines how many stations on average
                 reply to your CQ.
+     Faster 5NN - some stations send 5NN or 599 faster than the rest of
+                  the message.
 
   The Run Button
     This starts and stops the competition or contest.

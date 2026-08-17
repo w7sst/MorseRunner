@@ -10,6 +10,10 @@ interface
 uses
   SndTypes;
 
+const
+  CW_SPEED_UP = '<';
+  CW_SPEED_DOWN = '>';
+
 
 type
   TKeyer = class
@@ -161,12 +165,18 @@ var
 begin
   Result := '';
   for i:=1 to Length(Txt) do
-    if CharInSet(Txt[i], [' ', '_']) then
-        Result := Result + ' '
-    else
-        Result := Result + Morse[Txt[i]];
-  if Result <> '' then
-    Result[Length(Result)] := '~';  // EOM has ~5U spacing
+    case Txt[i] of
+      CW_SPEED_UP, CW_SPEED_DOWN: Result := Result + Txt[i];
+      ' ', '_': Result := Result + ' ';
+      else Result := Result + Morse[Txt[i]];
+    end;
+
+  for i:=Length(Result) downto 1 do
+    if not CharInSet(Result[i], [CW_SPEED_UP, CW_SPEED_DOWN]) then
+      begin
+      Result[i] := '~';  // EOM has ~5U spacing
+      Break;
+      end;
 end;
 
 
@@ -181,8 +191,14 @@ end;
 }
 function TKeyer.GetEnvelope: TSingleArray;
 var
-  UnitCnt, Len, i, p: integer;
-  SamplesInUnit: integer;
+  Len, i, p: integer;
+  CurrentWpm, SamplesInUnit: integer;
+
+  procedure SetSpeed(AWpm: integer);
+  begin
+    CurrentWpm := Max(1, AWpm);
+    SamplesInUnit := Round(60/48 * Rate / CurrentWpm);
+  end;
 
   procedure AddRampOn;
   begin
@@ -233,29 +249,32 @@ var
 begin
   assert(WpmS > 0, 'must init using SetWpm()');
 
-  //count units
-  UnitCnt := 0;
-
+  // Count samples directly - faster 5NN can put several WPMs in one message.
+  SetSpeed(WpmS);
+  TrueEnvelopeLen := 0;
   for i:=1 to Length(MorseMsg) do
     case MorseMsg[i] of
-      '.': Inc(UnitCnt, 2);   // 1 unit dit followed by 1 unit spacing
-      '-': Inc(UnitCnt, 4);   // 3 unit dash followed by 1 unit spacing
-      ' ': Inc(UnitCnt, 2);   // 3U inter-char space (2U + prior 1U)
+      CW_SPEED_UP: SetSpeed(CurrentWpm + 2);
+      CW_SPEED_DOWN: SetSpeed(CurrentWpm - 2);
+      '.': Inc(TrueEnvelopeLen, 2 * SamplesInUnit); // 1 unit dit followed by 1 unit spacing
+      '-': Inc(TrueEnvelopeLen, 4 * SamplesInUnit); // 3 unit dash followed by 1 unit spacing
+      ' ': Inc(TrueEnvelopeLen, 2 * SamplesInUnit); // 3U inter-char space (2U + prior 1U)
     { ' ': subsequent space } // 5U inter-word space (2U + prior 3U)
-      '~': Inc(UnitCnt, 3);   // 4U inter-msg space (3U + prior 1U + loop time)
+      '~': Inc(TrueEnvelopeLen, 3 * SamplesInUnit); // 4U inter-msg space (3U + prior 1U + loop time)
     end;
 
   //calc buffer size
-  SamplesInUnit := Round(60/48 * Rate / WpmS);  // 48U = 1 word w/ 5U inter-word space
-  TrueEnvelopeLen := UnitCnt * SamplesInUnit;
   Len := BufSize * Ceil(TrueEnvelopeLen / BufSize);
   Result := nil;
   SetLength(Result, Len);
 
   //fill buffer
   p := 0;
+  SetSpeed(WpmS);
   for i:=1 to Length(MorseMsg) do
     case MorseMsg[i] of
+      CW_SPEED_UP: SetSpeed(CurrentWpm + 2);
+      CW_SPEED_DOWN: SetSpeed(CurrentWpm - 2);
       '.': begin AddRampOn; AddOn(1); AddRampOff; AddOff(1, RampLen); end;
       '-': begin AddRampOn; AddOn(3); AddRampOff; AddOff(1, RampLen); end;
       ' ': AddOff(2, 0);      // 3U inter-char spacing (2U + prior 1U)

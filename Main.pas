@@ -178,6 +178,7 @@ type
     Flutter1: TMenuItem;
     LIDS1: TMenuItem;
     NilInstantRemove1: TMenuItem;
+    Faster5nn1: TMenuItem;
     Activity1: TMenuItem;
     N11: TMenuItem;
     N21: TMenuItem;
@@ -297,6 +298,7 @@ type
     procedure Settings1Click(Sender: TObject);
     procedure LIDS1Click(Sender: TObject);
     procedure NilInstantRemove1Click(Sender: TObject);
+    procedure Faster5nn1Click(Sender: TObject);
     procedure CWMaxRxSpeedClick(Sender: TObject);
     procedure CWMinRxSpeedClick(Sender: TObject);
     procedure NRDigitsClick(Sender: TObject);
@@ -2798,6 +2800,7 @@ begin
   Flutter1.Checked := Ini.Flutter;
   LIDS1.Checked := Ini.Lids;
   NilInstantRemove1.Checked := Ini.NilInstantRemove;
+  Faster5nn1.Checked := Ini.Faster5nn > 0;
 end;
 
 
@@ -2952,6 +2955,20 @@ procedure TMainForm.NilInstantRemove1Click(Sender: TObject);
 begin
   with Sender as TMenuItem do Checked := not Checked;
   Ini.NilInstantRemove := NilInstantRemove1.Checked;
+end;
+
+
+procedure TMainForm.Faster5nn1Click(Sender: TObject);
+begin
+  if Ini.Faster5nn = 0 then
+    Ini.Faster5nn := Ini.Faster5nnMem
+  else
+    begin
+    Ini.Faster5nnMem := Ini.Faster5nn;
+    Ini.Faster5nn := 0;
+    end;
+
+  Faster5nn1.Checked := Ini.Faster5nn > 0;
 end;
 
 

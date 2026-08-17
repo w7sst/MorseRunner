@@ -1529,6 +1529,10 @@ object MainForm: TMainForm
         Checked = True
         OnClick = NilInstantRemove1Click
       end
+      object Faster5nn1: TMenuItem
+        Caption = 'Faster 5NN'
+        OnClick = Faster5nn1Click
+      end
       object mnuShowCallsignInfo: TMenuItem
         Caption = 'Show Callsign Info'
         OnClick = mnuShowCallsignInfoClick

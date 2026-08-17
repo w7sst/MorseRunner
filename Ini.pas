@@ -274,6 +274,8 @@ var
   AllStationsWpmS: integer = 0;      // force all stations to this Wpm
   CallsFromKeyer: boolean = false;
   F8: string = '';
+  Faster5nn: integer = 0;
+  Faster5nnMem: integer = 20;
 
   { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
   DebugExchSettings: boolean = false;
@@ -460,6 +462,8 @@ begin
       SingleCallStartDelay := ReadInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
       SingleCallStartDelay := Max(0, Min(SingleCallStartDelay, 2500));
       NilInstantRemove := ReadBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
+      Faster5nn := Max(0, Min(100, ReadInteger(SEC_SET, 'Faster5nn', Faster5nn)));
+      if Faster5nn > 0 then Faster5nnMem := Faster5nn;
 
       // [Debug]
       DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
@@ -546,6 +550,7 @@ begin
       WriteInteger(SEC_SET, 'StationIdRate', StationIdRate);
       WriteInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
       WriteBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
+      WriteInteger(SEC_SET, 'Faster5nn', Faster5nn);
 
     finally
       Free;
