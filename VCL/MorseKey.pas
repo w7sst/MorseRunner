@@ -249,17 +249,18 @@ var
 begin
   assert(WpmS > 0, 'must init using SetWpm()');
 
+  // Count samples directly - faster 5NN can put several WPMs in one message.
   SetSpeed(WpmS);
   TrueEnvelopeLen := 0;
   for i:=1 to Length(MorseMsg) do
     case MorseMsg[i] of
       CW_SPEED_UP: SetSpeed(CurrentWpm + 2);
       CW_SPEED_DOWN: SetSpeed(CurrentWpm - 2);
-      '.': Inc(TrueEnvelopeLen, 2 * SamplesInUnit); // dit and spacing
-      '-': Inc(TrueEnvelopeLen, 4 * SamplesInUnit); // dash and spacing
-      ' ': Inc(TrueEnvelopeLen, 2 * SamplesInUnit); // inter-char space
+      '.': Inc(TrueEnvelopeLen, 2 * SamplesInUnit); // 1 unit dit followed by 1 unit spacing
+      '-': Inc(TrueEnvelopeLen, 4 * SamplesInUnit); // 3 unit dash followed by 1 unit spacing
+      ' ': Inc(TrueEnvelopeLen, 2 * SamplesInUnit); // 3U inter-char space (2U + prior 1U)
     { ' ': subsequent space } // 5U inter-word space (2U + prior 3U)
-      '~': Inc(TrueEnvelopeLen, 3 * SamplesInUnit); // inter-msg space
+      '~': Inc(TrueEnvelopeLen, 3 * SamplesInUnit); // 4U inter-msg space (3U + prior 1U + loop time)
     end;
 
   //calc buffer size

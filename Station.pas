@@ -314,11 +314,12 @@ begin
     Nr2 := NrAsText;
     FastSteps := 0;
     if (IsFastReport(Nr) or IsFastReport(Nr2)) and
-      (Ini.Faster5nn > 0) and not Tst.IsFarnsworthAllowed then
+      (Ini.Faster5nn > 0) and not Tst.IsFarnsworthAllowed and
+      not (Ini.SimContest in [scWpx, scHst]) then
       if Self = Tst.Me then
         FastSteps := 5
-      else if Random(100) < Ini.Faster5nn then
-        FastSteps := 3 + Random(3);
+      else if 100 * Frac(100 * R1) < Ini.Faster5nn then
+        FastSteps := 3 + Floor(3 * Frac(10000 * R1));
 
     //with error
     AMsg := StringReplace(AMsg, '<#>', MarkReport(Nr), []);
