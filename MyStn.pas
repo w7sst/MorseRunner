@@ -70,7 +70,7 @@ begin
   Amplitude := 300000;
 
   // invalidate SentExchTypes. Will be set by Tst.OnSetMyCall().
-  SentExchTypes := ExchTypesUndef;
+  SentExchTypes := Default(TExchTypes);
 
   // Adding a contest: Initialize Exch1 and Exch2
   // (try to use the generalized Exch1 and Exch2 fields for new contests.)

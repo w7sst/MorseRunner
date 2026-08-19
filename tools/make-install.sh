@@ -8,6 +8,8 @@ FILES=(
   "MorseRunner.exe"
   "Readme.txt"
   "HstResults.txt"
+  "arrl-10-2025.tsv"
+  "Arrl10m-corrections.txt"
   "ARRLDXCW_USDX.txt"
   "CQWWCW.txt"
   "CWOPS.LIST"

@@ -181,6 +181,12 @@ type
     [TestCase('KG44KG',             'KG44KG,Guantanamo Bay')]
     [TestCase('KG44KGX',            'KG44KGX,Guantanamo Bay')]
 
+    // --- 4U1WB, World Bank, issued by United Nations to a US location
+    [TestCase('4U1WB',              '4U1WB,United States of America')]
+    [TestCase('4U1WB/W7',           '4U1WB/W7,United States of America')]
+    [TestCase('I/4U1WB',            'I/4U1WB,Italy')]
+    [TestCase('I0/4U1WB',           'I0/4U1WB,Italy')]
+
     // Multiple slashes (rare but legal)
     [TestCase('TriplePortable',       'I2/AA1ZZ/MM,Italy')]
 

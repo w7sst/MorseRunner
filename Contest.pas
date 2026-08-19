@@ -680,7 +680,20 @@ begin
     //save Exchange2 (Edit3)
     case Mainform.RecvExchTypes.Exch2 of
       etSerialNr:    Qso.Nr := StrToIntDef(AExch2, 0);
-      etGenericField:Qso.Exch2 := AExch2;
+      etGenericField:
+        if MainForm.RecvExchTypes.Exch2AsSerialNR then
+          begin
+            Qso.Exch2 := AExch2.Replace('T', '0')
+                               .Replace('A', '1')
+                               .Replace('N', '9');
+            Qso.Nr := StrToIntDef(Qso.Exch2, 0);
+          end
+        else
+          begin
+            Qso.Exch2 := AExch2;
+            if MainForm.RecvExchTypes.Exch2AsITURegion
+              then Qso.Nr := StrToIntDef(AExch2, 0);
+          end;
       etArrlSection: Qso.Exch2 := AExch2;
       etStateProv:   Qso.Exch2 := AExch2;
       etCqZone:      Qso.Exch2 := AExch2;

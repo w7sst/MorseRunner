@@ -2,8 +2,8 @@
                               Contest Simulator
                                   freeware
 
-                Version 1.85.4 - ARRL Sweepstakes Contest
-            The sixth release of the Morse Runner Community Edition
+                Version 1.86 - ARRL 10M Contest
+            The 7th release of the Morse Runner Community Edition
 
                Copyright (C) 2004-2016 Alex Shovkoplyas, VE3NEA
                       http://www.dxatlas.com/MorseRunner/
@@ -190,11 +190,6 @@ CONFIGURATION
       the exchange to match N1MM's behavior. Please see the contest rules section
       below for more information.
 
-    Show Exchange Summary In Status Bar (for ARRL Sweepstakes only)
-      This contest will display the parsed exchange summary in either the status
-      bar (default) or optionally in the label/caption above the exchange entry
-      field. Please see the contest rules section below for more information.
-
     Send Station ID after N consecutive QSOs
       The user's Station ID will be sent after N consecutive QSOs without
       sending the Station ID. This will occur when running either Pile-Up mode
@@ -335,13 +330,25 @@ SUBMITTING YOUR SCORE
 VERSION HISTORY
 
 Version 1.86-dev (Fall 2026)
+  - Add ARRL 10M Contest (W7SST)
+
+  Contest-specific improvements...
+
   General bug fixes and improvements...
+  - Send 'TU MyCall' after three consecutive QSOs (#385) (W7SST)
+  - Make F8 NIL reliably dismiss unwanted callers (#452) (YO3GND)
+  - Fix alt+w/alt+enter ding (#453) (YO3GND)
+  - Fix end-of-session qso finalization (#454) (YO3GND)
+  - Improvements to Audio recording (#456) (YO3GND)
+  - Display number of callsigns loaded when starting a contest (#460) (W7SST)
+  - Display audio recording status and improve folder selection (#462) (YO3GND)
+  - Send 5NN faster than the rest of the exchange (#463) (YO3GND)
 
 Version 1.85.4 (May 2026)
   Bug Fix Release
   - Station gives report before I got the call and give my report (#434) (W7SST)
   - ARRL DX - MR quickly reports duplicate contacts (#437) (W7SST)
-  - CQ WPX - MR sends the SCP version, VER20251126, as a callsign (#440) (W7SST)
+  - CQ WPX - MR sends the SCP version, VER20251126, as a callsign (#440) (KD7SIR, W7SST)
   - Fix assertion StnColl.pas, line 128 (#436) (W7SST)
   - Improve '?' handling - exchange is no longer sent with partial callsigns (#450) (W7SST)
 
@@ -605,11 +612,22 @@ Version 1.80 (Oct 2022)
 
 CONTEST INFORMATION
 
+    ARRL 10M
+    When: Second full weekend of December.
+    How: Amateurs worldwide exchange QSO information with as many stations
+         as possible on the 10-meter band.
+    Exchange:
+      - US, Canada, and Mexico: Signal report (RS/RST) plus state or province.
+      - DX Stations: Signal report plus a sequential serial number starting with 001.
+      - Maritime/Aeronautical Mobile: Signal report plus ITU Region (1, 2, or 3).
+    Rules: https://contests.arrl.org/ContestRules/10M-Rules.pdf
+
     ARRL DX
     When: Third full weekend in February
     How: W/VE stations only work DX and vice versa
-    Exchange: W/VE send RST and state/province
-    DX send RST and power (number or abbreviation like k or kw)
+    Exchange:
+      - W/VE send RST and state/province
+      - DX send RST and power (number or abbreviation like K or KW)
     Rules: https://contests.arrl.org/ContestRules/DX-Rules.pdf
 
     ARRL Field Day

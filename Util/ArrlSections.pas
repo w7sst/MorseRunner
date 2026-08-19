@@ -10,6 +10,10 @@ type
     Sections: TList<PCHAR>;
   end;
 
+function SectionToState(const ASection: string): string; overload;
+function SectionToState(const ASection: string;
+  var DistributionIndex: Integer): string; overload;
+
 const
   // https://contests.arrl.org/contestmultipliers.php?a=wve
   SectionsTbl: array[0..84] of PCHAR = (
@@ -59,6 +63,98 @@ const
 
 implementation
 
+uses
+  System.SysUtils,
+  System.Generics.Collections;
+
+var
+  GSectionMap: TDictionary<string,string>;
+
+procedure InitSectionMap;
+begin
+  GSectionMap := TDictionary<string,string>.Create;
+
+  // US subdivisions
+  GSectionMap.Add('EMA', 'MA');
+  GSectionMap.Add('WMA', 'MA');
+
+  GSectionMap.Add('ENY', 'NY');
+  GSectionMap.Add('NLI', 'NY');
+  GSectionMap.Add('NNY', 'NY');
+  GSectionMap.Add('WNY', 'NY');
+
+  GSectionMap.Add('NNJ', 'NJ');
+  GSectionMap.Add('SNJ', 'NJ');
+
+  GSectionMap.Add('EPA', 'PA');
+  GSectionMap.Add('WPA', 'PA');
+
+  GSectionMap.Add('NFL', 'FL');
+  GSectionMap.Add('SFL', 'FL');
+  GSectionMap.Add('WCF', 'FL');
+
+  GSectionMap.Add('NTX', 'TX');
+  GSectionMap.Add('STX', 'TX');
+  GSectionMap.Add('WTX', 'TX');
+
+  GSectionMap.Add('EWA', 'WA');
+  GSectionMap.Add('WWA', 'WA');
+
+  // California sections
+  GSectionMap.Add('EB',  'CA');
+  GSectionMap.Add('LAX', 'CA');
+  GSectionMap.Add('ORG', 'CA');
+  GSectionMap.Add('SB',  'CA');
+  GSectionMap.Add('SCV', 'CA');
+  GSectionMap.Add('SDG', 'CA');
+  GSectionMap.Add('SF',  'CA');
+  GSectionMap.Add('SJV', 'CA');
+  GSectionMap.Add('SV',  'CA');
+
+  // Special MDC (Maryland/DC)
+  GSectionMap.Add('MDC', 'MD');
+
+  // Canadian subdivisions
+  GSectionMap.Add('ONE', 'ON');
+  GSectionMap.Add('ONN', 'ON');
+  GSectionMap.Add('ONS', 'ON');
+end;
+
+function SectionToState(
+  const ASection: string): string;
+var
+  S: string;
+begin
+  S := ASection.ToUpper;
+
+  if GSectionMap.TryGetValue(S, Result) then
+    Exit;
+
+  Result := S;
+end;
+
+function SectionToState(
+  const ASection: string;
+  var DistributionIndex: Integer): string;
+begin
+  // special case for MDC - split 50% between 'MD' and 'DC'
+  if ASection.ToUpper = 'MDC' then
+  begin
+    Inc(DistributionIndex);
+    if Odd(DistributionIndex) then
+      Exit('MD')
+    else
+      Exit('DC');
+  end;
+
+  Result := SectionToState(ASection);
+end;
+
+initialization
+  InitSectionMap;
+
+finalization
+  GSectionMap.Free;
 
 end.
 
