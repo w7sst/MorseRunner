@@ -415,6 +415,7 @@ uses
   DXCC, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, CWSST, ALLJA, ACAG,
   IARUHF, ARRLSS,
   MorseKey, FarnsKeyer, CallLst,
+  CallsignUtils,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
   Dialogs, Vcl.FileCtrl, System.UITypes, TypInfo, ScoreDlg, Log, PerlRegEx, StrUtils,
   DateUtils, ShlObj;
@@ -889,9 +890,9 @@ begin
 
     '.', '+', '[', ',': //TU & Save
       begin
-        // verify callsign using simple length-based check
+        // verify callsign using a RegEx-based check
         var ExchError: string;
-        if not Tst.CheckEnteredCallLength(Edit1.Text, ExchError) then
+        if not Tst.ValidateEnteredCall(Edit1.Text, ExchError) then
           begin
             DisplayError(ExchError);
             Exit;
@@ -1128,7 +1129,7 @@ begin
   if (GetKeyState(VK_CONTROL) or GetKeyState(VK_SHIFT) or GetKeyState(VK_MENU)) < 0 then
   begin
     // verify callsign before calling SaveQSO
-    if not Tst.CheckEnteredCallLength(Edit1.Text, ExchError) then
+    if not Tst.ValidateEnteredCall(Edit1.Text, ExchError) then
       begin
         DisplayError(ExchError);
         Exit;
@@ -1162,9 +1163,9 @@ begin
   // Update CallSent (HisCall has been sent)
   Tst.OnExchangeEditComplete;
 
-  // Has user entered a complete callsign (3 or more characters)?
+  // Has user entered a complete callsign?
   ValidCall := (Pos('?', Edit1.Text) = 0) and
-               Tst.CheckEnteredCallLength(Edit1.Text, ExchError);
+                Tst.ValidateEnteredCall(Edit1.Text, ExchError);
   ExchError := '';
 
   // clear prior error string
@@ -1208,7 +1209,7 @@ begin
     Log.SaveQso;
   end
   else
-    MustAdvance := true;
+    MustAdvance := ValidCall;
 end;
 
 
