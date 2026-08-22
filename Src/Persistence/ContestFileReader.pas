@@ -239,6 +239,14 @@ TContestFileReader<TCallRec: class, constructor> = class
 
       Derived readers typically override ConfigureBindings and use
       AddBinding instead.
+
+      Example usage:
+        Reader := TContestFileReader<TCallOnlyRec>.Create([cffN1MMCsv, cffArrlTsv]);
+        Reader.AddDefaultBinding('Call', True,
+          procedure(const Value: string; Rec: TCallOnlyRec)
+          begin
+            Rec.Call := Value.ToUpper;
+          end);
     }
     procedure AddDefaultBinding(
       const ColumnName: string;
