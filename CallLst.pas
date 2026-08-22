@@ -31,6 +31,7 @@ implementation
 
 uses
   AppPaths,
+  CallsignUtils,
   SysUtils, Ini;
 
 function CompareCalls(Item1, Item2: Pointer): Integer;
@@ -96,10 +97,10 @@ begin
     for i:=L.Count-1 downto 1 do
       if StrComp(PChar(L[i]), PChar(L[i-1])) = 0
         then L[i] := nil;
-    //put calls to Lst
+    //put valid calls to Lst
     Calls.Capacity := L.Count;
     for i:=0 to L.Count-1 do
-      if L[i] <> nil then
+      if (L[i] <> nil) and CallsignUtils.IsValidCall(PChar(L[i])) then
         Calls.Add(PChar(L[i]));
   finally
     L.Free;
