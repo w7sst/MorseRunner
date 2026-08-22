@@ -58,7 +58,7 @@ public
     out AExchSummary: string; out AExchError: string) : Boolean; override;
   procedure OnExchangeEditComplete; override;
   procedure SetHisCall(const ACall: string); override;
-  function CheckEnteredCallLength(const ACall: string;
+  function ValidateEnteredCall(const ACall: string;
     out AExchError: String) : boolean; override;
   function ValidateEnteredExchange(const ACall, AExch1, AExch2: string;
     out AExchError: String) : boolean; override;
@@ -347,16 +347,16 @@ end;
 
 
 {
-  Verify callsign using length-based check.
+  Verify callsign using RegExp-based check.
   For ARRL SS, if Call has been parsed, it is assumed valid; otherwise
   call the base class implementation.
 }
-function TSweepstakes.CheckEnteredCallLength(const ACall: string;
+function TSweepstakes.ValidateEnteredCall(const ACall: string;
   out AExchError: String) : boolean;
 begin
   AExchError := '';
   if ExchValidator.Call.IsEmpty then
-    Result := inherited CheckEnteredCallLength(ACall, AExchError)
+    Result := inherited ValidateEnteredCall(ACall, AExchError)
   else
     Result := True;
 end;
