@@ -13,12 +13,21 @@ resizing regressions show up too.
 
 Needs a running X/Wayland display (it realises real widgets).
 
-Usage: tools/check-layout.py [<repo-root>]
+With --dpi it sweeps scale factors by running the probe against a nested
+Xephyr server started at each resolution. That is the only faithful way to do
+it here: the desktop sits at one fixed DPI, and every attempt to simulate a
+different one in-process produced numbers that measured the harness instead of
+the app (see "Fractional scales" in CLAUDE.md). Xephyr opens a window on the
+desktop for the few seconds each pass takes.
+
+Usage: tools/check-layout.py [--dpi 96,120,144,192] [<repo-root>]
 """
 
+import argparse
 import os
 import subprocess
 import sys
+import time
 
 PROBE_BODY = '''
 var
@@ -60,7 +69,10 @@ begin
   MainForm.Show;
   Application.ProcessMessages;
   Total := 0;
-  WriteLn('Screen PPI = ', Screen.PixelsPerInch);
+  //the font is reported so the sweep is self-checking: if a scale factor did
+  //not really take, the font height gives it away before the counts do
+  WriteLn('Screen PPI = ', Screen.PixelsPerInch,
+          '  form font.h = ', MainForm.Font.Height);
   for J := 0 to 3 do
   begin
     case J of
@@ -86,8 +98,62 @@ end.
 '''
 
 
+def free_display():
+    """First X display number not already taken."""
+    for n in range(9, 40):
+        if not os.path.exists("/tmp/.X11-unix/X%d" % n):
+            return n
+    raise RuntimeError("no free X display")
+
+
+def run_probe(exe, root, display):
+    run = subprocess.run([exe], capture_output=True, text=True, cwd=root,
+                         env={**os.environ, "DISPLAY": display})
+    print("\n".join(l for l in run.stdout.splitlines()
+                    if not l.startswith("Gtk-Message")))
+    return run.returncode
+
+
+def run_probe_at_dpi(exe, root, dpi):
+    """Run the probe against a nested Xephyr started at the given resolution.
+
+    The screen has to be bigger than the largest window the probe asks for
+    (2400x1700), or SetBounds is clamped and the wide-window passes test
+    nothing.
+    """
+    n = free_display()
+    disp = ":%d" % n
+    xephyr = subprocess.Popen(
+        ["Xephyr", disp, "-screen", "2600x1900", "-dpi", str(dpi),
+         "-ac", "-nolisten", "tcp"],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        for _ in range(50):
+            if os.path.exists("/tmp/.X11-unix/X%d" % n):
+                break
+            time.sleep(0.1)
+        else:
+            print("Xephyr did not start for %d dpi" % dpi, file=sys.stderr)
+            return 2
+        time.sleep(0.5)
+        print("=== %d dpi (%d%% of the designed 96)" % (dpi, round(100 * dpi / 96)))
+        return run_probe(exe, root, disp)
+    finally:
+        xephyr.terminate()
+        try:
+            xephyr.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            xephyr.kill()
+
+
 def main():
-    root = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.getcwd())
+    ap = argparse.ArgumentParser()
+    ap.add_argument("root", nargs="?", default=os.getcwd())
+    ap.add_argument("--dpi", help="comma-separated DPI values to sweep in a "
+                                  "nested Xephyr, e.g. 96,120,144,192")
+    args = ap.parse_args()
+
+    root = os.path.abspath(args.root)
     lpr = os.path.join(root, "MorseRunner.lpr")
     lpi = os.path.join(root, "MorseRunner.lpi")
 
@@ -116,12 +182,15 @@ def main():
             print("\n".join(errors[:10]), file=sys.stderr)
             return 2
 
-        run = subprocess.run([os.path.join(root, "checklayout")],
-                             capture_output=True, text=True,
-                             env={**os.environ, "DISPLAY": os.environ.get("DISPLAY", ":0")})
-        print("\n".join(l for l in run.stdout.splitlines()
-                        if not l.startswith("Gtk-Message")))
-        return run.returncode
+        exe = os.path.join(root, "checklayout")
+        if not args.dpi:
+            return run_probe(exe, root, os.environ.get("DISPLAY", ":0"))
+
+        rc = 0
+        for dpi in args.dpi.split(","):
+            if run_probe_at_dpi(exe, root, int(dpi.strip())):
+                rc = 1
+        return rc
     finally:
         # The app writes an ini named after its executable on shutdown.
         for f in (probe_lpr, probe_lpi, os.path.join(root, "checklayout"),

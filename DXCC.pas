@@ -30,7 +30,7 @@ type
     destructor Destroy; override;
     function FindRec(out dxrec : TDXCCRec; const ACallsign : string) : Boolean;
     function GetStationInfo(const ACallsign: string): string;
-    function Search(ACallsign: string): string;
+    function Search(const ACallsign: string): string;
   end;
 
 var
@@ -184,7 +184,7 @@ begin
     Result:= sP + ':  ' + TDXCCRec(DXCCList[i]).GetString;
 end;
 
-function TDXCC.Search(ACallsign: string): string;
+function TDXCC.Search(const ACallsign: string): string;
 var
     reg: TPerlRegEx;
     i: integer;

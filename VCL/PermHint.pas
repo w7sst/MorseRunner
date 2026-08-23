@@ -17,8 +17,8 @@ type
     Active: boolean;
 
     constructor Create(AOwner: TComponent); override;
-    procedure ShowHint(Txt: string);
-    procedure ShowHintAt(Txt: string; x, y: integer);
+    procedure ShowHint(const Txt: string);
+    procedure ShowHintAt(const Txt: string; x, y: integer);
     procedure HideHint;
   end;
 
@@ -36,7 +36,7 @@ begin
 end;
 
 
-procedure TPermanentHintWindow.ShowHint(Txt: string);
+procedure TPermanentHintWindow.ShowHint(const Txt: string);
 var
   P: TPoint;
 begin
@@ -53,7 +53,7 @@ begin
 end;
 
 
-procedure TPermanentHintWindow.ShowHintAt(Txt: string; x, y: integer);
+procedure TPermanentHintWindow.ShowHintAt(const Txt: string; x, y: integer);
 
 var
   R: TRect;

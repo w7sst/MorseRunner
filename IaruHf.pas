@@ -39,7 +39,7 @@ type
     function getExch1(id:integer): string;    // returns default RST value
     function getExch2(id:integer): string;    // returns Society (Headquarters, etc) or ITU Zone (others)
     function getUserText(id:integer): string; // returns optional UserText
-    function IsNum(Num: String): Boolean;
+    function IsNum(const Num: String): Boolean;
     function FindCallRec(out dxrec: TIaruHfCallRec; const ACall: string): Boolean;
     function GetStationInfo(const ACallsign : string) : string; override;
     function ExtractMultiplier(Qso: PQso) : string; override;
@@ -360,7 +360,7 @@ begin
 end;
 
 
-function TIaruHf.IsNum(Num: String): Boolean;
+function TIaruHf.IsNum(const Num: String): Boolean;
 var
    X : Integer;
 begin

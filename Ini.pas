@@ -269,11 +269,16 @@ var
   StationIdRate: Integer = 3;
   SingleCallStartDelay: Integer = 0;
   Activity: integer = 2;
-  Qrn: boolean = false;
-  Qrm: boolean = false;
-  Qsb: boolean = false;
-  Flutter: boolean = false;
-  Lids: boolean = false;
+  // Band conditions default to on, as in VE3NEA's original. These are what
+  // make the receiver sound like a receiver on an empty frequency: without
+  // QRN there are no static crashes, without QRM no other stations, without
+  // QSB/Flutter the callers do not fade. A fresh install has no .INI file, so
+  // these values are exactly what a new user hears.
+  Qrn: boolean = true;
+  Qrm: boolean = true;
+  Qsb: boolean = true;
+  Flutter: boolean = true;
+  Lids: boolean = true;
   NoActivityCnt: integer=0;
   NoStopActivity: integer=0;
   GetWpmUsesGaussian: boolean = false;
@@ -306,7 +311,7 @@ var
 
 procedure FromIni(cb : TErrMessageCallback);
 procedure ToIni;
-function IsNum(Num: String): Boolean;
+function IsNum(const Num: String): Boolean;
 function FindContestByName(const AContestName : String) : TSimContest;
 function ToStr(const val: TRunMode): String; overload;
 
@@ -644,7 +649,7 @@ begin
 end;
 
 
-function IsNum(Num: String): Boolean;
+function IsNum(const Num: String): Boolean;
 var
    X : Integer;
 begin

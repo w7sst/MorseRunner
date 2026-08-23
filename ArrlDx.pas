@@ -39,7 +39,7 @@ type
     function getExch1(id:integer): string;    // returns default RST value
     function getExch2(id:integer): string;    // returns State/Prov (US/Canada) or Power (DX)
     function getUserText(id:integer): string; // returns optional club name
-    function IsNum(Num: String): Boolean;
+    function IsNum(const Num: String): Boolean;
     function FindCallRec(out dxrec: TArrlDxCallRec; const ACall: string): Boolean;
     function GetStationInfo(const ACallsign : string) : string; override;
     function ExtractMultiplier(Qso: PQso) : string; override;
@@ -359,7 +359,7 @@ begin
 end;
 
 
-function TArrlDx.IsNum(Num: String): Boolean;
+function TArrlDx.IsNum(const Num: String): Boolean;
 var
    X : Integer;
 begin

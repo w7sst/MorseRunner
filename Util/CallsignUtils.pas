@@ -7,8 +7,8 @@ unit CallsignUtils;
 
 interface
 
-function ExtractCallsign(Call: string): string;
-function ExtractPrefix(Call: string; DeleteTrailingLetters: boolean = True): string;
+function ExtractCallsign(const Call: string): string;
+function ExtractPrefix(const Call: string; DeleteTrailingLetters: boolean = True): string;
 
 implementation
 
@@ -20,7 +20,7 @@ var
   CallsignRegex: TPerlRegEx;    // Compile the regex ONCE at initialization
 
 // Code by BG4FQD
-function ExtractCallsign(Call: string):string;
+function ExtractCallsign(const Call: string):string;
 var
     bMatch: boolean;
 begin
@@ -55,23 +55,24 @@ end;
   2) DXCC lookup - the Entity-identifying prefix is extracted and returned
      along with all characters. Called with DeleteTrailingLetters = False.
 }
-function ExtractPrefix(Call: string; DeleteTrailingLetters: boolean): string;
+function ExtractPrefix(const Call: string; DeleteTrailingLetters: boolean): string;
 const
   DIGITS = ['0'..'9'];
   LETTERS = ['A'..'Z'];
 var
   p: integer;
   S1, S2, Dig: string;
+  Bare: string;     // Call with modifiers stripped; the parameter stays const
 begin
   //kill modifiers
-  Call := Call + '|';
-  Call := StringReplace(Call, '/QRP|', '', []);
-  Call := StringReplace(Call, '/MM|', '', []);
-  Call := StringReplace(Call, '/M|', '', []);
-  Call := StringReplace(Call, '/P|', '', []);
-  Call := StringReplace(Call, '|', '', []);
-  Call := StringReplace(Call, '//', '/', [rfReplaceAll]);
-  if Length(Call) < 2 then
+  Bare := Call + '|';
+  Bare := StringReplace(Bare, '/QRP|', '', []);
+  Bare := StringReplace(Bare, '/MM|', '', []);
+  Bare := StringReplace(Bare, '/M|', '', []);
+  Bare := StringReplace(Bare, '/P|', '', []);
+  Bare := StringReplace(Bare, '|', '', []);
+  Bare := StringReplace(Bare, '//', '/', [rfReplaceAll]);
+  if Length(Bare) < 2 then
   begin
     Result := '';
     Exit;
@@ -80,14 +81,14 @@ begin
   Dig := '';
 
   //select shorter piece
-  p := Pos('/', Call);
-  if p = 0 then Result := Call
-  else if p = 1 then Result := Copy(Call, 2, MAXINT)
-  else if p = Length(Call) then Result := Copy(Call, 1, p-1)
+  p := Pos('/', Bare);
+  if p = 0 then Result := Bare
+  else if p = 1 then Result := Copy(Bare, 2, MAXINT)
+  else if p = Length(Bare) then Result := Copy(Bare, 1, p-1)
   else
     begin
-    S1 := Copy(Call, 1, p-1);
-    S2 := Copy(Call, p+1, MAXINT);
+    S1 := Copy(Bare, 1, p-1);
+    S2 := Copy(Bare, p+1, MAXINT);
 
     if (Length(S1) = 1) and CharInSet(S1[1], DIGITS) then begin
         Dig := S1; Result := S2;

@@ -484,17 +484,17 @@ begin
     Assert.AreEqual(3, Reg.GroupCount);
     Assert.AreEqual(PCREString('B'), Reg.Groups[0]);
     Assert.AreEqual(PCREString('B'), Reg.Groups[1]);
-    Assert.IsEmpty(Reg.Groups[2]);
+    Assert.IsEmpty(String(Reg.Groups[2]));
     Assert.AreEqual(PCREString('B'), Reg.Groups[3]);
-    Assert.IsEmpty(Reg.Groups[4]);
-    Assert.IsEmpty(Reg.Groups[Reg.NamedGroup('c')]);  // index = 4
+    Assert.IsEmpty(String(Reg.Groups[4]));
+    Assert.IsEmpty(String(Reg.Groups[Reg.NamedGroup('c')]));  // index = 4
 
     Assert.IsTrue(Reg.MatchAgain);
     Assert.AreEqual(4, Reg.GroupCount);
     Assert.AreEqual(PCREString('C'), Reg.Groups[0]);
     Assert.AreEqual(PCREString('C'), Reg.Groups[1]);
-    Assert.IsEmpty(Reg.Groups[2]);
-    Assert.IsEmpty(Reg.Groups[3]);
+    Assert.IsEmpty(String(Reg.Groups[2]));
+    Assert.IsEmpty(String(Reg.Groups[3]));
     Assert.AreEqual(PCREString('C'), Reg.Groups[4]);
 
     Assert.IsFalse(Reg.MatchAgain, 'final MatchAgain should fail');
@@ -526,17 +526,17 @@ begin
     RegList.Subject := 'ABC';
     Assert.IsTrue(RegList.Match, 'a');
     MatchedReg := RegList.MatchedRegEx;
-    Assert.Contains(MatchedReg.MatchedText, 'A');
+    Assert.Contains(String(MatchedReg.MatchedText), 'A');
     Assert.AreEqual(0, RegList.IndexOf(MatchedReg));
 
     Assert.IsTrue(RegList.MatchAgain, 'b');
     MatchedReg := RegList.MatchedRegEx;
-    Assert.Contains(MatchedReg.MatchedText, 'B');
+    Assert.Contains(String(MatchedReg.MatchedText), 'B');
     Assert.AreEqual(1, RegList.IndexOf(MatchedReg));
 
     Assert.IsTrue(RegList.MatchAgain, 'c');
     MatchedReg := RegList.MatchedRegEx;
-    Assert.Contains(MatchedReg.MatchedText, 'C');
+    Assert.Contains(String(MatchedReg.MatchedText), 'C');
     Assert.AreEqual(2, RegList.IndexOf(MatchedReg));
 
     Assert.IsFalse(RegList.MatchAgain, 'final MatchAgain should fail');

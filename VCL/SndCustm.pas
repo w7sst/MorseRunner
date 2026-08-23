@@ -53,7 +53,7 @@ type
     FBufsDone: LongWord;
 
     procedure Loaded; override;
-    procedure Err(Txt: string);
+    procedure Err(const Txt: string);
     function GetThreadID: THandle;
 
     //override these
@@ -135,7 +135,7 @@ type
     FBufsDone: LongWord;
 
     procedure Loaded; override;
-    procedure Err(Txt: string);
+    procedure Err(const Txt: string);
 
     //ring buffer, shared between the main thread and TWaitThread
     function  NextFullBuffer: PWaveBuffer;
@@ -193,7 +193,8 @@ end;
 procedure TWaitThread.ProcessEvent;
 begin
   try
-    if Msg.wParam = Owner.DeviceHandle then
+    //both sides widened to the unsigned message parameter type
+    if Msg.wParam = WPARAM(Owner.DeviceHandle) then
       Owner.BufferDone(PWaveHdr(Msg.lParam));
   except on E: Exception do
     begin
@@ -202,10 +203,6 @@ begin
     end;
   end;
 end;
-
-
-
-
 
 
 { TCustomSoundInOut }
@@ -242,41 +239,6 @@ begin
 end;
 
 
-procedure TCustomSoundInOut.Err(Txt: string);
-begin
-  raise ESoundError.Create(Txt);
-end;
-
-
-
-
-
-//------------------------------------------------------------------------------
-//                            enable/disable
-//------------------------------------------------------------------------------
-//do not enable component at design or load time
-procedure TCustomSoundInOut.SetEnabled(AEnabled: boolean);
-begin
-  if (not (csDesigning in ComponentState)) and (not (csLoading in ComponentState)) and
-     (AEnabled <> FEnabled) then
-     DoSetEnabled(AEnabled);
-  FEnabled := AEnabled;
-end;
-
-
-//enable component after all properties have been loaded
-procedure TCustomSoundInOut.Loaded;
-begin
-  inherited Loaded;
-
-  if FEnabled and not (csDesigning in ComponentState) then
-    begin
-    FEnabled := false;
-    SetEnabled(true);
-    end;
-end;
-
-
 procedure TCustomSoundInOut.DoSetEnabled(AEnabled: boolean);
 begin
     if AEnabled then begin
@@ -302,7 +264,8 @@ begin
             raise;
         end;
         //device started ok, wait for events
-        FThread.Resume;
+        //Start, not the deprecated Resume; the FPC half already uses it
+        FThread.Start;
     end
     else begin
         if FThread <> nil then
@@ -333,32 +296,11 @@ begin
 end;
 
 
-
-procedure TCustomSoundInOut.SetDeviceID(const Value: UINT);
-begin
-  Enabled := false;
-  FDeviceID := Value;
-end;
-
-
-
 function TCustomSoundInOut.GetThreadID: THandle;
 begin
   Result := FThread.ThreadID;
 end;
 
-
-function TCustomSoundInOut.GetBufCount: LongWord;
-begin
-  Result := Length(Buffers);
-end;
-
-procedure TCustomSoundInOut.SetBufCount(const Value: LongWord);
-begin
-  if Enabled then
-    raise Exception.Create('Cannot change the number of buffers for an open audio device');
-  SetLength(Buffers, Value);
-end;
 
 {$ELSE}
 
@@ -424,8 +366,6 @@ begin
 end;
 
 
-
-
 { TCustomSoundInOut }
 
 //------------------------------------------------------------------------------
@@ -449,12 +389,6 @@ begin
   FreeAndNil(FDataReady);
   FreeAndNil(FLock);
   inherited;
-end;
-
-
-procedure TCustomSoundInOut.Err(Txt: string);
-begin
-  raise ESoundError.Create(Txt);
 end;
 
 
@@ -554,32 +488,6 @@ begin
 end;
 
 
-//------------------------------------------------------------------------------
-//                            enable/disable
-//------------------------------------------------------------------------------
-//do not enable component at design or load time
-procedure TCustomSoundInOut.SetEnabled(AEnabled: boolean);
-begin
-  if (not (csDesigning in ComponentState)) and (not (csLoading in ComponentState)) and
-     (AEnabled <> FEnabled) then
-     DoSetEnabled(AEnabled);
-  FEnabled := AEnabled;
-end;
-
-
-//enable component after all properties have been loaded
-procedure TCustomSoundInOut.Loaded;
-begin
-  inherited Loaded;
-
-  if FEnabled and not (csDesigning in ComponentState) then
-    begin
-    FEnabled := false;
-    SetEnabled(true);
-    end;
-end;
-
-
 procedure TCustomSoundInOut.DoSetEnabled(AEnabled: boolean);
 begin
   if AEnabled then
@@ -643,6 +551,40 @@ begin
 end;
 
 
+{$ENDIF}
+
+
+//------------------------------------------------------------------------------
+//   shared by both platforms -- these routines contain no OS calls
+//------------------------------------------------------------------------------
+
+procedure TCustomSoundInOut.Err(const Txt: string);
+begin
+  raise ESoundError.Create(Txt);
+end;
+
+
+procedure TCustomSoundInOut.Loaded;
+begin
+  inherited Loaded;
+
+  if FEnabled and not (csDesigning in ComponentState) then
+    begin
+    FEnabled := false;
+    SetEnabled(true);
+    end;
+end;
+
+
+procedure TCustomSoundInOut.SetEnabled(AEnabled: boolean);
+begin
+  if (not (csDesigning in ComponentState)) and (not (csLoading in ComponentState)) and
+     (AEnabled <> FEnabled) then
+     DoSetEnabled(AEnabled);
+  FEnabled := AEnabled;
+end;
+
+
 procedure TCustomSoundInOut.SetDeviceID(const Value: UINT);
 begin
   Enabled := false;
@@ -655,6 +597,7 @@ begin
   Result := Length(Buffers);
 end;
 
+
 procedure TCustomSoundInOut.SetBufCount(const Value: LongWord);
 begin
   if Enabled then
@@ -662,7 +605,6 @@ begin
   SetLength(Buffers, Value);
 end;
 
-{$ENDIF}
 
 end.
 

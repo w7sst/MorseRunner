@@ -17,7 +17,7 @@ type
   public
     constructor CreateStation;
     procedure ProcessEvent(AEvent: TStationEvent); override;
-    procedure SendText(AMsg: string); override;
+    procedure SendText(const AMsg: string); override;
   end;
 
 implementation
@@ -72,10 +72,9 @@ end;
   This is needed to bypass special handling of '<his>' during message
   processing to accomodate 'Ini.CallsFromKeyer'.
 }
-procedure TQrmStation.SendText(AMsg: string);
+procedure TQrmStation.SendText(const AMsg: string);
 begin
-  AMsg := AMsg.Replace('<his>', HisCall);
-  inherited SendText(AMsg);
+  inherited SendText(AMsg.Replace('<his>', HisCall));
 end;
 
 end.

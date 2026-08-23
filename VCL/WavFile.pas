@@ -81,11 +81,11 @@ type
     procedure SetInfo(const Value: TStrings);
     procedure SetFileName(const Value: TFileName);
     {$IFNDEF MSWINDOWS}
-    procedure ParseInfo(Data: AnsiString);
+    procedure ParseInfo(const Data: AnsiString);
     {$ENDIF}
   protected
     procedure ChkErr;
-    procedure ErrIf(IsErr: boolean; Msg: string);
+    procedure ErrIf(IsErr: boolean; const Msg: string);
     procedure ChkNotOpen;
     procedure ReadInfo;
     procedure WriteInfo;
@@ -964,22 +964,24 @@ begin
 end;
 
 
-procedure TAlWavFile.ParseInfo(Data: AnsiString);
+procedure TAlWavFile.ParseInfo(const Data: AnsiString);
 var
+  Rest: AnsiString;   //Data is const; walk a local copy
   InfName: AnsiString;
   InfValue: AnsiString;
   Len: integer;
 begin
   FInfo.Clear;
+  Rest := Data;
 
-  while Length(Data) > 8 {4 for chunk ID and 4 for length} do
+  while Length(Rest) > 8 {4 for chunk ID and 4 for length} do
     begin
-    InfName := Copy(Data, 1, 4);
-    Len := PInteger(@Data[5])^;
-    if (Len < 0) or (Len > Length(Data) - 8) then Break;
-    InfValue := Copy(Data, 9, Len);
-    Delete(Data, 1, 8+Len);
-    if Copy(Data, 1, 1) = #0 then Delete(Data, 1, 1); //padded byte
+    InfName := Copy(Rest, 1, 4);
+    Len := PInteger(@Rest[5])^;
+    if (Len < 0) or (Len > Length(Rest) - 8) then Break;
+    InfValue := Copy(Rest, 9, Len);
+    Delete(Rest, 1, 8+Len);
+    if Copy(Rest, 1, 1) = #0 then Delete(Rest, 1, 1); //padded byte
     FInfo.Add(string(InfName) + '=' + string(InfValue));
     end;
 end;
@@ -1014,7 +1016,7 @@ end;
 {$ENDIF}
 
 
-procedure TAlWavFile.ErrIf(IsErr: boolean; Msg: string);
+procedure TAlWavFile.ErrIf(IsErr: boolean; const Msg: string);
 begin
   if IsErr then raise Exception.Create(Msg);
 end;

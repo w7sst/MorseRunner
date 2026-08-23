@@ -626,14 +626,15 @@ begin
 end;
 
 
-function CallToScore(S: string): integer;
+function CallToScore(const S: string): integer;
 var
   i: integer;
+  Code: string;    // the morse for S; the parameter stays const
 begin
-  S := Keyer.Encode(S);
+  Code := Keyer.Encode(S);
   Result := -1;
-  for i:=1 to Length(S) do
-    case S[i] of
+  for i:=1 to Length(Code) do
+    case Code[i] of
       '.': Inc(Result, 2);
       '-': Inc(Result, 4);
       ' ': Inc(Result, 2);

@@ -39,7 +39,7 @@ type
     function ExtractMultiplier(Qso: PQso) : string; override;
   end;
 
-  function IsNum(Num: String): Boolean;
+  function IsNum(const Num: String): Boolean;
 
 
 implementation
@@ -260,7 +260,7 @@ begin
 end;
 
 
-function IsNum(Num: String): Boolean;
+function IsNum(const Num: String): Boolean;
 var
    X : Integer;
 begin

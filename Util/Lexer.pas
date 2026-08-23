@@ -39,7 +39,7 @@ type
     Value: string;
     Pos: integer;
 
-    procedure Init(AType: Integer; aValue: string; aPos: integer);
+    procedure Init(AType: Integer; const aValue: string; aPos: integer);
   end;
 
   {
@@ -102,7 +102,7 @@ begin
   Self.regex := ARegEx;
 end;
 
-procedure TExchToken.Init(AType: Integer; aValue: string; aPos: integer);
+procedure TExchToken.Init(AType: Integer; const aValue: string; aPos: integer);
 begin
   Self.TokenType := AType;
   Self.Value := aValue;
@@ -191,7 +191,7 @@ begin
 
   if SkipWhitespace then
     begin
-      assert(ReSkipWhitespace.Subject = self.Buf);
+      assert(String(ReSkipWhitespace.Subject) = self.Buf);
       assert(ReSkipWhitespace.Stop = Self.Buf.Length);
       ReSkipWhitespace.Start := self.Pos;
       if ReSkipWhitespace.MatchAgain then
@@ -207,7 +207,7 @@ begin
 
   for Rule in Rules do
     begin
-      assert(Rule.regex.Subject = Self.Buf);
+      assert(String(Rule.regex.Subject) = Self.Buf);
       assert(Rule.regex.Stop = Self.Buf.Length);
       Rule.regex.Start := Self.Pos;
       Result := Rule.regex.MatchAgain;

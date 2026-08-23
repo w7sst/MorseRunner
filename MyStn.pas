@@ -14,7 +14,7 @@ type
   TMyStation = class(TStation)
   private
     Pieces: TStringList;
-    procedure AddToPieces(AMsg: string);
+    procedure AddToPieces(const AMsg: string);
     procedure SendNextPiece;
   public
     MyEntity : String;
@@ -24,9 +24,9 @@ type
     procedure SetWpm(const AWpmS : integer);
     procedure ProcessEvent(AEvent: TStationEvent); override;
     procedure AbortSend;
-    procedure SendText(AMsg: string); override;
+    procedure SendText(const AMsg: string); override;
     function GetBlock: TSingleArray; override;
-    function UpdateCallInMessage(ACall: string): boolean;
+    function UpdateCallInMessage(const ACall: string): boolean;
   end;
 
 
@@ -116,7 +116,7 @@ begin
 end;
 
 
-procedure TMyStation.SendText(AMsg: string);
+procedure TMyStation.SendText(const AMsg: string);
 begin
   // Adding a contest: some field types have specific behaviors
   if SentExchTypes.Exch1 = etOpName then
@@ -136,21 +136,23 @@ begin
 end;
 
 
-procedure TMyStation.AddToPieces(AMsg: string);
+procedure TMyStation.AddToPieces(const AMsg: string);
 var
   p, i: integer;
+  Rest: string;   // what is left to split; the parameter stays const
 begin
   //split into pieces
   //special processing of callsign
-  p := Pos('<his>', AMsg);
+  Rest := AMsg;
+  p := Pos('<his>', Rest);
   while p > 0 do
     begin
-    if p > 1 then Pieces.Add(Copy(AMsg, 1, p-1));
+    if p > 1 then Pieces.Add(Copy(Rest, 1, p-1));
     Pieces.Add('@');  //his callsign indicator
-    Delete(AMsg, 1, p+4);
-    p := Pos('<his>', AMsg);
+    Delete(Rest, 1, p+4);
+    p := Pos('<his>', Rest);
     end;
-  if AMsg <> '' then Pieces.Add(AMsg);
+  if Rest <> '' then Pieces.Add(Rest);
 
   // remove any empty pieces (there shouldn't be any)
   // todo - this can be removed in the future.
@@ -187,7 +189,7 @@ begin
 end;
 
 
-function TMyStation.UpdateCallInMessage(ACall: string): boolean;
+function TMyStation.UpdateCallInMessage(const ACall: string): boolean;
 var
   NewEnvelope: TSingleArray;
   i: integer;

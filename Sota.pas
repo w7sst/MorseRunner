@@ -57,6 +57,7 @@ const
   // purpose: how well a caller hears me has nothing to do with how well I
   // hear him, so his report of me is drawn at random while my report of him
   // follows his actual level in the receiver.
+  WeakRst       = 339;       // the report a barely-readable caller sends
   WeakFraction  = 0.15;      // callers who report me as barely readable
   WeakAmplitude = 14000;     // TDxStation.Amplitude below this reads as 339
 
@@ -64,8 +65,14 @@ type
   TSota = class(TContest)
   private
     SotaCallList: TStringList;
-    // country (cty.dat primary prefix) -> summit codes there. Owns the lists.
-    SummitsByEntity: TObjectDictionary<string, TStringList>;
+    // association (e.g. 'W7O', 'JA5', 'VE9') -> summit codes in it. Owns the
+    // lists. Indexed per association, not per country, so that a caller in
+    // one call area does not get a summit from another (see PickSummitFor).
+    SummitsByAssoc: TObjectDictionary<string, TStringList>;
+    // country (cty.dat primary prefix) -> the associations inside it
+    AssocsByEntity: TObjectDictionary<string, TStringList>;
+    // association -> its call-area digit, #0 when it has none ('G', 'JA')
+    AssocArea: TDictionary<string, Char>;
     // cty.dat: callsign prefix -> primary prefix, and exact-callsign overrides
     CtyPrefix: TDictionary<string, string>;
     CtyExact: TDictionary<string, string>;
@@ -77,7 +84,6 @@ type
     procedure RequireFile(const AName: string);
     procedure LoadCountryFile;
     procedure LoadSummits;
-    function EntityOf(const ACall: string): string;
 
   public
     constructor Create;
@@ -92,21 +98,34 @@ type
     function ValidateMyExchange(const AExchange: string;
       ATokens: TStringList; out AExchError: string): boolean; override;
     function ExtractMultiplier(Qso: PQso) : string; override;
+    function CallerCopiesPoorly(const AStn: TStation): boolean; override;
 
     // returns a summit reference in the country ACall is operating from, or
     // '' when there are no summits there
     function PickSummitFor(const ACall: string): string;
-    // the part of a callsign that says where the operator actually is:
-    // 'LX/AB1DE/P' -> 'LX', 'DL1GG/P' -> 'DL1GG', 'DL1GG' -> 'DL1GG'
+    // Where the operator actually is, from the callsign he signs. Returns the
+    // prefix or callsign that names the location, and the call-area digit
+    // that applies there (#0 when the location carries none).
+    //   'LX/AB1DE/P' -> 'LX'      + area from LX     (operating in Luxembourg)
+    //   'K0EMT/VE9'  -> 'VE9'     + area 9           (a US call, but in VE9)
+    //   'JL1EFV/5'   -> 'JL1EFV'  + area 5           (same country, area 5)
+    //   'DL1GG/P'    -> 'DL1GG'   + area 1           ('/P' is only a modifier)
+    //   '2W0ILQ/M'   -> '2W0ILQ'  + area 0           ('/M' is mobile, not England)
+    class procedure SplitLocation(const ACall: string;
+      out ALocation: string; out AArea: Char);
+    // just the location half of SplitLocation
     class function LocationPart(const ACall: string): string;
+    // the call-area digit of a prefix or callsign: 'K0EMT' -> '0',
+    // 'VE9' -> '9', 'W7O' -> '7', 'JA' -> #0
+    class function AreaDigitOf(const ACall: string): Char;
     // whether ACall is signing portable or with a foreign prefix
     class function IsPortable(const ACall: string): boolean;
     // put a reference into canonical form, or '' if it is not one at all:
     // 'PA-PA003', 'PA/PA003' and 'papa003' all become 'PA/PA-003'
     class function NormaliseRef(const ARef: string): string;
     // the country a callsign (or a summit association) belongs to, as a
-    // cty.dat primary prefix. Public so the checker can verify the pairing.
-    function EntityOfPublic(const ACall: string): string;
+    // cty.dat primary prefix
+    function EntityOf(const ACall: string): string;
     // a realistic report: 339 for a weak signal, otherwise 5x9
     class function MakeRst(AIsWeak: boolean): integer;
     // a report as it is actually keyed: 599 -> 5NN, 579 -> 57N, 339 -> 33N
@@ -125,18 +144,19 @@ const
   SummitsFile     = 'summitslist.txt';
   CountryFile     = 'cty.dat';
 
-  // Keeping every one of the ~181,000 summits would cost far more memory than
-  // the variety is worth; this many per entity is already more than a user
-  // will ever see in a session. Kept by reservoir sampling so the choice is
-  // spread over the whole association rather than biased to '-001'.
-  MaxSummitsPerEntity = 500;
+  // Per association rather than per country: keeping every one of the ~181,000
+  // summits costs far more memory than the variety is worth, but the cap has
+  // to leave every association populated or a whole call area disappears.
+  MaxSummitsPerAssoc = 200;
 
 
 constructor TSota.Create;
 begin
   inherited Create;
   SotaCallList := TStringList.Create;
-  SummitsByEntity := TObjectDictionary<string, TStringList>.Create([doOwnsValues]);
+  SummitsByAssoc := TObjectDictionary<string, TStringList>.Create([doOwnsValues]);
+  AssocsByEntity := TObjectDictionary<string, TStringList>.Create([doOwnsValues]);
+  AssocArea := TDictionary<string, Char>.Create;
   CtyPrefix := TDictionary<string, string>.Create;
   CtyExact := TDictionary<string, string>.Create;
 end;
@@ -146,7 +166,9 @@ destructor TSota.Destroy;
 begin
   FreeAndNil(CtyExact);
   FreeAndNil(CtyPrefix);
-  FreeAndNil(SummitsByEntity);
+  FreeAndNil(AssocArea);
+  FreeAndNil(AssocsByEntity);
+  FreeAndNil(SummitsByAssoc);
   FreeAndNil(SotaCallList);
   inherited;
 end;
@@ -225,22 +247,111 @@ end;
 
 
 {
-  The part of a callsign that says where the operator actually is. Only a
-  leading element can be a location prefix; anything after the callsign is a
-  suffix such as /P or /M. 'M' in 2W0ILQ/M is a suffix, not England.
+  Where the operator actually is, worked out from the callsign he signs.
+
+  Three things can appear around the base callsign, and they mean different
+  things:
+
+    a leading prefix   'LX/AB1DE/P'  he is in Luxembourg -- the prefix wins
+    a trailing prefix  'K0EMT/VE9'   a US call operating in VE9 (mostly NA use)
+    a trailing digit   'JL1EFV/5'    same country, call area 5 (JA, W, ...)
+
+  Everything else after the callsign is a modifier -- /P, /M, /QRP, /MM -- and
+  says nothing about location. That matters because some modifiers are also
+  valid prefixes: the 'M' of 2W0ILQ/M is mobile, not England, so a trailing
+  single letter is always read as a modifier.
 }
+class procedure TSota.SplitLocation(const ACall: string;
+  out ALocation: string; out AArea: Char);
+var
+  Parts: TStringList;
+  i: integer;
+  P: string;
+begin
+  ALocation := ACall;
+  AArea := #0;
+
+  Parts := TStringList.Create;
+  try
+    Parts.Delimiter := '/';
+    Parts.StrictDelimiter := True;
+    Parts.DelimitedText := UpperCase(Trim(ACall));
+    if Parts.Count = 0 then Exit;
+
+    // The base callsign is the longest element; a leading element shorter than
+    // it is a location prefix ('LX/AB1DE'), not the call itself.
+    ALocation := Parts.Strings[0];
+    for i := 1 to Parts.Count-1 do
+      if Length(Parts.Strings[i]) > Length(ALocation) then
+        ALocation := Parts.Strings[i];
+
+    if Parts.Strings[0] <> ALocation then
+      begin
+      // a leading prefix names the location outright and outranks any suffix
+      ALocation := Parts.Strings[0];
+      AArea := AreaDigitOf(ALocation);
+      Exit;
+      end;
+
+    AArea := AreaDigitOf(ALocation);
+
+    // walk the suffixes; the last one that carries location information wins
+    for i := 1 to Parts.Count-1 do
+      begin
+      P := Parts.Strings[i];
+      if P = '' then Continue;
+
+      // '/5' - same country, different call area
+      if (Length(P) = 1) and CharInSet(P[1], ['0'..'9']) then
+        AArea := P[1]
+      // a single letter is always a modifier (/P, /M, /A, /R)
+      else if Length(P) = 1 then
+        Continue
+      else if (P = 'MM') or (P = 'AM') or (P = 'QRP') or (P = 'QRPP') or
+              (P = 'LH') or (P = 'BCN') then
+        Continue
+      // '/VE9' - operating in another prefix's area altogether
+      else
+        begin
+        ALocation := P;
+        AArea := AreaDigitOf(P);
+        end;
+      end;
+  finally
+    Parts.Free;
+  end;
+end;
+
+
 class function TSota.LocationPart(const ACall: string): string;
 var
-  n: integer;
+  Area: Char;
 begin
-  // It is always the first element, whether that is a prefix or the callsign
-  // itself: 'LX/AB1DE/P' -> LX, 'DL1GG/P' -> DL1GG, '2W0ILQ/M' -> 2W0ILQ.
-  // Taking anything later would read the 'M' of 2W0ILQ/M as England.
-  n := Pos('/', ACall);
-  if n = 0 then
-    Result := ACall
-  else
-    Result := Copy(ACall, 1, n-1);
+  SplitLocation(ACall, Result, Area);
+end;
+
+
+{
+  The call-area digit: the last digit that is followed only by letters, which
+  is where the prefix ends in any callsign or prefix. 'K0EMT' -> '0',
+  'JL1EFV' -> '1', '2W0ILQ' -> '0', 'VE9' -> '9', 'JA' -> #0.
+}
+class function TSota.AreaDigitOf(const ACall: string): Char;
+var
+  i, j: integer;
+  OnlyLetters: boolean;
+begin
+  Result := #0;
+  for i := Length(ACall) downto 1 do
+    if CharInSet(ACall[i], ['0'..'9']) then
+      begin
+      OnlyLetters := True;
+      for j := i+1 to Length(ACall) do
+        if not CharInSet(ACall[j], ['A'..'Z', 'a'..'z']) then
+          begin OnlyLetters := False; Break; end;
+      if OnlyLetters then
+        begin Result := ACall[i]; Exit; end;
+      end;
 end;
 
 
@@ -312,24 +423,30 @@ end;
 
 
 {
-  Read summitslist.txt and group summit codes by the DXCC entity of their
-  association. Line 1 is a title, line 2 the CSV header; SummitCode is the
-  first column, so everything up to the first comma is taken without having
-  to parse the quoted fields that follow.
+  Read summitslist.txt and index the summit codes by their association, and
+  the associations by the country they sit in. Line 1 is a title, line 2 the
+  CSV header; SummitCode is the first column, so everything up to the first
+  comma is taken without having to parse the quoted fields that follow.
+
+  Indexing per association (not per country) is what lets PickSummitFor keep a
+  caller in his own call area: 'W5T' and 'W7O' are both the USA, but only one
+  of them is where a W5 station is standing.
 }
 procedure TSota.LoadSummits;
 var
   slst: TStringList;
   AssocEntity: TDictionary<string, string>;  // association -> entity ('' = none)
-  SeenPerEntity: TDictionary<string, integer>;
-  Codes: TStringList;
+  SeenPerAssoc: TDictionary<string, integer>;
+  Codes, Assocs: TStringList;
   i, n, Seen: integer;
   Line, Code, Assoc, Entity: string;
 begin
-  SummitsByEntity.Clear;
+  SummitsByAssoc.Clear;
+  AssocsByEntity.Clear;
+  AssocArea.Clear;
   slst := TStringList.Create;
   AssocEntity := TDictionary<string, string>.Create;
-  SeenPerEntity := TDictionary<string, integer>.Create;
+  SeenPerAssoc := TDictionary<string, integer>.Create;
   try
     slst.LoadFromFile(ParamStr(1) + SummitsFile);
 
@@ -351,30 +468,42 @@ begin
         // longest-prefix lookup applies: 'W7O' -> W, 'KLA' -> KL, 'G' -> G.
         Entity := EntityOf(Assoc);
         AssocEntity.Add(Assoc, Entity);
+
+        if Entity <> '' then
+          begin
+          if not AssocsByEntity.TryGetValue(Entity, Assocs) then
+            begin
+            Assocs := TStringList.Create;
+            AssocsByEntity.Add(Entity, Assocs);
+            end;
+          Assocs.Add(Assoc);
+          AssocArea.AddOrSetValue(Assoc, AreaDigitOf(Assoc));
+          end;
         end;
       if Entity = '' then Continue;
 
-      if not SummitsByEntity.TryGetValue(Entity, Codes) then
+      if not SummitsByAssoc.TryGetValue(Assoc, Codes) then
         begin
         Codes := TStringList.Create;
-        SummitsByEntity.Add(Entity, Codes);
+        SummitsByAssoc.Add(Assoc, Codes);
         end;
 
-      // reservoir sampling: keep MaxSummitsPerEntity of them, uniformly
-      if not SeenPerEntity.TryGetValue(Entity, Seen) then Seen := 0;
+      // reservoir sampling: keep MaxSummitsPerAssoc of them, uniformly, so
+      // the choice is spread over the association rather than biased to '-001'
+      if not SeenPerAssoc.TryGetValue(Assoc, Seen) then Seen := 0;
       Inc(Seen);
-      SeenPerEntity.AddOrSetValue(Entity, Seen);
+      SeenPerAssoc.AddOrSetValue(Assoc, Seen);
 
-      if Codes.Count < MaxSummitsPerEntity then
+      if Codes.Count < MaxSummitsPerAssoc then
         Codes.Add(Code)
       else
         begin
         n := Random(Seen);
-        if n < MaxSummitsPerEntity then Codes.Strings[n] := Code;
+        if n < MaxSummitsPerAssoc then Codes.Strings[n] := Code;
         end;
       end;
   finally
-    SeenPerEntity.Free;
+    SeenPerAssoc.Free;
     AssocEntity.Free;
     slst.Free;
   end;
@@ -456,17 +585,57 @@ begin
 end;
 
 
+{
+  A summit reference for where ACall is actually operating.
+
+  The association has to match the operator's call area, not just his country:
+  a station signing /VE9 belongs on a VE9 summit, and JL1EFV/5 on a JA5 one.
+  When the country's associations carry no digit at all (G, DL, LX) or none
+  matches (a JA1 station: Japan indexes only JA5, JA6 and JA8 separately, the
+  rest are plain 'JA'), the digit-less associations are the right answer.
+}
 function TSota.PickSummitFor(const ACall: string): string;
 var
-  Codes: TStringList;
-  Entity: string;
+  Codes, Assocs, Candidates: TStringList;
+  Entity, Location: string;
+  Area, AssocDigit: Char;
+  i: integer;
 begin
   Result := '';
-  Entity := EntityOf(ACall);
+  SplitLocation(ACall, Location, Area);
+  Entity := EntityOf(Location);
   if Entity = '' then Exit;
-  if not SummitsByEntity.TryGetValue(Entity, Codes) then Exit;
-  if Codes.Count = 0 then Exit;
-  Result := Codes.Strings[Random(Codes.Count)];
+  if not AssocsByEntity.TryGetValue(Entity, Assocs) then Exit;
+  if Assocs.Count = 0 then Exit;
+
+  Candidates := TStringList.Create;
+  try
+    // first choice: an association in the operator's own call area
+    if Area <> #0 then
+      for i := 0 to Assocs.Count-1 do
+        if AssocArea.TryGetValue(Assocs.Strings[i], AssocDigit) and
+           (AssocDigit = Area) then
+          Candidates.Add(Assocs.Strings[i]);
+
+    // otherwise the associations that cover the whole country
+    if Candidates.Count = 0 then
+      for i := 0 to Assocs.Count-1 do
+        if AssocArea.TryGetValue(Assocs.Strings[i], AssocDigit) and
+           (AssocDigit = #0) then
+          Candidates.Add(Assocs.Strings[i]);
+
+    // last resort: anywhere in the country, as before
+    if Candidates.Count = 0 then
+      Candidates.Assign(Assocs);
+
+    if Candidates.Count = 0 then Exit;
+    if not SummitsByAssoc.TryGetValue(
+         Candidates.Strings[Random(Candidates.Count)], Codes) then Exit;
+    if Codes.Count = 0 then Exit;
+    Result := Codes.Strings[Random(Codes.Count)];
+  finally
+    Candidates.Free;
+  end;
 end;
 
 
@@ -477,15 +646,19 @@ end;
 class function TSota.MakeRst(AIsWeak: boolean): integer;
 begin
   if AIsWeak then
-    Result := 339
+    Result := WeakRst
   else
     Result := 509 + 10 * (3 + Random(7));   // 539..599
 end;
 
 
-function TSota.EntityOfPublic(const ACall: string): string;
+ {
+  A caller who reports me WeakRst can barely hear me, so he mis-copies what I
+  send more often and asks for more repeats. See TContest.CallerCopiesPoorly.
+}
+function TSota.CallerCopiesPoorly(const AStn: TStation): boolean;
 begin
-  Result := EntityOf(ACall);
+  Result := Assigned(AStn) and (AStn.RST = WeakRst);
 end;
 
 
@@ -612,6 +785,11 @@ begin
         SendText(AStn, 'REF?')
       else
         SendText(AStn, 'R <#> REF?');
+    // I send my own reference with F6, keyed twice as on the air. A caller's
+    // own doubled reference is rendered by TStation.NrAsText instead.
+    msgSotaRef: SendText(AStn, 'REF <exch2> <exch2>');
+    msgAgnQm:   SendText(AStn, 'AGN?');
+    msgTu73:    SendText(AStn, 'TU 73');
     else
       inherited SendMsg(AStn, AMsg);
   end;

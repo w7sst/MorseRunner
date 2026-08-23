@@ -19,7 +19,7 @@ type
 
   public
     constructor Create(ARate, ABufSize : integer);
-    function Encode(Txt: string): string; override;
+    function Encode(const Txt: string): string; override;
   end;
 
 
@@ -123,7 +123,7 @@ end;
   - all ' ' occurances - additional inter-word spacing with 5U spacing
   - all '~' occurances - inter-word      spacing with 5U @ Farns adjusted time
 }
-function TFarnsKeyer.Encode(Txt: string): string;
+function TFarnsKeyer.Encode(const Txt: string): string;
 var
   i: integer;
 begin

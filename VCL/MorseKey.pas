@@ -38,7 +38,7 @@ public
 
     constructor Create(ARate, ABufSize : integer);
     procedure SetWpm(const AWpmS : integer; const AWpmC : integer = 0);
-    function Encode(Txt: string): string; virtual;
+    function Encode(const Txt: string): string; virtual;
 
     property RiseTime: Single read FRiseTime write SetRiseTime;
     property Envelope: TSingleArray read GetEnvelope;
@@ -155,7 +155,7 @@ begin
 end;
 
 
-function TKeyer.Encode(Txt: string): string;
+function TKeyer.Encode(const Txt: string): string;
 var
   i: integer;
 begin

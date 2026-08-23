@@ -640,6 +640,8 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'QSB'
+        Checked = True
+        State = cbChecked
         TabOrder = 0
         OnClick = CheckBoxClick
       end
@@ -650,6 +652,8 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'QRM'
+        Checked = True
+        State = cbChecked
         TabOrder = 1
         OnClick = CheckBoxClick
       end
@@ -660,6 +664,8 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'QRN'
+        Checked = True
+        State = cbChecked
         TabOrder = 2
         OnClick = CheckBoxClick
       end
@@ -670,6 +676,8 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'Flutter'
+        Checked = True
+        State = cbChecked
         TabOrder = 3
         OnClick = CheckBoxClick
       end
@@ -680,6 +688,8 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'LIDs'
+        Checked = True
+        State = cbChecked
         TabOrder = 4
         OnClick = CheckBoxClick
       end

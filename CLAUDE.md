@@ -10,6 +10,13 @@ stays intact.
 - FPC 3.2.3, Lazarus 4.8 (`lazbuild`, `/usr/bin/lazarus-ide`)
 - Build: `lazbuild MorseRunner.lpi` → `./MorseRunner`
 - Units out to `lib/x86_64-linux/`
+- Two build modes in `MorseRunner.lpi`:
+  - **Default** (the default) — `-O1`, DWARF3 debug info, ~32 MB binary
+  - **Release** — `lazbuild --build-mode=Release MorseRunner.lpi`; `-O3`,
+    smart linking, no debug info, stripped → **3.7 MB**. Units go to
+    `lib/x86_64-linux/release/`; both modes link to `./MorseRunner`, so
+    always `-B` when switching modes. Use this for packaging (replaces the
+    manual `strip MorseRunner` step noted below).
 - Project files added for Lazarus: `MorseRunner.lpi`, `MorseRunner.lpr`
   (the Delphi `.dpr`/`.dproj` are untouched and still authoritative for Windows)
 - **`README.md` carries a "Building on Linux (Lazarus/FPC)" section** (added
@@ -32,7 +39,21 @@ skipped** (the skipped ones are `[Test(False)]`, matching Delphi).
 (Studio 37.0) — see "Windows build verification" below. Delphi unit tests:
 **897 found, 897 passed, 0 failed, 0 leaked.**
 
-Nothing is committed yet — everything is still in the working tree.
+**Repo state (2026-08-05):** all of the above is committed as `defde9d`
+"MorseRunnerCE-SOTA" on `linux-lazarus-port`, pushed to the user's own repo
+`github.com/taekehf/MorseRunnerSOTA` (`origin`; the upstream w7sst repo is
+the `upstream` remote). `main` still carries a junk commit `47cb11e` on top
+of upstream — only the compiled 32 MB Linux binary and the regenerable
+`Test/fpc/gen/` files; the plan (agreed, not yet executed) is
+`git switch main && git reset --hard linux-lazarus-port &&
+git push --force-with-lease origin main`, which puts the real code on main
+and drops the blob from history. Release archives (Win32 Release exe +
+Linux binary, each with all data files incl. the three SOTA files) are in
+`D:\projects\MorseRunner-release\`, ready to attach to a GitHub release
+targeting the code branch. The Linux binary is unstripped with DWARF3
+debug info (`MorseRunner.lpi` builds -O1 with dsDwarf3) — ~32 MB instead
+of ~6; `strip MorseRunner` on Linux (or a Release build mode in the .lpi)
+before the next packaging.
 
 ### Done
 
@@ -113,6 +134,15 @@ with `tools/check-layout.py`, which builds a throwaway program from
   `ContestGroup` scales 195x74 -> 390x148, but its `ExchangeEdit` goes from
   top 44 to top 88 while its height stays 23. Labels stay 15px, check boxes
   17px, combos/edits 23px — all Win32 design-time values.
+  **Correction (2026-08-16): this is wrong — it was measured on an unrealised
+  form.** Those are the streamed `.lfm` values, which is all a control reports
+  before it has a widget. After `MainForm.Show` + `ProcessMessages`, gtk2
+  autosizes them to the scaled font: at 192 dpi `Label1` is 45x30 (its font
+  needs 30), `CheckBox4` 77x34, `ComboBox1` 130x42, `Edit1` 236x62,
+  `SpinEdit1` 130x47. Heights do scale. What does *not* hold is that they
+  scale to exactly 2x the Win32 design value (23 -> 42, not 46), which is the
+  metric mismatch described next. Any future probe that reads control geometry
+  must show the form first.
 - **gtk2's group box caption inset is much larger than Win32's**: a 148px-tall
   group box has a client height of only 110 (38px inset, vs roughly 16 on
   Win32). `ExchangeEdit` ends at 88+23 = 111 > 110, so it overflows by a
@@ -286,10 +316,24 @@ DL1GG/P      portable at home in DL   -> a DL summit
 DL1GG        not portable             -> never on a summit
 ```
 
-`TSota.LocationPart` takes **the first `/`-separated element** and nothing
-else. That is the whole rule, and the reason for it is `2W0ILQ/M`: `M` is a
-perfectly good England prefix, so anything that considers later elements reads
-a Welsh station as English.
+**Corrected 2026-08-23 — the old rule was wrong.** It took *the first*
+`/`-separated element and nothing else, which gave `K0EMT/VE9` (a US call
+operating in New Brunswick) a `W5T` summit. `TSota.SplitLocation` now returns
+both where he is and which call area applies:
+
+| signed | location | area | because |
+| --- | --- | --- | --- |
+| `LX/AB1DE/P` | `LX` | - | a leading prefix names the location and outranks any suffix |
+| `K0EMT/VE9` | `VE9` | 9 | a trailing prefix relocates him (mostly a North-American habit) |
+| `JL1EFV/5` | `JL1EFV` | 5 | a trailing digit keeps the country, changes the call area |
+| `DL1GG/P` | `DL1GG` | 1 | `/P` is a modifier and says nothing about location |
+| `2W0ILQ/M` | `2W0ILQ` | 0 | the original trap: `M` is mobile, not England |
+
+The base callsign is the longest `/`-separated element; anything before it is a
+location prefix, anything after it is a suffix. A **trailing single letter is
+always a modifier** — that is what keeps `2W0ILQ/M` Welsh, since `M` is also a
+valid England prefix. `MM`, `AM`, `QRP`, `QRPP`, `LH` and `BCN` are modifiers
+too; any other trailing element is treated as a prefix that relocates him.
 
 Country comes from **cty.dat** by longest-prefix match, with `=CALL` exact
 overrides honoured and the `()[]<>{}~` CQ/ITU/coordinate overrides stripped.
@@ -301,9 +345,24 @@ fake `1AA` suffix.) Measured by `tools/check-sota.py`: **248 of ~250 portable
 callers in a 1000-call sample get a reference, and all 248 match their own
 country.**
 
-Only 500 summits per country are kept, by reservoir sampling, which bounds
-memory without biasing the choice toward `-001`. All three files load in
-~0.4 s.
+Summits are indexed **per association** (`W7O`, `JA5`, `VE9`), not per
+country, because the country alone loses the call area — that was the other
+half of the `K0EMT/VE9` bug. `PickSummitFor` prefers an association whose
+call-area digit matches the operator's, falls back to the country-wide
+associations that carry no digit (a JA1 station belongs in plain `JA`, since
+only JA5/JA6/JA8 are split out), and only then to anywhere in the country.
+
+That last fallback is doing real work and is correct: Russia has only `R3` and
+`R9U`, so an `RD6A/P` gets `R3`; and where the digit belongs to the country
+prefix itself rather than to a call area (`9A` Croatia, `S5` Slovenia, `CT3`
+Madeira) nothing matches and the sole association is used. Measured over the
+real call list: 370 of 378 portable callers get a reference, 175 of those
+match on call area exactly, and the picker never mixes areas for one caller.
+
+200 summits per association are kept, by reservoir sampling, which bounds
+memory without biasing the choice toward `-001` and — unlike the old 500 per
+*country* — cannot let a whole call area fall out of the sample. All three
+files load in ~0.4 s.
 
 ### Scoring
 
@@ -540,9 +599,13 @@ threads and RSS after each cycle.
   it cost time when a test harness passed an argument.
 - ~~`GetExchange(id; out station: TDxStation)` reads `station` before writing
   it~~ — fixed in the 2026-07-29 Windows audit: `out` changed to `var` in
-  `Contest.pas` and all 12 overrides. Behaviour is identical (`out` never
-  cleared a class reference); the contract now says what it means and the
-  FPC 5037 warnings go away.
+  `Contest.pas` and all 12 overrides. **Superseded upstream 2026-08-09** by
+  w7sst commit `a2bfed0`, which drops the modifier entirely: `station` is a
+  class reference, so it is already a pointer and `var` only adds a level of
+  indirection to every field access. The signature is now
+  `GetExchange(id: Integer; station: TDxStation)` everywhere. The original
+  `out` complaint is still answered — that was the point — and the extra
+  indirection is gone with it.
 - The remaining warnings are benign: `3175` (unlisted fields in typed constant
   arrays are zero-filled) and `4110` (the deliberate `TSimContest(-1)` sentinel
   casts in initialization sections).
@@ -597,6 +660,8 @@ cycles, all-contest switches, single-calls mode, and closing mid-run.
 ### Fixed
 
 - **`GetExchange` `out` → `var`** in `Contest.pas` + 12 overrides (see above).
+  Later superseded by upstream `a2bfed0`, which removes the modifier
+  altogether — see the note above.
 - **Win32 `DoSetEnabled` failed-start handling** (`VCL/SndCustm.pas`,
   upstream bug): if `waveOutOpen` failed, the component stayed flagged
   enabled with a nil thread — re-enabling was impossible and the next
@@ -639,8 +704,10 @@ FPC, confirmed by inspection as well as by the build:
 - `Main.pas:83-88` — the `TMemo` / `TRichEdit` `{$IFDEF FPC}` split survived
   the Delphi IDE (worth re-checking after any IDE form edit, per the note
   above).
-- `GetExchange` is `var station` in all **25** declaration/override sites,
-  none left as `out`.
+- `GetExchange` was `var station` in all **25** declaration/override sites,
+  none left as `out`. Since 2026-08-23 it carries no modifier at all in any
+  of them (upstream `a2bfed0`); `JarlContest.pas`, which postdates that
+  commit, had to be brought into line by hand.
 - `Exch2KeyPress`'s `etSotaRef` branch (a Delphi-assertion-only bug) is
   present and harmless on FPC.
 
@@ -652,6 +719,428 @@ pre-existing, not new.)
 Only pre-existing caveat reconfirmed: `check-leaks.py` **with** heaptrc is
 still SIGKILLed on the GUI path (`rc=-9`, no summary), exactly as documented
 above. Use `--no-heaptrc` for the GUI figures.
+
+## "The radio sound isn't as good" (2026-08-16)
+
+A user comment on the release: the band noise heard after starting, before
+anything is happening, is worse than VE3NEA's original. A copy of the original
+1.68 source was dropped in `/mnt/data/projects/Morserunnerve3nea/MorseRunner`
+to compare against.
+
+**The synthesis code is not the cause — it is identical.** Every unit that
+contributes to that sound was diffed against 1.68 (ignoring CRLF) and the
+bodies match:
+
+| Unit | Verdict |
+| --- | --- |
+| `Contest.pas` `GetAudio` noise block, `Create` filter/AGC setup, `SwapFilters` | identical |
+| `QrnStn.pas`, `QrmStn.pas`, `StnColl.AddQrn/AddQrm` | identical (CE adds exchange-type wiring only) |
+| `Qsb.pas`, `VCL/MovAvg.pas`, `VCL/Mixers.pas`, `VCL/VolumCtl.pas`, `VCL/QuickAvg.pas`, `VCL/SndTypes.pas` | identical apart from `{$IFDEF MSWINDOWS}` on uses clauses |
+| `TStation.GetBlock`, `TMainForm.SetPitch/SetBw`, `ReadCheckboxes` | identical |
+| `Main.dfm` `AlSoundOut1` | same 11025 Hz, `BufCount = 8` |
+
+The differences that do exist elsewhere are deliberate CE changes and affect
+CW, not the noise floor: `VCL/MorseKey.pas` timing (48U vs 50U word, `~`
+spacing), `RndFunc.RndGaussLim` (rejection sampling instead of clipping), the
+self-monitor gain curve in `GetAudio` (proper dB scale plus a rolloff to zero),
+and `TContest.OnMeFinishedSending`'s no-activity fallback.
+
+### The actual cause: band-condition defaults
+
+Upstream CE commit `93ebedb` "change MR defaults to match Alex in Ontario"
+flipped **QRN, QRM, QSB, Flutter and LIDs from on to off**, in `Ini.pas` and in
+the `Main.dfm` checkboxes. A fresh install has no `.INI`, so a new user hears
+flat filtered noise: no static crashes, no other stations on frequency, no
+fading. That is precisely "the radio emulation isn't as good".
+
+Reverted to the 1.68 values in `Ini.pas` and re-ticked `CheckBox2..6` in both
+`Main.dfm` and `Main.lfm`. Measured with `tools/check-audio.py --fresh`, the
+crest factor of the recorded audio (peak over RMS — static crashes are short
+and loud, so QRN lifts the peak well above the noise):
+
+| Fresh install | Crest factor |
+| --- | --- |
+| all five off (CE default) | **12.3 dB** — plain Gaussian noise, a dead band |
+| all five on (restored) | **18.4 dB** |
+
+An existing `MorseRunner.ini` still wins, so this only changes first-run
+behaviour. Note the repo's own `MorseRunner.ini` has `Qrm=0`; that is a stored
+user setting, not a default.
+
+`Qsk` also defaults to false in CE against true upstream (commit `10c6692`,
+"QSK should be off by default"). Left alone — QSK only matters while *you* are
+sending, so it is not part of the complaint.
+
+### New tool: `tools/check-audio.py`
+
+Written to rule the Linux audio path in or out, since identical DSP code meant
+the fault could only have been in delivery. Same throwaway-program pattern as
+the other probes: it builds a program from `MorseRunner.lpr`, creates the real
+`TMainForm`, turns on WAV recording (which captures exactly what
+`TContest.GetAudio` produced, before the sound device sees it), runs a pile-up
+under `Application.Run` and stops. Meanwhile the app is pinned to a private
+null sink via `PULSE_SINK` and `parec` records that sink's monitor.
+
+**The Linux output path is transparent** — it is not the problem:
+
+- block rate 21.49/s against the expected `DEFAULTRATE/BufSize` = 21.53/s, so
+  the feeder thread paces the simulation correctly;
+- zero dropouts (no 23 ms frame below 10% of the median RMS over 8 s);
+- the played-back spectrum matches the WAV bin for bin within ~1 dB across
+  0–3 kHz, and the peak sample is the same (19173 vs 19170).
+
+Measurement traps it had to work around, both worth remembering:
+
+- **The default sink's monitor is useless.** It carries every other stream on
+  the desktop; a first attempt recorded full-scale broadband audio with a flat
+  spectrum that looked like catastrophic distortion and was in fact somebody
+  else's audio. Recording a purpose-made null sink is the only clean way.
+- **The first second must be discarded when measuring pacing.**
+  `TAlSoundOut.Start` primes one block per buffer at once, and
+  `TContest.GetAudio` returns a 1-sample block until `BlockNumber` reaches 6 —
+  neither is paced by the sound server, and counting them puts the apparent
+  rate 4% high.
+
+Regression after the change (FPC 3.2.3 / Lazarus 4.8): `lazbuild -B` links
+clean at 22,290 lines; `./UnitTests` **897 passed, 0 failed, 60 skipped**;
+`check-layout.py` 0 overflows at all four sizes; `check-sota.py`,
+`check-histo.py` and `check-audio.py` all checks passed.
+
+**Not verified:** that a human agrees the restored band sounds like the
+original. The crest-factor and spectrum figures prove the noise is the same
+signal the original code makes and that the defaults now match 1.68 — not that
+the commenter's ear is satisfied. `Main.dfm` was edited but the Delphi build
+has not been re-run.
+
+### The clock read cyan on grey (2026-08-16)
+
+Reported as "the timer is cyan". `Panel2` (the `hh:nn:ss` elapsed clock,
+written by `Contest.pas:847`) carries `Font.Color = 14151712` = `$D7F020`,
+which as a `TColor` is `$00BBGGRR` = **RGB(32, 240, 215)**, cyan. 1.68 has the
+*same* cyan digits — the difference is the panel behind them: upstream is
+`Color = clBlack`, CE changed it to `Color = clBackground`. That is the
+*desktop* colour, which this gtk2 theme resolves to **`#E7E8E8`**, so cyan
+digits ended up on pale grey instead of on black.
+
+Fixed in **`Main.lfm` only**: `Font.Color = clBlack`. Verified with a
+throwaway probe that reads the resolved colours off the live form:
+`Panel2.Color = E7E8E8`, `Panel2.Font = 000000`.
+
+`Main.dfm` is **not** changed, so Windows keeps the cyan digits. Deliberate:
+`clBackground` there is whatever the user's Windows desktop colour is, and on a
+dark desktop black digits would be unreadable. If Windows should match, the
+robust change is to set `Color = clBlack` as well, not just the font — but that
+needs a look at the real Delphi build.
+
+### DPI awareness: where it stands (2026-08-16)
+
+Asked whether the GUI can be made DPI-aware on both platforms. Largely it
+already is; measured rather than assumed.
+
+**Linux/LCL — works today.** `Application.Scaled := True` (`MorseRunner.lpr`)
+plus `DesignTimePPI = 96` in `Main.lfm`/`ScoreDlg.lfm`. On the 192 dpi dev
+machine the form comes up 1458 wide, exactly 2x the designed 729; fonts double
+(`-12` -> `-24`, Panel2 `-24` -> `-48`); positions double; and once realised,
+controls autosize to the scaled font (see the correction under "UI /
+appearance"). Limits: LCL reads the DPI once at startup, so dragging the window
+to a differently-scaled monitor does not re-lay-it-out — gtk2 has no
+per-monitor DPI. Fractional scales (125%, 150%) are also weaker on gtk2 than
+the integer 2x measured here. The `lcl-qt6` switch already listed in Next
+steps is the real fix for both.
+
+**Windows/Delphi — verified working (2026-08-16).** `AppDPIAwarenessMode =
+PerMonitorV2` in `MorseRunner.dproj` (both Win32 configs) produces a manifest
+carrying both `dpiAware: true/pm` and `dpiAwareness: PerMonitorV2`, and the
+VCL scales the form correctly. Measured on a dev box with a 3840x2160 primary
+at **150% (144 dpi)** and a 1920x1080 secondary at 100%:
+
+| | client | form font | `Edit1` |
+| --- | --- | --- | --- |
+| designed (96 dpi) | 729x506 | -12 | 118x27 |
+| on the 150% monitor | **1094x759** (1.501x) | -18 | 177x36 |
+| dragged to the 100% monitor | 728x504 | -12 | 118x27 |
+
+So per-monitor rescaling happens on `WM_DPICHANGED` as well as at startup,
+in both directions (the 1-2 px lost on the round trip is integer rounding).
+A Windows port of the layout probe reported **0 overflowing controls** at
+150%, so the Win32-absolute layout survives VCL scaling — unlike gtk2, VCL
+scales positions, sizes and fonts homogeneously, which is why the group-box
+overflows seen on Linux have no Windows counterpart.
+
+Both earlier loose ends are closed:
+
+- **`Main.dfm` needs no `PixelsPerInch` line.** Adding `PixelsPerInch = 96`
+  was tried and measured to be a **no-op** — 1094x759 either way — because
+  `TCustomForm` initialises the field to the design DPI already. The line was
+  reverted rather than left in as decoration. (`ScoreDlg.dfm` has one only
+  because the IDE wrote it.)
+- `BorderStyle = bsSingle` is not a trap: scaling does not overshoot.
+
+**Measurement trap that cost an hour and will do so again.** A DPI-*unaware*
+process asking about another process's window gets **virtualised** rectangles:
+PowerShell/C# `GetClientRect` on the running app returned exactly 729x506 —
+the scaled 1094x759 multiplied by 96/144 — which looks precisely like "scaling
+is broken". `GetDpiForWindow` is *not* virtualised, so the giveaway is a
+window reporting 144 dpi while its client rect still reads the design size.
+Any probe must call `SetProcessDpiAwarenessContext(PER_MONITOR_AWARE_V2)`
+(-4) before measuring; a Delphi probe built with bare `dcc32` has no manifest
+and is unaware by default, so it must do the same or it will report 96
+everywhere.
+
+**The standing risk is Linux-side only:** the layout is Win32-absolute
+positions, so scaling exposes metric mismatches rather than reflowing. That is
+exactly what bit the right-hand group boxes on gtk2; VCL scaling is uniform
+and showed no overflow at 150%. Any DPI work needs the `check-layout.py` pass
+afterwards, and layout fixes have to be made twice — `Main.lfm` for Linux,
+`Main.dfm` for Windows.
+
+#### Fractional scales: swept with Xephyr, one real bug found and fixed
+
+`tools/check-layout.py` gained **`--dpi 96,120,144,192`**, which runs the probe
+against a nested `Xephyr` started at each resolution (`Xephyr :N -screen
+2600x1900 -dpi X`). The screen must be larger than the biggest window the probe
+asks for (2400x1700) or `SetBounds` is clamped and the wide-window passes test
+nothing. Xephyr opens a window on the desktop while the sweep runs.
+
+The sweep is self-checking: it prints the form font height alongside the DPI,
+and those track exactly — `-12 / -15 / -18 / -24` for 96 / 120 / 144 / 192,
+with form widths 729 / 911 / 1094 / 1458 = 1.0 / 1.25 / 1.5 / 2.0x the designed
+729. If a scale factor did not really take, the font gives it away first.
+
+**The bug was at 100%, not at the fractional scales.** At 96 dpi
+`ExchangeEdit` sat at top 44 with a realised height of 32, ending at 76 inside
+a `ContestGroup` whose client height is only 74 — the same gtk2 caption-inset
+overflow that was fixed for the right-hand boxes before, except the earlier fix
+was tuned at 192 dpi only and left the unscaled case 2px over. **That is the
+common case** — an ordinary 1080p Linux desktop at 100% — so it shipped broken
+for most users while the 200% dev machine looked fine.
+
+Fixed by raising `ContestGroup.Height` 90 -> 96 in **`Main.lfm` only** (gtk2
+inset; VCL has no equivalent, so `Main.dfm` is untouched). Now clean at eight
+scale factors: **96, 108, 120, 132, 144, 168, 192 and 240 dpi**, 0 overflowing
+controls at all four window sizes each.
+
+Lesson: a layout probe run at a single DPI proves nothing about the others, and
+the *designed* DPI is the one most likely to be skipped.
+
+#### What did not work: faking the DPI in-process
+
+Recorded so it is not attempted again. Before Xephyr was installed, three
+routes were tried and all three measure the harness rather than the app:
+
+- **`Application.Scaled := False` + one `AutoAdjustLayout(96 -> target)`.**
+  Without `Application.Scaled` the LCL does not scale the fonts the way the
+  shipping path does: the form font came out `-8` at 120 dpi and `-9` at 144
+  where it should be `-15` and `-18`. Every autosized control is then the wrong
+  size. Proof it was invalid: forced-192 reported a Label19 overflow that the
+  real 192 run does not have.
+- **`Application.Scaled := True` + a second `AutoAdjustLayout(192 -> target)`.**
+  The form would not shrink at all (1458 wide for every target) because
+  `Constraints.MinWidth/MinHeight` had themselves been scaled to 1458x1120 on
+  load, and the font stayed `-24` throughout.
+- **Clearing the constraints first, then re-adjusting.** Hung the probe — no
+  output, had to `kill -9`. Presumably an autosize loop on an already-shown
+  form.
+
+- **Faking the DPI from the environment does not work either.** `XENVIRONMENT`
+  pointing at a file with `Xft.dpi: 144` changed nothing: GNOME's XSETTINGS
+  daemon supplies Xft/DPI and gtk2 prefers it over the X resource database.
+
+All of that was thrown away once `xorg-x11-server-Xephyr` was installed — a
+nested server at the wanted DPI is the only faithful method, and it is what
+`--dpi` now uses.
+
+## SOTA: summit references now follow the call area (2026-08-23)
+
+Reported from play-testing: a caller signing `K0EMT/VE9` was sent `W5T/NT-111`
+-- the reference matched his *home* prefix instead of where he actually was.
+Two independent causes, both fixed; see "Who is on a summit, and where" above
+for the rules and the measured results. In short: `LocationPart` read only the
+first `/`-separated element, and summits were indexed by DXCC entity, which
+threw the call area away. `tools/check-sota.py` gained assertions for the new
+cases (`K0EMT/VE9` -> VE9, `JL1EFV/5` -> JA5, `JL1EFV` -> JA, `W1AW/7` -> W7x,
+`2W0ILQ/M` -> GW).
+
+## Branch-wide cleanup (2026-08-23)
+
+Follow-up to the audit below, run once the user confirmed upstream merges with
+w7sst no longer matter — the deferred items became actionable. All changes are
+compiler-verified plus behaviour-verified; Delphi tests stayed 897/897
+throughout and the app builds Release with **no warnings**, only the five
+deliberate `H2077` "value assigned never used" hints (defensive
+`Result := false` initialisers; removing them would let a fall-through return
+an undefined value).
+
+- **`const` on 58 string parameters** across 21 units. Five routines used
+  their parameter as a scratch variable and now take a local copy instead:
+  `ExtractPrefix` (`Util/CallsignUtils.pas`), `CallToScore` (`Log.pas`),
+  `TMyStation.AddToPieces`, `TQrmStation.SendText` and `TStation.SendText`.
+  The compiler found every one of them (E2064/E2197) — this is the pass where
+  the compiler does the auditing for you. Object-reference parameters were
+  deliberately **not** made `const`: it buys nothing (no refcount) and
+  misleads, since the pointed-to object stays mutable.
+- **`ACAG.pas` and `ALLJA.pas` were literally the same program.** After
+  normalising the contest name, only comments differed; the sole functional
+  difference is the call-history file. Extracted **`JarlContest.pas`**
+  (`TJarlContest`, with `CallHistoryFileName: string; virtual; abstract`); the
+  two units are now 32-line descendants naming their file. 483 lines -> 318.
+  Proved behaviour-identical by `JarlProbe`, a characterisation probe that
+  dumps call/exch1/exch2/info for 25 stations of each contest under a fixed
+  `RandSeed`: output is byte-for-byte identical before and after.
+- **The other "clone" pairs were left alone** — measured, not assumed:
+  CWOPS/CWSST differ in 160 non-comment lines, ArrlDx/IaruHf in 189,
+  MorseKey/FarnsKeyer in 300. They share shape, not behaviour; merging them
+  would invent commonality that is not there.
+- **Audio-layer duplication removed**: six routines were byte-identical in
+  both halves of `VCL/SndCustm.pas` (`Err`, `Loaded`, `SetEnabled`,
+  `SetDeviceID`, `GetBufCount`, `SetBufCount`). They now live in one shared
+  section below the `{$ENDIF}`; both class declarations still declare them, so
+  each platform compiles exactly one copy. Verified structurally (each defined
+  once, `SndTypes`/`ESoundError` reachable from both uses clauses) and at
+  runtime on Windows (audio starts, stops, exits clean). **Since verified on
+  Linux too** (2026-08-23): builds clean, and `check-audio.py` measures the
+  feeder thread still pacing at 21.48 blocks/s with 0 dropouts.
+- **`Main.pas` score-append duplication** (identical blocks in
+  `PopupScoreWpx` and `PopupScoreHst`) extracted into `AppendLineToFile`.
+- **Warnings fixed rather than silenced**: `W1035` on `TDxOperator.GetReply`
+  (three `case Trunc(R2*n)` blocks got `else` branches that are unreachable
+  because `Random < 1`, stating the guarantee the compiler cannot derive),
+  `W1000` deprecated `FThread.Resume` -> `Start` (the FPC half already used
+  `Start`), `W1057` UTF8String comparisons in `Util/Lexer.pas` asserts made
+  explicit, and `W1023` signed/unsigned in `SndCustm` by casting the handle to
+  `WPARAM`.
+
+**Not done deliberately:** the five `H2077` hints (see above), and the ~150
+lines of shared harness across `tools/check-*.py` (dev tooling, and each probe
+genuinely diverges — Xephyr, parec, heaptrc).
+
+**Test-coverage caveat that shaped all of the above:** the 897 tests cover
+`CallsignUtils`, `DXCC`, the lexers and the SS exchange parser — and **no
+contest unit, no keyer, no audio**. Anything touching those had to be verified
+with purpose-built probes instead, which is why the JARL merge got a
+characterisation probe before it was attempted.
+
+## Linux re-verification after the audit (2026-08-23)
+
+The audit was written and verified on Windows/Delphi; this is the FPC pass over
+the same working tree. **One real break, in the one place Delphi could not see
+it**, plus a coverage gap that is now closed.
+
+### The break: `const` on a parameter used as scratch space
+
+`VCL/WavFile.pas` failed to compile — `Can't assign values to const variable`
+at `TAlWavFile.ParseInfo`, which walks the LIST/INFO payload by `Delete`ing
+chunks off the front of its own `Data` parameter. Same class of mistake the
+`const` pass caught five times in shared code (`ExtractPrefix`, `CallToScore`,
+`AddToPieces`, the two `SendText`s) — but `ParseInfo` lives inside
+`{$IFNDEF MSWINDOWS}`, so **`dcc32` never parsed it and the Delphi build could
+not have caught it**. Fixed the same way as the other five: a local `Rest`
+copy.
+
+Worth generalising: any tree-wide pass that leans on "the compiler will find
+them" only covers the half of an `{$IFDEF}` that the compiler you ran actually
+compiled. The Linux-only halves — `WavFile.pas`, `SndPulse.pas`, the `{$ELSE}`
+side of `SndCustm.pas` — need a build on the other compiler before the pass
+counts as done.
+
+### Full regression, FPC 3.2.3 / Lazarus 4.8
+
+| Check | Result |
+| --- | --- |
+| `lazbuild -B MorseRunner.lpi` | clean, 22,268 lines (was 22,290 — the JARL merge) |
+| `lazbuild -B --build-mode=Release` | clean, **3.8 MB stripped binary** |
+| `Test/fpc/UnitTests.lpi` + `./UnitTests` | **897 passed, 0 failed, 60 skipped** |
+| `tools/check-sota.py` | all checks passed |
+| `tools/check-histo.py` | all checks passed |
+| `tools/check-audio.py` | 21.48 blocks/s, 0 dropouts, crest 17.2 dB, band conditions 1 1 1 1 1 |
+| `tools/check-layout.py --dpi 96,120,144,192` | 0 overflowing controls, all 4 sizes at all 4 scales |
+| `tools/check-leaks.py --no-heaptrc` | fds 20→24→20, threads 10→12→10, flat over 5 cycles |
+| `tools/check-contests.py` | **new** — all 13 contests |
+
+Release binary additionally smoke-tested by hand: starts, stays up, exits on
+SIGTERM, and all five `dlopen`ed libraries resolve on this box.
+
+### New tool: `tools/check-contests.py`
+
+Written because **`JarlContest.pas` was new code in the FPC build that no probe
+touched**. The audit collapsed `ACAG.pas` and `ALLJA.pas` onto a shared base
+and proved it byte-identical *on Delphi*; on Linux the merge had only ever been
+compiled, never run. The 897 unit tests cover no contest unit (see the coverage
+caveat under "Branch-wide cleanup"), so there was nothing between "it links"
+and "a user picks ALL JA".
+
+Same throwaway-program pattern as the other probes. For each of the 13
+`TSimContest` values it calls `SetContest`, then `OnContestPrepareToStart`
+(which is what actually reads the call-history file), then draws 100 stations
+via `PickStation` / `GetCall` and asserts every draw yields a callsign and the
+draws are not all the same station. All 13 pass, ACAG and ALLJA included.
+
+Two things it got wrong first, both worth remembering:
+
+- **`Stations.AddCaller` is not the way in.** Called on a contest that has not
+  been prepared, it dies silently — the probe printed two contests and exited
+  0. The call history is loaded by `OnContestPrepareToStart`, not by
+  `SetContest`, so `PickStation` was indexing an empty list. (`AddCaller` also
+  dereferences `Result` after a `break` that can leave it nil — upstream, not
+  touched.)
+- **`TStation.NrAsText` is not public**; use the `Exch1` / `Exch2` fields.
+
+## Code-quality audit (2026-08-16)
+
+Asked for a review of initialisation, `const` usage and duplicate code, first
+on the SOTA work and then across the whole tree (51 units, ~20,000 lines;
+`PerlRegEx/` excluded as third-party).
+
+### Applied
+
+- **SOTA messages left the base class.** `msgSotaRef` / `msgRefQm` /
+  `msgAgnQm` / `msgTu73` were rendered in `TContest.SendMsg`, where the
+  `msgRefQm` branch was **unreachable** (`TSota.SendMsg` always handles it and
+  never calls `inherited` for it). All four now live in `TSota.SendMsg`; the
+  base class keeps only a comment pointing there.
+- **`TSota.EntityOfPublic` deleted.** It was a pure pass-through to the
+  private `EntityOf`, existing only so `tools/check-sota.py` could reach it.
+  `EntityOf` is public now; the checker follows the rename.
+- **`339` no longer hard-coded in two units.** `Sota.MakeRst` produced it and
+  `DxOper.IsWeakCopier` tested `Station.RST = 339`, so changing the weak-signal
+  report in `Sota.pas` would silently disable weak-caller behaviour with no
+  compile error. Now `TContest.CallerCopiesPoorly(AStn): boolean; virtual`
+  (False by default) with a `TSota` override against a named `WeakRst = 339`.
+  `IsWeakCopier` also loses its `SimContest = scSota` test — the contest
+  object decides.
+
+Verified: 897/897 Delphi tests; a contest-aware probe reproduces the rates
+(S2S asks 900/1000 with 0 skipped; weak-caller repeats 354 vs 84 strong,
+ratio 4.2 against an expected ~3.5); every SOTA message still renders
+(`REF <ref> <ref>`, `REF?`, `AGN?`, `TU 73`, `R 5NN <ref> <ref> REF?`) and
+non-SOTA messages still reach the base class through `inherited`.
+
+### Findings left alone (with reasons)
+
+- **Initialisation is sound tree-wide.** No `W1036` anywhere; the only
+  `W1035` (`GetReply`) is upstream and provably covered. All 45 `out`
+  parameters are safe: the `FindCallRec` family are class references set to
+  `nil` before use and all 11 call sites guard on the result. No raw
+  `GetMem`/`New` without initialisation. Note Pascal does *not* zero locals
+  (only class fields and managed types), so this rests on explicit assignment.
+- **`const`: SOTA code is fully const-correct** (zero by-value string
+  parameters). Upstream has **64** by-value `string`/`TStringList` parameters
+  (`MyStn.pas` 6, `Station.pas` 5, `Main.pas` 4, ...). Cost is one refcount
+  per call, none on an audio-block path; changing them would churn signatures
+  across the tree and conflict with w7sst upstream merges.
+- **Duplication is mostly upstream by design**: `ACAG.pas`/`ALLJA.pas` are
+  near-clone JARL contests (30 repeated 8-line windows), `FarnsKeyer`/
+  `MorseKey` 17, `CWOPS`/`CWSST` 8, and a copy-pasted score-append block in
+  `Main.pas` (2378 and 2417).
+- **The one duplication this branch introduced** is in the audio layer:
+  `VCL/SndCustm.pas` has 6 routines byte-identical between its Win32 and
+  PulseAudio halves (`Err`, `Loaded`, `SetEnabled`, `SetDeviceID`,
+  `GetBufCount`, `SetBufCount` — ~23 lines) and `SndOut.pas` repeats its class
+  declaration per platform. Hoisting those above the `{$IFDEF}` would remove
+  the repetition, but it restructures the one component that has already
+  produced a deadlock, it can only be tested for Windows from here, and the
+  branch convention is explicitly to keep the platform paths side by side.
+  Left as is; revisit only with a Linux run available.
 
 ## Next steps
 
@@ -665,7 +1154,13 @@ above. Use `--no-heaptrc` for the GUI figures.
 5. Consider `lazarus-lcl-qt6` + `qt6pas` (both packaged on Fedora) instead of
    gtk2 — better HiDPI and a far more modern look. Set `LCLWidgetType` in
    `MorseRunner.lpi`. Not attempted yet.
-6. Commit the branch once runtime is confirmed.
+6. ~~Commit the branch once runtime is confirmed~~ — done 2026-08-05
+   (`defde9d`, pushed to `origin`). ~~Reset `main` onto the branch~~ — done,
+   the working tree is on `main` now. ~~Strip the Linux binary and repackage~~
+   — done 2026-08-23 via the Release build mode (3.8 MB, stripped). Still
+   open: publish the GitHub release from
+   `/mnt/data/projects/MorseRunner-release/2026-08-23/`, and commit the
+   audit changes plus this CLAUDE.md update.
 
 ## Conventions
 

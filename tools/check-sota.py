@@ -121,6 +121,34 @@ begin
         Sota.LocationPart('2W0ILQ/M') = '2W0ILQ', Sota.LocationPart('2W0ILQ/M'));
   Check('DL1GG is not portable', not Sota.IsPortable('DL1GG'), 'DL1GG');
   Check('DL1GG/P is portable', Sota.IsPortable('DL1GG/P'), 'DL1GG/P');
+  // a trailing prefix says where he is (mostly a North-American habit)
+  Check('K0EMT/VE9 is operating in VE9',
+        Sota.LocationPart('K0EMT/VE9') = 'VE9', Sota.LocationPart('K0EMT/VE9'));
+  // a trailing digit keeps the country but changes the call area
+  Check('JL1EFV/5 stays in Japan', Sota.LocationPart('JL1EFV/5') = 'JL1EFV',
+        Sota.LocationPart('JL1EFV/5'));
+  Check('JL1EFV/5 is in area 5',
+        Sota.AreaDigitOf('5') = '5', 'area digit');
+  Check('W7O is a call-area-7 association',
+        Sota.AreaDigitOf('W7O') = '7', Sota.AreaDigitOf('W7O'));
+  Check('JA carries no call area', Sota.AreaDigitOf('JA') = #0, 'none');
+
+  WriteLn('--- the reference comes from the caller''s own call area');
+  Check('K0EMT/VE9 gets a VE9 summit',
+        Copy(Sota.PickSummitFor('K0EMT/VE9'), 1, 4) = 'VE9/',
+        Sota.PickSummitFor('K0EMT/VE9'));
+  Check('JL1EFV/5 gets a JA5 summit',
+        Copy(Sota.PickSummitFor('JL1EFV/5'), 1, 4) = 'JA5/',
+        Sota.PickSummitFor('JL1EFV/5'));
+  Check('JL1EFV (area 1) gets a plain JA summit',
+        Copy(Sota.PickSummitFor('JL1EFV'), 1, 3) = 'JA/',
+        Sota.PickSummitFor('JL1EFV'));
+  Check('a W1 call operating /7 gets a W7 summit',
+        Copy(Sota.PickSummitFor('W1AW/7'), 1, 2) = 'W7',
+        Sota.PickSummitFor('W1AW/7'));
+  Check('2W0ILQ/M still gets a GW summit',
+        Copy(Sota.PickSummitFor('2W0ILQ/M'), 1, 3) = 'GW/',
+        Sota.PickSummitFor('2W0ILQ/M'));
 
   WriteLn('--- summit references match where the caller is operating');
   Mismatch := 0; nRef := 0; Row := '';
@@ -134,12 +162,12 @@ begin
     Inc(nRef);
     // the summit's association must resolve to the caller's own country
     Assoc := Copy(Ref, 1, Pos('/', Ref)-1);
-    if Sota.EntityOfPublic(Assoc) <> Sota.EntityOfPublic(Msg) then
+    if Sota.EntityOf(Assoc) <> Sota.EntityOf(Msg) then
       begin
       Inc(Mismatch);
       if Mismatch <= 5 then
-        WriteLn('    mismatch: ', Msg, ' (', Sota.EntityOfPublic(Msg), ') -> ',
-                Ref, ' (', Sota.EntityOfPublic(Assoc), ')');
+        WriteLn('    mismatch: ', Msg, ' (', Sota.EntityOf(Msg), ') -> ',
+                Ref, ' (', Sota.EntityOf(Assoc), ')');
       end;
     if nRef <= 6 then Row := Row + Msg + '=' + Ref + '  ';
     end;

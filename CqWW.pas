@@ -42,7 +42,7 @@ public
   function FindCallRec(out fdrec: TCqWwCallRec; const ACall: string): Boolean;
   function GetStationInfo(const ACallsign: string) : string; override;
   function ExtractMultiplier(Qso: PQso) : string; override;
-  function IsNum(Num: String): Boolean;
+  function IsNum(const Num: String): Boolean;
 end;
 
 implementation
@@ -316,7 +316,7 @@ begin
 end;
 
 
-function TCqWw.IsNum(Num: String): Boolean;
+function TCqWw.IsNum(const Num: String): Boolean;
 var
    X : Integer;
 begin

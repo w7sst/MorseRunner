@@ -63,7 +63,7 @@ public
   function GetStationInfo(const ACallsign: string) : string; override;
   function ExtractMultiplier(Qso: PQso) : string; override;
   function GetCheckSection(const ACallsign: string; AThreshold: Single = 0): String;
-  function IsNum(Num: String): Boolean;
+  function IsNum(const Num: String): Boolean;
 end;
 
 implementation
@@ -521,7 +521,7 @@ begin
 end;
 
 
-function TSweepstakes.IsNum(Num: String): Boolean;
+function TSweepstakes.IsNum(const Num: String): Boolean;
 var
    X : Integer;
 begin

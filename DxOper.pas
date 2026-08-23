@@ -580,8 +580,9 @@ end;
 }
 function TDxOperator.IsWeakCopier: Boolean;
 begin
-  Result := (SimContest = scSota) and Assigned(Station) and
-    (Station.RST = 339);
+  //the contest decides what "weak" means; see TContest.CallerCopiesPoorly
+  Result := Assigned(Tst) and Assigned(Station) and
+    Tst.CallerCopiesPoorly(Station);
 end;
 
 
@@ -791,6 +792,7 @@ begin
         case Trunc(R2*3) of
           0: Result := msgDeMyCallNr1;  // DE <my> <exch>
           1,2: Result := msgMyCallNr1;  // <my> <exch>
+          else Result := msgMyCallNr1;  // unreachable: R2 < 1
         end
       else
         case Trunc(R2*6) of
@@ -799,6 +801,7 @@ begin
           2,3: Result := msgMyCallNr1;  // <my> <exch>
           4: Result := msgMyCallNr2;    // <my> <my> <exch>
           5: Result := msgMyCall;       // <my>
+          else Result := msgMyCall;     // unreachable: R2 < 1
         end;
 
     // osNeedCallNr - They have sent an almost-correct callsign.
@@ -824,6 +827,7 @@ begin
               else                      // 1.0  - 0.95 = 5%
                 Result := msgMyCall2;   // <my> <my>
              end;
+          else Result := msgMyCall;     // unreachable: R2 < 1
         end
     else //osNeedEnd:
       if Patience < (FULL_PATIENCE-1) then Result := msgNR

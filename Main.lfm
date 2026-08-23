@@ -240,7 +240,7 @@ object MainForm: TMainForm
       Caption = '00:00:00'
       Color = clBackground
       Font.Charset = ANSI_CHARSET
-      Font.Color = 14151712
+      Font.Color = clBlack
       Font.Height = -24
       Font.Name = 'Arial'
       Font.Style = []
@@ -634,6 +634,8 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'QSB'
+        Checked = True
+        State = cbChecked
         TabOrder = 0
         OnClick = CheckBoxClick
       end
@@ -644,6 +646,8 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'QRM'
+        Checked = True
+        State = cbChecked
         TabOrder = 1
         OnClick = CheckBoxClick
       end
@@ -654,6 +658,8 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'QRN'
+        Checked = True
+        State = cbChecked
         TabOrder = 2
         OnClick = CheckBoxClick
       end
@@ -664,6 +670,8 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'Flutter'
+        Checked = True
+        State = cbChecked
         TabOrder = 3
         OnClick = CheckBoxClick
       end
@@ -674,6 +682,8 @@ object MainForm: TMainForm
         Height = 17
         TabStop = False
         Caption = 'LIDs'
+        Checked = True
+        State = cbChecked
         TabOrder = 4
         OnClick = CheckBoxClick
       end
@@ -917,7 +927,7 @@ object MainForm: TMainForm
       Left = 6
       Top = 6
       Width = 195
-      Height = 90
+      Height = 96
       Align = alTop
       BorderSpacing.Around = 6
       Caption = 'Contest'

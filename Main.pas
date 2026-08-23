@@ -376,7 +376,7 @@ type
     procedure SetMySerialNR;
     procedure SetQsk(Value: boolean);
     procedure SetWpm(AWpm : integer);
-    function SetMyCall(ACall: string) : Boolean;
+    function SetMyCall(const ACall: string) : Boolean;
     procedure SetPitch(PitchNo: integer);
     procedure SetBw(BwNo: integer);
     procedure ReadCheckboxes;
@@ -1357,7 +1357,7 @@ begin
   end;
 end;
 
-{procedure TMainForm.SetNumber(ANumber: string);
+{procedure TMainForm.SetNumber(const ANumber: string);
 begin
    Ini.Number := ANumber;
    editNumber.Text := ANumber;
@@ -1472,7 +1472,7 @@ begin
 end;
 
 
-function TMainForm.SetMyCall(ACall: string) : Boolean;
+function TMainForm.SetMyCall(const ACall: string) : Boolean;
 var
   err : string;
 begin
@@ -2350,6 +2350,24 @@ begin
 end;
 
 
+{
+  Append one line to a text file, creating it when it does not exist yet.
+  Used for the WPX score list and the HST results file.
+}
+procedure AppendLineToFile(const AFileName: TFileName; const ALine: string);
+begin
+  with TStringList.Create do
+    try
+      if FileExists(AFileName) then
+        LoadFromFile(AFileName);
+      Add(ALine);
+      SaveToFile(AFileName);
+    finally
+      Free;
+    end;
+end;
+
+
 procedure TMainForm.PopupScoreWpx;
 var
     S, FName: string;
@@ -2375,15 +2393,7 @@ begin
 }
     S := S + '[' + IntToHex(CalculateCRC32(S, $C90C2086), 8) + ']';
     FName := ChangeFileExt(ParamStr(0), '.lst');
-    with TStringList.Create do
-    try
-        if FileExists(FName) then
-            LoadFromFile(FName);
-        Add(S);
-        SaveToFile(FName);
-    finally
-        Free;
-    end;
+    AppendLineToFile(FName, S);
 
     DlgScore:= TScoreDialog.Create(Self);
     try
@@ -2414,21 +2424,13 @@ begin
     Panel11.Caption]);
 
   FName := ExtractFilePath(ParamStr(0)) + 'HstResults.txt';
-  with TStringList.Create do
-    try
-      if FileExists(FName) then
-        LoadFromFile(FName);
-      Add(S);
-      SaveToFile(FName);
-    finally
-      Free;
-    end;
+  AppendLineToFile(FName, S);
 
   ShowMessage('HST Score: ' + ListView1.Items[2].SubItems[1]);
 end;
 
 
-procedure OpenWebPage(Url: string);
+procedure OpenWebPage(const Url: string);
 begin
   {$IFDEF FPC}
   OpenURL(Url);

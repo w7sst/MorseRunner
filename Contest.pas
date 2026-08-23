@@ -76,6 +76,7 @@ type
       const AStationCallsign : String;
       const ARemoteCallsign : String) : TExchTypes; virtual;
     procedure SendMsg(const AStn: TStation; const AMsg: TStationMessage); virtual;
+    function CallerCopiesPoorly(const AStn: TStation): boolean; virtual;
     procedure SendText(const AStn: TStation; const AMsg: string); virtual;
     procedure ResetQsoState;
     procedure OnWipeBoxes; virtual;
@@ -442,14 +443,8 @@ begin
     msgQrl2: SendText(AStn, 'QRL?   QRL?');
     msqQsy: SendText(AStn, '<his>  QSY QSY');                // QrmStation only
     msgAgn: SendText(AStn, 'AGN');
-    // SOTA summit-reference sub-protocol (see TSota.SendMsg).
-    // msgSotaRef is only ever sent by the user (F6); the reference is keyed
-    // twice, as on the air. A caller's own doubled reference is rendered in
-    // TStation.NrAsText and is not affected by this template.
-    msgSotaRef: SendText(AStn, 'REF <exch2> <exch2>');
-    msgRefQm: SendText(AStn, 'REF?');
-    msgAgnQm: SendText(AStn, 'AGN?');
-    msgTu73: SendText(AStn, 'TU 73');
+    // The SOTA summit-reference messages (msgSotaRef, msgRefQm, msgAgnQm,
+    // msgTu73) are rendered by TSota.SendMsg -- they belong to that activity.
   end;
 end;
 
@@ -459,6 +454,19 @@ end;
   to perform additional processing on the message, including token replacement,
   before being passed to the Encoder and Keyer.
 }
+{
+  Whether AStn copies the user's transmissions poorly and will therefore ask
+  for more repeats than an average caller. Contests that model signal quality
+  override this; everywhere else every caller copies equally well.
+
+  Adding a contest: override when the caller's signal report is meaningful.
+}
+function TContest.CallerCopiesPoorly(const AStn: TStation): boolean;
+begin
+  Result := False;
+end;
+
+
 procedure TContest.SendText(const AStn: TStation; const AMsg: string);
 begin
   AStn.SendText(AMsg);  // virtual

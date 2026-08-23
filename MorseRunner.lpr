@@ -51,6 +51,7 @@ uses
   ArrlDx in 'ArrlDx.pas',
   CWSST in 'CWSST.pas',
   ALLJA in 'ALLJA.pas',
+  JarlContest in 'JarlContest.pas',
   ACAG in 'ACAG.pas',
   IaruHf in 'IaruHf.pas',
   Sota in 'Sota.pas',

@@ -117,8 +117,8 @@ type
     procedure ProcessEvent(AEvent: TStationEvent); virtual; abstract;
 
     procedure SendMsg(AMsg: TStationMessage); virtual;
-    procedure SendText(AMsg: string); virtual;
-    procedure SendMorse(AMorse: string);
+    procedure SendText(const AMsg: string); virtual;
+    procedure SendMorse(const AMorse: string);
 
     function WpmAsText : string;
 
@@ -245,10 +245,11 @@ end;
   their respective values. The resulting message is then passed to
   Keyer.Encode() and SendMorse().
 }
-procedure TStation.SendText(AMsg: string);
+procedure TStation.SendText(const AMsg: string);
 var
   Q: Integer;
   P : integer;
+  Msg : string;   // working copy; the parameter itself stays const
 
   // Modifies AMsg by replacing AToken at position P with ANewText and
   // advances the token offset P to the start of the next token.
@@ -256,7 +257,7 @@ var
   // Returns true when no additional tokens are available.
   function ReplaceTokenAt(
     var AMsg : string;      // in/out: message to be modified
-    var P : integer;        // in/out: current token offset; advanced to next
+    var P : integer;        // in/out: current token offset; const advanced to next
     const AToken : string;  // token to be replaced
     const ANewText : string // NewText to replace token
     ) : boolean;            // return true when no additional tokens available
@@ -273,39 +274,41 @@ var
   end;
 
 begin
-  if Pos('<#>', AMsg) > 0 then
+  Msg := AMsg;
+
+  if Pos('<#>', Msg) > 0 then
     begin
     //with error
-    AMsg := StringReplace(AMsg, '<#>', NrAsText, []);
+    Msg := StringReplace(Msg, '<#>', NrAsText, []);
     //error cleared
-    AMsg := StringReplace(AMsg, '<#>', NrAsText, [rfReplaceAll]);
+    Msg := StringReplace(Msg, '<#>', NrAsText, [rfReplaceAll]);
     end;
 
   // replace tokens with actual values
-  P := Pos('<', AMsg);
+  P := Pos('<', Msg);
   while (P > 0) do
     begin
       Q := P;
-      if ReplaceTokenAt(AMsg, P, '<my>', MyCall) then Break;
-      if ReplaceTokenAt(AMsg, P, '<exch1>', Exch1) then Break;
-      if ReplaceTokenAt(AMsg, P, '<exch2>', Exch2) then Break;
-      if ReplaceTokenAt(AMsg, P, '<HisName>', MainForm.Edit2.Text) then Break;
-      if ReplaceTokenAt(AMsg, P, '<MyName>', Tst.Me.OpName) then Break;
+      if ReplaceTokenAt(Msg, P, '<my>', MyCall) then Break;
+      if ReplaceTokenAt(Msg, P, '<exch1>', Exch1) then Break;
+      if ReplaceTokenAt(Msg, P, '<exch2>', Exch2) then Break;
+      if ReplaceTokenAt(Msg, P, '<HisName>', MainForm.Edit2.Text) then Break;
+      if ReplaceTokenAt(Msg, P, '<MyName>', Tst.Me.OpName) then Break;
       if P = Q then
         raise Exception.CreateFmt(
           'Internal error: TStation.SendText: unrecognized token in msg: "%s"',
-          [AMsg]);
+          [Msg]);
     end;
 
 {
   if CallsFromKeyer
-     then AMsg := StringReplace(AMsg, '<his>', ' ', [rfReplaceAll])
-     else AMsg := StringReplace(AMsg, '<his>', HisCall, [rfReplaceAll]);
+     then Msg := StringReplace(Msg, '<his>', ' ', [rfReplaceAll])
+     else Msg := StringReplace(Msg, '<his>', HisCall, [rfReplaceAll]);
 }
 
   if MsgText <> ''
-    then MsgText := MsgText + ' ' + AMsg
-    else MsgText := AMsg;
+    then MsgText := MsgText + ' ' + Msg
+    else MsgText := Msg;
 
   // during debug, use status bar to show CW stream
   if BDebugCwDecoder and not (self is TQrmStation) then
@@ -315,7 +318,7 @@ begin
 end;
 
 
-procedure TStation.SendMorse(AMorse: string);
+procedure TStation.SendMorse(const AMorse: string);
 var
   i: integer;
 begin

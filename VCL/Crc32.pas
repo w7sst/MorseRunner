@@ -9,7 +9,7 @@ interface
 
 uses SysUtils{$IFDEF MSWINDOWS}, Windows{$ENDIF};
 
-function CalculateCRC32(AStr: string; ACrc: DWord): DWord;
+function CalculateCRC32(const AStr: string; ACrc: DWord): DWord;
 
 
 implementation
@@ -54,7 +54,7 @@ const
   );
 
 
-function CalculateCRC32(AStr: string; ACrc: DWord): DWord;
+function CalculateCRC32(const AStr: string; ACrc: DWord): DWord;
 var
   i: integer;
 begin
