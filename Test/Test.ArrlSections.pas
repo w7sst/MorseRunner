@@ -63,6 +63,12 @@ type
 
     [Test]
     procedure SectionToState_Mdc_InitialDistribution;
+
+    [Test]
+    procedure SectionToState_RAC_BasicMapping;
+
+    [Test]
+    procedure SectionToState_RAC_SpecialCase;
   end;
 
 implementation
@@ -137,16 +143,16 @@ begin
   MdcCounter := 0;
 
   // Special MDC (Maryland/DC) processing alternates between MD & DC
-  Assert.AreEqual('MD', SectionToState('MDC', MdcCounter));
-  Assert.AreEqual('DC', SectionToState('MDC', MdcCounter));
+  Assert.AreEqual('MD', SectionToState('MDC', '', MdcCounter));
+  Assert.AreEqual('DC', SectionToState('MDC', 'K1ABC', MdcCounter));
 
   // Without distribution counter, 'MD' is returned
   Assert.AreEqual('MD', SectionToState('MDC'));
   Assert.AreEqual('MD', SectionToState('MDC'));
   Assert.AreEqual('MD', SectionToState('MDC'));
 
-  Assert.AreEqual('MD', SectionToState('Mdc', MdcCounter));
-  Assert.AreEqual('DC', SectionToState('Mdc', MdcCounter));
+  Assert.AreEqual('MD', SectionToState('Mdc', 'W1AW', MdcCounter));
+  Assert.AreEqual('DC', SectionToState('Mdc', 'W1/VY0ABC', MdcCounter));
   Assert.AreEqual(4, MdcCounter);
 end;
 
@@ -173,8 +179,8 @@ begin
   Assert.AreEqual('CA', SectionToState('scv'));
   Assert.AreEqual('ON', SectionToState('one'));
   Assert.AreEqual('MD', SectionToState('mdc'));
-  Assert.AreEqual('MD', SectionToState('mdc', MdcCounter));
-  Assert.AreEqual('DC', SectionToState('mdc', MdcCounter));
+  Assert.AreEqual('MD', SectionToState('mdc', '', MdcCounter));
+  Assert.AreEqual('DC', SectionToState('mdc', '', MdcCounter));
 end;
 
 procedure TTestArrlSections.SectionToState_EmptySectionReturnsInput;
@@ -193,7 +199,7 @@ var
 begin
   Index := 42;
 
-  Assert.AreEqual('MA', SectionToState('EMA', Index));
+  Assert.AreEqual('MA', SectionToState('EMA', '', Index));
   Assert.AreEqual(42, Index);
 end;
 
@@ -203,10 +209,10 @@ var
 begin
   Index := 0;
 
-  Assert.AreEqual('MD', SectionToState('MDC', Index));
-  Assert.AreEqual('DC', SectionToState('MDC', Index));
-  Assert.AreEqual('MD', SectionToState('MDC', Index));
-  Assert.AreEqual('DC', SectionToState('MDC', Index));
+  Assert.AreEqual('MD', SectionToState('MDC', '', Index));
+  Assert.AreEqual('DC', SectionToState('MDC', '', Index));
+  Assert.AreEqual('MD', SectionToState('MDC', '', Index));
+  Assert.AreEqual('DC', SectionToState('MDC', '', Index));
 end;
 
 procedure TTestArrlSections.SectionToState_CounterIncrementedOnlyForMdc;
@@ -215,13 +221,13 @@ var
 begin
   Index := 0;
 
-  SectionToState('EMA', Index);
+  SectionToState('EMA', '', Index);
   Assert.AreEqual(0, Index);
 
-  SectionToState('MDC', Index);
+  SectionToState('MDC', '', Index);
   Assert.AreEqual(1, Index);
 
-  SectionToState('SCV', Index);
+  SectionToState('SCV', '', Index);
   Assert.AreEqual(1, Index);
 end;
 
@@ -230,7 +236,51 @@ var
   Index: Integer;
 begin
   Index := 0;
-  Assert.AreEqual('MD', SectionToState('MDC', Index));
+  Assert.AreEqual('MD', SectionToState('MDC', '', Index));
+end;
+
+procedure TTestArrlSections.SectionToState_RAC_BasicMapping;
+var
+  Index: Integer;
+begin
+  Index := 0;
+
+  Assert.AreEqual('AB', SectionToSTate('AB', '', Index));
+  Assert.AreEqual('BC', SectionToSTate('BC', '', Index));
+  Assert.AreEqual('ON', SectionToSTate('GH', '', Index));
+  Assert.AreEqual('MB', SectionToSTate('MB', '', Index));
+  Assert.AreEqual('NB', SectionToSTate('NB', '', Index));
+
+  Assert.AreEqual('NS', SectionToSTate('NS',  '', Index));
+  Assert.AreEqual('ON', SectionToSTate('ONE', '', Index));
+  Assert.AreEqual('ON', SectionToSTate('ONN', '', Index));
+  Assert.AreEqual('ON', SectionToSTate('ONS', '', Index));
+  Assert.AreEqual('PE', SectionToSTate('PE', '', Index));
+  Assert.AreEqual('QC', SectionToSTate('QC', '', Index));
+  Assert.AreEqual('SK', SectionToSTate('SK', '', Index));
+
+  Assert.AreEqual(0, Index);
+end;
+
+procedure TTestArrlSections.SectionToState_RAC_SpecialCase;
+var
+  Index: Integer;
+begin
+  Index := 0;
+
+  // Special case: Newfoundland and Labrador (NL)
+  Assert.AreEqual('NF', SectionToSTate('NL', 'VO1ABC', Index), 'NL x VO1 -> NF');
+  Assert.AreEqual('LB', SectionToSTate('NL', 'VO2ABC', Index), 'NL x VO2 -> LB');
+  Assert.AreEqual('NF', SectionToSTate('NL', 'VE8ABC', Index), 'NL x VE8 -> NF');   // default mapping
+  Assert.AreEqual('NF', SectionToSTate('NL', 'VE7ABC', Index), 'NL x VE7 -> NF');   // default mapping
+
+  // Special case: Territories (TER)
+  Assert.AreEqual('NT', SectionToSTate('TER', 'VE8ABC', Index), 'TER x VE8 -> NT');
+  Assert.AreEqual('NU', SectionToSTate('TER', 'VY0ABC', Index), 'TER x VY0 -> NU');
+  Assert.AreEqual('YT', SectionToSTate('TER', 'VY1ABC', Index), 'TER x VY1 -> YT');
+  Assert.AreEqual('NT', SectionToSTate('TER', 'VE7ABC', Index), 'TER x VE7 -> NT');   // default mapping
+
+  Assert.AreEqual(0, Index);
 end;
 
 initialization

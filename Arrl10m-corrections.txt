@@ -10,6 +10,10 @@
 # This file is created by extracting the `MD` and 'DC' states from a N1MM
 # call history file extracting all records containing 'MD' or 'DC' as states.
 #
+# The special case handling for Canadian RAC Section-to-Province is handled
+# in a similar manner. Extract these corrections using:
+#       grep -e ,NF -e ,LB -e ,NT -e ,NU -e ,YT ARRL10M.txt
+#
 # Created 08/15/2026 by W7SST
 #
 !!Order!!,Call,State,
@@ -340,3 +344,21 @@ WW3MM,MD,
 WW3N,MD,
 WX3B,MD,
 WY3P,MD,
+
+# RAC Corrections...
+VE3KTB/VY0,NT,
+VE8DW,NT,
+VE8EV,NT,
+VE8GER,NT,
+VE8NSD,NT,
+VO1GO,NF,
+VO2AC,LB,
+VY0/KD6W,NT,
+VY0JA,NT,
+VY1AAA,NT,
+VY1CQ,NT,
+VY1EI,NT,
+VY1FC,NT,
+VY1JA,NT,
+VY1MAB,NT,
+VY1MB,NT,

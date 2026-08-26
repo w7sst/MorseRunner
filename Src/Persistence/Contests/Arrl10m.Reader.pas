@@ -69,8 +69,10 @@ type
 implementation
 
 uses
+  System.StrUtils,  // for MatchStr
   AppPaths,
   Arrl10m.Policy,
+  CallsignUtils,  // for ExtractPrefix
   ArrlSections;   // for SectionToState
 
 constructor TArrl10mContestFileReader.Create;
@@ -192,7 +194,8 @@ begin
   //
   // 1. Correct callsigns first.
   // 2. Convert contest sections to canonical states
-  //    (MDC alternates MD/DC using FMdcCounter).
+  //    - MDC alternates MD/DC using FMdcCounter.
+  //    - NL and TER section mapping using TArrlSections.GSectionMap.
   // 3. Apply remaining field normalization.
   if Rec.Call = '4U1WB' then
     Rec.State := 'DC'
@@ -205,14 +208,17 @@ begin
   else if Rec.State.IsEmpty then
   begin
     // importing from Arrl Contest Summary (no State field)
-    if FTemp.Section = 'MDC' then
+    // map Section to corresponding State/Province
+    if MatchStr(FTemp.Section, ['MDC', 'NL', 'TER']) then
     begin
-      // apply callsign-based corrections for 'MD' or'DC'
+      // apply callsign-based corrections (from arrl10m-corrections.txt file)
       if FCorrections.TryGetStateOverride(Rec.Call, State) then
         Rec.State := State
       else
-        // otherwise, equally distribute between DC and MD
-        Rec.State := SectionToState(FTemp.Section, FMdcCounter);
+        // otherwise, apply secondary overrides:
+        //  - for MDC, equally distribute across DC and MD
+        //  - for TER & NF, use callsign prefix
+        Rec.State := SectionToState(FTemp.Section, Rec.Call, FMdcCounter);
     end
     else
       Rec.State := SectionToState(FTemp.Section);

@@ -12,6 +12,7 @@ type
 
 function SectionToState(const ASection: string): string; overload;
 function SectionToState(const ASection: string;
+  const ACall: string;
   var DistributionIndex: Integer): string; overload;
 
 const
@@ -64,10 +65,14 @@ const
 implementation
 
 uses
+  CallsignUtils,
+  System.StrUtils,  // for MatchStr
   System.SysUtils,
   System.Generics.Collections;
 
 var
+  // Map Section to corresponding State
+  // Map Callsign Prefix to RAC Province
   GSectionMap: TDictionary<string,string>;
 
 procedure InitSectionMap;
@@ -114,10 +119,31 @@ begin
   // Special MDC (Maryland/DC)
   GSectionMap.Add('MDC', 'MD');
 
-  // Canadian subdivisions
-  GSectionMap.Add('ONE', 'ON');
-  GSectionMap.Add('ONN', 'ON');
-  GSectionMap.Add('ONS', 'ON');
+  // Canadian                      RAC Section          Provinces & Territories
+  GSectionMap.Add('AB',  'AB'); // Alberta              Alberta           (VE6)
+  GSectionMap.Add('BC',  'BC'); // British Columbia     British Columbia  (VE7)
+  GSectionMap.Add('GH',  'ON'); // Golden Horseshoe     Ontario           (VE3)
+  GSectionMap.Add('MB',  'MB'); // Manitoba             Manitoba          (VE4)
+  GSectionMap.Add('NB',  'NB'); // New Brunswick        New Brunswick     (VE9)
+
+  // Special case: Newfoundland and Labrador (NL)
+  GSectionMap.Add('NL x VO1', 'NF'); // NL x VO1 -> NF  Newfoundland      (VO1)
+  GSectionMap.Add('NL x VO2', 'LB'); // NL x VO2 -> LB  Labrador          (VO2)
+  GSectionMap.Add('NL x Def', 'NF'); // NL x Def -> NF  (Default mapping)
+
+  GSectionMap.Add('NS',  'NS'); // Nova Scotia          Nova Scotia       (VE1)
+  GSectionMap.Add('ONE', 'ON'); // Ontario East         Ontario           (VE3)
+  GSectionMap.Add('ONN', 'ON'); // Ontario North        Ontario           (VE3)
+  GSectionMap.Add('ONS', 'ON'); // Ontario South        Ontario           (VE3)
+  GSectionMap.Add('PE',  'PE'); // Prince Edward Island Prince Edward Is  (VY2)
+  GSectionMap.Add('QC',  'QC'); // Quebec               Quebec            (VE2)
+  GSectionMap.Add('SK',  'SK'); // Saskatchewan         Saskatchewan      (VE5)
+
+  // Special case: Territories (TER)
+  GSectionMap.Add('TER x VE8', 'NT'); // TER x VE8 -> NT  NW Territories    (VE8)
+  GSectionMap.Add('TER x VY0', 'NU'); // TER x VY0 -> NU  Nunavut           (VY0)
+  GSectionMap.Add('TER x VY1', 'YT'); // TER x VY1 -> YT  Yukon Territories (VY1)
+  GSectionMap.Add('TER x Def', 'NT'); // TER x Def -> NT  (Default mapping)
 end;
 
 function SectionToState(
@@ -135,16 +161,33 @@ end;
 
 function SectionToState(
   const ASection: string;
+  const ACall: string;
   var DistributionIndex: Integer): string;
+var
+  Section, Prefix: String;
 begin
+  Section := ASection.ToUpper;
+
   // special case for MDC - split 50% between 'MD' and 'DC'
-  if ASection.ToUpper = 'MDC' then
+  if Section.Equals('MDC') then
   begin
     Inc(DistributionIndex);
     if Odd(DistributionIndex) then
       Exit('MD')
     else
       Exit('DC');
+  end
+  // special case for Newfoundland & Labrador and Territories
+  else if MatchStr(Section, ['NL', 'TER']) then
+  begin
+    Prefix := CallsignUtils.ExtractPrefix(ACall);
+    if GSectionMap.TryGetValue(format('%s x %s', [Section, Prefix]), Result) then
+      Exit
+    else if GSectionMap.TryGetValue(format('%s x %s', [Section, 'Def']), Result) then
+      Exit
+    else
+      raise Exception.CreateFmt('SectionToState: %s section is missing its default state mapping.',
+        [ASection]);
   end;
 
   Result := SectionToState(ASection);
