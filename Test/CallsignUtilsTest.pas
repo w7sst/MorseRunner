@@ -39,6 +39,16 @@ type
     [TestCase('No Valid Prefix',      '123ABC,')]   // Invalid callsign format
     [TestCase('Invalid Characters',   '@#CALL,')]   // Callsign contains invalid characters
     [TestCase('Incomplete Portable',  'F6/,')]      // Invalid callsign without proper format
+    [TestCase('Incomplete Portable2', 'F6/W,')]     // Invalid callsign without proper format
+    [TestCase('Incomplete Portable3', 'F6/W7,')]    // Invalid callsign without proper format
+    [TestCase('Invalid_Short1',       'W,')]
+    [TestCase('Invalid_Short2',       'W7,')]
+    [TestCase('Invalid_Short3',       'KD7,')]
+    [TestCase('Invalid_Short4',       'DL,')]
+    [TestCase('Invalid_OnlyDigit',    '43,')]
+    [TestCase('Invalid_LeadingDigit1','43T,')]
+    [TestCase('Invalid_LeadingDigit2','7QCU,')]
+    [TestCase('Invalid_LeadingDigit3','7Q3,')]
     procedure TestExtractCallsign(const AFullCall, AExpected: string);
 
     // --- ExtractPrefix Tests (w/ WPX Contest Rules) ---
@@ -216,6 +226,10 @@ type
     [TestCase('W7SST/W',          'W7SST/W,W7')]  // should be 'W0'
     [TestCase('F6FVY/W7',         'F6FVY/W7,F6')] // should be 'W7'
     procedure TestExtractPrefix0(const AFullCall, AExpected: String);
+
+    [Test(True)]
+    [Category('IsValidCallsign')]
+    procedure IsValidCallsign_Across_Multiple_Files;
   end;
 
 implementation
@@ -224,6 +238,10 @@ uses
   //TypInfo,          // for typeInfo
   PerlRegEx,
   CallsignUtils,
+  ContestFileReader,
+  ContestFileFormat,
+  AppPaths,
+  System.Generics.Collections,
   System.SysUtils;
 
 procedure TestCallsignUtils.SetupFixture;
@@ -236,6 +254,7 @@ end;
 procedure TestCallsignUtils.TestExtractCallsign(const AFullCall, AExpected: string);
 var
   FullCall, Expected: String;
+  IsValid: Boolean;
   S: string;
 
   procedure RunAlgo(var S: String; const AFullcall, AExpected: String);
@@ -259,6 +278,19 @@ begin
 
   RunAlgo(S, FullCall, Expected);
   if S <> '' then Assert.Fail(S);
+
+  {
+    The following IsValidCall(callsign) test is added into this existing unit
+    test function.
+    The expected argument indicates callsign validity:
+      Expected.IsEmpty=True  --> Callsign should be invalid
+      Expected.IsEmpty=False --> Callsign should be valid
+  }
+  IsValid := CallsignUtils.IsValidCall(AFullCall);
+  if Expected.IsEmpty then
+    Assert.IsFalse(IsValid, 'IsValidCall(%s) = True; should be False')
+  else
+    Assert.IsTrue(IsValid, 'IsValidCall(%s) = False; should be True');
 end;
 
 procedure TestCallsignUtils.TestExtractPrefixWpx(const ACallsign, AExpected: string);
@@ -338,6 +370,61 @@ procedure TestCallsignUtils.TestExtractPrefix0(const AFullCall, AExpected: Strin
 begin
   Assert.AreEqual(ExtractPrefix0(AFullCall.Trim), AExpected.Trim);
 end;
+
+type TCallOnlyRec = class
+public
+  Call: string;
+end;
+
+procedure TestCallsignUtils.IsValidCallsign_Across_Multiple_Files;
+var
+  Reader: TContestFileReader<TCallOnlyRec>;
+  UniqueCalls: TDictionary<string,byte>;
+  InvalidCalls: TList<string>;
+begin
+  Reader := TContestFileReader<TCallOnlyRec>.Create([cffN1MMCsv, cffArrlTsv]);
+  UniqueCalls := TDictionary<string,byte>.Create;
+  InvalidCalls := TList<string>.Create;
+
+  try
+    Reader.AddDefaultBinding('Call', True,
+      procedure(const Value: string; Rec: TCallOnlyRec)
+      begin
+        Rec.Call := Value.ToUpper;
+      end);
+
+    Reader.ReadFiles(
+      [
+        // TAppPaths.ContestDataFile('arrl-10-2025.tsv'),
+        // TAppPaths.ContestDataFile('ARRL10M.txt'),
+        TAppPaths.ContestDataFile('ARRLDXCW_USDX.txt'),
+        TAppPaths.ContestDataFile('CQWWCW.txt'),
+        TAppPaths.ContestDataFile('FDGOTA.txt'),
+        TAppPaths.ContestDataFile('IARU_HF.txt'),
+        TAppPaths.ContestDataFile('K1USNSST.txt'),
+        TAppPaths.ContestDataFile('NAQPCW.txt'),
+        TAppPaths.ContestDataFile('SSCW.txt')
+      ],
+      procedure(Rec: TCallOnlyRec)
+      begin
+        if UniqueCalls.TryAdd(Rec.Call,0) then
+          if not CallsignUtils.IsValidCall(Rec.Call) then
+            InvalidCalls.Add(Rec.Call);
+        Rec.Free;
+      end);
+
+    if InvalidCalls.Count > 0 then
+      Assert.Fail(format(
+        'Found %d invalid callsigns: [%s] --> Please remove from call history files.',
+        [InvalidCalls.Count, string.join(', ', InvalidCalls.ToArray)]));
+
+  finally
+    Reader.Free;
+    UniqueCalls.Free;
+    InvalidCalls.Free;
+  end;
+end;
+
 
 initialization
   TDUnitX.RegisterTestFixture(TestCallsignUtils);

@@ -87,7 +87,7 @@ type
     procedure OnExchangeEditComplete; virtual;
     procedure SetHisCall(const ACall: string); virtual;
 
-    function CheckEnteredCallLength(const ACall: string;
+    function ValidateEnteredCall(const ACall: string;
       out AExchError: String) : boolean; virtual;
     function ValidateEnteredExchange(const ACall, AExch1, AExch2: string;
       out AExchError: String) : boolean; virtual;
@@ -113,6 +113,7 @@ implementation
 uses
   SysUtils, RndFunc, Math, DxOper,
   PerlRegEx,
+  CallsignUtils,
   VCL.Graphics,       // clDefault
   Main, CallLst, DXCC;
 
@@ -586,14 +587,14 @@ end;
 
 
 {
-  Performs simple length check on a callsign.
-  Returns true for callsigns with 3 or more characters; false otherwise.
+  Performs RegEx-based validity check on a callsign.
+  Returns true for valid callsigns; false otherwise.
   Upon error, AExchError will contain a simple error message.
 }
-function TContest.CheckEnteredCallLength(const ACall: string;
+function TContest.ValidateEnteredCall(const ACall: string;
   out AExchError: String) : boolean;
 begin
-  Result := StringReplace(ACall, '?', '', [rfReplaceAll]).Length >= 3;
+  Result := CallsignUtils.IsValidCall(StringReplace(ACall, '?', '', [rfReplaceAll]));
   if not Result then
     AExchError := 'Invalid callsign';
 end;
@@ -647,7 +648,9 @@ function TContest.ValidateEnteredExchange(const ACall, AExch1, AExch2: string;
   end;
 
 begin
-  if not ValidateExchField1(AExch1) then
+  if not CallsignUtils.IsValidCall(ACall) then
+    AExchError := 'Invalid callsign'
+  else if not ValidateExchField1(AExch1) then
     AExchError := format('Missing/Invalid %s',
       [Exchange1Settings[Mainform.RecvExchTypes.Exch1].C])
   else if not ValidateExchField2(AExch2) then

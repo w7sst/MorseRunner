@@ -694,7 +694,7 @@ begin
     Call := StringReplace(Edit1.Text, '?', '', [rfReplaceAll]);
 
     // Verify callsign (simple length-based check); virtual
-    if not Tst.CheckEnteredCallLength(Call, ExchError) then
+    if not Tst.ValidateEnteredCall(Call, ExchError) then
       begin
         {Beep;}
         DisplayError(ExchError);

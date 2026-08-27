@@ -9,6 +9,8 @@ interface
 
 function ExtractCallsign(Call: string): string;
 function ExtractPrefix(Call: string; DeleteTrailingLetters: boolean = True): string;
+function IsValidCall(Call: string): boolean;
+
 
 implementation
 
@@ -18,6 +20,7 @@ uses
 
 var
   CallsignRegex: TPerlRegEx;    // Compile the regex ONCE at initialization
+  ValidCallRegex: TPerlRegEx;   // Compile the regex ONCE at initialization
 
 // Code by BG4FQD
 function ExtractCallsign(Call: string):string;
@@ -132,13 +135,26 @@ begin
   Result := Copy(Result, 1, 5);
 end;
 
+
+function IsValidCall(Call: string): boolean;
+begin
+  ValidCallRegEx.Subject := UTF8Encode(Call);
+  Result := ValidCallRegEx.Match;
+end;
+
+
 initialization
   // Compile callsign regex only once at startup; free automatically.
   CallsignRegEx := TPerlRegEx.Create();
   CallsignRegEx.RegEx:= '(([0-9][A-Z])|([A-Z]{1,2}))[0-9][A-Z0-9]*[A-Z]';
   CallsignRegEx.Study;
 
+  ValidCallRegEx := TPerlRegEx.Create();
+  ValidCallRegEx.RegEx:= '(([0-9][A-Z])|([A-Z]{1,2}))[0-9][A-Z0-9]*[A-Z]';
+  ValidCallRegEx.Study;
+
 finalization
   CallsignRegEx.Free;
+  ValidCallRegEx.Free;
 
 end.
