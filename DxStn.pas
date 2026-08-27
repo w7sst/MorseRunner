@@ -242,11 +242,12 @@ end;
 procedure TDxStation.DataToLastQso;
 begin
   with QsoList[High(QsoList)] do begin
+    QsoExchTypes := Self.SentExchTypes;
     TrueCall := Self.MyCall;
     TrueRst := Self.Rst;
     TrueNR := Self.NR;
     // Adding a contest: copy DxStation's Exch1 qso information into log
-    case SentExchTypes.Exch1 of
+    case Self.SentExchTypes.Exch1 of
       etRST: TrueExch1 := IntToStr(Self.RST);
       etOpName: TrueExch1 := Self.OpName;
       etFdClass: TrueExch1 := Self.Exch1;
@@ -258,10 +259,10 @@ begin
         assert(false);
     end;
     // Adding a contest: copy DxStation's Exch2 qso information into log
-    case SentExchTypes.Exch2 of
+    case Self.SentExchTypes.Exch2 of
       etSerialNr: TrueExch2 := IntToStr(Self.NR);
       etGenericField:
-        if SentExchTypes.Exch2AsSerialNR then
+        if Self.SentExchTypes.Exch2AsSerialNR then
           TrueExch2 := IntToStr(Self.NR)
         else
           TrueExch2 := Self.Exch2;

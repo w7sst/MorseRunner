@@ -673,7 +673,8 @@ begin
 
     // update "received" Exchange field types. Some contests change field
     // types based on MyCall and/or DX station's call (Tst.Me.HisCall).
-    RecvExchTypes:= Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall, Tst.Me.HisCall);
+    RecvExchTypes:= Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall,
+      StringReplace(Tst.Me.HisCall, '?', '', [rfReplaceAll]));
   end;
   if AMsg = msgNR then
     NrSent := true;
@@ -2058,6 +2059,11 @@ begin
         NrSent := false;
     if not Tst.Me.UpdateCallInMessage(Edit1.Text) then
         CallSent := false;
+
+    // update "received" Exchange field types. Some contests change field
+    // types based on MyCall and/or DX station's call (Edit1).
+    RecvExchTypes:= Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall,
+      StringReplace(Edit1.Text, '?', '', [rfReplaceAll]));
 end;
 
 

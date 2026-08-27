@@ -9,6 +9,7 @@ interface
 
 uses
   Graphics,           // for TColor
+  Station,            // for TExchTypes
   Classes, ExtCtrls;
 
 procedure SaveQso;
@@ -64,6 +65,7 @@ type
     Sect, TrueSect: string;     // SS' Arrl/RAC Section
     Exch1, TrueExch1: string;   // exchange 1 (e.g. 3A, OpName)
     Exch2, TrueExch2: string;   // exchange 2 (e.g. OR, CWOPSNum)
+    QsoExchTypes: TExchTypes;   // sender's SentExchTypes
     TrueWpm: string;            // WPM of sending DxStn (reported in log)
     Pfx: string;                // extracted call prefix
     MultStr: string;            // contest-specific multiplier (e.g. Pfx, dxcc)
@@ -144,7 +146,7 @@ uses
   CallsignUtils,  // for ExtractCallsign, ExtractPrefix
   Controls,
   StdCtrls, StrUtils,
-  Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
+  Contest, Main, DxStn, DxOper, Ini, MorseKey;
 
 const
   ShowHstCorrections: Boolean = true;
@@ -712,6 +714,10 @@ begin
     Qso.T := BlocksToSeconds(Tst.BlockNumber) /  86400;
     Qso.Call := Call;
 
+    // Set QSO's Exchange field types. Some contests change field
+    // types based on MyCall and/or DX station's call (Edit1).
+    Qso.QsoExchTypes := Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall, Call);
+
     //save contest-specific exchange values into QSO
     Tst.SaveEnteredExchToQso(Qso^, Edit2.Text, Edit3.Text);
 
@@ -866,7 +872,7 @@ begin
   Exch1ExError := leNONE;
 
   // Adding a contest: check for contest-specific exchange field 1 errors
-  case Mainform.RecvExchTypes.Exch1 of
+  case QsoExchTypes.Exch1 of
     etRST:     if TrueRst   <> Rst   then Exch1Error := leRST;
     etOpName:  if TrueExch1 <> Exch1 then Exch1Error := leNAME;
     etFdClass: if TrueExch1 <> Exch1 then Exch1Error := leCLASS;
@@ -897,7 +903,7 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
   // Reduce Power characters (T, O, A, N) to (0, 0, 1, 9) respectively.
   function ReducePowerStr(const text: string): string;
   begin
-    assert(Mainform.RecvExchTypes.Exch2 in [etPower, etCqZone]);
+    assert(QsoExchTypes.Exch2 in [etPower, etCqZone]);
     Result := text.Replace('T', '0', [rfReplaceAll])
                   .Replace('O', '0', [rfReplaceAll])
                   .Replace('A', '1', [rfReplaceAll])
@@ -915,7 +921,7 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
   Exch2ExError := leNONE;
 
   // Adding a contest: check for contest-specific exchange field 2 errors
-  case Mainform.RecvExchTypes.Exch2 of
+  case QsoExchTypes.Exch2 of
     etSerialNr:    if TrueNr <> NR then Exch2Error := leNR;
     etGenericField:
       // Adding a contest: implement comparison for Generic Field type
@@ -984,7 +990,7 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
     leNR:
       if (SimContest = scHst) and ShowHstCorrections and (RunMode = rmHst) then
       begin
-        assert(Mainform.RecvExchTypes.Exch2 = etSerialNr);
+        assert(QsoExchTypes.Exch2 = etSerialNr);
         ACorrections.Add(format('%.4d', [TrueNR]));
       end
       else if (SimContest = scArrlSS) then
@@ -999,7 +1005,7 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
       // special case for NAQP - Non-NA Stations do not send State. Return a
       // space (' ') to avoid printing a confusing "" in the error log.
       if (SimContest = scNaQP) and
-        (Mainform.RecvExchTypes.Exch2 = etNaQpNonNaExch2) and
+        (QsoExchTypes.Exch2 = etNaQpNonNaExch2) and
         TrueExch2.IsEmpty then
         ACorrections.Add(' ')
       else
