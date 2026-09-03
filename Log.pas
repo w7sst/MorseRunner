@@ -9,6 +9,7 @@ interface
 
 uses
   Graphics,           // for TColor
+  Station,            // for TExchTypes
   Classes, ExtCtrls;
 
 procedure SaveQso;
@@ -64,6 +65,7 @@ type
     Sect, TrueSect: string;     // SS' Arrl/RAC Section
     Exch1, TrueExch1: string;   // exchange 1 (e.g. 3A, OpName)
     Exch2, TrueExch2: string;   // exchange 2 (e.g. OR, CWOPSNum)
+    QsoExchTypes: TExchTypes;   // sender's SentExchTypes
     TrueWpm: string;            // WPM of sending DxStn (reported in log)
     Pfx: string;                // extracted call prefix
     MultStr: string;            // contest-specific multiplier (e.g. Pfx, dxcc)
@@ -144,7 +146,7 @@ uses
   CallsignUtils,  // for ExtractCallsign, ExtractPrefix
   Controls,
   StdCtrls, StrUtils,
-  Contest, Main, DxStn, DxOper, Ini, Station, MorseKey;
+  Contest, Main, DxStn, DxOper, Ini, MorseKey;
 
 const
   ShowHstCorrections: Boolean = true;
@@ -187,6 +189,7 @@ const
   SS_CALL_COL     = 'Call,9,L';
   SS_PREC_COL     = 'Pr,2.5,L';
   SS_CHECK_COL    = 'Chk,3.25,C';
+  ARRL_EXCH_COL   = 'Exch,5,L';
 
 {$ifdef DEBUG}
   DEBUG_INDENT: Integer = 3;
@@ -553,6 +556,8 @@ begin
       ScoreTableInit([UTC_COL, CALL_COL, CQWW_RST_COL, CQ_ZONE_COL, CORRECTIONS_COL, WPM_COL]);
     scArrlDx:
       ScoreTableInit([UTC_COL, CALL_COL, RST_COL, ARRLDX_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
+    scArrl10m:
+      ScoreTableInit([UTC_COL, CALL_COL, RST_COL, ARRL_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scAllJa:
       ScoreTableInit([UTC_COL, CALL_COL, RST_COL, ALLJA_EXCH_COL, CORRECTIONS_COL, WPM_COL]);
     scAcag:
@@ -709,6 +714,10 @@ begin
     Qso.T := BlocksToSeconds(Tst.BlockNumber) /  86400;
     Qso.Call := Call;
 
+    // Set QSO's Exchange field types. Some contests change field
+    // types based on MyCall and/or DX station's call (Edit1).
+    Qso.QsoExchTypes := Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall, Call);
+
     //save contest-specific exchange values into QSO
     Tst.SaveEnteredExchToQso(Qso^, Edit2.Text, Edit3.Text);
 
@@ -765,7 +774,7 @@ begin
 
   //inc NR
   if (Tst.Me.SentExchTypes.Exch1 in [etSSNrPrecedence]) or
-     (Tst.Me.SentExchTypes.Exch2 in [etSerialNr]) then
+      Tst.Me.SentExchTypes.Exch2AsSerialNR then
     Inc(Tst.Me.NR);
 
   // Notify SaveQso is complete
@@ -823,6 +832,11 @@ begin
         , format('%.3d', [Rst])
         , Exch2
         , Err, format('%3s', [TrueWpm]));
+    scArrl10m:
+      ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
+        , format('%.3d', [Rst])
+        , Exch2
+        , Err, format('%3s', [TrueWpm]));
     scAllJa:
       ScoreTableInsert(FormatDateTime('hh:nn:ss', t), Call
         , format('%.3d', [Rst])
@@ -858,7 +872,7 @@ begin
   Exch1ExError := leNONE;
 
   // Adding a contest: check for contest-specific exchange field 1 errors
-  case Mainform.RecvExchTypes.Exch1 of
+  case QsoExchTypes.Exch1 of
     etRST:     if TrueRst   <> Rst   then Exch1Error := leRST;
     etOpName:  if TrueExch1 <> Exch1 then Exch1Error := leNAME;
     etFdClass: if TrueExch1 <> Exch1 then Exch1Error := leCLASS;
@@ -889,7 +903,7 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
   // Reduce Power characters (T, O, A, N) to (0, 0, 1, 9) respectively.
   function ReducePowerStr(const text: string): string;
   begin
-    assert(Mainform.RecvExchTypes.Exch2 in [etPower, etCqZone]);
+    assert(QsoExchTypes.Exch2 in [etPower, etCqZone]);
     Result := text.Replace('T', '0', [rfReplaceAll])
                   .Replace('O', '0', [rfReplaceAll])
                   .Replace('A', '1', [rfReplaceAll])
@@ -907,7 +921,7 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
   Exch2ExError := leNONE;
 
   // Adding a contest: check for contest-specific exchange field 2 errors
-  case Mainform.RecvExchTypes.Exch2 of
+  case QsoExchTypes.Exch2 of
     etSerialNr:    if TrueNr <> NR then Exch2Error := leNR;
     etGenericField:
       // Adding a contest: implement comparison for Generic Field type
@@ -928,6 +942,19 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
               Exch2Error := leZN
             else
               Exch2Error := leSOC;
+        scArrl10m:
+          if TrueCall.EndsWith('/MM') then
+            begin
+              if TrueExch2 <> Exch2 then
+                Exch2Error := leZN;
+            end
+          else if TrueNR > 0 then
+            begin
+              if (TrueNr <> NR) then
+                Exch2Error := leNR;
+            end
+          else if TrueExch2 <> Exch2 then
+            Exch2Error := leERR;
         else
           if TrueExch2 <> Exch2 then
             Exch2Error := leERR;
@@ -963,11 +990,13 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
     leNR:
       if (SimContest = scHst) and ShowHstCorrections and (RunMode = rmHst) then
       begin
-        assert(Mainform.RecvExchTypes.Exch2 = etSerialNr);
+        assert(QsoExchTypes.Exch2 = etSerialNr);
         ACorrections.Add(format('%.4d', [TrueNR]));
       end
       else if (SimContest = scArrlSS) then
         ACorrections.Add(TrueSect)
+      else if (SimContest = scArrl10m) then
+        ACorrections.Add(format('%.3d', [TrueNR]))
       else
         ACorrections.Add(TrueExch2);
     leCHK:
@@ -976,7 +1005,7 @@ procedure TQso.CheckExch2(var ACorrections: TStringList);
       // special case for NAQP - Non-NA Stations do not send State. Return a
       // space (' ') to avoid printing a confusing "" in the error log.
       if (SimContest = scNaQP) and
-        (Mainform.RecvExchTypes.Exch2 = etNaQpNonNaExch2) and
+        (QsoExchTypes.Exch2 = etNaQpNonNaExch2) and
         TrueExch2.IsEmpty then
         ACorrections.Add(' ')
       else

@@ -672,7 +672,7 @@ procedure TContest.SaveEnteredExchToQso(var Qso: TQso; const AExch1, AExch2: str
 begin
     // Adding a contest: save contest-specific exchange values into QsoList
     //save Exchange 1 (Edit2)
-    case Mainform.RecvExchTypes.Exch1 of
+    case Qso.QsoExchTypes.Exch1 of
       etRST:     Qso.Rst := StrToIntDef(AExch1, 0);
       etOpName:  Qso.Exch1 := AExch1;
       etFdClass: Qso.Exch1 := AExch1;
@@ -681,9 +681,22 @@ begin
     end;
 
     //save Exchange2 (Edit3)
-    case Mainform.RecvExchTypes.Exch2 of
+    case Qso.QsoExchTypes.Exch2 of
       etSerialNr:    Qso.Nr := StrToIntDef(AExch2, 0);
-      etGenericField:Qso.Exch2 := AExch2;
+      etGenericField:
+        if Qso.QsoExchTypes.Exch2AsSerialNR then
+          begin
+            Qso.Exch2 := AExch2.Replace('T', '0')
+                               .Replace('A', '1')
+                               .Replace('N', '9');
+            Qso.Nr := StrToIntDef(Qso.Exch2, 0);
+          end
+        else
+          begin
+            Qso.Exch2 := AExch2;
+            if Qso.QsoExchTypes.Exch2AsITURegion
+              then Qso.Nr := StrToIntDef(AExch2, 0);
+          end;
       etArrlSection: Qso.Exch2 := AExch2;
       etStateProv:   Qso.Exch2 := AExch2;
       etCqZone:      Qso.Exch2 := AExch2;
@@ -703,7 +716,7 @@ begin
     end;
 
   if Qso.Exch1.IsEmpty then Qso.Exch1 := '?';
-  if Qso.Exch2.IsEmpty and (Mainform.RecvExchTypes.Exch2 <> etNaQpNonNaExch2) then
+  if Qso.Exch2.IsEmpty and (Qso.QsoExchTypes.Exch2 <> etNaQpNonNaExch2) then
     Qso.Exch2 := '?';
 end;
 

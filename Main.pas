@@ -22,7 +22,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.85.4+';  { Sets version strings in UI panel. }
+  sVersion: String = '1.85.4+10m';  { Sets version strings in UI panel. }
 
 type
 
@@ -413,7 +413,7 @@ implementation
 
 uses
   DXCC, ARRLFD, NAQP, CWOPS, CQWW, CQWPX, ARRLDX, CWSST, ALLJA, ACAG,
-  IARUHF, ARRLSS,
+  IARUHF, ARRLSS, ARRL10M,
   MorseKey, FarnsKeyer, CallLst,
   CallsignUtils,
   SysUtils, ShellApi, Crc32, Idhttp, Math, IniFiles,
@@ -613,6 +613,7 @@ begin
   scAcag:       Result := TACAG.Create;
   scIaruHf:     Result := TIaruHf.Create;
   scArrlSS:     Result := TSweepstakes.Create;
+  scArrl10m:    Result := TArrl10m.Create;
   else
     assert(false);
   end;
@@ -673,7 +674,8 @@ begin
 
     // update "received" Exchange field types. Some contests change field
     // types based on MyCall and/or DX station's call (Tst.Me.HisCall).
-    RecvExchTypes:= Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall, Tst.Me.HisCall);
+    RecvExchTypes:= Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall,
+      StringReplace(Tst.Me.HisCall, '?', '', [rfReplaceAll]));
   end;
   if AMsg = msgNR then
     NrSent := true;
@@ -758,6 +760,8 @@ end;
   key is mapped to it's equivalent '9' value. this allows the user
   to type what they hear and this function will convert to the equivalent
   numeric value.
+
+  Adding a Contest: consider contest-specific character mappings.
 }
 procedure TMainForm.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
@@ -789,6 +793,7 @@ begin
       end;
     etGenericField:
       begin
+        // scArrl10m - perhaps handle ATN
         // log what the user types - assuming alpha numeric characters
         if not CharInSet(Key, ['0'..'9', 'A'..'Z', 'a'..'z', #8]) then
           Key := #0;
@@ -1143,7 +1148,7 @@ begin
   // This status message occurs when user presses the Enter key.
   // remember not to give a hint if exchange entry is affected by this info.
   // for certain contests (e.g. ARRL Field Day), update update status bar
-  if SimContest in [scCwt, scFieldDay, scWpx, scCQWW, scArrlDx, scIaruHf] then
+  if SimContest in [scCwt, scFieldDay, scWpx, scCQWW, scArrlDx, scIaruHf, scArrl10m] then
     SbarUpdateStationInfo(Edit1.Text)
   else if not BDebugCwDecoder then
     SbarUpdateStationInfo('');
@@ -1291,7 +1296,8 @@ begin
   // Adding a contest: add each contest to this set. TODO - implement alternative
   // validate selected contest
   if not (AContestNum in [scWpx, scCwt, scFieldDay, scNaQp, scHst,
-    scCQWW, scArrlDx, scSst, scAllJa, scAcag, scIaruHf, scArrlSS]) then
+    scCQWW, scArrlDx, scSst, scAllJa, scAcag, scIaruHf, scArrlSS,
+    scArrl10m]) then
   begin
     ShowMessage('The selected contest is not yet supported.');
     SimContestCombo.ItemIndex :=
@@ -1656,32 +1662,41 @@ end;
 
 procedure TMainForm.SetMyExch2(const AExchType: TExchange2Type;
   const Avalue: string);
+
+  procedure SetupSerialNR(const Avalue: string);
+  begin
+    var S : String := Avalue.Replace('T', '0', [rfReplaceAll])
+                            .Replace('O', '0', [rfReplaceAll])
+                            .Replace('N', '9', [rfReplaceAll]);
+    Ini.UserExchange2[SimContest] := Avalue;
+    if SimContest = scHST then
+      Tst.Me.NR := 1
+    else if S.Contains('#') and (SerialNR in [snMidContest, snEndContest]) then
+      Tst.Me.NR := 1 + (Tst.GetRandomSerialNR div 10) * 10
+    else if IsNum(S) then
+      Tst.Me.Nr := S.ToInteger
+    else
+      Tst.Me.Nr := 1;
+    if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
+  end;
 begin
   assert(RunMode = rmStop);
   // Adding a contest: setup contest-specific exchange field 2
   case AExchType of
     etSerialNr:
-      begin
-        var S : String := Avalue.Replace('T', '0', [rfReplaceAll])
-                                .Replace('O', '0', [rfReplaceAll])
-                                .Replace('N', '9', [rfReplaceAll]);
-        Ini.UserExchange2[SimContest] := Avalue;
-        if SimContest = scHST then
-          Tst.Me.NR := 1
-        else if S.Contains('#') and (SerialNR in [snMidContest, snEndContest]) then
-          Tst.Me.NR := 1 + (Tst.GetRandomSerialNR div 10) * 10
-        else if IsNum(S) then
-          Tst.Me.Nr := S.ToInteger
-        else
-          Tst.Me.Nr := 1;
-        if BDebugExchSettings then Edit3.Text := IntToStr(Tst.Me.Nr);  // testing only
-      end;
+      SetupSerialNr(Avalue);
     etGenericField, etNaQpExch2, etNaQpNonNaExch2:
       begin
-        // 'expecting alpha-numeric field'
-        Ini.UserExchange2[SimContest] := Avalue;
-        Tst.Me.Exch2 := Avalue;
-        if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+        // ARRL 10M - handle local station sending Serial NR
+        if Tst.Me.SentExchTypes.Exch2AsSerialNR then
+          SetupSerialNR(Avalue)
+        else
+          begin
+            // 'expecting alpha-numeric field'
+            Ini.UserExchange2[SimContest] := Avalue;
+            Tst.Me.Exch2 := Avalue;
+            if BDebugExchSettings then Edit3.Text := Avalue; // testing only
+          end;
       end;
     etArrlSection:  // e.g. Field Day (OR)
       begin
@@ -1737,7 +1752,7 @@ begin
     else
       assert(false, Format('Unsupported exchange 2 type: %s.', [ToStr(AExchType)]));
   end;
-  Tst.Me.SentExchTypes.Exch2 := AExchType;
+  Tst.Me.SentExchTypes.Exch2 := AExchType;  // should this be set at top of function?
 end;
 
 
@@ -2045,6 +2060,11 @@ begin
         NrSent := false;
     if not Tst.Me.UpdateCallInMessage(Edit1.Text) then
         CallSent := false;
+
+    // update "received" Exchange field types. Some contests change field
+    // types based on MyCall and/or DX station's call (Edit1).
+    RecvExchTypes:= Tst.GetRecvExchTypes(skMyStation, Tst.Me.MyCall,
+      StringReplace(Edit1.Text, '?', '', [rfReplaceAll]));
 end;
 
 

@@ -10,6 +10,7 @@ interface
 uses
   Classes, SndTypes,
   ExchFields,
+  Flags,
   Ini;
 
 const
@@ -49,9 +50,27 @@ type
 
   // Exchange Field types
   TExchTypes = record
+  private
+    Flags: TFlags16;        // Used by etGenericField for contest-specific behaviors
+
+    const EXCH2_AS_SERIAL_NR      = $0001;
+    const EXCH2_AS_ITU_REGION     = $0002;
+
+    procedure SetSendExch2AsSerialNR(const Val: Boolean);
+    function  GetSendExch2AsSerialNR: Boolean;
+    procedure SetSendExch2AsITURegion(const Val: Boolean);
+    function  GetSendExch2AsITURegion: Boolean;
+
+  public
     Exch1: TExchange1Type;  // Exchange field 1 type
     Exch2: TExchange2Type;  // Exchange field 2 type
+    // Exch1SubType: TExchSubType;
+    // Exch2SubType: TExchSubType;
 
+    property Exch2AsSerialNR:  Boolean read GetSendExch2AsSerialNR  write SetSendExch2AsSerialNR;
+    property Exch2AsITURegion: Boolean read GetSendExch2AsITURegion write SetSendExch2AsITURegion;
+
+    class operator Initialize(out Dest: TExchTypes);
     class operator Equal(const a,b: TExchTypes) : Boolean;
   end;
 
@@ -120,12 +139,6 @@ type
     property Bfo: Single read GetBfo;
   end;
 
-const
-  ExchTypesUndef : TExchTypes = (
-    Exch1: TExchange1Type(-1);
-    Exch2: TExchange2Type(-1);
-  );
-
 function ToStr(const val : TStationMessage) : string; overload;
 function ToStr(const val : TStationMessages) : string; overload;
 function ToStr(const val : TStationState) : string; overload;
@@ -178,9 +191,37 @@ end;
 
 class operator TExchTypes.Equal(const a,b: TExchTypes) : Boolean;
 begin
-  Result:= (a.Exch1 = b.Exch1) and (a.Exch2 = b.Exch2);
+  Result:= (a.Exch1 = b.Exch1) and
+           (a.Exch2 = b.Exch2) and
+           (a.Flags.GetValue = b.Flags.GetValue);
 end;
 
+class operator TExchTypes.Initialize(out Dest: TExchTypes);
+begin
+  Dest.Exch1 := TExchange1Type(-1);
+  Dest.Exch2 := TExchange2Type(-1);
+  Dest.Flags.Create(0);
+end;
+
+procedure TExchTypes.SetSendExch2AsSerialNR(const Val: Boolean);
+begin
+  Flags.SetFlag(EXCH2_AS_SERIAL_NR, Val);
+end;
+
+function TExchTypes.GetSendExch2AsSerialNR: Boolean;
+begin
+  Result := (Exch2 = etSerialNr) or Flags.TestFlag(EXCH2_AS_SERIAL_NR);
+end;
+
+procedure TExchTypes.SetSendExch2AsITURegion(const Val: Boolean);
+begin
+  Flags.SetFlag(TExchTypes.EXCH2_AS_ITU_REGION, Val);
+end;
+
+function TExchTypes.GetSendExch2AsITURegion: Boolean;
+begin
+  Result := Flags.TestFlag(EXCH2_AS_ITU_REGION);
+end;
 
 { TStation }
 
@@ -194,7 +235,7 @@ end;
 
 procedure TStation.Init;
 begin
-  SentExchTypes:= ExchTypesUndef;
+  SentExchTypes := Default(TExchTypes);
   MsgTemp := 'undef';
   R1 := Random;
 end;
@@ -422,6 +463,11 @@ begin
         Result := Format('%d%s %s %s', [NR, Exch1, MyCall, Exch2])
       else
         Result := Format('%s %s %s', [Exch1, MyCall, Exch2]);
+    scArrl10m:
+      if Self.SentExchTypes.Exch2AsSerialNR then
+        Result := Format('%s %d', [Exch1, NR])
+      else
+        Result := Format('%s %s', [Exch1, Exch2]);
     scWpx, scHst:
       if Call = MyCall then
         Result := Format('%d%.3d', [RST, NR])
@@ -451,7 +497,7 @@ begin
       Result := Format('%s %s', [Exch1, Exch2]);
   end;
 
-  if NrWithError and (SentExchTypes.Exch2 = etSerialNr) then
+  if NrWithError and SentExchTypes.Exch2AsSerialNR then
     begin
     Idx := Length(Result);
     if not CharInSet(Result[Idx], ['2'..'7']) then
@@ -474,13 +520,13 @@ begin
      Result := StringReplace(Result, '599', '5NN', [rfReplaceAll]);
      end;
 
-  if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2 in
-    [etSerialNr, etCqZone, etItuZone, etAge, etPower]) then
+  if (Ini.RunMode <> rmHst) and (SentExchTypes.Exch2AsSerialNR or
+     (SentExchTypes.Exch2 in [etSerialNr, etCqZone, etItuZone, etAge, etPower])) then
     begin
     // replace leading zeros
     Result := StringReplace(Result, '000', 'TTT', [rfReplaceAll]);
     Result := StringReplace(Result, '00', 'TT', [rfReplaceAll]);
-    if (SentExchTypes.Exch2 = etSerialNr) and (Random < 0.98) then
+    if (SentExchTypes.Exch2AsSerialNR) and (Random < 0.98) then
       Result := StringReplace(Result, '0', 'T', [rfReplaceAll]);
 
     // the user's station will always send cut numeric fields

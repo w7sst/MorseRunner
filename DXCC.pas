@@ -165,6 +165,11 @@ begin
      ((sP.Length = 6) and (sP.StartsWith('KC4AA') or sP.StartsWith('KC4US'))) then
     sP := 'CE9KC4';
 
+  // special case for 4U1WB...
+  // 4U1WB is from DC, not DX. DX is flagged as an Invalid Section by N1MM.
+  if sP.Equals('4U1WB') then
+    sP := 'W0';
+
   Result:= SearchPrefix(index, sP);
   if Result then
     dxrec:= TDXCCRec(DXCCList.Items[index]);
