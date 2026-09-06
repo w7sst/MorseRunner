@@ -22,7 +22,7 @@ uses
 
 const
   WM_TBDOWN = WM_USER+1;
-  sVersion: String = '1.85.4+10m';  { Sets version strings in UI panel. }
+  sVersion: String = '1.86-dev';  { Sets version strings in UI panel. }
 
 type
 
