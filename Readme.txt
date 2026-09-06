@@ -194,6 +194,16 @@ CONFIGURATION
       and favor realism, meaning it may require several NIL messages and
       cost QSO time to fully abandon the QSO.
 
+    Caller Behaviors > Stays After Continued Incomplete Calls
+      Enabling this option favors training over realism, allowing the calling
+      station to remain active in the current QSO indefinitely so users can
+      practice head-copying and correct a callsign or exchange before the
+      station leaves.
+
+      By default, this option is disabled to match original v1.68 behaviors
+      and favor realism, meaning the calling station will automatically leave
+      the QSO after 3–5 failed retries.
+
     Show Check/Section (for ARRL Sweepstakes only)
       This contest has a complicated exchange and there is a setting to prepopulate
       the exchange to match N1MM's behavior. Please see the contest rules section
