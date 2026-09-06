@@ -240,6 +240,7 @@ type
     Label20: TLabel;
     Label21: TLabel;
     Label22: TLabel;
+    CallerBehaviors1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -322,6 +323,7 @@ type
     procedure SpinEdit1Exit(Sender: TObject);
     procedure Edit3Enter(Sender: TObject);
     procedure Edit3KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure CallerBehaviors1Click(Sender: TObject);
 
   private
     MustAdvance: boolean;       // Controls when Exchange fields advance
@@ -2678,6 +2680,12 @@ begin
 end;
 
 
+procedure TMainForm.CallerBehaviors1Click(Sender: TObject);
+begin
+  NilInstantRemove1.Checked := Ini.NilInstantRemove;
+end;
+
+
 procedure TMainForm.SetQsk(Value: boolean);
 begin
   Qsk := Value;
@@ -2820,7 +2828,6 @@ begin
   QSB1.Checked := Ini.Qsb;
   Flutter1.Checked := Ini.Flutter;
   LIDS1.Checked := Ini.Lids;
-  NilInstantRemove1.Checked := Ini.NilInstantRemove;
   Faster5nn1.Checked := Ini.Faster5nn > 0;
 end;
 
