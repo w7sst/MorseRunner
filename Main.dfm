@@ -1521,7 +1521,7 @@ object MainForm: TMainForm
         end
       end
       object Operator1: TMenuItem
-        Caption = 'HST Operator'
+        Caption = 'HST Operator...'
         OnClick = Operator1Click
       end
       object NilInstantRemove1: TMenuItem
