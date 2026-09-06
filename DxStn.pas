@@ -14,6 +14,18 @@ type
   TDxStation = class(TStation)
   private
     Qsb: TQsb;
+    FMasterSpeed: Integer;
+    FMasterCharacterSpeed: Integer;
+    FSpeedState: TStationSpeedState;
+    FSpeedDropFactor: Double;
+    FUseFarnsworthGaps: Boolean;
+
+    // The Callback Method that catches the operator's event
+    procedure HandleOperatorSpeedChangeRequest(Sender: TObject;
+      ASpeedState: TStationSpeedState;
+      ASpeedDropFactor: Double;
+      AUseFarnsworthGaps: Boolean);
+
   public
     Oper: TDxOperator;
     constructor CreateStation;
@@ -24,6 +36,8 @@ type
 {$endif}
     procedure DataToLastQso;
     function GetBlock: TSingleArray; override;
+
+    property SpeedState: TStationSpeedState read FSpeedState;
   var
      Operid: integer;
   end;
@@ -36,7 +50,8 @@ var
 implementation
 
 uses
-  SysUtils, Classes, RndFunc, Dialogs,
+  SysUtils, RndFunc,
+  System.Math,
   Main,     // for Mainform
   ExchFields, // for TExchField
   CallLst, Log, Ini, Contest;
@@ -55,10 +70,16 @@ begin
   MyCall := Tst.GetCall(Operid);
 
   Oper := TDxOperator.Create(MyCall, osNeedPrevEnd);
+  Oper.OnSpeedStateChange := Self.HandleOperatorSpeedChangeRequest;
   NrWithError := Ini.Lids and (Random < 0.1);
 
   // DX's speed, {WpmS,WpmC}, is set once at creation time
   WpmS := Oper.GetWpm(WpmC);
+  FMasterSpeed := WpmS;
+  FMasterCharacterSpeed := WpmC;
+  FUseFarnsworthGaps := Tst.IsFarnsworthAllowed;
+  FSpeedState := ssNormalSpeed;
+  FSpeedDropFactor := 0;
 
   // DX's sent exchange types depends on kind-of-station and their callsign
   SentExchTypes := Tst.GetSentExchTypes(skDxStation, MyCall);
@@ -107,6 +128,52 @@ begin
   Oper.Free;
   Qsb.Free;
   inherited;
+end;
+
+
+procedure TDxStation.HandleOperatorSpeedChangeRequest(Sender: TObject;
+  ASpeedState: TStationSpeedState;
+  ASpeedDropFactor: Double;
+  AUseFarnsworthGaps: Boolean);
+var
+  TargetSpeed: Integer;
+  CharacterSpeed, EffectiveSpeed: Integer;
+begin
+  if (FSpeedState = ASpeedState) and
+     (FSpeedDropFactor = ASpeedDropFactor) and
+     (FUseFarnsworthGaps = AUseFarnsworthGaps) then
+    Exit;
+
+  FSpeedState := ASpeedState;
+  FSpeedDropFactor := ASpeedDropFactor;
+  FUseFarnsworthGaps := AUseFarnsworthGaps;
+
+  if FSpeedState = ssNormalSpeed then
+  begin
+    // Recover back to full normal running speed
+    WpmC := FMasterCharacterSpeed;
+    WpmS := FMasterSpeed;
+    Exit;
+  end;
+
+  // Apply Operator's scale factor directly to master speed
+  // ASpeedDropFactor is a value representing 12-20% drop in CW Speed
+  TargetSpeed := Round(FMasterSpeed * (1.0 - ASpeedDropFactor));
+
+  // Safety check to ensure the math always creates a noticeable drop
+  if (TargetSpeed >= FMasterSpeed) and (FMasterSpeed > 5) then
+    TargetSpeed := FMasterSpeed - 4;
+
+  // Absolute lower data-integrity floor for Morse code synthesis math
+  if TargetSpeed < 5 then
+    TargetSpeed := 5;
+
+    // Characters and gaps slow down at an identical 1:1 matching ratio.
+    CharacterSpeed := TargetSpeed;
+    EffectiveSpeed := TargetSpeed;
+
+  WpmC := CharacterSpeed;
+  WpmS := EffectiveSpeed;
 end;
 
 
