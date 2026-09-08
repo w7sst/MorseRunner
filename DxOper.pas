@@ -83,6 +83,7 @@ type
 
   TCallCheckResult = (mcNo, mcYes, mcAlmost);
 
+  TStationSkill = (skLow, skMedium, skHigh);
 
   TDxOperator = class
   private
@@ -91,6 +92,8 @@ type
     LastCallCheck: TCallCheckResult;    // IsMyCall()'s last result
     procedure DecPatience;
     procedure MorePatience(AValue: integer = 0);
+    function GetSkillLevel: TStationSkill;
+
   public
     Call: string;
     Skills: integer;
@@ -122,9 +125,11 @@ type
     function CallConfidenceCheck(const ACall: string;
       ARandomResult: boolean): TCallCheckResult;
     function IsActiveInQso: Boolean;
+    property SkillLevel: TStationSkill read GetSkillLevel;
   end;
 
 function ToStr(const val : TOperatorState) : string; overload;
+function ToStr(const val : TStationSkill) : string; overload;
 
 implementation
 
@@ -137,6 +142,12 @@ uses
 function ToStr(const val : TOperatorState) : string; overload;
 begin
   Result := GetEnumName(typeInfo(TOperatorState), Ord(val));
+end;
+
+
+function ToStr(const val : TStationSkill) : string; overload;
+begin
+  Result := GetEnumName(typeInfo(TStationSkill), Ord(val));
 end;
 
 
@@ -175,6 +186,12 @@ end;
 function TDxOperator.IsGhosting: boolean;
 begin
   Result := Patience = 0;
+end;
+
+
+function TDxOperator.GetSkillLevel: TStationSkill;
+begin
+  Result := TStationSkill(Skills-1);
 end;
 
 
