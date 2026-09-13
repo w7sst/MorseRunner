@@ -34,6 +34,8 @@ begin
   // QrnStation doesn't send messages, so no call nor exchange types
   SentExchTypes.Exch1:= TExchange1Type(-1);
   SentExchTypes.Exch2:= TExchange2Type(-1);
+  WpmS := 0;
+  WpmC := 0;
 
   Dur := SecondsToBlocks(Random) * Ini.BufSize;
   SetLength(Envelope, Dur);
