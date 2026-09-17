@@ -168,9 +168,27 @@ begin
   if TargetSpeed < 5 then
     TargetSpeed := 5;
 
+  if FUseFarnsworthGaps then
+  begin
+    assert(Tst.IsFarnsworthAllowed);
+    case Oper.SkillLevel of
+      skLow, skMedium:
+              CharacterSpeed := Round(FMasterCharacterSpeed * (1.0 - ASpeedDropFactor/2));
+      skHigh: CharacterSpeed := FMasterCharacterSpeed;
+    end;
+
+    EffectiveSpeed := TargetSpeed;
+
+    // Character speed must never be slower than effective speed
+    if CharacterSpeed < EffectiveSpeed then
+      CharacterSpeed := EffectiveSpeed;
+  end
+  else
+  begin
     // Characters and gaps slow down at an identical 1:1 matching ratio.
     CharacterSpeed := TargetSpeed;
     EffectiveSpeed := TargetSpeed;
+  end;
 
   WpmC := CharacterSpeed;
   WpmS := EffectiveSpeed;
