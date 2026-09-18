@@ -185,6 +185,15 @@ CONFIGURATION
             An optional leading zero can be specified for generating serial numbers
             with leading zeros (e.g. 001-200).
 
+    Caller Behaviors > NIL Instantly Removes Caller
+      Enabling this option favors training over realism, making MRCE remove
+      one targeted caller immediately upon receiving a single F8 NIL
+      (Not In Log) message.
+
+      By default, this option is disabled to match original v1.68 behaviors
+      and favor realism, meaning it may require several NIL messages and
+      cost QSO time to fully abandon the QSO.
+
     Show Check/Section (for ARRL Sweepstakes only)
       This contest has a complicated exchange and there is a setting to prepopulate
       the exchange to match N1MM's behavior. Please see the contest rules section
@@ -209,14 +218,10 @@ CONFIGURATION
        1. Nothing
           If calling CQ, no one heard you call CQ again.
           If you responded to someone and you got silence, the call sent was incorrect.
-          To abandon the QSO, send F8 NIL (Not In Log). By default, "NIL
-          Instantly Removes Caller" under Settings makes MRCE remove one targeted
-          caller immediately. Disable it for more realistic behaviour, which may
-          require several NIL messages and cost QSO time; the default favours
-          training over realism.
+	  Entering a partial-callsign will often cause the caller to repeat their call.
        2. Corrected Call
           If you sent a partial call or if you were off a little they may respond with
-          "de" (from) and their call or just their call again. Sometimes just the call
+          "DE" (from) and their call or just their call again. Sometimes just the call
           is repeated and sometimes with the exchange.
        3. They may respond with "NR?"
           You will have to send your exchange again (Hit F2).
