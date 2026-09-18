@@ -264,7 +264,7 @@ var
   Qsb: boolean = false;
   Flutter: boolean = false;
   Lids: boolean = false;
-  NilInstantRemove: boolean = true;
+  NilInstantRemove: boolean = false;
   NoActivityCnt: integer=0;
   NoStopActivity: integer=0;
   GetWpmUsesGaussian: boolean = false;
