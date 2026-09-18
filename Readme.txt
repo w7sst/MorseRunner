@@ -353,7 +353,7 @@ SUBMITTING YOUR SCORE
 
 VERSION HISTORY
 
-Version 1.86-dev (Fall 2026)
+Version 1.86 (Fall 2026)
   - Add ARRL 10M Contest (W7SST)
 
   Contest-specific improvements...
@@ -366,6 +366,7 @@ Version 1.86-dev (Fall 2026)
 
   General bug fixes and improvements...
   - Send 'TU MyCall' after three consecutive QSOs (#385) (W7SST)
+  - Improve 'Invalid callsign' Error check (#433) (W7SST)
   - Make F8 NIL reliably dismiss unwanted callers (#452) (YO3GND)
   - Fix alt+w/alt+enter ding (#453) (YO3GND)
   - Fix end-of-session qso finalization (#454) (YO3GND)
@@ -373,6 +374,9 @@ Version 1.86-dev (Fall 2026)
   - Display number of callsigns loaded when starting a contest (#460) (W7SST)
   - Display audio recording status and improve folder selection (#462) (YO3GND)
   - Send 5NN faster than the rest of the exchange (#463) (YO3GND)
+  - Add 'Cluster Behaviors > NIL Instantly Removes Caller' (#467) (YO3GND)
+  - Add 'Cluster Behaviors > QRS After a Few Incomplete Calls' (#471) (W7SST)
+  - Add 'Cluster Behaviors > Stays After Continued Incomplete Calls' (#469) (W7SST)
 
 Version 1.85.4 (May 2026)
   Bug Fix Release
