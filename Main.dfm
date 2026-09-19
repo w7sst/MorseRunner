@@ -1531,6 +1531,10 @@ object MainForm: TMainForm
           Caption = 'NIL Instantly Removes Caller'
           OnClick = NilInstantRemove1Click
         end
+        object CallerQrsAfterIncompleteCalls1: TMenuItem
+          Caption = 'QRS After a Few Incomplete Calls'
+          OnClick = CallerQrsAfterIncompleteCalls1Click
+        end
         object CallerStaysAfterIncompleteCalls1: TMenuItem
           Caption = 'Stays After Continued Incomplete Calls'
           OnClick = CallerStaysAfterIncompleteCalls1Click

@@ -265,6 +265,7 @@ var
   Flutter: boolean = false;
   Lids: boolean = false;
   NilInstantRemove: boolean = false;
+  CallerQrsAfterIncompleteCalls: boolean = false;
   CallerStaysAfterIncompleteCalls: boolean = false;
   NoActivityCnt: integer=0;
   NoStopActivity: integer=0;
@@ -304,6 +305,7 @@ procedure ToIni;
 function IsNum(Num: String): Boolean;
 function FindContestByName(const AContestName : String) : TSimContest;
 function ToStr(const val: TRunMode): String; overload;
+function AllowCallerToQrs: Boolean;
 function AllowCallerToStay: Boolean;
 
 
@@ -474,6 +476,7 @@ begin
       SingleCallStartDelay := ReadInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
       SingleCallStartDelay := Max(0, Min(SingleCallStartDelay, 2500));
       NilInstantRemove := ReadBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
+      CallerQrsAfterIncompleteCalls := ReadBool(SEC_SET, 'CallerQrsAfterIncompleteCalls', CallerQrsAfterIncompleteCalls);
       CallerStaysAfterIncompleteCalls := ReadBool(SEC_SET, 'CallerStaysAfterIncompleteCalls', CallerStaysAfterIncompleteCalls);
       Faster5nn := Max(0, Min(100, ReadInteger(SEC_SET, 'Faster5nn', Faster5nn)));
       if Faster5nn > 0 then Faster5nnMem := Faster5nn;
@@ -563,6 +566,7 @@ begin
       WriteInteger(SEC_SET, 'StationIdRate', StationIdRate);
       WriteInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
       WriteBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
+      WriteBool(SEC_SET, 'CallerQrsAfterIncompleteCalls', CallerQrsAfterIncompleteCalls);
       WriteBool(SEC_SET, 'CallerStaysAfterIncompleteCalls', CallerStaysAfterIncompleteCalls);
       WriteInteger(SEC_SET, 'Faster5nn', Faster5nn);
 
@@ -676,6 +680,13 @@ begin
   raise Exception.Create(
       Format('error: ''%s'' is an unsupported contest name', [AContestName]));
   Halt;
+end;
+
+
+function AllowCallerToQrs: Boolean;
+begin
+  Result := CallerQrsAfterIncompleteCalls and
+              not Ini.Lids and (RunMode <> rmHST);
 end;
 
 

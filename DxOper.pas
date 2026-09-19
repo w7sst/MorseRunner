@@ -85,12 +85,24 @@ type
 
   TStationSkill = (skLow, skMedium, skHigh);
 
+  TStationSpeedState = (ssNormalSpeed, ssSlowingDown);
+
+  // Define an event type that passes the relevant data up to the station
+  TSpeedStateChangeEvent = procedure(
+    Sender: TObject;
+    ASpeedState: TStationSpeedState;
+    ASpeedDropFactor: Double;     // Drop current speed by this percentage
+    AUseFarnsworthGaps: Boolean   // Whether the station should widen gaps instead of slowing characters
+  ) of object;
+
   TDxOperator = class
   private
     R2: Single;         // holds a Random number; used in MsgReceived, GetReply
     LastCheckedCall: String;            // last call passed to IsMyCall()
     LastCallCheck: TCallCheckResult;    // IsMyCall()'s last result
     FSilentTimeoutCount: Integer;       // count consecutive silent timeouts (msgNone)
+    FIncompleteCallCount: Integer;           // count of Incomplete Calls
+    FOnSpeedStateChange: TSpeedStateChangeEvent;  // TDxStation callback
 
     procedure DecPatience;
     procedure MorePatience(AValue: integer = 0);
@@ -128,6 +140,9 @@ type
     function CallConfidenceCheck(const ACall: string;
       ARandomResult: boolean): TCallCheckResult;
     function IsActiveInQso: Boolean;
+
+    // The station will plug its own method into this event hook
+    property OnSpeedStateChange: TSpeedStateChangeEvent read FOnSpeedStateChange write FOnSpeedStateChange;
     property SkillLevel: TStationSkill read GetSkillLevel;
   end;
 
@@ -163,6 +178,7 @@ begin
   Call := ACall;
   Skills := 1 + Random(3); //1..3
   FSilentTimeoutCount := 0;
+  FIncompleteCallCount := 0;
   Patience := 0;
   RepeatCnt := 1;
   State := osDone;
@@ -280,11 +296,18 @@ end;
   When this count reaches zero, the DxStation will start "ghosting" and
   stop transmitting. The ghosting station will remain active so it can
   receive final messages from user, logged and deleted from the simulation.
+
+  Starting with v1.86, 'Calling Behaviors > QRS After A Few Incomplete Calls'
+  will slow down (QRS) the sending speed of the Dx Station.
 }
 procedure TDxOperator.DecPatience;
+var
+  IsQrsStateAllowed, IsQrsTriggerValueMet: boolean;
+  DropFactor: Double;
 begin
   if State = osDone then Exit;
 
+  // 1. Decrement Patience after every received message
   if Patience > 0 then
     Dec(Patience);
 
@@ -296,7 +319,7 @@ begin
       State := osFailed;
 
     // Starting in v1.86, if the QSO has started and the user has not provided
-    // correct full callsign nor sent final TU (implying they have not copied
+    // correct full callsign or sent final TU (implying they have not copied
     // my exchange), we allow the caller to stay in the QSO.
     if State in [osNeedCallNr, osNeedCall, osNeedEnd] then
     begin
@@ -314,7 +337,45 @@ begin
         State := osFailed;
     end;
 
+    // If Patience hits zero, station starts ghosting and waits for removal
+    if Patience = 0 then
+      Exit;
   end;
+
+  // 2. Check if the user is struggling to copy my callsign or exchange
+  IsQrsStateAllowed := AllowCallerToQrs and
+    (State in [osNeedCall, osNeedCallNr,    // waiting for callsign or exch
+               osNeedNr, osNeedEnd]);       // waiting for exch or TU
+
+  if not IsQrsStateAllowed then Exit;
+
+  // 3. Evaluate if this specific skill level's patience threshold requires QRS yet
+  IsQrsTriggerValueMet := False;
+  case SkillLevel of
+    skLow:    IsQrsTriggerValueMet := FIncompleteCallCount >= FULL_PATIENCE-2;  // 3
+    skMedium: IsQrsTriggerValueMet := FIncompleteCallCount >= FULL_PATIENCE-2;  // 3
+    skHigh:   IsQrsTriggerValueMet := FIncompleteCallCount >= FULL_PATIENCE-1;  // 4
+  end;
+
+  // Is QRS needed? If not, stay at normal speed
+  if not IsQrsTriggerValueMet then
+    Exit;
+
+  // Set baseline drop percentages based on operator skill
+  DropFactor := 0.0;
+  case SkillLevel of
+    skLow:    DropFactor := 0.20; // 20% speed drop (e.g., 35 WPM -> 28 WPM)
+    skMedium: DropFactor := 0.16; // 16% speed drop (e.g., 35 WPM -> 29 WPM)
+    skHigh:   DropFactor := 0.12; // 12% speed drop (e.g., 35 WPM -> 31 WPM)
+  end;
+
+  // If the user continues to fail, drop speed by another 2%
+  if FIncompleteCallCount >= 4 then
+    DropFactor := DropFactor + 0.02;  // 14%, 18%, or 22% speed drop
+
+  // Pass speed state change event up to the station
+  if Assigned(FOnSpeedStateChange) then
+    FOnSpeedStateChange(Self, ssSlowingDown, DropFactor, Tst.IsFarnsworthAllowed);
 end;
 
 
@@ -342,6 +403,13 @@ end;
       DxOperator.GetReply(osNeedEnd, Patience=4) --> '<HisCall>'
   To fix this problem, MorePatience will maintain an existing Patience value
   of 5 (FULL_PATIENCE) and not set it to 4. Resolved in October 2024.
+
+  September 2026
+    - Adding 'QRS After a Few Incomplete Calls'. When allowing caller to slow
+      down, we want to update the Patience value to the incoming value
+      (typically 1).
+      Otherwise, Patience is set to FULL_PATIENCE (typically 5) which will
+      change the counting in DecPatience which causes the logic to not QRS.
 }
 procedure TDxOperator.MorePatience(AValue: integer);
 begin
@@ -383,8 +451,26 @@ procedure TDxOperator.SetState(AState: TOperatorState);
 begin
   if State <> AState then
   begin
+    // Reset incomplete call count whenever callsign has been correctly copied.
+    // - exclude the common osNeedCallNr -> osNeedCall transition occuring when
+    //   user sends a partial callsign. If caller is already sending slow, we
+    //   want to continue sending slowly.
+    if not ((State = osNeedCallNr) and (AState = osNeedCall)) then
+      FIncompleteCallCount := 0;
+
     State := AState;
     FSilentTimeoutCount := 0; // Reset silence tracker on normal state transitions
+
+    // SPEED RECOVERY TRIGGER: If the operator state leaves the error zone
+    // because the user typed the correct callsign or exchange, we automatically
+    // tell the station to restore normal speeds.
+    // Only evaluate speed recovery if the operator state actually changed and
+    // has correctly copied the callsign or exchange.
+    if not (State in [osNeedCall, osNeedCallNr, osNeedEnd]) then
+      begin
+        if Assigned(FOnSpeedStateChange) then
+          FOnSpeedStateChange(Self, ssNormalSpeed, 1.0, False);
+      end;
   end;
 
   {
@@ -617,7 +703,6 @@ end;
 
 procedure TDxOperator.MsgReceived(AMsg: TStationMessages);
 begin
-
   //if CQ received, we can call no matter what else was sent
   if msgCQ in AMsg then
     begin
@@ -649,11 +734,14 @@ begin
         else if State = osNeedCall then SetState(osNeedEnd);
 
       mcAlmost:
+      begin
         if State in [osNeedPrevEnd, osNeedQso] then SetState(osNeedCallNr)
         // else if State = osNeedCallNr then    // allow DecPatience below
         // else if State = osNeedCall then      // allow DecPatience below
         else if State = osNeedNr then SetState(osNeedCallNr)  // waiting for user's Exch
         else if State = osNeedEnd then SetState(osNeedCall);  // waiting for user's TU
+        Inc(FIncompleteCallCount);
+      end;
 
       mcNo:
         if State = osNeedQso then State := osNeedPrevEnd

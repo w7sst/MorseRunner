@@ -241,6 +241,7 @@ type
     Label21: TLabel;
     Label22: TLabel;
     CallerBehaviors1: TMenuItem;
+    CallerQrsAfterIncompleteCalls1: TMenuItem;
     CallerStaysAfterIncompleteCalls1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure AlSoundOut1BufAvailable(Sender: TObject);
@@ -324,6 +325,7 @@ type
     procedure SpinEdit1Exit(Sender: TObject);
     procedure Edit3Enter(Sender: TObject);
     procedure Edit3KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure CallerQrsAfterIncompleteCalls1Click(Sender: TObject);
     procedure CallerStaysAfterIncompleteCalls1Click(Sender: TObject);
     procedure CallerBehaviors1Click(Sender: TObject);
 
@@ -2685,7 +2687,15 @@ end;
 procedure TMainForm.CallerBehaviors1Click(Sender: TObject);
 begin
   NilInstantRemove1.Checked := Ini.NilInstantRemove;
+  CallerQrsAfterIncompleteCalls1.Checked := Ini.CallerQrsAfterIncompleteCalls;
   CallerStaysAfterIncompleteCalls1.Checked := Ini.CallerStaysAfterIncompleteCalls;
+end;
+
+
+procedure TMainForm.CallerQrsAfterIncompleteCalls1Click(Sender: TObject);
+begin
+  with Sender as TMenuItem do Checked := not Checked;
+  Ini.CallerQrsAfterIncompleteCalls := CallerQrsAfterIncompleteCalls1.Checked;
 end;
 
 

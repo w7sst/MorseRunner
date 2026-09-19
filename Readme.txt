@@ -194,6 +194,15 @@ CONFIGURATION
       and favor realism, meaning it may require several NIL messages and
       cost QSO time to fully abandon the QSO.
 
+    Caller Behaviors > QRS After a Few Incomplete Calls
+      Enabling this option automatically slows down a calling station's code
+      speed (QRS) after 2–3 incomplete retry attempts to assist users who
+      are struggling to accurately copy a difficult callsign or exchange.
+
+      By default, this option is disabled to match original v1.68 behaviors
+      and maintain historical realism, which includes explicitly preventing
+      LID stations from ever slowing down their speed.
+
     Caller Behaviors > Stays After Continued Incomplete Calls
       Enabling this option favors training over realism, allowing the calling
       station to remain active in the current QSO indefinitely so users can
