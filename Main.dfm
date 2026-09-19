@@ -1529,7 +1529,6 @@ object MainForm: TMainForm
         OnClick = CallerBehaviors1Click
         object NilInstantRemove1: TMenuItem
           Caption = 'NIL Instantly Removes Caller'
-          Checked = True
           OnClick = NilInstantRemove1Click
         end
       end
