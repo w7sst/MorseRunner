@@ -90,6 +90,8 @@ type
     R2: Single;         // holds a Random number; used in MsgReceived, GetReply
     LastCheckedCall: String;            // last call passed to IsMyCall()
     LastCallCheck: TCallCheckResult;    // IsMyCall()'s last result
+    FSilentTimeoutCount: Integer;       // count consecutive silent timeouts (msgNone)
+
     procedure DecPatience;
     procedure MorePatience(AValue: integer = 0);
     function GetSkillLevel: TStationSkill;
@@ -110,6 +112,7 @@ type
     SendNrQmCnt: Integer;     // Send 'NR?' followed by two 'AGN' messages.
     CorrectedCallAndExchSent: Boolean;  // DxOper has sent callsign correction
                                         // and exchange in one message.
+
     constructor Create(const ACall: string; AState: TOperatorState);
     function IsGhosting: boolean;
     function GetSendDelay: integer;
@@ -159,8 +162,10 @@ begin
   R2 := Random;     // assigned at creation for consistent responses
   Call := ACall;
   Skills := 1 + Random(3); //1..3
+  FSilentTimeoutCount := 0;
   Patience := 0;
   RepeatCnt := 1;
+  State := osDone;
   SetState(AState);
   LastCheckedCall := '';
   LastCallCheck := mcNo;
@@ -175,6 +180,8 @@ end;
   Patience and is leaving the QSO because the User has failed to respond.
   This will occur if the User does not respond or continue to interact with
   this DxOperator. A station is considered ghosting whenever Patience = 0.
+  The DxOperator can also leave a QSO when the user fails to send the correct
+  Dx callsign. At some point, the DxOperator will give up and QSY.
 
   When a DxStation is ghosting, it will:
   - leaving the QSO because User did not complete QSO
@@ -281,10 +288,33 @@ begin
   if Patience > 0 then
     Dec(Patience);
 
-  // starting in v1.85, caller ghosting will occur when a QSO has started, but
-  // has not yet completed. If the QSO has not yet started, set State=osFailed.
-  if (Patience < 1) and (State in [osNeedPrevEnd, osNeedQso]) then
-    State := osFailed;
+  if (Patience = 0) then
+  begin
+    // starting in v1.85, caller ghosting will occur when a QSO has started, but
+    // has not yet completed. If the QSO has not yet started, set State=osFailed.
+    if State in [osNeedPrevEnd, osNeedQso] then
+      State := osFailed;
+
+    // Starting in v1.86, if the QSO has started and the user has not provided
+    // correct full callsign nor sent final TU (implying they have not copied
+    // my exchange), we allow the caller to stay in the QSO.
+    if State in [osNeedCallNr, osNeedCall, osNeedEnd] then
+    begin
+      {
+        If 'Caller Stays' is checked, we stay in this QSO ONLY if the
+        user is actively trying. If the user has let 3 or more consecutive
+        silent timeout messages (msgNone) pass without a single keystroke,
+        the caller must leave the simulation.
+      }
+      if AllowCallerToStay and (FSilentTimeoutCount < 3) then
+        // User is struggling but present: extend patience to loop the contact
+        MorePatience(Patience+1)
+      else
+        // otherwise operator gives up and leaves the simulation
+        State := osFailed;
+    end;
+
+  end;
 end;
 
 
@@ -351,7 +381,11 @@ end;
 }
 procedure TDxOperator.SetState(AState: TOperatorState);
 begin
-  State := AState;
+  if State <> AState then
+  begin
+    State := AState;
+    FSilentTimeoutCount := 0; // Reset silence tracker on normal state transitions
+  end;
 
   {
     Patience, set below, represents how long a station will stay around to
@@ -616,10 +650,10 @@ begin
 
       mcAlmost:
         if State in [osNeedPrevEnd, osNeedQso] then SetState(osNeedCallNr)
-        else if State = osNeedCallNr then MorePatience
-        else if State = osNeedCall then MorePatience
-        else if State = osNeedNr then SetState(osNeedCallNr)
-        else if State = osNeedEnd then SetState(osNeedCall);
+        // else if State = osNeedCallNr then    // allow DecPatience below
+        // else if State = osNeedCall then      // allow DecPatience below
+        else if State = osNeedNr then SetState(osNeedCallNr)  // waiting for user's Exch
+        else if State = osNeedEnd then SetState(osNeedCall);  // waiting for user's TU
 
       mcNo:
         if State = osNeedQso then State := osNeedPrevEnd
@@ -671,11 +705,11 @@ begin
   begin
     case State of
       osNeedPrevEnd: if Mainform.Edit1.Text = '' then SetState(osNeedQso);
-      osNeedQso: ;
-      osNeedNr: MorePatience;
-      osNeedCall: MorePatience;
-      osNeedCallNr: MorePatience;
-      osNeedEnd: MorePatience;
+      osNeedQso: ;                // waiting for callsign (full or partial); sending my Call
+      osNeedNr: ;                 // has call, waiting for Exch; sending my Exch
+      osNeedCall: ;               // has Exch, waiting for call correction; sending my Call [& Exch]
+      osNeedCallNr: ;             // waiting for Call correction and Exch; sending my Call
+      osNeedEnd: ;                // waiting for TU, resending my Exch
     end;
   end;
 
@@ -686,13 +720,19 @@ begin
       osNeedQso: MorePatience;    // waiting for callsign (full or partial)
       osNeedNr: MorePatience;     // has call, waiting for Exch
       osNeedCall: MorePatience;   // has Exch, waiting for call correction
-      osNeedCallNr: MorePatience; // waiting for call and Exch
+      osNeedCallNr: MorePatience; // waiting for call correction and Exch
       osNeedEnd: ;                // waiting for TU
       osDone: ;                   // QSO complete; no state change
       osFailed: ;                 // QSO failed; no state change
       else
         State := osNeedPrevEnd;
     end;
+
+  // check for a silent timeout event or user activity (used by 'Caller Stays')
+  if AMsg = [msgNone] then
+    Inc(FSilentTimeoutCount)    // no user activity
+  else
+    FSilentTimeoutCount := 0;   // user is still active
 
   if State <> osNeedPrevEnd then DecPatience;
 end;
