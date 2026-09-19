@@ -1524,10 +1524,14 @@ object MainForm: TMainForm
         Caption = 'HST Operator...'
         OnClick = Operator1Click
       end
-      object NilInstantRemove1: TMenuItem
-        Caption = 'NIL Instantly Removes Caller'
-        Checked = True
-        OnClick = NilInstantRemove1Click
+      object CallerBehaviors1: TMenuItem
+        Caption = 'Caller Behaviors'
+        OnClick = CallerBehaviors1Click
+        object NilInstantRemove1: TMenuItem
+          Caption = 'NIL Instantly Removes Caller'
+          Checked = True
+          OnClick = NilInstantRemove1Click
+        end
       end
       object Faster5nn1: TMenuItem
         Caption = 'Faster 5NN'
