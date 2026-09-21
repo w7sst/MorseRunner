@@ -374,22 +374,22 @@ Version 1.86 (October 2026)
   - Display number of callsigns loaded when starting a contest (#460) (W7SST)
   - Display audio recording status and improve folder selection (#462) (YO3GND)
   - Send 5NN faster than the rest of the exchange (#463) (YO3GND)
-  - Add 'Cluster Behaviors > NIL Instantly Removes Caller' (#467) (YO3GND)
-  - Add 'Cluster Behaviors > QRS After a Few Incomplete Calls' (#471) (W7SST)
-  - Add 'Cluster Behaviors > Stays After Continued Incomplete Calls' (#469) (W7SST)
+  - Add 'Caller Behaviors > NIL Instantly Removes Caller' (#467) (YO3GND)
+  - Add 'Caller Behaviors > QRS After a Few Incomplete Calls' (#471) (W7SST)
+  - Add 'Caller Behaviors > Stays After Continued Incomplete Calls' (#469) (W7SST)
 
   Additional Details...
-    Settings > Cluster Behaviors > NIL Instantly Removes Caller
+    Settings > Caller Behaviors > NIL Instantly Removes Caller
       Introduces a menu option that alters how quickly a station drops out of a
       QSO when an F8 (Not In Log message) is sent. Allows the user to give up
       on a troublesome callsign and move onto the next caller.
 
-    Settings > Cluster Behaviors > QRS After a Few Incomplete Calls
+    Settings > Caller Behaviors > QRS After a Few Incomplete Calls
       Introduces a menu option that automatically slows down a calling station's code
       speed (QRS) after 2–3 incomplete retry attempts. This assists users who are
       struggling to accurately copy a difficult callsign or exchange during a QSO.
 
-    Settings > Cluster Behaviors > Stays After Continued Incomplete Calls
+    Settings > Caller Behaviors > Stays After Continued Incomplete Calls
       Adds a new option under the Settings menu that allows calling stations to remain
       active in the current QSO after repeated failed copy attempts. When enabled,
       users can practice head-copying and correct callsigns or exchanges without
