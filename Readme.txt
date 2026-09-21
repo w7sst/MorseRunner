@@ -357,6 +357,12 @@ Version 1.86-dev (Fall 2026)
   - Add ARRL 10M Contest (W7SST)
 
   Contest-specific improvements...
+  - ARRL FD - Update call history file
+  - ARRL DX - Update call history file
+  - ARRL Sweepstakes - Update call history file
+  - CWOPS CWT - Update call history file
+  - K1USN Slow Speed Test - Update call history file
+  - NCJ NAQP - Update call history file
 
   General bug fixes and improvements...
   - Send 'TU MyCall' after three consecutive QSOs (#385) (W7SST)
