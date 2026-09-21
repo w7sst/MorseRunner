@@ -237,7 +237,7 @@ CONFIGURATION
        1. Nothing
           If calling CQ, no one heard you call CQ again.
           If you responded to someone and you got silence, the call sent was incorrect.
-	  Entering a partial-callsign will often cause the caller to repeat their call.
+          Send F8 NIL (Not In Log) to have them respond again and/or restart the pile-up.
        2. Corrected Call
           If you sent a partial call or if you were off a little they may respond with
           "DE" (from) and their call or just their call again. Sometimes just the call
@@ -353,8 +353,8 @@ SUBMITTING YOUR SCORE
 
 VERSION HISTORY
 
-Version 1.86 (Fall 2026)
-  - Add ARRL 10M Contest (W7SST)
+Version 1.86 (October 2026)
+  - Add ARRL 10M Contest
 
   Contest-specific improvements...
   - ARRL FD - Update call history file
@@ -377,6 +377,37 @@ Version 1.86 (Fall 2026)
   - Add 'Cluster Behaviors > NIL Instantly Removes Caller' (#467) (YO3GND)
   - Add 'Cluster Behaviors > QRS After a Few Incomplete Calls' (#471) (W7SST)
   - Add 'Cluster Behaviors > Stays After Continued Incomplete Calls' (#469) (W7SST)
+
+  Additional Details...
+    Settings > Cluster Behaviors > NIL Instantly Removes Caller
+      Introduces a menu option that alters how quickly a station drops out of a
+      QSO when an F8 (Not In Log message) is sent. Allows the user to give up
+      on a troublesome callsign and move onto the next caller.
+
+    Settings > Cluster Behaviors > QRS After a Few Incomplete Calls
+      Introduces a menu option that automatically slows down a calling station's code
+      speed (QRS) after 2–3 incomplete retry attempts. This assists users who are
+      struggling to accurately copy a difficult callsign or exchange during a QSO.
+
+    Settings > Cluster Behaviors > Stays After Continued Incomplete Calls
+      Adds a new option under the Settings menu that allows calling stations to remain
+      active in the current QSO after repeated failed copy attempts. When enabled,
+      users can practice head-copying and correct callsigns or exchanges without
+      the station leaving prematurely.
+
+    Settings > Faster 5NN
+      During contests, some operators often send 5NN or 599 a little faster than
+      the rest of their exchange. When enabled, MRCE will reproduce that behaviour.
+
+    Improvements to Audio Recording
+      Adds a configurable audio recording folder, defaulting to the user profile and
+      persisted in the MorseRunner.INI file. Each run receives a separate, sanitized
+      UTC/callsign/contest filename. This change adds two new File menu items:
+        - 'File > Choose Audio Recording Folder...'
+        - 'File > Open Audio Recording Folder'
+      By default, the audio recording folder is added to your home directory
+      (e.g. C:\Users\<user>\Morse Runner CE Recordings). Audio recording is enabled
+      using 'File > Audio Recording Enabled'.
 
 Version 1.85.4 (May 2026)
   Bug Fix Release
