@@ -16,7 +16,6 @@ type
     Qsb: TQsb;
     FMasterSpeed: Integer;
     FMasterCharacterSpeed: Integer;
-    FSpeedState: TStationSpeedState;
     FSpeedDropFactor: Double;
     FUseFarnsworthGaps: Boolean;
 
