@@ -48,6 +48,8 @@ type
   // Used in TContest.GetSentExchTypes() and TContest.GetRecvExchTypes().
   TRequestedMsgType = (mtSendMsg, mtRecvMsg);
 
+  TStationSpeedState = (ssNormalSpeed, ssSlowingDown);
+
   // Exchange Field types
   TExchTypes = record
   private
@@ -87,6 +89,7 @@ type
                       // A Tick occurs whenever an audio block is requested.
                       // TStation.Tick() calls ProcessEvent(evTimeout) whenever
                       // Timeout decrements to zero.
+    FSpeedState: TStationSpeedState;
     NrWithError: boolean;
     procedure Init;
     function NrAsText: string;
@@ -236,6 +239,7 @@ end;
 procedure TStation.Init;
 begin
   SentExchTypes := Default(TExchTypes);
+  FSpeedState := ssNormalSpeed;
   MsgTemp := 'undef';
   R1 := Random;
 end;
@@ -356,6 +360,7 @@ begin
     FastSteps := 0;
     if (IsFastReport(Nr) or IsFastReport(Nr2)) and
       (Ini.Faster5nn > 0) and not Tst.IsFarnsworthAllowed and
+      (FSpeedState = ssNormalSpeed) and
       not (Ini.SimContest in [scWpx, scHst]) then
       if Self = Tst.Me then
         FastSteps := 5
