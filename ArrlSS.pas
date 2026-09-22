@@ -73,6 +73,7 @@ implementation
 
 uses
   SysUtils,
+  System.Math,    // for InRange
   PerlRegEx,      // for regular expression support
   Ini,            // for ActiveContest
   ArrlSections,   // SectionsTbl
@@ -113,12 +114,15 @@ begin
             rec := TSweepstakesCallRec.Create;
           rec.Call := UpperCase(tl.Strings[0]);
           rec.Section := UpperCase(tl.Strings[1]);
-          if not TryStrToInt(tl.Strings[3], rec.Check) then continue;
+          if not TryStrToInt(tl.Strings[3], rec.Check) then
+            rec.Check := -1;
           if (tl.Count >= 5) then rec.UserText := tl.Strings[4]
                              else rec.UserText := '';
           if rec.Call='' then continue;
           if not Lexer.IsValidCall(rec.Call) then continue;
           if rec.Section='' then continue;
+          if not InRange(rec.Check, 0, 99) then
+            rec.Check := random(100);
 
           SweepstakesCallList.Add(rec);
           rec := nil;
