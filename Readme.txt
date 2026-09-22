@@ -365,7 +365,6 @@ Version 1.86 (October 2026)
   - NCJ NAQP - Update call history file
 
   General bug fixes and improvements...
-  - Send 'TU MyCall' after three consecutive QSOs (#385) (W7SST)
   - Improve 'Invalid callsign' Error check (#433) (W7SST)
   - Make F8 NIL reliably dismiss unwanted callers (#452) (YO3GND)
   - Fix alt+w/alt+enter ding (#453) (YO3GND)
