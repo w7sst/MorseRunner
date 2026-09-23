@@ -361,6 +361,8 @@ Version 1.86 (October 2026)
   - ARRL DX - Update call history file
   - ARRL Sweepstakes - Update call history file
   - CWOPS CWT - Update call history file
+  - JARL All JA - Update call history file
+  - JARL ACAG - Update call history file
   - K1USN Slow Speed Test - Update call history file
   - NCJ NAQP - Update call history file
 
