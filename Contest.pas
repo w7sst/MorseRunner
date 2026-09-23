@@ -478,8 +478,12 @@ begin
     msgQm: SendText(AStn, '?');
     msgNil: if Ini.F8.IsEmpty then SendText(AStn, 'NIL')
                               else SendText(Astn, Ini.F8);
-    msgR_NR: SendText(AStn, 'R <#>');
-    msgR_NR2: SendText(AStn, 'R <#> <#>');
+    msgR_NR:
+      if Random(100) < Ini.RPrefixChance then SendText(AStn, 'R <#>')
+                                          else SendText(AStn, '<#>');
+    msgR_NR2:
+      if Random(100) < Ini.RPrefixChance then SendText(AStn, 'R <#> <#>')
+                                          else SendText(AStn, '<#> <#>');
     msgDeMyCall1: SendText(AStn, 'DE <my>');
     msgDeMyCall2: SendText(AStn, 'DE <my> <my>');
     msgDeMyCallNr1: SendText(AStn, 'DE <my> <#>');
