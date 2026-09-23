@@ -367,6 +367,7 @@ Version 1.86 (October 2026)
   - NCJ NAQP - Update call history file
 
   General bug fixes and improvements...
+  - Improve 'TU MyCall' after three consecutive QSOs (#385) (W7SST)
   - Improve 'Invalid callsign' Error check (#433) (W7SST)
   - Make F8 NIL reliably dismiss unwanted callers (#452) (YO3GND)
   - Fix alt+w/alt+enter ding (#453) (YO3GND)
@@ -381,9 +382,8 @@ Version 1.86 (October 2026)
 
   Additional Details...
     Settings > Caller Behaviors > NIL Instantly Removes Caller
-      Introduces a menu option that alters how quickly a station drops out of a
-      QSO when an F8 (Not In Log message) is sent. Allows the user to give up
-      on a troublesome callsign and move onto the next caller.
+      When enabled, a single F8 NIL (Not In Log) message immediately removes
+      the current caller, allowing the next caller or pile-up to proceed.
 
     Settings > Caller Behaviors > QRS After a Few Incomplete Calls
       Introduces a menu option that automatically slows down a calling station's code
