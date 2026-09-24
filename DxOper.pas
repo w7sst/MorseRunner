@@ -99,7 +99,7 @@ type
     LastCheckedCall: String;            // last call passed to IsMyCall()
     LastCallCheck: TCallCheckResult;    // IsMyCall()'s last result
     FSilentTimeoutCount: Integer;       // count consecutive silent timeouts (msgNone)
-    FIncompleteCallCount: Integer;           // count of Incomplete Calls
+    FIncompleteCallCount: Integer;      // count of Incomplete Calls
     FOnSpeedStateChange: TSpeedStateChangeEvent;  // TDxStation callback
 
     procedure DecPatience;
@@ -450,10 +450,10 @@ begin
   if State <> AState then
   begin
     // Reset incomplete call count whenever callsign has been correctly copied.
-    // - exclude the common osNeedCallNr -> osNeedCall transition occuring when
-    //   user sends a partial callsign. If caller is already sending slow, we
-    //   want to continue sending slowly.
-    if not ((State = osNeedCallNr) and (AState = osNeedCall)) then
+    // However in the following transitions, we want to continue sending slowly:
+    //    - osNeedCallNr -> osNeedCall -- user send partial call & Exch
+    //    - osNeedEnd    -> osNeedCall -- expecting 'TU' & user sends partial call
+    if not ((State in [osNeedCallNr, osNeedEnd]) and (AState = osNeedCall)) then
       FIncompleteCallCount := 0;
 
     State := AState;
@@ -792,10 +792,12 @@ begin
     case State of
       osNeedPrevEnd: if Mainform.Edit1.Text = '' then SetState(osNeedQso);
       osNeedQso: ;                // waiting for callsign (full or partial); sending my Call
-      osNeedNr: ;                 // has call, waiting for Exch; sending my Exch
-      osNeedCall: ;               // has Exch, waiting for call correction; sending my Call [& Exch]
-      osNeedCallNr: ;             // waiting for Call correction and Exch; sending my Call
-      osNeedEnd: ;                // waiting for TU, resending my Exch
+      osNeedNr: ;                 // user has my call, waiting for Exch; sending 'NR?'
+      osNeedCall,                 // user has my Exch, waiting for call correction; sending my Call [& Exch]
+        osNeedCallNr,             // waiting for Call correction and Exch; sending my Call
+        osNeedEnd:                // waiting for TU, resending my Exch
+          if not (msgHisCall in AMsg) then
+            Inc(FIncompleteCallCount);
     end;
   end;
 
