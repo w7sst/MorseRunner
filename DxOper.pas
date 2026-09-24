@@ -85,8 +85,6 @@ type
 
   TStationSkill = (skLow, skMedium, skHigh);
 
-  TStationSpeedState = (ssNormalSpeed, ssSlowingDown);
-
   // Define an event type that passes the relevant data up to the station
   TSpeedStateChangeEvent = procedure(
     Sender: TObject;
