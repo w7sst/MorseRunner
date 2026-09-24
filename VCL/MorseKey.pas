@@ -190,6 +190,8 @@ end;
     - https://www.arrl.org/files/file/Technology/x9004008.pdf
 }
 function TKeyer.GetEnvelope: TSingleArray;
+const
+  WPM_PER_STEP = 1;
 var
   Len, i, p: integer;
   CurrentWpm, SamplesInUnit: integer;
@@ -254,8 +256,8 @@ begin
   TrueEnvelopeLen := 0;
   for i:=1 to Length(MorseMsg) do
     case MorseMsg[i] of
-      CW_SPEED_UP: SetSpeed(CurrentWpm + 2);
-      CW_SPEED_DOWN: SetSpeed(CurrentWpm - 2);
+      CW_SPEED_UP: SetSpeed(CurrentWpm + WPM_PER_STEP);
+      CW_SPEED_DOWN: SetSpeed(CurrentWpm - WPM_PER_STEP);
       '.': Inc(TrueEnvelopeLen, 2 * SamplesInUnit); // 1 unit dit followed by 1 unit spacing
       '-': Inc(TrueEnvelopeLen, 4 * SamplesInUnit); // 3 unit dash followed by 1 unit spacing
       ' ': Inc(TrueEnvelopeLen, 2 * SamplesInUnit); // 3U inter-char space (2U + prior 1U)
@@ -273,8 +275,8 @@ begin
   SetSpeed(WpmS);
   for i:=1 to Length(MorseMsg) do
     case MorseMsg[i] of
-      CW_SPEED_UP: SetSpeed(CurrentWpm + 2);
-      CW_SPEED_DOWN: SetSpeed(CurrentWpm - 2);
+      CW_SPEED_UP: SetSpeed(CurrentWpm + WPM_PER_STEP);
+      CW_SPEED_DOWN: SetSpeed(CurrentWpm - WPM_PER_STEP);
       '.': begin AddRampOn; AddOn(1); AddRampOff; AddOff(1, RampLen); end;
       '-': begin AddRampOn; AddOn(3); AddRampOff; AddOff(1, RampLen); end;
       ' ': AddOff(2, 0);      // 3U inter-char spacing (2U + prior 1U)

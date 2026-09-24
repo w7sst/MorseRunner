@@ -94,7 +94,7 @@ type
     procedure Init;
     function NrAsText: string;
   public
-    R1 : Single;            // holds a Random number; used in NrAsText, SendMsg
+    R1 : Extended;            // holds a Random number; used in NrAsText, SendMsg
     Amplitude: Single;
     WpmS: integer;          // Words per minute, sending speed (set by UI)
     WpmC: integer;          // Words per minute, character speed (set via .INI)
@@ -285,9 +285,12 @@ end;
   Keyer.Encode() and SendMorse().
 }
 procedure TStation.SendText(AMsg: string);
+const
+  WPM_PER_STEP = 1;   // must match MorseKey.WPM_PER_STEP
 var
   P, FastSteps: integer;
   Nr, Nr2, DebugMsg: string;
+  FastRate: Single;
 
   // Modifies AMsg by replacing AToken at position P with ANewText and
   // advances the token offset P to the start of the next token.
@@ -359,13 +362,22 @@ begin
     Nr2 := NrAsText;
     FastSteps := 0;
     if (IsFastReport(Nr) or IsFastReport(Nr2)) and
-      (Ini.Faster5nn > 0) and not Tst.IsFarnsworthAllowed and
+      (Ini.Faster5nn and (Ini.Faster5nnOccurrenceRate > 0)) and
+      not Tst.IsFarnsworthAllowed and
       (FSpeedState = ssNormalSpeed) and
-      not (Ini.SimContest in [scWpx, scHst]) then
-      if Self = Tst.Me then
-        FastSteps := 5
-      else if 100 * Frac(100 * R1) < Ini.Faster5nn then
-        FastSteps := 3 + Floor(3 * Frac(10000 * R1));
+      not (RunMode in [rmWpx, rmHst]) then
+      if (Self = Tst.Me) or
+        (Ini.Faster5nn and (100 * Frac(100 * R1) < Ini.Faster5nnOccurrenceRate)) then
+        begin
+          FastRate := 1.2 + 0.1*Floor(4*Frac(10000*R1));
+          FastSteps := Round(((WpmS*FastRate) - WpmS)/WPM_PER_STEP);
+        end;
+{$ifdef DEBUG}
+if Self <> Tst.Me then
+  DebugLn('%f < %d, WpmS %d, FastRate %f, FastSteps %d -> WPM %d',
+    [100 * Frac(100 * R1), Ini.Faster5nnOccurrenceRate, WpmS,
+     FastRate, FastSteps, WpmS+FastSteps*WPM_PER_STEP]);
+{$endif}
 
     //with error
     AMsg := StringReplace(AMsg, '<#>', MarkReport(Nr), []);

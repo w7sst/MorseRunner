@@ -286,8 +286,8 @@ var
   AllStationsWpmS: integer = 0;      // force all stations to this Wpm
   CallsFromKeyer: boolean = false;
   F8: string = '';
-  Faster5nn: integer = 0;
-  Faster5nnMem: integer = 20;
+  Faster5nn: boolean = false;
+  Faster5nnOccurrenceRate: integer = 80;
 
   { display parsed Exchange field settings; calls/exchanges (in rmSingle mode) }
   DebugExchSettings: boolean = false;
@@ -478,8 +478,8 @@ begin
       NilInstantRemove := ReadBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
       CallerQrsAfterIncompleteCalls := ReadBool(SEC_SET, 'CallerQrsAfterIncompleteCalls', CallerQrsAfterIncompleteCalls);
       CallerStaysAfterIncompleteCalls := ReadBool(SEC_SET, 'CallerStaysAfterIncompleteCalls', CallerStaysAfterIncompleteCalls);
-      Faster5nn := Max(0, Min(100, ReadInteger(SEC_SET, 'Faster5nn', Faster5nn)));
-      if Faster5nn > 0 then Faster5nnMem := Faster5nn;
+      Faster5nn := ReadBool(SEC_SET, 'Faster5nn', Faster5nn);
+      Faster5nnOccurrenceRate := Max(0, Min(100, ReadInteger(SEC_SET, 'Faster5nnOccurrenceRate', Faster5nnOccurrenceRate)));
 
       // [Debug]
       DebugExchSettings := ReadBool(SEC_DBG, 'DebugExchSettings', DebugExchSettings);
@@ -568,7 +568,8 @@ begin
       WriteBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
       WriteBool(SEC_SET, 'CallerQrsAfterIncompleteCalls', CallerQrsAfterIncompleteCalls);
       WriteBool(SEC_SET, 'CallerStaysAfterIncompleteCalls', CallerStaysAfterIncompleteCalls);
-      WriteInteger(SEC_SET, 'Faster5nn', Faster5nn);
+      WriteBool(SEC_SET, 'Faster5nn', Faster5nn);
+      WriteInteger(SEC_SET, 'Faster5nnOccurrenceRate', Faster5nnOccurrenceRate);
 
     finally
       Free;
