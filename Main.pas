@@ -2702,7 +2702,7 @@ end;
 procedure TMainForm.CallerStaysAfterIncompleteCalls1Click(Sender: TObject);
 begin
   with Sender as TMenuItem do Checked := not Checked;
-  Ini.CallerStaysAfterIncompleteCalls := Self.CallerStaysAfterIncompleteCalls1.Checked;
+  Ini.CallerStaysAfterIncompleteCalls := CallerStaysAfterIncompleteCalls1.Checked;
 end;
 
 
@@ -2848,7 +2848,7 @@ begin
   QSB1.Checked := Ini.Qsb;
   Flutter1.Checked := Ini.Flutter;
   LIDS1.Checked := Ini.Lids;
-  Faster5nn1.Checked := Ini.Faster5nn > 0;
+  Faster5nn1.Checked := Ini.Faster5nn;
 end;
 
 
@@ -3008,15 +3008,8 @@ end;
 
 procedure TMainForm.Faster5nn1Click(Sender: TObject);
 begin
-  if Ini.Faster5nn = 0 then
-    Ini.Faster5nn := Ini.Faster5nnMem
-  else
-    begin
-    Ini.Faster5nnMem := Ini.Faster5nn;
-    Ini.Faster5nn := 0;
-    end;
-
-  Faster5nn1.Checked := Ini.Faster5nn > 0;
+  with Sender as TMenuItem do Checked := not Checked;
+  Ini.Faster5nn := Faster5nn1.Checked;
 end;
 
 

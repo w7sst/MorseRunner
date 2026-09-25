@@ -400,6 +400,11 @@ Version 1.86 (October 2026)
       During contests, some operators often send 5NN or 599 a little faster than
       the rest of their exchange. When enabled, MRCE will reproduce that behaviour.
 
+      The following keyword is provided to specify the percentage of calling
+      stations that will send a faster 5NN exchange. Default is 80%.
+          [Settings]
+          Faster5nnOccurrenceRate=80
+
     Improvements to Audio Recording
       Adds a configurable audio recording folder, defaulting to the user profile and
       persisted in the MorseRunner.INI file. Each run receives a separate, sanitized
