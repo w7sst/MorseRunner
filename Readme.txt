@@ -353,7 +353,7 @@ SUBMITTING YOUR SCORE
 
 VERSION HISTORY
 
-Version 1.86 (October 2026)
+Version 1.86 (Sept 2026)
   - Add ARRL 10M Contest
 
   Contest-specific improvements...
