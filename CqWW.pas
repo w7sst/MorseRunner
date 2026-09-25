@@ -149,8 +149,23 @@ end;
 
 
 function TCqWw.PickStation(): integer;
+const
+  // real CQWW ops overwhelmingly chase DX; down-weight same-country callers
+  // so a station calling CQ mostly hears DX answer, not fellow countrymen
+  DomesticAcceptProb = 0.05;
+var
+  dxrec: TDXCCRec;
+  tries: integer;
 begin
-     result := random(CqWwCallList.Count);
+  tries := 0;
+  repeat
+    result := random(CqWwCallList.Count);
+    Inc(tries);
+  until (MyEntity = '') or
+        (not gDXCCList.FindRec(dxrec, CqWwCallList.Items[result].Call)) or
+        (dxrec.Entity <> MyEntity) or
+        (Random < DomesticAcceptProb) or
+        (tries > 200);
 end;
 
 
