@@ -285,8 +285,6 @@ end;
   Keyer.Encode() and SendMorse().
 }
 procedure TStation.SendText(AMsg: string);
-const
-  WPM_PER_STEP = 1;   // must match MorseKey.WPM_PER_STEP
 var
   P, FastSteps: integer;
   Nr, Nr2, DebugMsg: string;
@@ -372,12 +370,6 @@ begin
           FastRate := 1.2 + 0.1*Floor(4*Frac(10000*R1));
           FastSteps := Round(((WpmS*FastRate) - WpmS)/WPM_PER_STEP);
         end;
-{$ifdef DEBUG}
-if Self <> Tst.Me then
-  DebugLn('%f < %d, WpmS %d, FastRate %f, FastSteps %d -> WPM %d',
-    [100 * Frac(100 * R1), Ini.Faster5nnOccurrenceRate, WpmS,
-     FastRate, FastSteps, WpmS+FastSteps*WPM_PER_STEP]);
-{$endif}
 
     //with error
     AMsg := StringReplace(AMsg, '<#>', MarkReport(Nr), []);

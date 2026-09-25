@@ -13,6 +13,7 @@ uses
 const
   CW_SPEED_UP = '<';
   CW_SPEED_DOWN = '>';
+  WPM_PER_STEP = 1;
 
 
 type
@@ -190,8 +191,6 @@ end;
     - https://www.arrl.org/files/file/Technology/x9004008.pdf
 }
 function TKeyer.GetEnvelope: TSingleArray;
-const
-  WPM_PER_STEP = 1;
 var
   Len, i, p: integer;
   CurrentWpm, SamplesInUnit: integer;
