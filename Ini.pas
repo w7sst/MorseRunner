@@ -286,6 +286,7 @@ var
   AllStationsWpmS: integer = 0;      // force all stations to this Wpm
   CallsFromKeyer: boolean = false;
   F8: string = '';
+  RPrefixChance: integer = 100;  // % chance a station leads exchange with 'R '; 100 = classic/original hardcoded behavior
   Faster5nn: integer = 0;
   Faster5nnMem: integer = 20;
 
@@ -474,6 +475,7 @@ begin
       ShowExchangeSummary := ReadBool(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
       StationIdRate := ReadInteger(SEC_SET, 'StationIdRate', StationIdRate);
       SingleCallStartDelay := ReadInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
+      RPrefixChance := Max(0, Min(100, ReadInteger(SEC_SET, 'RPrefixChance', RPrefixChance)));
       SingleCallStartDelay := Max(0, Min(SingleCallStartDelay, 2500));
       NilInstantRemove := ReadBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
       CallerQrsAfterIncompleteCalls := ReadBool(SEC_SET, 'CallerQrsAfterIncompleteCalls', CallerQrsAfterIncompleteCalls);
@@ -565,6 +567,7 @@ begin
       WriteBool(SEC_SET, 'ShowExchangeSummary', ShowExchangeSummary);
       WriteInteger(SEC_SET, 'StationIdRate', StationIdRate);
       WriteInteger(SEC_SET, 'SingleCallStartDelay', SingleCallStartDelay);
+      WriteInteger(SEC_SET, 'RPrefixChance', RPrefixChance);
       WriteBool(SEC_SET, 'NilInstantRemove', NilInstantRemove);
       WriteBool(SEC_SET, 'CallerQrsAfterIncompleteCalls', CallerQrsAfterIncompleteCalls);
       WriteBool(SEC_SET, 'CallerStaysAfterIncompleteCalls', CallerStaysAfterIncompleteCalls);
